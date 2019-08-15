@@ -42,7 +42,6 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
 
     @Override
     public List<InstitucionRequerida> getRegistroMixtoList() {
-        System.out.println("===En Servicio RegistroMixto===");
         List<InstitucionRequerida> registroMixtoList = new ArrayList<InstitucionRequerida>();
         String[] criteriaNombres = {"tipo"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_IN_LIST};
