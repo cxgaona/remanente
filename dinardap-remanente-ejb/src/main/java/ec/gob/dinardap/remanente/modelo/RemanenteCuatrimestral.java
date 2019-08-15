@@ -20,7 +20,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -42,25 +41,30 @@ import javax.xml.bind.annotation.XmlTransient;
 public class RemanenteCuatrimestral implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     protected RemanenteCuatrimestralPK remanenteCuatrimestralPK;
+
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
-    @Size(max = 2147483647)
-    @Column(name = "informe_remanente_url")
+
+    @Column(name = "informe_remanente_url", length = 2147483647)
     private String informeRemanenteUrl;
-    @Size(max = 2147483647)
-    @Column(name = "informe_tecnico_url")
+
+    @Column(name = "informe_tecnico_url", length = 2147483647)
     private String informeTecnicoUrl;
+
     @OneToMany(mappedBy = "remanenteCuatrimestral")
     private List<Bandeja> bandejaList;
+
     @OneToMany(mappedBy = "remanenteCuatrimestral")
     private List<RemanenteMensual> remanenteMensualList;
+
+    @ManyToOne(optional = false)
     @JoinColumns({
         @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id", insertable = false, updatable = false)
         , @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id", insertable = false, updatable = false)})
-    @ManyToOne(optional = false)
     private RemanenteAnual remanenteAnual;
     @OneToMany(mappedBy = "remanenteCuatrimestral")
     private List<EstadoRemanenteCuatrimestral> estadoRemanenteCuatrimestralList;
@@ -167,5 +171,5 @@ public class RemanenteCuatrimestral implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral[ remanenteCuatrimestralPK=" + remanenteCuatrimestralPK + " ]";
     }
-    
+
 }
