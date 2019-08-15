@@ -1,0 +1,4 @@
+#Ignorar carpeta target
+target/
+.project
+.settings/
