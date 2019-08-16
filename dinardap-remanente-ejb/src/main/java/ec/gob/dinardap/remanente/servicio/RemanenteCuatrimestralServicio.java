@@ -18,6 +18,6 @@ public interface RemanenteCuatrimestralServicio extends GenericService<Remanente
 
     public RemanenteAnual getRemanenteAnual(RemanenteCuatrimestral remanenteCuatrimestral);
 
-    public void createRemanenteCuatrimestral(Date fecha);
+    public void createRemanenteCuatrimestral(Date fecha, Integer institucionId);
 
 }

@@ -9,18 +9,16 @@ import javax.ejb.Stateless;
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
+import ec.gob.dinardap.persistence.util.DateBetween;
 import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
 import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Stateless(name = "RemanenteCuatrimestralServicio")
 public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<RemanenteCuatrimestral, RemanenteCuatrimestralPK> implements RemanenteCuatrimestralServicio {
@@ -61,12 +59,18 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     }
 
     @Override
-    public void createRemanenteCuatrimestral(Date fecha) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public void createRemanenteCuatrimestral(Date fecha, Integer institucionId) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fecha);
-        verificarRemanenteCuatrimestral(fecha);
-
+        if (!remanenteCuatrimestralDao.verificarRemanenteCuatrimestral(fecha)) {
+            RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
+            rc.setRemanenteAnual(remanenteCuatrimestralDao.getRemanenteAnual(fecha));
+            rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(0,
+                    remanenteCuatrimestralDao.getRemanenteAnual(fecha).getRemanenteAnualPK().getRemanenteAnualId(),
+                    remanenteCuatrimestralDao.getRemanenteAnual(fecha).getRemanenteAnualPK().getInstitucionId()));
+            remanenteCuatrimestral.setRemanenteAnual(remanenteCuatrimestralDao.getRemanenteAnual(fecha));
+            this.create(remanenteCuatrimestral);
+        }
     }
 
     private Boolean verificarRemanenteCuatrimestral(Date fecha) {
@@ -115,15 +119,13 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
         List<RemanenteCuatrimestral> remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         String[] criteriaNombres = {"fecha"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.DATE_BETWEEN};
-        Object[] criteriaValores = {dateDesde, dateHasta};
+        Object[] criteriaValores = {new DateBetween(dateDesde, dateHasta)};
         String[] orderBy = {"fecha"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteCuatrimestralList = findByCriterias(criteria);
         System.out.println("size: " + remanenteCuatrimestralList.size());
-
         return true;
-
     }
 
 }

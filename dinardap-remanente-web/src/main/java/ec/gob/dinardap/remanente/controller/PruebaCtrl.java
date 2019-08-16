@@ -1,6 +1,9 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
+import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
+import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -30,7 +33,12 @@ public class PruebaCtrl extends BaseCtrl implements Serializable {
         fecha.set(Calendar.MONTH, 10);
         fecha.set(Calendar.DAY_OF_MONTH, 28);
         Date date = fecha.getTime();
-        remanenteCuatrimestralServicio.createRemanenteCuatrimestral(date);
+        fecha.set(Calendar.YEAR, 2000);
+        fecha.set(Calendar.MONTH, 2);
+        fecha.set(Calendar.DAY_OF_MONTH, 15);
+        date = fecha.getTime();
+        RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
+        remanenteCuatrimestralServicio.createRemanenteCuatrimestral(date, 220);
     }
 
     public String getTitulo() {
