@@ -22,7 +22,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -30,7 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "estado_remanente_cuatrimestral")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "EstadoRemanenteCuatrimestral.findAll", query = "SELECT e FROM EstadoRemanenteCuatrimestral e")
     , @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByEstadoRemanenteCuatrimestral", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.estadoRemanenteCuatrimestral = :estadoRemanenteCuatrimestral")
@@ -45,7 +43,7 @@ public class EstadoRemanenteCuatrimestral implements Serializable {
     @Column(name = "estado_remanente_cuatrimestral_")
     private Integer estadoRemanenteCuatrimestral;
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @Size(max = 50)
     @Column(name = "descripcion")
@@ -56,6 +54,9 @@ public class EstadoRemanenteCuatrimestral implements Serializable {
         , @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")})
     @ManyToOne
     private RemanenteCuatrimestral remanenteCuatrimestral;
+    @JoinColumn(name = "usuario_id", referencedColumnName = "usuario_id")
+    @ManyToOne
+    private Usuario usuarioId;
 
     public EstadoRemanenteCuatrimestral() {
     }
@@ -94,6 +95,14 @@ public class EstadoRemanenteCuatrimestral implements Serializable {
 
     public void setRemanenteCuatrimestral(RemanenteCuatrimestral remanenteCuatrimestral) {
         this.remanenteCuatrimestral = remanenteCuatrimestral;
+    }
+
+    public Usuario getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Usuario usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     @Override

@@ -65,6 +65,7 @@ public class RemanenteCuatrimestralDaoEjb extends RemanenteGenericDao<RemanenteC
         }
         Query query = em.createQuery("SELECT rc FROM RemanenteCuatrimestral rc "
                 + "WHERE rc.fecha BETWEEN '" + sdf.format(dateDesde) + "' AND '" + sdf.format(dateDesde) + "'");
+        Query query1 = em.createQuery("SELECT rc FROM RemanenteMensual rc WHERE rc.informeAprobacionUrl");
         List<RemanenteCuatrimestral> rc = new ArrayList<RemanenteCuatrimestral>();
         rc = query.getResultList();
         System.out.println("size: " + rc.size());

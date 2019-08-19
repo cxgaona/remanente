@@ -5,21 +5,22 @@
  */
 package ec.gob.dinardap.remanente.modelo;
 
-import ec.gob.dinardap.seguridad.modelo.Institucion;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -27,63 +28,75 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "institucion_requerida")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "InstitucionRequerida.findAll", query = "SELECT i FROM InstitucionRequerida i")
     , @NamedQuery(name = "InstitucionRequerida.findByInstitucionId", query = "SELECT i FROM InstitucionRequerida i WHERE i.institucionId = :institucionId")
     , @NamedQuery(name = "InstitucionRequerida.findByRuc", query = "SELECT i FROM InstitucionRequerida i WHERE i.ruc = :ruc")
+    , @NamedQuery(name = "InstitucionRequerida.findByNombre", query = "SELECT i FROM InstitucionRequerida i WHERE i.nombre = :nombre")
     , @NamedQuery(name = "InstitucionRequerida.findByEmail", query = "SELECT i FROM InstitucionRequerida i WHERE i.email = :email")
     , @NamedQuery(name = "InstitucionRequerida.findByProvinciaCanton", query = "SELECT i FROM InstitucionRequerida i WHERE i.provinciaCanton = :provinciaCanton")
     , @NamedQuery(name = "InstitucionRequerida.findByTipo", query = "SELECT i FROM InstitucionRequerida i WHERE i.tipo = :tipo")})
 public class InstitucionRequerida implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
-    @JoinColumn(name = "institucion_id")
-    @ManyToOne
-    private Institucion institucionId;
+    @SequenceGenerator(name = "INSTITUCION_REQUERIDA_GENERATOR", sequenceName = "institucion_requerida_institucion_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INSTITUCION_REQUERIDA_GENERATOR")
+    @Column(name = "institucion_id")
+    private Integer institucionId;
 
     @Column(name = "ruc", length = 13)
     private String ruc;
 
+    @Column(name = "nombre", length = 100)
+    private String nombre;
+
     @Column(name = "email", length = 300)
     private String email;
 
-    @Column(name = "provincia_canton", length = 300)
+    @Column(name = "provincia_canton", length = 100)
     private String provinciaCanton;
 
     @Column(name = "tipo", length = 50)
     private String tipo;
 
     //Dirección Regional//
-    @OneToMany(mappedBy = "institucionDireccionRegional")
-    private List<InstitucionRequerida> institucionDireccionRegionalList;
+    @OneToMany(mappedBy = "direccionRegional")
+    private List<InstitucionRequerida> direccionRegionalList;
+
     @ManyToOne
-    @JoinColumn(name = "institucion_direccion_regional_id",referencedColumnName = "institucion_id")
-    private InstitucionRequerida institucionDireccionRegional;
+    @JoinColumn(name = "direccion_regional_id", referencedColumnName = "institucion_id")
+    private InstitucionRequerida direccionRegional;
     //Dirección Regional//
 
     //GAD//
-    @OneToMany(mappedBy = "institucionGad")
-    private List<InstitucionRequerida> institucionGadList;
+    @OneToMany(mappedBy = "gad")
+    private List<InstitucionRequerida> gadList;
+
     @ManyToOne
-    @JoinColumn(name = "institucion_gad_id",referencedColumnName = "institucion_id")
-    private InstitucionRequerida institucionGad;
+    @JoinColumn(name = "gad_id", referencedColumnName = "institucion_id")
+    private InstitucionRequerida gad;
     //GAD//
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institucionRequerida")
     private List<RemanenteAnual> remanenteAnualList;
+
     @OneToMany(mappedBy = "institucionId")
     private List<Usuario> usuarioList;
 
     public InstitucionRequerida() {
     }
 
-    public Institucion getInstitucionId() {
+    public InstitucionRequerida(Integer institucionId) {
+        this.institucionId = institucionId;
+    }
+
+    public Integer getInstitucionId() {
         return institucionId;
     }
 
-    public void setInstitucionId(Institucion institucionId) {
+    public void setInstitucionId(Integer institucionId) {
         this.institucionId = institucionId;
     }
 
@@ -93,6 +106,14 @@ public class InstitucionRequerida implements Serializable {
 
     public void setRuc(String ruc) {
         this.ruc = ruc;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getEmail() {
@@ -119,39 +140,38 @@ public class InstitucionRequerida implements Serializable {
         this.tipo = tipo;
     }
 
-    public List<InstitucionRequerida> getInstitucionDireccionRegionalList() {
-        return institucionDireccionRegionalList;
+    public List<InstitucionRequerida> getDireccionRegionalList() {
+        return direccionRegionalList;
     }
 
-    public void setInstitucionDireccionRegionalList(List<InstitucionRequerida> institucionDireccionRegionalList) {
-        this.institucionDireccionRegionalList = institucionDireccionRegionalList;
+    public void setDireccionRegionalList(List<InstitucionRequerida> direccionRegionalList) {
+        this.direccionRegionalList = direccionRegionalList;
     }
 
-    public InstitucionRequerida getInstitucionDireccionRegional() {
-        return institucionDireccionRegional;
+    public InstitucionRequerida getDireccionRegional() {
+        return direccionRegional;
     }
 
-    public void setInstitucionDireccionRegional(InstitucionRequerida institucionDireccionRegional) {
-        this.institucionDireccionRegional = institucionDireccionRegional;
+    public void setDireccionRegional(InstitucionRequerida direccionRegional) {
+        this.direccionRegional = direccionRegional;
     }
 
-    public List<InstitucionRequerida> getInstitucionGadList() {
-        return institucionGadList;
+    public List<InstitucionRequerida> getGadList() {
+        return gadList;
     }
 
-    public void setInstitucionGadList(List<InstitucionRequerida> institucionGadList) {
-        this.institucionGadList = institucionGadList;
+    public void setGadList(List<InstitucionRequerida> gadList) {
+        this.gadList = gadList;
     }
 
-    public InstitucionRequerida getInstitucionGad() {
-        return institucionGad;
+    public InstitucionRequerida getGad() {
+        return gad;
     }
 
-    public void setInstitucionGad(InstitucionRequerida institucionGad) {
-        this.institucionGad = institucionGad;
+    public void setGad(InstitucionRequerida gad) {
+        this.gad = gad;
     }
 
-    @XmlTransient
     public List<RemanenteAnual> getRemanenteAnualList() {
         return remanenteAnualList;
     }
@@ -160,7 +180,6 @@ public class InstitucionRequerida implements Serializable {
         this.remanenteAnualList = remanenteAnualList;
     }
 
-    @XmlTransient
     public List<Usuario> getUsuarioList() {
         return usuarioList;
     }
@@ -191,7 +210,7 @@ public class InstitucionRequerida implements Serializable {
 
     @Override
     public String toString() {
-        return "InstitucionRequerida{" + "institucionId=" + institucionId + ", ruc=" + ruc + ", email=" + email + ", provinciaCanton=" + provinciaCanton + ", tipo=" + tipo + ", institucionDireccionRegionalList=" + institucionDireccionRegionalList + ", institucionDireccionRegional=" + institucionDireccionRegional + ", institucionGadList=" + institucionGadList + ", institucionGad=" + institucionGad + ", remanenteAnualList=" + remanenteAnualList + ", usuarioList=" + usuarioList + '}';
+        return "InstitucionRequerida{" + "institucionId=" + institucionId + ", ruc=" + ruc + ", nombre=" + nombre + ", email=" + email + ", provinciaCanton=" + provinciaCanton + ", tipo=" + tipo + ", direccionRegionalList=" + direccionRegionalList + ", direccionRegional=" + direccionRegional + ", gadList=" + gadList + ", gad=" + gad + ", remanenteAnualList=" + remanenteAnualList + ", usuarioList=" + usuarioList + '}';
     }
 
 }

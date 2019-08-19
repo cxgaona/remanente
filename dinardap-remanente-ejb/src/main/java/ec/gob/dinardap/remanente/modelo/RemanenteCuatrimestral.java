@@ -20,8 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -29,42 +28,39 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "remanente_cuatrimestral")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "RemanenteCuatrimestral.findAll", query = "SELECT r FROM RemanenteCuatrimestral r")
     , @NamedQuery(name = "RemanenteCuatrimestral.findByRemanenteCuatrimestralId", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.remanenteCuatrimestralPK.remanenteCuatrimestralId = :remanenteCuatrimestralId")
     , @NamedQuery(name = "RemanenteCuatrimestral.findByRemanenteAnualId", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.remanenteCuatrimestralPK.remanenteAnualId = :remanenteAnualId")
     , @NamedQuery(name = "RemanenteCuatrimestral.findByInstitucionId", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.remanenteCuatrimestralPK.institucionId = :institucionId")
-    , @NamedQuery(name = "RemanenteCuatrimestral.findByFecha", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.fecha = :fecha")
+    , @NamedQuery(name = "RemanenteCuatrimestral.findByCuatrimestre", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.cuatrimestre = :cuatrimestre")
+    , @NamedQuery(name = "RemanenteCuatrimestral.findByFechaRegistro", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.fechaRegistro = :fechaRegistro")
     , @NamedQuery(name = "RemanenteCuatrimestral.findByInformeRemanenteUrl", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.informeRemanenteUrl = :informeRemanenteUrl")
     , @NamedQuery(name = "RemanenteCuatrimestral.findByInformeTecnicoUrl", query = "SELECT r FROM RemanenteCuatrimestral r WHERE r.informeTecnicoUrl = :informeTecnicoUrl")})
 public class RemanenteCuatrimestral implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @EmbeddedId
     protected RemanenteCuatrimestralPK remanenteCuatrimestralPK;
-
-    @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
-
-    @Column(name = "informe_remanente_url", length = 2147483647)
+    @Column(name = "cuatrimestre")
+    private Integer cuatrimestre;
+    @Column(name = "fecha_registro")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaRegistro;
+    @Size(max = 2147483647)
+    @Column(name = "informe_remanente_url")
     private String informeRemanenteUrl;
-
-    @Column(name = "informe_tecnico_url", length = 2147483647)
+    @Size(max = 2147483647)
+    @Column(name = "informe_tecnico_url")
     private String informeTecnicoUrl;
-
     @OneToMany(mappedBy = "remanenteCuatrimestral")
     private List<Bandeja> bandejaList;
-
     @OneToMany(mappedBy = "remanenteCuatrimestral")
     private List<RemanenteMensual> remanenteMensualList;
-
-    @ManyToOne(optional = false)
     @JoinColumns({
         @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id", insertable = false, updatable = false)
         , @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id", insertable = false, updatable = false)})
+    @ManyToOne(optional = false)
     private RemanenteAnual remanenteAnual;
     @OneToMany(mappedBy = "remanenteCuatrimestral")
     private List<EstadoRemanenteCuatrimestral> estadoRemanenteCuatrimestralList;
@@ -88,12 +84,20 @@ public class RemanenteCuatrimestral implements Serializable {
         this.remanenteCuatrimestralPK = remanenteCuatrimestralPK;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public Integer getCuatrimestre() {
+        return cuatrimestre;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+    public void setCuatrimestre(Integer cuatrimestre) {
+        this.cuatrimestre = cuatrimestre;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 
     public String getInformeRemanenteUrl() {
@@ -112,7 +116,6 @@ public class RemanenteCuatrimestral implements Serializable {
         this.informeTecnicoUrl = informeTecnicoUrl;
     }
 
-    @XmlTransient
     public List<Bandeja> getBandejaList() {
         return bandejaList;
     }
@@ -121,7 +124,6 @@ public class RemanenteCuatrimestral implements Serializable {
         this.bandejaList = bandejaList;
     }
 
-    @XmlTransient
     public List<RemanenteMensual> getRemanenteMensualList() {
         return remanenteMensualList;
     }
@@ -138,7 +140,6 @@ public class RemanenteCuatrimestral implements Serializable {
         this.remanenteAnual = remanenteAnual;
     }
 
-    @XmlTransient
     public List<EstadoRemanenteCuatrimestral> getEstadoRemanenteCuatrimestralList() {
         return estadoRemanenteCuatrimestralList;
     }
@@ -171,5 +172,5 @@ public class RemanenteCuatrimestral implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral[ remanenteCuatrimestralPK=" + remanenteCuatrimestralPK + " ]";
     }
-
+    
 }

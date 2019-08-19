@@ -6,9 +6,9 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,12 +20,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -33,11 +31,11 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "remanente_mensual")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "RemanenteMensual.findAll", query = "SELECT r FROM RemanenteMensual r")
     , @NamedQuery(name = "RemanenteMensual.findByRemanenteMensualId", query = "SELECT r FROM RemanenteMensual r WHERE r.remanenteMensualId = :remanenteMensualId")
-    , @NamedQuery(name = "RemanenteMensual.findByFecha", query = "SELECT r FROM RemanenteMensual r WHERE r.fecha = :fecha")
+    , @NamedQuery(name = "RemanenteMensual.findByMes", query = "SELECT r FROM RemanenteMensual r WHERE r.mes = :mes")
+    , @NamedQuery(name = "RemanenteMensual.findByFechaRegistro", query = "SELECT r FROM RemanenteMensual r WHERE r.fechaRegistro = :fechaRegistro")
     , @NamedQuery(name = "RemanenteMensual.findByTotal", query = "SELECT r FROM RemanenteMensual r WHERE r.total = :total")
     , @NamedQuery(name = "RemanenteMensual.findByComentarios", query = "SELECT r FROM RemanenteMensual r WHERE r.comentarios = :comentarios")
     , @NamedQuery(name = "RemanenteMensual.findBySolicitudCambioUrl", query = "SELECT r FROM RemanenteMensual r WHERE r.solicitudCambioUrl = :solicitudCambioUrl")
@@ -45,41 +43,56 @@ import javax.xml.bind.annotation.XmlTransient;
 public class RemanenteMensual implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "REMANENTE_MENSUAL_GENERATOR", sequenceName = "remanente_mensual_remanente_mensual_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REMANENTE_MENSUAL_GENERATOR")
     @Column(name = "remanente_mensual_id")
     private Integer remanenteMensualId;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+
+    @Column(name = "mes")
+    private Integer mes;
+
+    @Column(name = "fecha_registro")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaRegistro;
+
     @Column(name = "total")
-    private Double total;
-    @Size(max = 500)
-    @Column(name = "comentarios")
+    private BigDecimal total;
+
+    @Column(name = "comentarios", length = 500)
     private String comentarios;
-    @Size(max = 2147483647)
-    @Column(name = "solicitud_cambio_url")
+
+    @Column(name = "solicitud_cambio_url", length = 2147483647)
     private String solicitudCambioUrl;
-    @Size(max = 2147483647)
-    @Column(name = "informe_aprobacion_url")
+
+    @Column(name = "informe_aprobacion_url", length = 2147483647)
     private String informeAprobacionUrl;
+
+    //Bandeja//
     @OneToMany(mappedBy = "remanenteMensualId")
     private List<Bandeja> bandejaList;
+
+    //RemanenteCuatrimestral//
+    @ManyToOne
     @JoinColumns({
         @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id")
         , @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id")
         , @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")})
-    @ManyToOne
     private RemanenteCuatrimestral remanenteCuatrimestral;
+
+    //Remanente Origen//
     @OneToMany(mappedBy = "remanenteMensualOrigenId")
     private List<RemanenteMensual> remanenteMensualList;
-    @JoinColumn(name = "remanente_mensual_origen_id", referencedColumnName = "remanente_mensual_id")
+
     @ManyToOne
+    @JoinColumn(name = "remanente_mensual_origen_id", referencedColumnName = "remanente_mensual_id")
     private RemanenteMensual remanenteMensualOrigenId;
+    //Remanente Origen//
+
     @OneToMany(mappedBy = "remanenteMensualId")
     private List<EstadoRemanenteMensual> estadoRemanenteMensualList;
+
     @OneToMany(mappedBy = "remanenteMensualId")
     private List<Transaccion> transaccionList;
 
@@ -98,19 +111,27 @@ public class RemanenteMensual implements Serializable {
         this.remanenteMensualId = remanenteMensualId;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public Integer getMes() {
+        return mes;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+    public void setMes(Integer mes) {
+        this.mes = mes;
     }
 
-    public Double getTotal() {
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(Double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
@@ -138,7 +159,6 @@ public class RemanenteMensual implements Serializable {
         this.informeAprobacionUrl = informeAprobacionUrl;
     }
 
-    @XmlTransient
     public List<Bandeja> getBandejaList() {
         return bandejaList;
     }
@@ -155,7 +175,6 @@ public class RemanenteMensual implements Serializable {
         this.remanenteCuatrimestral = remanenteCuatrimestral;
     }
 
-    @XmlTransient
     public List<RemanenteMensual> getRemanenteMensualList() {
         return remanenteMensualList;
     }
@@ -172,7 +191,6 @@ public class RemanenteMensual implements Serializable {
         this.remanenteMensualOrigenId = remanenteMensualOrigenId;
     }
 
-    @XmlTransient
     public List<EstadoRemanenteMensual> getEstadoRemanenteMensualList() {
         return estadoRemanenteMensualList;
     }
@@ -181,7 +199,6 @@ public class RemanenteMensual implements Serializable {
         this.estadoRemanenteMensualList = estadoRemanenteMensualList;
     }
 
-    @XmlTransient
     public List<Transaccion> getTransaccionList() {
         return transaccionList;
     }
@@ -214,5 +231,5 @@ public class RemanenteMensual implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.RemanenteMensual[ remanenteMensualId=" + remanenteMensualId + " ]";
     }
-    
+
 }

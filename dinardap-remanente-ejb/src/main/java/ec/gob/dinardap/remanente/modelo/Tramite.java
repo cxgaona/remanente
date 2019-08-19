@@ -6,6 +6,7 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,7 +22,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "tramite")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Tramite.findAll", query = "SELECT t FROM Tramite t")
     , @NamedQuery(name = "Tramite.findByTramiteId", query = "SELECT t FROM Tramite t WHERE t.tramiteId = :tramiteId")
@@ -56,14 +55,14 @@ public class Tramite implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date fecha;
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @Size(max = 10)
     @Column(name = "numero_comprobante_pago")
     private String numeroComprobantePago;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "valor")
-    private Double valor;
+    private BigDecimal valor;
     @Size(max = 50)
     @Column(name = "actividad_registral")
     private String actividadRegistral;
@@ -124,11 +123,11 @@ public class Tramite implements Serializable {
         this.numeroComprobantePago = numeroComprobantePago;
     }
 
-    public Double getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 

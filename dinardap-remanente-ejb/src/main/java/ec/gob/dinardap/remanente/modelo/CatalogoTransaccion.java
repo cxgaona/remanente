@@ -7,6 +7,7 @@ package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,9 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -33,19 +33,17 @@ import javax.xml.bind.annotation.XmlTransient;
 public class CatalogoTransaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @Id
-    @SequenceGenerator(name = "CATALOGO_TRANSACCION_GENERATOR", sequenceName = "CATALOGO_TRANSACCION_CATALOGO_TRANSACCION_ID_SEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATALOGO_TRANSACCION_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     @Column(name = "catalogo_transaccion_id")
     private Integer catalogoTransaccionId;
-
-    @Column(name = "tipo", length = 20)
+    @Size(max = 20)
+    @Column(name = "tipo")
     private String tipo;
-
-    @Column(name = "nombre", length = 100)
+    @Size(max = 100)
+    @Column(name = "nombre")
     private String nombre;
-
     @OneToMany(mappedBy = "catalogoTransaccionId")
     private List<Transaccion> transaccionList;
 
@@ -80,7 +78,6 @@ public class CatalogoTransaccion implements Serializable {
         this.nombre = nombre;
     }
 
-    @XmlTransient
     public List<Transaccion> getTransaccionList() {
         return transaccionList;
     }
@@ -111,7 +108,7 @@ public class CatalogoTransaccion implements Serializable {
 
     @Override
     public String toString() {
-        return "CatalogoTransaccion{" + "catalogoTransaccionId=" + catalogoTransaccionId + ", tipo=" + tipo + ", nombre=" + nombre + ", transaccionList=" + transaccionList + '}';
+        return "ec.gob.dinardap.remanente.modelo.CatalogoTransaccion[ catalogoTransaccionId=" + catalogoTransaccionId + " ]";
     }
-
+    
 }

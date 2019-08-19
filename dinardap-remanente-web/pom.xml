@@ -99,12 +99,12 @@
 
 		<!-- Eliminar los comentarios una vez se verifique que la dependencia existe 
 			en el repositorio maven -->
-		<dependency> 
-			<groupId>ec.gob.dinardap.seguridad</groupId> 
-			<artifactId>dinardap-seguridad-ejb</artifactId> 
-			<type>ejb</type> 
-			<scope>provided</scope> 
-		</dependency> 
+                <dependency> 
+                    <groupId>ec.gob.dinardap.seguridad</groupId> 
+                    <artifactId>dinardap-seguridad-ejb</artifactId> 
+                    <type>ejb</type> 
+                    <scope>provided</scope> 
+                </dependency> 
 		<dependency> 
 			<groupId>ec.gob.dinardap.autorizacion</groupId> 
 			<artifactId>dinardap-autorizacion</artifactId> 

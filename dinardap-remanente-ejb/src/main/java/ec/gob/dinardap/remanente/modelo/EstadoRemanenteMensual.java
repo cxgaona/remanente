@@ -21,7 +21,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,7 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "estado_remanente_mensual")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "EstadoRemanenteMensual.findAll", query = "SELECT e FROM EstadoRemanenteMensual e")
     , @NamedQuery(name = "EstadoRemanenteMensual.findByEstadoRemanenteMensualId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.estadoRemanenteMensualId = :estadoRemanenteMensualId")
@@ -44,7 +42,7 @@ public class EstadoRemanenteMensual implements Serializable {
     @Column(name = "estado_remanente_mensual_id")
     private Integer estadoRemanenteMensualId;
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @Size(max = 50)
     @Column(name = "descripcion")
@@ -52,6 +50,9 @@ public class EstadoRemanenteMensual implements Serializable {
     @JoinColumn(name = "remanente_mensual_id", referencedColumnName = "remanente_mensual_id")
     @ManyToOne
     private RemanenteMensual remanenteMensualId;
+    @JoinColumn(name = "usuario_id", referencedColumnName = "usuario_id")
+    @ManyToOne
+    private Usuario usuarioId;
 
     public EstadoRemanenteMensual() {
     }
@@ -90,6 +91,14 @@ public class EstadoRemanenteMensual implements Serializable {
 
     public void setRemanenteMensualId(RemanenteMensual remanenteMensualId) {
         this.remanenteMensualId = remanenteMensualId;
+    }
+
+    public Usuario getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Usuario usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     @Override

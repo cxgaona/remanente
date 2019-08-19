@@ -6,6 +6,7 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,7 +22,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,10 +29,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "factura_pagada")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "FacturaPagada.findAll", query = "SELECT f FROM FacturaPagada f")
     , @NamedQuery(name = "FacturaPagada.findByFacturaPagadaId", query = "SELECT f FROM FacturaPagada f WHERE f.facturaPagadaId = :facturaPagadaId")
+    , @NamedQuery(name = "FacturaPagada.findByFecha", query = "SELECT f FROM FacturaPagada f WHERE f.fecha = :fecha")
     , @NamedQuery(name = "FacturaPagada.findByNumero", query = "SELECT f FROM FacturaPagada f WHERE f.numero = :numero")
     , @NamedQuery(name = "FacturaPagada.findByTipo", query = "SELECT f FROM FacturaPagada f WHERE f.tipo = :tipo")
     , @NamedQuery(name = "FacturaPagada.findByDetalle", query = "SELECT f FROM FacturaPagada f WHERE f.detalle = :detalle")
@@ -46,6 +46,9 @@ public class FacturaPagada implements Serializable {
     @Basic(optional = false)
     @Column(name = "factura_pagada_id")
     private Integer facturaPagadaId;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
     @Size(max = 10)
     @Column(name = "numero")
     private String numero;
@@ -57,9 +60,9 @@ public class FacturaPagada implements Serializable {
     private String detalle;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "valor")
-    private Double valor;
+    private BigDecimal valor;
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @JoinColumn(name = "transaccion_id", referencedColumnName = "transaccion_id")
     @ManyToOne
@@ -78,6 +81,14 @@ public class FacturaPagada implements Serializable {
 
     public void setFacturaPagadaId(Integer facturaPagadaId) {
         this.facturaPagadaId = facturaPagadaId;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
 
     public String getNumero() {
@@ -104,11 +115,11 @@ public class FacturaPagada implements Serializable {
         this.detalle = detalle;
     }
 
-    public Double getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 

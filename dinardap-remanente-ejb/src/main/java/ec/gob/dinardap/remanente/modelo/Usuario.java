@@ -21,8 +21,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -30,7 +28,6 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "usuario")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u")
     , @NamedQuery(name = "Usuario.findByUsuarioId", query = "SELECT u FROM Usuario u WHERE u.usuarioId = :usuarioId")
@@ -50,7 +47,7 @@ public class Usuario implements Serializable {
     @Basic(optional = false)
     @Column(name = "usuario_id")
     private Integer usuarioId;
-    @Size(max = 150)
+    @Size(max = 300)
     @Column(name = "nombre")
     private String nombre;
     @Size(max = 50)
@@ -76,9 +73,13 @@ public class Usuario implements Serializable {
     private List<Bandeja> bandejaList;
     @OneToMany(mappedBy = "usuarioSolicitanteId")
     private List<Bandeja> bandejaList1;
+    @OneToMany(mappedBy = "usuarioId")
+    private List<EstadoRemanenteMensual> estadoRemanenteMensualList;
     @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")
     @ManyToOne
     private InstitucionRequerida institucionId;
+    @OneToMany(mappedBy = "usuarioId")
+    private List<EstadoRemanenteCuatrimestral> estadoRemanenteCuatrimestralList;
 
     public Usuario() {
     }
@@ -164,7 +165,6 @@ public class Usuario implements Serializable {
         this.estado = estado;
     }
 
-    @XmlTransient
     public List<Bandeja> getBandejaList() {
         return bandejaList;
     }
@@ -173,7 +173,6 @@ public class Usuario implements Serializable {
         this.bandejaList = bandejaList;
     }
 
-    @XmlTransient
     public List<Bandeja> getBandejaList1() {
         return bandejaList1;
     }
@@ -182,12 +181,28 @@ public class Usuario implements Serializable {
         this.bandejaList1 = bandejaList1;
     }
 
+    public List<EstadoRemanenteMensual> getEstadoRemanenteMensualList() {
+        return estadoRemanenteMensualList;
+    }
+
+    public void setEstadoRemanenteMensualList(List<EstadoRemanenteMensual> estadoRemanenteMensualList) {
+        this.estadoRemanenteMensualList = estadoRemanenteMensualList;
+    }
+
     public InstitucionRequerida getInstitucionId() {
         return institucionId;
     }
 
     public void setInstitucionId(InstitucionRequerida institucionId) {
         this.institucionId = institucionId;
+    }
+
+    public List<EstadoRemanenteCuatrimestral> getEstadoRemanenteCuatrimestralList() {
+        return estadoRemanenteCuatrimestralList;
+    }
+
+    public void setEstadoRemanenteCuatrimestralList(List<EstadoRemanenteCuatrimestral> estadoRemanenteCuatrimestralList) {
+        this.estadoRemanenteCuatrimestralList = estadoRemanenteCuatrimestralList;
     }
 
     @Override

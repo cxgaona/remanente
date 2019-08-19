@@ -30,11 +30,11 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
         List<InstitucionRequerida> institucionRequeridaList = new ArrayList<InstitucionRequerida>();
         institucionRequeridaList = institucionRequeridaDao.findAll();
         for (InstitucionRequerida ir : institucionRequeridaList) {
-            if (ir.getInstitucionGad() == null) {
-                ir.setInstitucionGad(null);
+            if (ir.getGad() == null) {
+                ir.setGad(null);
             }
-            if (ir.getInstitucionDireccionRegional() == null) {
-                ir.setInstitucionDireccionRegional(null);
+            if (ir.getDireccionRegional() == null) {
+                ir.setDireccionRegional(null);
             }
         }
         return institucionRequeridaList;
@@ -52,11 +52,11 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         registroMixtoList = findByCriterias(criteria);
         for (InstitucionRequerida ir : registroMixtoList) {
-            if (ir.getInstitucionGad() == null) {
-                ir.setInstitucionGad(null);
+            if (ir.getGad() == null) {
+                ir.setGad(null);
             }
-            if (ir.getInstitucionDireccionRegional() == null) {
-                ir.setInstitucionDireccionRegional(null);
+            if (ir.getDireccionRegional() == null) {
+                ir.setDireccionRegional(null);
             }
         }
         return registroMixtoList;
@@ -73,11 +73,11 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         gadList = findByCriterias(criteria);
         for (InstitucionRequerida ir : gadList) {
-            if (ir.getInstitucionGad() == null) {
-                ir.setInstitucionGad(null);
+            if (ir.getGad() == null) {
+                ir.setGad(null);
             }
-            if (ir.getInstitucionDireccionRegional() == null) {
-                ir.setInstitucionDireccionRegional(null);
+            if (ir.getDireccionRegional() == null) {
+                ir.setDireccionRegional(null);
             }
         }
         return gadList;
@@ -94,11 +94,11 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         direccionRegionalList = findByCriterias(criteria);
         for (InstitucionRequerida ir : direccionRegionalList) {
-            if (ir.getInstitucionGad() == null) {
-                ir.setInstitucionGad(null);
+            if (ir.getGad() == null) {
+                ir.setGad(null);
             }
-            if (ir.getInstitucionDireccionRegional() == null) {
-                ir.setInstitucionDireccionRegional(null);
+            if (ir.getDireccionRegional() == null) {
+                ir.setDireccionRegional(null);
             }
         }
         return direccionRegionalList;

@@ -55,7 +55,8 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     public RemanenteAnual getRemanenteAnual(RemanenteCuatrimestral remanenteCuatrimestral) {
         RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
         rc = findByPk(remanenteCuatrimestral.getRemanenteCuatrimestralPK());
-        return rc.getRemanenteAnual();
+//        return rc.getRemanenteAnual();
+        return null;
     }
 
     @Override
@@ -64,12 +65,10 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
         calendar.setTime(fecha);
         if (!remanenteCuatrimestralDao.verificarRemanenteCuatrimestral(fecha)) {
             RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
-            rc.setRemanenteAnual(remanenteCuatrimestralDao.getRemanenteAnual(fecha));
+//            rc.setRemanenteAnual(remanenteCuatrimestralDao.getRemanenteAnual(fecha));
             rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(0,
                     remanenteCuatrimestralDao.getRemanenteAnual(fecha).getRemanenteAnualPK().getRemanenteAnualId(),
                     remanenteCuatrimestralDao.getRemanenteAnual(fecha).getRemanenteAnualPK().getInstitucionId()));
-            remanenteCuatrimestral.setRemanenteAnual(remanenteCuatrimestralDao.getRemanenteAnual(fecha));
-            this.create(remanenteCuatrimestral);
         }
     }
 

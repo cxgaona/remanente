@@ -17,8 +17,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,7 +24,6 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "remanente_anual")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "RemanenteAnual.findAll", query = "SELECT r FROM RemanenteAnual r")
     , @NamedQuery(name = "RemanenteAnual.findByRemanenteAnualId", query = "SELECT r FROM RemanenteAnual r WHERE r.remanenteAnualPK.remanenteAnualId = :remanenteAnualId")
@@ -80,7 +77,6 @@ public class RemanenteAnual implements Serializable {
         this.institucionRequerida = institucionRequerida;
     }
 
-    @XmlTransient
     public List<RemanenteCuatrimestral> getRemanenteCuatrimestralList() {
         return remanenteCuatrimestralList;
     }
