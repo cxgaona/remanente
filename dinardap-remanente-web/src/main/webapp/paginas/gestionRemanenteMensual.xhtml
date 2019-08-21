@@ -14,12 +14,14 @@
         <ui:define name="content">
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>           
             <h:form id="formRemanenteMensual">
-                <b:panel title="Remanentes Mensuales - #" class="">
+                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <h:outputLabel value="Gestión Remanente Mensual" 
                                        styleClass="form-label-izquierda-15" style="width: 100%"/>
                         <b:dataTable value="#{remanenteMensualCtrl.remanenteMensualList}"
                                      var="remanenteMensual"
+                                     select="true"
+                                     onselect="ajax:remanenteMensualCtrl.onRowSelect(remanenteMensual)"
                                      columnVisibility="false"
                                      copy="false"
                                      print="false">  
@@ -31,10 +33,7 @@
                             <b:dataTableColumn value="#{remanenteMensual.informeAprobacionUrl}" label="Documento aprobación"/>                            
                         </b:dataTable>
                     </h:panelGrid>
-                    <h:panelGrid columns="1" style="width: 30%;">
-                        <b:commandButton value="Generar Remanente Mensual" ajax="true" />
-                    </h:panelGrid>
-                </b:panel>
+                </b:panel>                
             </h:form>              
         </ui:define>
     </ui:composition>

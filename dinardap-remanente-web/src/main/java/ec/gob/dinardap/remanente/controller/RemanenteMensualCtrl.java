@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import java.io.Serializable;
@@ -19,27 +20,34 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private String tituloPagina;
     private List<RemanenteMensual> remanenteMensualList;
     private Integer institucionId;
+    private String nombreInstitucion;
+
+    private RemanenteMensual remanenteMensualSelected;
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
+    @EJB
+    private InstitucionRequeridaServicio institucionRequeridaServicio;
+
     @PostConstruct
     protected void init() {
         tituloPagina = "Gestión Remanente Mensual";
-        remanenteMensualList = new ArrayList<RemanenteMensual>();
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
+        remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId);
-        System.out.println("Front");
-        for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("RM: " + rm.getMes());
-            System.out.println("RM: " + rm.getSolicitudCambioUrl());
-            System.out.println("RM: " + rm.getInformeAprobacionUrl());
-            System.out.println("RM: " + rm.getComentarios());
-            System.out.println("RM: " + rm.getTotal());
-            System.out.println("RM: " + rm.getFechaRegistro());
-            System.out.println("RM INS: " + rm.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId());
-            System.out.println("RM INS: " + rm.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getNombre());
+    }
+
+    public void onRowSelect(RemanenteMensual remanenteMensual) {
+        remanenteMensualSelected = remanenteMensual;
+        for (Transaccion t : remanenteMensualSelected.getTransaccionList()) {
+            System.out.println("Transaccion: " + t.getTransaccionId());
+            System.out.println("Transaccion: " + t.getCatalogoTransaccionId().getNombre());
+            System.out.println("Transaccion: " + t.getValorTotal());
+            System.out.println("Transaccion: " + t.getRespaldoUrl());
         }
+
     }
 
     public String getTituloPagina() {
@@ -56,6 +64,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setRemanenteMensualList(List<RemanenteMensual> remanenteMensualList) {
         this.remanenteMensualList = remanenteMensualList;
+    }
+
+    public String getNombreInstitucion() {
+        return nombreInstitucion;
+    }
+
+    public void setNombreInstitucion(String nombreInstitucion) {
+        this.nombreInstitucion = nombreInstitucion;
     }
 
 }
