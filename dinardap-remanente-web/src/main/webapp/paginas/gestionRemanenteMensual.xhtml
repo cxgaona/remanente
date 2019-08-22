@@ -21,7 +21,7 @@
                         <b:dataTable value="#{remanenteMensualCtrl.remanenteMensualList}"
                                      var="remanenteMensual"
                                      select="true"
-                                     onselect="ajax:remanenteMensualCtrl.onRowSelect(remanenteMensual)"
+                                     
                                      columnVisibility="false"
                                      copy="false"
                                      print="false">  
@@ -30,8 +30,9 @@
                             <b:dataTableColumn value="#{remanenteMensual.fechaRegistro}" label="Fecha"/>
                             <b:dataTableColumn value="#{remanenteMensual.comentarios}" label="comentarios"/>
                             <b:dataTableColumn value="#{remanenteMensual.solicitudCambioUrl}" label="Documento solicitud"/>
-                            <b:dataTableColumn value="#{remanenteMensual.informeAprobacionUrl}" label="Documento aprobación"/>                            
+                            <b:dataTableColumn value="#{remanenteMensual.informeAprobacionUrl}" label="Documento aprobación"/>                                                        
                         </b:dataTable>
+                        <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelect()}" update="formRemanenteMensual" />
                     </h:panelGrid>
                 </b:panel>                
             </h:form>              

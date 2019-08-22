@@ -39,15 +39,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId);
     }
 
-    public void onRowSelect(RemanenteMensual remanenteMensual) {
-        remanenteMensualSelected = remanenteMensual;
-        for (Transaccion t : remanenteMensualSelected.getTransaccionList()) {
-            System.out.println("Transaccion: " + t.getTransaccionId());
-            System.out.println("Transaccion: " + t.getCatalogoTransaccionId().getNombre());
-            System.out.println("Transaccion: " + t.getValorTotal());
-            System.out.println("Transaccion: " + t.getRespaldoUrl());
-        }
-
+    public void onRowSelect() {
+        System.out.println("Seleccionado");
+        
+        System.out.println("Fin de Seleccion");
     }
 
     public String getTituloPagina() {
