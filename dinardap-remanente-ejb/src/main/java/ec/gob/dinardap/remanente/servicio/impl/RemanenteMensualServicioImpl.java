@@ -47,17 +47,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        remanenteMensualList = findByCriterias(criteria);
-        for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("RM: " + rm.getMes());
-            System.out.println("RM: " + rm.getSolicitudCambioUrl());
-            System.out.println("RM: " + rm.getInformeAprobacionUrl());
-            System.out.println("RM: " + rm.getComentarios());
-            System.out.println("RM: " + rm.getTotal());
-            System.out.println("RM: " + rm.getFechaRegistro());
-            System.out.println("RM INS: " + rm.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId());
-            System.out.println("RM INS: " + rm.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getNombre());
-        }
+        remanenteMensualList = findByCriterias(criteria);        
         return remanenteMensualList;
     }
 }
