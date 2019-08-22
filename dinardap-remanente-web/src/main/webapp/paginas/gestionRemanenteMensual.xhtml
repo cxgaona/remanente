@@ -14,7 +14,7 @@
         <ui:define name="content">
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>           
             <h:form id="formRemanenteMensual">
-                <b:panel title="Remanentes Mensuales - #" class="">
+                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}" class="">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <h:outputLabel value="Gestión Remanente Mensual" 
                                        styleClass="form-label-izquierda-15" style="width: 100%"/>

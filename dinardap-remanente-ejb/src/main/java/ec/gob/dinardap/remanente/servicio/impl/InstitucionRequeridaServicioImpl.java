@@ -116,4 +116,11 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
 //        return registroMixtoList;
 //    }
 
+    @Override
+    public InstitucionRequerida getInstitucionById(Integer institucionId) {
+        InstitucionRequerida institucionRequerida = new InstitucionRequerida();
+        institucionRequerida= findByPk(institucionId);
+        return institucionRequerida;        
+    }
+
 }

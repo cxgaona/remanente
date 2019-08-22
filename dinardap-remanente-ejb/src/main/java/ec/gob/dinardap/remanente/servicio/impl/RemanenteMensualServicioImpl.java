@@ -10,8 +10,10 @@ import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.persistence.util.DateBetween;
+import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
 import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
@@ -27,6 +29,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
 
     @EJB
     private RemanenteMensualDao remanenteMensualDao;
+
+    @EJB
+    private InstitucionRequeridaDao institucionRequeridaDao;
 
     @Override
     public GenericDao<RemanenteMensual, Integer> getDao() {
@@ -55,5 +60,4 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         }
         return remanenteMensualList;
     }
-
 }
