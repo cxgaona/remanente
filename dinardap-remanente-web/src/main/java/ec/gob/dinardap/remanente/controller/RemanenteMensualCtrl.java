@@ -41,8 +41,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void onRowSelect() {
         System.out.println("Seleccionado");
+
+        nombreInstitucion= remanenteMensualSelected.getComentarios();
         
-        System.out.println("Fin de Seleccion");
+        System.out.println("Fin del seleccionado");
+
+
     }
 
     public String getTituloPagina() {
@@ -68,5 +72,17 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     public void setNombreInstitucion(String nombreInstitucion) {
         this.nombreInstitucion = nombreInstitucion;
     }
+
+
+    public RemanenteMensual getRemanenteMensualSelected() {
+        return remanenteMensualSelected;
+    }
+
+    public void setRemanenteMensualSelected(RemanenteMensual remanenteMensualSelected) {
+        this.remanenteMensualSelected = remanenteMensualSelected;
+    }
+    
+    
+
 
 }

@@ -14,25 +14,37 @@
         <ui:define name="content">
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>           
             <h:form id="formRemanenteMensual">
-                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
+                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}" class="">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <h:outputLabel value="Gestión Remanente Mensual" 
                                        styleClass="form-label-izquierda-15" style="width: 100%"/>
-                        <b:dataTable value="#{remanenteMensualCtrl.remanenteMensualList}"
-                                     var="remanenteMensual"
-                                     select="true"
-                                     
-                                     columnVisibility="false"
-                                     copy="false"
-                                     print="false">  
-                            <b:dataTableColumn value="#{remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId}" label="ID Institución" />
-                            <b:dataTableColumn value="#{remanenteMensual.mes}" label="Mes" />
-                            <b:dataTableColumn value="#{remanenteMensual.fechaRegistro}" label="Fecha"/>
-                            <b:dataTableColumn value="#{remanenteMensual.comentarios}" label="comentarios"/>
-                            <b:dataTableColumn value="#{remanenteMensual.solicitudCambioUrl}" label="Documento solicitud"/>
-                            <b:dataTableColumn value="#{remanenteMensual.informeAprobacionUrl}" label="Documento aprobación"/>                                                        
-                        </b:dataTable>
-                        <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelect()}" update="formRemanenteMensual" />
+                        <p:dataTable id="singleDT" 
+                                     var="remanenteMensual" 
+                                     value="#{remanenteMensualCtrl.remanenteMensualList}" 
+                                     selectionMode="single"                                      
+                                     selection="#{remanenteMensualCtrl.remanenteMensualSelected}" 
+                                     rowKey="#{remanenteMensual.remanenteMensualId}">
+                            <f:facet name="header">
+                                Single with Row Click
+                            </f:facet>
+                            <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelect()}" update="formRemanenteMensual" />
+                            <p:column headerText="ID Institución">
+                                <h:outputText value="#{remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId}"/>
+                            </p:column>
+                            <p:column headerText="Mes">
+                                <h:outputText value="#{remanenteMensual.mes}" />
+                            </p:column>
+                            <p:column headerText="Fecha">
+                                <h:outputText value="#{remanenteMensual.fechaRegistro}" />
+                            </p:column>
+                            <p:column headerText="Comentarios">
+                                <h:outputText value="#{remanenteMensual.comentarios}" />
+                            </p:column>
+                            <p:column headerText="Solicitud de cambio">
+                                <h:outputText value="#{remanenteMensual.solicitudCambioUrl}" />
+                            </p:column>
+
+                        </p:dataTable>
                     </h:panelGrid>
                 </b:panel>                
             </h:form>              
