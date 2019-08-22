@@ -49,6 +49,13 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
+        for (RemanenteMensual rm : remanenteMensualList) {
+            for (Transaccion t : rm.getTransaccionList()) {
+                System.out.println("T: " + t.getCatalogoTransaccionId().getNombre());
+                System.out.println("T: " + t.getValorTotal());
+                System.out.println("T: " + t.getRespaldoUrl());
+            }
+        }
         return remanenteMensualList;
     }
 }
