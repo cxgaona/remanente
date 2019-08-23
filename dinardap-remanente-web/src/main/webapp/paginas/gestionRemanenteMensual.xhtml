@@ -14,43 +14,155 @@
         <ui:define name="content">
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>           
             <h:form id="formRemanenteMensual">
-                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}" class="">
+                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <h:outputLabel value="Gestión Remanente Mensual" 
                                        styleClass="form-label-izquierda-15" style="width: 100%"/>
-                        <p:dataTable id="singleDT" 
-                                     var="remanenteMensual" 
+                        <p:dataTable id="remanenteMensualTbl"
+                                     rowKey="#{remanenteMensual.remanenteMensualId}"
                                      value="#{remanenteMensualCtrl.remanenteMensualList}" 
-                                     selectionMode="single"                                      
-                                     selection="#{remanenteMensualCtrl.remanenteMensualSelected}" 
-                                     rowKey="#{remanenteMensual.remanenteMensualId}">
-                            <f:facet name="header">
-                                Single with Row Click
-                            </f:facet>
+                                     var="remanenteMensual"
+                                     selectionMode="single"
+                                     selection="#{remanenteMensualCtrl.remanenteMensualSelected}"
+                                     reflow="true" rows="4" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="4,8,12">
                             <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelect()}" update="formRemanenteMensual" />
-                            <p:column headerText="ID Institución">
+                            <p:column headerText="ID Institución" rendered="false">
                                 <h:outputText value="#{remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId}"/>
                             </p:column>
-                            <p:column headerText="Mes">
+                            <p:column headerText="Mes" sortBy="#{remanenteMensual.mes}" filterBy="#{remanenteMensual.mes}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.mes}" />
                             </p:column>
-                            <p:column headerText="Fecha">
-                                <h:outputText value="#{remanenteMensual.fechaRegistro}" />
+                            <p:column headerText="Fecha" sortBy="#{remanenteMensual.fechaRegistro}" filterBy="#{remanenteMensual.fechaRegistro}" filterMatchMode="contains">
+                                <h:outputText value="#{remanenteMensual.fechaRegistro}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
                             </p:column>
-                            <p:column headerText="Comentarios">
-                                <h:outputText value="#{remanenteMensual.comentarios}" />
+                            <p:column headerText="Comentarios" sortBy="#{remanenteMensual.comentarios}" filterBy="#{remanenteMensual.comentarios}" filterMatchMode="contains">
+                                <h:outputText value="#{remanenteMensual.comentarios}"/>
                             </p:column>
-                            <p:column headerText="Solicitud de cambio">
+                            <p:column headerText="Solicitud de cambio" sortBy="#{remanenteMensual.solicitudCambioUrl}" filterBy="#{remanenteMensual.solicitudCambioUrl}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.solicitudCambioUrl}" />
                             </p:column>
-                            
+                            <p:column headerText="Informe de aprobación" sortBy="#{remanenteMensual.informeAprobacionUrl}" filterBy="#{remanenteMensual.informeAprobacionUrl}" filterMatchMode="contains">
+                                <h:outputText value="#{remanenteMensual.informeAprobacionUrl}" />
+                            </p:column>
                         </p:dataTable>
-                        
                     </h:panelGrid>
-                    <h:panelGrid columns="1" style="width: 30%;">
-                        <b:commandButton value="Generar Remanente Mensual" ajax="true" />
+
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <h:outputLabel value="Transacción Remanente Mensual (Mes: #{remanenteMensualCtrl.mesRemanenteMensualSelected})" 
+                                       styleClass="form-label-izquierda-15" style="width: 100%"/>
+                        <p:dataTable id="transaccionRPropiedadTbl"
+                                     value="#{remanenteMensualCtrl.transaccionRPropiedadList}" 
+                                     var="transaccion"
+                                     rowKey="#{transaccion.transaccionId}" 
+                                     expandableRowGroups="true"
+                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"                                     
+                                     sortOrder="descending"
+                                     editable="true">
+                            <p:ajax event="rowEditInit" listener="#{remanenteMensualCtrl.rowEditInit}"/>
+                            <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowEdit()}" />
+                            <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowEditCancel()}" />
+                            <p:headerRow>
+                                <p:column colspan="3">
+                                    <h:outputText value="Ingresos Registro de la Propiedad" />
+                                </p:column>
+                            </p:headerRow>                            
+                            <p:column headerText="Detalle" >
+                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                            </p:column>
+                            <p:column headerText="Valor" >                                
+                                <p:cellEditor disabled="#{remanenteMensualCtrl.enabledEdicionTransaccion}">
+                                    <f:facet name="output"><h:outputText value="#{transaccion.valorTotal}"/></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{transaccion.valorTotal}" style="width:100%" label="Valor"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Archivo">
+                                <h:outputText value="#{transaccion.respaldoUrl}"/>
+                            </p:column>  
+                            <p:column style="width:35px">
+                                <p:rowEditor/>
+                            </p:column>
+                            <p:summaryRow>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="TOTAL INGRESOS REGISTRO DE LA PROPIEDAD:" />
+                                </p:column>
+                                <p:column colspan="3">
+                                    <h:outputText value="#{remanenteMensualCtrl.totalIngRPropiedad}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+                        </p:dataTable>
+                        <p:dataTable id="transaccionRMercantilTbl"
+                                     value="#{remanenteMensualCtrl.transaccionRMercantilList}" 
+                                     var="transaccion"
+                                     rowKey="#{transaccion.transaccionId}" 
+                                     expandableRowGroups="true"
+                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"                                     
+                                     sortOrder="descending">   
+                            <p:headerRow>
+                                <p:column colspan="3">
+                                    <h:outputText value="Ingresos Registro Mercatil" />
+                                </p:column>
+                            </p:headerRow>                            
+                            <p:column headerText="Detalle" >
+                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                            </p:column>
+                            <p:column headerText="Valor" >
+                                <h:outputText value="#{transaccion.valorTotal}"/>                                    
+                            </p:column>
+                            <p:column headerText="Archivo">
+                                <h:outputText value="#{transaccion.respaldoUrl}"/>
+                            </p:column>  
+                            <p:summaryRow>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="TOTAL INGRESOS REGISTRO MERCANTIL:" />
+                                </p:column>
+                                <p:column colspan="2">
+                                    <h:outputText value="#{remanenteMensualCtrl.totalIngRMercantil}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+                        </p:dataTable>
+                        <p:dataTable id="transaccionEgresosTbl"
+                                     value="#{remanenteMensualCtrl.transaccionEgresosList}" 
+                                     var="transaccion"
+                                     rowKey="#{transaccion.transaccionId}" 
+                                     expandableRowGroups="true"
+                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"                                     
+                                     sortOrder="descending">   
+                            <p:headerRow>
+                                <p:column colspan="3">
+                                    <h:outputText value="Gastos Actividad Registral (Propiedad y Mercantil)" />
+                                </p:column>
+                            </p:headerRow>                            
+                            <p:column headerText="Detalle" >
+                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                            </p:column>
+                            <p:column headerText="Valor" >
+                                <h:outputText value="#{transaccion.valorTotal}"/>                                    
+                            </p:column>
+                            <p:column headerText="Archivo">
+                                <h:outputText value="#{transaccion.respaldoUrl}"/>
+                            </p:column>  
+                            <p:summaryRow>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="TOTAL GASTOS:" />
+                                </p:column>
+                                <p:column colspan="2">
+                                    <h:outputText value="#{remanenteMensualCtrl.totalEgresos}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+                        </p:dataTable>
+
                     </h:panelGrid>
-                </b:panel>
+                </b:panel>                
             </h:form>              
         </ui:define>
     </ui:composition>

@@ -18,6 +18,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,7 +48,14 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        remanenteMensualList = findByCriterias(criteria);        
+        remanenteMensualList = findByCriterias(criteria);
+        for (RemanenteMensual rm : remanenteMensualList) {
+            for (Transaccion t : rm.getTransaccionList()) {
+                System.out.println("T: " + t.getCatalogoTransaccionId().getNombre());
+                System.out.println("T: " + t.getValorTotal());
+                System.out.println("T: " + t.getRespaldoUrl());
+            }
+        }
         return remanenteMensualList;
     }
 }
