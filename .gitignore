@@ -6,8 +6,5 @@ dinardap-remanente-web/target
 .project
 .settings/
 #pom.xml
-<<<<<<< HEAD
 .nbactions.xml
-=======
 nbactions.xml
->>>>>>> 902c01006c6a16b0f51ca22d2acd5f7caae65307
