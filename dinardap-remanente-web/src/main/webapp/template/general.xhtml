@@ -21,7 +21,8 @@
                   href="#{facesContext.externalContext.requestContextPath}/resource/css/dinardap.css" />
         </h:head>
         <h:body>
-            <p:growl id="msgMensajes" autoUpdate="true" sticky="true" keepAlive="true" />
+            <p:growl id="msgMensajes" sticky="true" keepAlive="true" />
+            <!--autoUpdate="true"-->
             <div id="contenedor">
                 <div>
                     <ui:insert name="header">
@@ -45,7 +46,7 @@
             <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
                       closable="false" resizable="false" showHeader="false">
                 <div align="center">
-                    <p:graphicImage value="/resource/images/procesando.gif" width="64"/>
+                    <p:graphicImage value="/resource/images/procesando1.gif" width="64"/>
                 </div>
             </p:dialog>
 
