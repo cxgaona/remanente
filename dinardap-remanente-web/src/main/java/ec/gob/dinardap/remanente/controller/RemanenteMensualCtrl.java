@@ -55,7 +55,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     protected void init() {
         tituloPagina = "Gestión Remanente Mensual";
         mesRemanenteMensualSelected = "SinSelección";
-
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
@@ -69,7 +68,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId);
-    }    
+    }
 
     public void rowEdit() {
     }
@@ -136,8 +135,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         }
     }
 
-    
-
     public void rowTransaccionEdit(RowEditEvent event) {
         Transaccion transaccion = new Transaccion();
         transaccion = (Transaccion) event.getObject();
@@ -145,6 +142,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
+        System.out.println("Transaccion Seleccionada: " + remanenteMensualSelected.getFechaRegistro());
         for (Transaccion t : transaccionRPropiedadList) {
             totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
         }
@@ -153,7 +151,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         }
         for (Transaccion t : transaccionEgresosList) {
             totalEgresos = totalEgresos.add(t.getValorTotal());
-        }        
+        }
     }
 
     public void rowTransaccionEditCancel() {
