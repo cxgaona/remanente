@@ -16,6 +16,13 @@
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                            <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
+                            <p:inputMask id="anioSelected" value="#{remanenteMensualCtrl.año}" mask="9999" style="width: 100%"/>
+                            <p:commandButton action="#{remanenteMensualCtrl.reloadRemanentes}" update="formRemanenteMensual" style="margin-right:20px;" icon="pi pi-spin pi-spinner"/>
+                        </b:panelGrid>
+
+
                         <h:outputLabel value="Gestión Remanente Mensual" 
                                        styleClass="form-label-izquierda-15" style="width: 100%"/>
                         <p:dataTable id="remanenteMensualTbl"

@@ -8,6 +8,8 @@ import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +27,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private List<RemanenteMensual> remanenteMensualList;
     private Integer institucionId;
     private String nombreInstitucion;
+    private Integer año;
 
     private RemanenteMensual remanenteMensualSelected;
     private String mesRemanenteMensualSelected;
@@ -52,6 +55,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         tituloPagina = "Gestión Remanente Mensual";
+        año = 0;
         mesRemanenteMensualSelected = "SinSelección";
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
@@ -65,7 +69,13 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, calendar.get(Calendar.YEAR));
+    }
+
+    public void reloadRemanentes() {
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
     }
 
     public void rowEdit() {
@@ -258,6 +268,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setTransaccionSelected(Transaccion transaccionSelected) {
         this.transaccionSelected = transaccionSelected;
+    }
+
+    public Integer getAño() {
+        return año;
+    }
+
+    public void setAño(Integer año) {
+        this.año = año;
     }
 
 }

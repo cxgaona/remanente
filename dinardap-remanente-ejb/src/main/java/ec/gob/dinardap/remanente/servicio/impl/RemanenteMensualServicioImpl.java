@@ -28,24 +28,25 @@ import java.util.Date;
 
 @Stateless(name = "RemanenteMensualServicio")
 public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMensual, Integer> implements RemanenteMensualServicio {
-    
+
     @EJB
     private RemanenteMensualDao remanenteMensualDao;
-    
+
     @EJB
     private InstitucionRequeridaDao institucionRequeridaDao;
-    
+
     @Override
     public GenericDao<RemanenteMensual, Integer> getDao() {
         return remanenteMensualDao;
     }
-    
+
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID) {
-        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();        
-        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {institucionID};
+    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
+        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+            "remanenteCuatrimestral.remanenteAnual.anio"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS,CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {institucionID,año};
         String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
