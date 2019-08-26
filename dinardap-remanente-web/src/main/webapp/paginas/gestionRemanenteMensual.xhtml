@@ -11,11 +11,11 @@
     -->
     <ui:composition template="/template/general.xhtml">      
         <ui:define name="content">
-            <p:dialog header = "Selección de Archi... "
+            <p:dialog header = "Selección de Archivo... "
                       id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
                 <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
                     <p:fileUpload 
-                        value="#{remanenteMensualCtrl.fileA}"
+                        value="#{remanenteMensualCtrl.file}"
                         style="width:100%"
                         mode="advanced" 
                         dragDropSupport="true"                                              
@@ -29,22 +29,26 @@
                         />
                 </h:form>
             </p:dialog>
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>           
+
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
+
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
                             <p:inputMask id="anioSelected" value="#{remanenteMensualCtrl.año}" mask="9999" style="width: 100%"/>
-                            <p:commandButton action="#{remanenteMensualCtrl.reloadRemanenteMensual}" update="formRemanenteMensual" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                            <p:commandButton action="#{remanenteMensualCtrl.loadRemanenteMensualByAño}" 
+                                             update="formRemanenteMensual" 
+                                             style="margin-right:20px;" 
+                                             icon="fa fa-fw fa-refresh"/>
                         </b:panelGrid>
 
-                        <h:outputLabel value="Gestión Remanente Mensual" 
-                                       styleClass="form-label-izquierda-15" style="width: 100%"/>
+                        <h:outputLabel value="Gestión Remanente Mensual" styleClass="form-label-izquierda-15" style="width: 100%"/>
                         <p:dataTable id="remanenteMensualTbl"
-                                     rowKey="#{remanenteMensual.remanenteMensualId}"
                                      value="#{remanenteMensualCtrl.remanenteMensualList}" 
                                      var="remanenteMensual"
+                                     rowKey="#{remanenteMensual.remanenteMensualId}"
                                      selectionMode="single"
                                      selection="#{remanenteMensualCtrl.remanenteMensualSelected}"
                                      reflow="true" rows="4" paginator="true"
@@ -75,16 +79,15 @@
                     </h:panelGrid>                    
                 </b:panel>                
             </h:form>              
+
             <h:form id="formTransacciones" enctype="multipart/form-data" >
-                <b:panel title="Transacción Remanente Mensual (Mes: #{remanenteMensualCtrl.mesRemanenteMensualSelected})">
-                    <h:panelGrid columns="1" style="width: 100%;">                        
+                <b:panel title="Transacción Remanente Mensual (Mes: #{remanenteMensualCtrl.mesSelected})">
+                    <h:panelGrid columns="1" style="width: 60%;">                        
                         <p:dataTable id="transaccionRPropiedadTbl"
-                                     value="#{remanenteMensualCtrl.transaccionRPropiedadList}" 
+                                     value="#{remanenteMensualCtrl.transaccionRPropiedadList}"
                                      var="transaccion"
-                                     rowKey="#{transaccion.transaccionId}" 
-                                     expandableRowGroups="true"
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"   
-                                     sortOrder="descending"
+                                     rowKey="#{transaccion.transaccionId}"
+                                     expandableRowGroups="true"                                     
                                      editable="true">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" update="formTransacciones:transaccionRPropiedadTbl"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" update="formTransacciones:transaccionRPropiedadTbl"/>
@@ -93,10 +96,10 @@
                                     <h:outputText value="Ingresos Registro de la Propiedad" />
                                 </p:column>
                             </p:headerRow>                            
-                            <p:column headerText="Detalle" >
+                            <p:column headerText="Detalle" width="60%">
                                 <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
                             </p:column>
-                            <p:column headerText="Valor" >                                
+                            <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{transaccion.valorTotal}">
@@ -108,7 +111,7 @@
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" style="width:100%" label="Valor"/></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
-                            <p:column >
+                            <p:column width="15%" >
                                 <f:facet name="header">
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
@@ -118,10 +121,9 @@
                                         <img width="57" height="37" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
-                            <p:column style="width:35px">
+                            <p:column style="width:5%">
                                 <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
-                                <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? true:false}" style="background: none;border: none;width: auto;"
-                                                 action="#{remanenteMensualCtrl.seleccionarArchivo}"
+                                <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? true:false}" style="background: none;border: none;width: auto;"                                                 
                                                  onclick="PF('transaccionRPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>

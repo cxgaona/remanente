@@ -5,14 +5,10 @@ import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
-import ec.gob.dinardap.remanente.utils.Constantes;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,34 +33,27 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
+    private UploadedFile file;
     private String tituloPagina;
     private String nombreInstitucion;
     private Integer año;
+    private List<RemanenteMensual> remanenteMensualList;
     private RemanenteMensual remanenteMensualSelected;
+    private String mesSelected;
 
+    //Variables Antiguas
     //===
     private Integer institucionId;
 
     //===Listas===//
-    private List<RemanenteMensual> remanenteMensualList;
-
-    private String mesRemanenteMensualSelected;
-
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
     private Transaccion transaccionSelected;
-    private Boolean showDialog;
 
     private List<Transaccion> transaccionRPropiedadList;
     private List<Transaccion> transaccionRMercantilList;
     private List<Transaccion> transaccionEgresosList;
-
-    private Boolean renderedEdicionTransaccion;
-    private Boolean habilitarSeleccion;
-
-    private UploadedFile fileA;
-    private String destination;
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
@@ -77,11 +66,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
-        showDialog = Boolean.FALSE;
-        habilitarSeleccion = Boolean.TRUE;
+
         tituloPagina = "Gestión Remanente Mensual";
         año = 0;
-        mesRemanenteMensualSelected = "SinSelección";
+        mesSelected = "SinSelección";
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
@@ -89,7 +77,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        renderedEdicionTransaccion = Boolean.FALSE;
+
         transaccionSelected = new Transaccion();
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
@@ -99,53 +87,47 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, calendar.get(Calendar.YEAR));
     }
 
-    public void reloadRemanenteMensual() {
+    public void loadRemanenteMensualByAño() {
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-    }
-
-    public void seleccionarArchivo() {
-        System.out.println("Transaeccion Seleccionada: " + transaccionSelected.getTransaccionId());
-        System.out.println("Transaeccion Seleccionada: " + transaccionSelected.getCatalogoTransaccionId().getNombre());
-
     }
 
     public void onRowSelectRemanenteMensual() {
         switch (remanenteMensualSelected.getMes()) {
             case 1:
-                mesRemanenteMensualSelected = "Enero";
+                mesSelected = "Enero";
                 break;
             case 2:
-                mesRemanenteMensualSelected = "Febrero";
+                mesSelected = "Febrero";
                 break;
             case 3:
-                mesRemanenteMensualSelected = "Marzo";
+                mesSelected = "Marzo";
                 break;
             case 4:
-                mesRemanenteMensualSelected = "Abril";
+                mesSelected = "Abril";
                 break;
             case 5:
-                mesRemanenteMensualSelected = "Mayo";
+                mesSelected = "Mayo";
                 break;
             case 6:
-                mesRemanenteMensualSelected = "Junio";
+                mesSelected = "Junio";
                 break;
             case 7:
-                mesRemanenteMensualSelected = "Julio";
+                mesSelected = "Julio";
                 break;
             case 8:
-                mesRemanenteMensualSelected = "Agosto";
+                mesSelected = "Agosto";
                 break;
             case 9:
-                mesRemanenteMensualSelected = "Septiembre";
+                mesSelected = "Septiembre";
                 break;
             case 10:
-                mesRemanenteMensualSelected = "Octubre";
+                mesSelected = "Octubre";
                 break;
             case 11:
-                mesRemanenteMensualSelected = "Noviembre";
+                mesSelected = "Noviembre";
                 break;
             case 12:
-                mesRemanenteMensualSelected = "Diciembre";
+                mesSelected = "Diciembre";
                 break;
         }
         transaccionRPropiedadList = new ArrayList<Transaccion>();
@@ -168,45 +150,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         }
     }
 
-    //Funciones
-    public void onRowSelectRPropiedad() {
-        habilitarSeleccion = Boolean.FALSE;
-    }
-
-    public void handleFileUploadRPropiedad(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
-        try {
-            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            //Se debe crear un archivo .propierties para parametrizar la dirección en donde se guardarán los archivos subidos
-            String path = FacesUtils.getPath() + "/archivos/transacciones/";
-            String realPath = path + transaccionSelected.getTransaccionId() + ".pdf";
-            System.out.println("realPath = " + realPath);
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
-            transaccionServicio.editTransaccion(transaccionSelected);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        PrimeFaces current = PrimeFaces.current();
-        current.executeScript("PF('transaccionRPropiedadDlg').hide()");
-        showDialog = Boolean.FALSE;
-
-    }
-
-    public void rowEdit() {
-    }
-
-    public void mostrarDialog() {
-        showDialog = Boolean.TRUE;
-    }
-
-    public void rowEditCancel() {
-    }
-
     public void rowTransaccionEdit(RowEditEvent event) {
         Transaccion transaccion = new Transaccion();
         transaccion = (Transaccion) event.getObject();
@@ -214,7 +157,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        System.out.println("Transaccion Seleccionada: " + remanenteMensualSelected.getFechaRegistro());
         for (Transaccion t : transaccionRPropiedadList) {
             totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
         }
@@ -230,43 +172,25 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         System.out.println("Cancelado");
     }
 
-    public void nuevoDocumento() {
-        if (upload()) {
-
-        }
-    }
-
-    public Boolean upload() {
+    public void handleFileUploadRPropiedad(FileUploadEvent event) {
+        UploadedFile file = event.getFile();
         try {
-            destination = Constantes.URL + "transaccionXXX";
-            System.out.println("destination = " + destination);
-            File folder = new File(FacesUtils.getPath() + destination);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-            copyFile("nombrePruebaXXX.pdf", getFileA().getInputstream());
-            return true;
-        } catch (IOException e) {
-            return false;
+            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+            String path = FacesUtils.getPath() + "/archivos/transacciones/";
+            String realPath = path + transaccionSelected.getTransaccionId() + ".pdf";
+            System.out.println("realPath = " + realPath);
+            FileOutputStream fos = new FileOutputStream(realPath);
+            fos.write(fileByte);
+            fos.close();
+            transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
+            transaccionServicio.editTransaccion(transaccionSelected);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public void copyFile(String fileName, InputStream in) {
-        try {
-            destination = destination + Constantes.SEPARADOR + fileName;
-            System.out.println("destination = " + destination);
-            OutputStream out = new FileOutputStream(new File(FacesUtils.getPath() + destination));
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            while ((read = in.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            in.close();
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        PrimeFaces current = PrimeFaces.current();
+        current.executeScript("PF('transaccionRPropiedadDlg').hide()");
     }
 
     public String getTituloPagina() {
@@ -301,12 +225,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         this.remanenteMensualSelected = remanenteMensualSelected;
     }
 
-    public String getMesRemanenteMensualSelected() {
-        return mesRemanenteMensualSelected;
+    public String getMesSelected() {
+        return mesSelected;
     }
 
-    public void setMesRemanenteMensualSelected(String mesRemanenteMensualSelected) {
-        this.mesRemanenteMensualSelected = mesRemanenteMensualSelected;
+    public void setMesSelected(String mesSelected) {
+        this.mesSelected = mesSelected;
     }
 
     public List<Transaccion> getTransaccionRPropiedadList() {
@@ -357,14 +281,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         this.totalEgresos = totalEgresos;
     }
 
-    public Boolean getRenderedEdicionTransaccion() {
-        return renderedEdicionTransaccion;
-    }
-
-    public void setRenderedEdicionTransaccion(Boolean renderedEdicionTransaccion) {
-        this.renderedEdicionTransaccion = renderedEdicionTransaccion;
-    }
-
     public Transaccion getTransaccionSelected() {
         return transaccionSelected;
     }
@@ -381,36 +297,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         this.año = año;
     }
 
-    public Boolean getHabilitarSeleccion() {
-        return habilitarSeleccion;
+    public UploadedFile getFile() {
+        return file;
     }
 
-    public void setHabilitarSeleccion(Boolean habilitarSeleccion) {
-        this.habilitarSeleccion = habilitarSeleccion;
-    }
-
-    public UploadedFile getFileA() {
-        return fileA;
-    }
-
-    public void setFileA(UploadedFile fileA) {
-        this.fileA = fileA;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    public Boolean getShowDialog() {
-        return showDialog;
-    }
-
-    public void setShowDialog(Boolean showDialog) {
-        this.showDialog = showDialog;
+    public void setFile(UploadedFile file) {
+        this.file = file;
     }
 
 }
