@@ -413,3 +413,15 @@ panel-heading{
     border-radius: 3px;
     font-size: 15pt;
 }
+
+/*Remanentes*/
+.ui-fileupload-content .ui-progressbar {
+    width: 100% !important;
+    height: 20px;
+    margin: 0;
+    top: 5px;
+}
+
+ui-fileupload ui-widget ui-fileupload-responsive{
+    width: 50% !important;
+}

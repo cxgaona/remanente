@@ -5,3 +5,6 @@ dinardap-remanente-ejb/target
 dinardap-remanente-web/target
 .project
 .settings/
+#pom.xml
+.nbactions.xml
+nbactions.xml
