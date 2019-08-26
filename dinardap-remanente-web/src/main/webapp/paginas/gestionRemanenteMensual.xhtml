@@ -19,7 +19,7 @@
                         <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
                             <p:inputMask id="anioSelected" value="#{remanenteMensualCtrl.año}" mask="9999" style="width: 100%"/>
-                            <p:commandButton action="#{remanenteMensualCtrl.reloadRemanentes}" update="formRemanenteMensual" style="margin-right:20px;" icon="pi pi-spin pi-spinner"/>
+                            <p:commandButton action="#{remanenteMensualCtrl.reloadRemanenteMensual}" update="formRemanenteMensual" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                         </b:panelGrid>
 
 
@@ -34,7 +34,7 @@
                                      reflow="true" rows="4" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="4,8,12">
-                            <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelect()}" update="formTransacciones" />
+                            <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelectRemanenteMensual}" update="formTransacciones" />
                             <p:column headerText="ID Institución" rendered="false">
                                 <h:outputText value="#{remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId}"/>
                             </p:column>
@@ -59,7 +59,7 @@
                     </h:panelGrid>                    
                 </b:panel>                
             </h:form>              
-            <h:form id="formTransacciones" >
+            <h:form id="formTransacciones" enctype="multipart/form-data" >
                 <b:panel title="Transacción Remanente Mensual (Mes: #{remanenteMensualCtrl.mesRemanenteMensualSelected})">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="transaccionRPropiedadTbl"
@@ -67,9 +67,12 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}" 
                                      expandableRowGroups="true"
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"                                     
+                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"   
+                                     selectionMode="single"
+                                     selection="#{remanenteMensualCtrl.transaccionSelected}" 
                                      sortOrder="descending"
-                                     editable="true">                                                        
+                                     editable="true">  
+                            <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelectRPropiedad()}"/>
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" update="formTransacciones:transaccionRPropiedadTbl"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" update="formTransacciones"/>
                             <p:headerRow>
@@ -92,9 +95,32 @@
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" style="width:100%" label="Valor"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
-                            <p:column headerText="Archivo">
-                                <h:outputText value="#{transaccion.respaldoUrl}"/>
+                            <p:column headerText="Archivo">                                
+                                <p:fileUpload 
+                                    value="#{remanenteMensualCtrl.fileA}"
+                                    style="width: 70%"
+                                    mode="advanced" 
+                                    dragDropSupport="false"                                              
+                                    sizeLimit="100000" 
+                                    fileLimit="1"
+                                    allowTypes="/(\.|\/)(pdf)$/"
+                                    label=""
+                                    uploadLabel=""
+                                    cancelLabel=""
+                                    update=":formTransacciones:transaccionRPropiedadTbl"
+                                    fileUploadListener="#{remanenteMensualCtrl.handleFileUploadRPropiedad}"
+                                    rendered="#{transaccion.catalogoTransaccionId.nombre ne 'Otros' and transaccion.catalogoTransaccionId.nombre ne 'Número de trámites Registro de la Propiedad'  ? true:false}"/>
+                                <h:outputText value="#{transaccion.respaldoUrl}" rendered="#{transaccion.catalogoTransaccionId.nombre ne 'Otros' and transaccion.catalogoTransaccionId.nombre ne 'Número de trámites Registro de la Propiedad'  ? true:false}"/>
                             </p:column>  
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Ver"/>
+                                    <center>
+                                        <a href="#{facesContext.externalContext.requestContextPath}/archivos/transacciones/2485.pdf" target="_blank">
+                                            <img width="57" height="37" src="../resource/images/verPDF.png"/></a>
+                                    </center>
+                                </f:facet>
+                            </p:column>
                             <p:column style="width:35px">
                                 <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
                             </p:column>

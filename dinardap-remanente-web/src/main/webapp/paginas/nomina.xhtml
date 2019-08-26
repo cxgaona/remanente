@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- 
+            Replace path to template, title, header and body
+            with actual data.
+    -->
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{nominaCtrl.titulo}</h1>           
+            <h:form id="formNomina">  
+                <b:panel title="Nómina - #{nominaCtrl.titulo}">
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <b:panelGrid colSpans="12" style="width: 10%; margin: 4px 5px;">
+                            <p:commandButton 
+                                value="Agregar Registro"                              
+                                update=":formNomina"
+                                action="#{nominaCtrl.addRowNomina()}"/>
+                        </b:panelGrid>
+                        <p:dataTable 
+                            id="nominaTbl" 
+                            widgetVar="nominaWdg" 
+                            var="nomina" 
+                            value="#{nominaCtrl.nominaList}" 
+                            editable="true" 
+                            style="margin-bottom:20px">
+                            <f:facet name="header">
+                                Gastos por Nómina
+                            </f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{nominaCtrl.onRowEditNomina}" update="formNomina"  />
+                            <!--<p:ajax event="rowEditCancel" listener="{dtAddRowView.onRowCancel}" update=":form:msgs" />-->
+                            <p:column style="width:32px">
+                                <p:rowEditor />
+                            </p:column>
+                            <p:column headerText="Nombre">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.nomNombres}" /></f:facet>
+                                    <f:facet name="input"><p:inputText id="nombre" value="#{nomina.nomNombres}" maxlength="100" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Cargo">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.cargo}" /></f:facet>
+                                    <f:facet name="input"><p:inputText id="cargo" value="#{nomina.cargo}" maxlength="100" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Remuneración">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.remuneracion}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="remuneracion" value="#{nomina.remuneracion}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Aporte Patronal">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.aportePatronal}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="aportePatronal" value="#{nomina.aportePatronal}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Impuesto a la Renta">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.impuestoRenta}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="impuestoRenta" value="#{nomina.impuestoRenta}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Fondos de Reserva">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.fondosReserva}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="fondosReserva" value="#{nomina.fondosReserva}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Décimo Tercero">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.decimoTercero}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="decimoTercero" value="#{nomina.decimoTercero}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Décimo Cuarto">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.decimoCuarto}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="decimoCuarto" value="#{nomina.decimoCuarto}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Total Descuento">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.totalDesc}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="totalDescuento" value="#{nomina.totalDesc}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Líquido a Recibir">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.liquidoRecibir}" /></f:facet>
+                                    <f:facet name="input"><p:inputNumber id="liquidoRecibir" value="#{nomina.liquidoRecibir}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>                    
+                        </p:dataTable>        
+                    </h:panelGrid>
+                </b:panel>
+
+
+
+            </h:form>              
+        </ui:define>
+    </ui:composition>
+</html>

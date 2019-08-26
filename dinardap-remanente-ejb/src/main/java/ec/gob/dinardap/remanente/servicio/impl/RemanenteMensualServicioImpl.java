@@ -9,22 +9,13 @@ import javax.ejb.Stateless;
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
-import ec.gob.dinardap.persistence.util.DateBetween;
 import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
-import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
-import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 @Stateless(name = "RemanenteMensualServicio")
 public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMensual, Integer> implements RemanenteMensualServicio {
@@ -51,6 +42,16 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
+        for (RemanenteMensual rm : remanenteMensualList) {
+            for(EstadoRemanenteMensual erm:rm.getEstadoRemanenteMensualList()){
+                System.out.println("==="+rm.getMes()+"===");
+                System.out.println("erm: "+erm.getEstadoRemanenteMensualId());
+                System.out.println("erm: "+erm.getRemanenteMensualId().getRemanenteMensualId());
+                System.out.println("erm: "+erm.getUsuarioId().getUsuario());
+                System.out.println("erm: "+erm.getFechaRegistro());
+                System.out.println("erm: "+erm.getDescripcion());
+            }
+        }
         /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
         for (RemanenteMensual rm : remanenteMensualList) {
             for (Transaccion t : rm.getTransaccionList()) {
