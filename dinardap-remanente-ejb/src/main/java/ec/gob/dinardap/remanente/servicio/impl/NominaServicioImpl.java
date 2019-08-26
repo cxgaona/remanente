@@ -29,24 +29,10 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
     }
 
     @Override
-    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, String fecha) {
+    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes) {
         List<Nomina> nominaList = new ArrayList<Nomina>();
-        String[] criteriaNombres = {"transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",""};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {institucionID};
-        String[] orderBy = {"remanenteMensualId"};
-        boolean[] asc = {false};
-        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        remanenteMensualList = findByCriterias(criteria);
-        for (RemanenteMensual rm : remanenteMensualList) {
-            for (Transaccion t : rm.getTransaccionList()) {
-
-                t.getCatalogoTransaccionId().getCatalogoTransaccionId();
-            }
-
-        }
-        return remanenteMensualList;
-        return null;
+        nominaList = nominaDao.getNominaByInstitucionFecha(idInstitucion, anio, mes);
+        return nominaList;
     }
 
 }

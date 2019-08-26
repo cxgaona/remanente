@@ -1,9 +1,7 @@
 package ec.gob.dinardap.remanente.dao.ejb;
 
 import ec.gob.dinardap.remanente.dao.NominaDao;
-import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.Nomina;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +24,9 @@ public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implement
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);
         query.setParameter("mes", mes);
-        List<Nomina> lista = query.getResultList();
-        List<RemanenteCuatrimestral> rc = new ArrayList<RemanenteCuatrimestral>();
-        rc = query.getResultList();
-        System.out.println("size: " + rc.size());
-        return rc.size() > 0 ? true : false;
-        return null;
+        List<Nomina> nominaList = new ArrayList<Nomina>();
+        nominaList = query.getResultList();        
+        return nominaList;
     }
 
 }

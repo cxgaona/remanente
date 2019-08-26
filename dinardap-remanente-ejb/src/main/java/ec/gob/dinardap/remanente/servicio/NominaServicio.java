@@ -12,5 +12,5 @@ public interface NominaServicio extends GenericService<Nomina, Integer> {
 
     public void crearNomina(Nomina nomina);
     
-    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, String fecha);
+    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
 }

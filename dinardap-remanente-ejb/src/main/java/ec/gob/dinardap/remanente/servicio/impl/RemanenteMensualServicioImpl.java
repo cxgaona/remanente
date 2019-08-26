@@ -9,21 +9,13 @@ import javax.ejb.Stateless;
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
-import ec.gob.dinardap.persistence.util.DateBetween;
 import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
-import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 @Stateless(name = "RemanenteMensualServicio")
 public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMensual, Integer> implements RemanenteMensualServicio {
@@ -40,22 +32,35 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID) {
+    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {institucionID};
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+            "remanenteCuatrimestral.remanenteAnual.anio"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS,CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {institucionID,año};
         String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
-            for (Transaccion t : rm.getTransaccionList()) {
-
-                t.getCatalogoTransaccionId().getCatalogoTransaccionId();
+            for(EstadoRemanenteMensual erm:rm.getEstadoRemanenteMensualList()){
+                System.out.println("==="+rm.getMes()+"===");
+                System.out.println("erm: "+erm.getEstadoRemanenteMensualId());
+                System.out.println("erm: "+erm.getRemanenteMensualId().getRemanenteMensualId());
+                System.out.println("erm: "+erm.getUsuarioId().getUsuario());
+                System.out.println("erm: "+erm.getFechaRegistro());
+                System.out.println("erm: "+erm.getDescripcion());
             }
-
         }
+        /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
+        for (RemanenteMensual rm : remanenteMensualList) {
+            for (Transaccion t : rm.getTransaccionList()) {
+                System.out.println("T: " + t.getCatalogoTransaccionId().getNombre());
+                System.out.println("T: " + t.getValorTotal());
+                System.out.println("T: " + t.getRespaldoUrl());
+            }
+        }
+        /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
         return remanenteMensualList;
     }
 }
