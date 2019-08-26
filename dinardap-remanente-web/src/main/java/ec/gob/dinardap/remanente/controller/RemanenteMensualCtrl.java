@@ -27,6 +27,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.poi.util.IOUtils;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.event.RowEditEvent;
@@ -53,6 +54,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
     private Transaccion transaccionSelected;
+    private Boolean showDialog;
 
     private List<Transaccion> transaccionRPropiedadList;
     private List<Transaccion> transaccionRMercantilList;
@@ -75,6 +77,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
+        showDialog = Boolean.FALSE;
         habilitarSeleccion = Boolean.TRUE;
         tituloPagina = "Gestión Remanente Mensual";
         año = 0;
@@ -98,6 +101,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void reloadRemanenteMensual() {
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+    }
+
+    public void seleccionarArchivo() {
+        System.out.println("Transaeccion Seleccionada: " + transaccionSelected.getTransaccionId());
+        System.out.println("Transaeccion Seleccionada: " + transaccionSelected.getCatalogoTransaccionId().getNombre());
+
     }
 
     public void onRowSelectRemanenteMensual() {
@@ -175,16 +184,24 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             FileOutputStream fos = new FileOutputStream(realPath);
             fos.write(fileByte);
             fos.close();
-            transaccionSelected.setRespaldoUrl("/resources/archivo/transaccion/xxx.pdf");
+            transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
             transaccionServicio.editTransaccion(transaccionSelected);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        PrimeFaces current = PrimeFaces.current();
+        current.executeScript("PF('transaccionRPropiedadDlg').hide()");
+        showDialog = Boolean.FALSE;
+
     }
 
     public void rowEdit() {
+    }
+
+    public void mostrarDialog() {
+        showDialog = Boolean.TRUE;
     }
 
     public void rowEditCancel() {
@@ -386,6 +403,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public Boolean getShowDialog() {
+        return showDialog;
+    }
+
+    public void setShowDialog(Boolean showDialog) {
+        this.showDialog = showDialog;
     }
 
 }
