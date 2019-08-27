@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,12 +42,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private List<RemanenteMensual> remanenteMensualList;
     private RemanenteMensual remanenteMensualSelected;
     private String mesSelected;
-
-    //Variables Antiguas
-    //===
     private Integer institucionId;
 
-    //===Listas===//
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
@@ -89,6 +87,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void loadRemanenteMensualByAño() {
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        remanenteMensualSelected = new RemanenteMensual();
+        transaccionRPropiedadList = new ArrayList<Transaccion>();
+        transaccionRMercantilList = new ArrayList<Transaccion>();
+        transaccionEgresosList = new ArrayList<Transaccion>();
     }
 
     public void onRowSelectRemanenteMensual() {
@@ -148,9 +150,29 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 totalEgresos = totalEgresos.add(t.getValorTotal());
             }
         }
+        Collections.sort(transaccionRPropiedadList, new Comparator<Transaccion>() {
+            @Override
+            public int compare(Transaccion t1, Transaccion t2) {
+                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
+            }
+        });
+        Collections.sort(transaccionRMercantilList, new Comparator<Transaccion>() {
+            @Override
+            public int compare(Transaccion t1, Transaccion t2) {
+                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
+            }
+        });
+        Collections.sort(transaccionEgresosList, new Comparator<Transaccion>() {
+            @Override
+            public int compare(Transaccion t1, Transaccion t2) {
+                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
+            }
+        });
+
     }
 
     public void rowTransaccionEdit(RowEditEvent event) {
+        System.out.println("Al Cambiar el valor de otros");
         Transaccion transaccion = new Transaccion();
         transaccion = (Transaccion) event.getObject();
         transaccionServicio.editTransaccion(transaccion);
@@ -158,7 +180,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
         for (Transaccion t : transaccionRPropiedadList) {
-            totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
+            totalIngRPropiedad = new BigDecimal(26.26);
+//            totalIngRPropiedad.add(t.getValorTotal());
         }
         for (Transaccion t : transaccionRMercantilList) {
             totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
@@ -178,7 +201,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
             String path = FacesUtils.getPath() + "/archivos/transacciones/";
             String realPath = path + transaccionSelected.getTransaccionId() + ".pdf";
-            System.out.println("realPath = " + realPath);
             FileOutputStream fos = new FileOutputStream(realPath);
             fos.write(fileByte);
             fos.close();
