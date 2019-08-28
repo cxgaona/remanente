@@ -145,9 +145,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
         //Traer todas las transacciones de ese mes seleccionado
-        transaccionServicio.getTransaccionByInstitucionAñoMes(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                remanenteMensualSelected.get, año);
-
+        transaccionServicio.getTransaccionByInstitucionAñoMes(
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                remanenteMensualSelected.getMes());
         for (Transaccion t : remanenteMensualSelected.getTransaccionList()) {
             if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Propiedad")) {
                 transaccionRPropiedadList.add(t);
