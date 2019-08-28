@@ -35,7 +35,8 @@
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
                             <p:inputMask id="anioSelected" value="#{remanenteMensualCtrl.año}" mask="9999" style="width: 100%"/>
                             <p:commandButton action="#{remanenteMensualCtrl.loadRemanenteMensualByAño}" 
-                                             update=":formRemanenteMensual, 
+                                             update=":formRemanenteMensual,
+                                             :formTransacciones,
                                              @(.transaccionRPropiedadTbl), 
                                              @(.transaccionRMercantilTbl), 
                                              @(.transaccionEgresosTbl)"

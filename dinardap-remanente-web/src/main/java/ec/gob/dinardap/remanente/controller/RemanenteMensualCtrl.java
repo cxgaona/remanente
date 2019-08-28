@@ -67,7 +67,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
         tituloPagina = "Gestión Remanente Mensual";
         año = 0;
-        mesSelected = "SinSelección";
+        mesSelected = "Sin Selección";
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
@@ -86,11 +86,17 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     }
 
     public void loadRemanenteMensualByAño() {
+        if (año == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            año = calendar.get(calendar.YEAR);
+        }
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
         transaccionEgresosList = new ArrayList<Transaccion>();
+        mesSelected = "Sin Selección";
     }
 
     public void onRowSelectRemanenteMensual() {
