@@ -22,8 +22,14 @@
                                 update=":formNomina"
                                 action="#{nominaCtrl.addRowNomina()}"/>
                         </b:panelGrid>
+                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                            <p:outputLabel for="mesNomina" value="Mes:&nbsp;" />
+                            <p:datePicker id="mesNomina" view="month" value="#{nominaCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
+                            <p:commandButton action="#{nominaCtrl.reloadNomina}" update="formNomina" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                        </b:panelGrid>
                         <p:dataTable 
                             id="nominaTbl" 
+                            styleClass="nominaTbl"
                             widgetVar="nominaWdg" 
                             var="nomina" 
                             value="#{nominaCtrl.nominaList}" 
@@ -33,10 +39,13 @@
                                 Gastos por Nómina
                             </f:facet>
 
-                            <p:ajax event="rowEdit" listener="#{nominaCtrl.onRowEditNomina}" update="formNomina"  />
-                            <!--<p:ajax event="rowEditCancel" listener="{dtAddRowView.onRowCancel}" update=":form:msgs" />-->
+                            <p:ajax event="rowEdit" listener="#{nominaCtrl.onRowEditNomina}" update="formNomina:nominaTbl"  />
                             <p:column style="width:32px">
                                 <p:rowEditor />
+                                <p:commandButton icon="fa fa-fw fa-trash" title="Eliminar" style="background: none;border: none;width: auto;"
+                                                 action="#{nominaCtrl.onRowDeleteNomina()}" update="formNomina:nominaTbl, @(.nominaTbl), @this">
+                                    <f:setPropertyActionListener value="#{nomina}" target="#{nominaCtrl.nominaSelected}" />
+                                </p:commandButton>
                             </p:column>
                             <p:column headerText="Nombre">
                                 <p:cellEditor>
@@ -52,49 +61,81 @@
                             </p:column>
                             <p:column headerText="Remuneración">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.remuneracion}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.remuneracion}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>    
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="remuneracion" value="#{nomina.remuneracion}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Aporte Patronal">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.aportePatronal}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.aportePatronal}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="aportePatronal" value="#{nomina.aportePatronal}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Impuesto a la Renta">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.impuestoRenta}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.impuestoRenta}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="impuestoRenta" value="#{nomina.impuestoRenta}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Fondos de Reserva">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.fondosReserva}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.fondosReserva}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="fondosReserva" value="#{nomina.fondosReserva}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Décimo Tercero">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.decimoTercero}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.decimoTercero}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="decimoTercero" value="#{nomina.decimoTercero}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Décimo Cuarto">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.decimoCuarto}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.decimoCuarto}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="decimoCuarto" value="#{nomina.decimoCuarto}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Total Descuento">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.totalDesc}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.totalDesc}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="totalDescuento" value="#{nomina.totalDesc}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column headerText="Líquido a Recibir">
                                 <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{nomina.liquidoRecibir}" /></f:facet>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.liquidoRecibir}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber id="liquidoRecibir" value="#{nomina.liquidoRecibir}" style="width:100%"/></f:facet>
                                 </p:cellEditor>
                             </p:column>                    

@@ -1,15 +1,15 @@
 package ec.gob.dinardap.remanente.dao.ejb;
 
-import ec.gob.dinardap.remanente.dao.NominaDao;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import ec.gob.dinardap.remanente.dao.NominaDao1;
 
-@Stateless(name = "NominaDao")
-public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implements NominaDao {
+@Stateless(name = "NominaDao1")
+public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implements NominaDao1 {
 
     public NominaDaoEjb() {
         super(Nomina.class);

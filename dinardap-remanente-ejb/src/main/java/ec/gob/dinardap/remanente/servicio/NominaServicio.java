@@ -13,4 +13,10 @@ public interface NominaServicio extends GenericService<Nomina, Integer> {
     public void crearNomina(Nomina nomina);
     
     public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
+    
+    public void editNomina(Nomina nomina);
+    
+    public void borrarNomina(Nomina nomina);
+    
+    public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes);
 }

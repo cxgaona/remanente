@@ -7,7 +7,7 @@ import ec.gob.dinardap.remanente.modelo.Nomina;
 import java.util.List;
 
 @Local
-public interface NominaDao extends GenericDao<Nomina, Integer> {
+public interface NominaDao1 extends GenericDao<Nomina, Integer> {
 
     public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
 }
