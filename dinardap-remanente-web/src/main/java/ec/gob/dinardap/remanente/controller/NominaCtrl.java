@@ -27,6 +27,7 @@ public class NominaCtrl extends BaseCtrl implements Serializable {
     @EJB
     private TransaccionServicio transaccionServicio;
 
+    private String tituloEgreso;
     private String titulo;
     private List<Nomina> nominaList;
     private Integer anio, mes;
@@ -36,6 +37,7 @@ public class NominaCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
+        tituloEgreso = "Egresos";
         titulo = "Nómina";
         nominaList = new ArrayList<Nomina>();
         Calendar calendar = Calendar.getInstance();
@@ -49,7 +51,6 @@ public class NominaCtrl extends BaseCtrl implements Serializable {
     }
 
     public void addRowNomina() {
-        System.out.println("Agregar nueva fila");
         Nomina newNomina = new Nomina();
         newNomina.setAportePatronal(BigDecimal.ZERO);
         newNomina.setDecimoCuarto(BigDecimal.ZERO);
@@ -92,6 +93,7 @@ public class NominaCtrl extends BaseCtrl implements Serializable {
     public void onRowDeleteNomina() {
         nominaServicio.borrarNomina(nominaSelected);
         nominaServicio.actualizarTransaccionValor(institucionId, anio, mes);
+        reloadNomina();
     }
 
     public String getTitulo() {
@@ -116,6 +118,14 @@ public class NominaCtrl extends BaseCtrl implements Serializable {
 
     public void setMes(Integer mes) {
         this.mes = mes;
+    }
+
+    public String getTituloEgreso() {
+        return tituloEgreso;
+    }
+
+    public void setTituloEgreso(String tituloEgreso) {
+        this.tituloEgreso = tituloEgreso;
     }
 
     public List<Nomina> getNominaList() {

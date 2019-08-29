@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- 
+            Replace path to template, title, header and body
+            with actual data.
+    -->
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{nominaCtrl.tituloEgreso}</h1>           
+            <!-- NOMINA -->
+            <h:form id="formNomina">  
+                <b:panel title="#{nominaCtrl.titulo}">
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
+                            <p:commandButton 
+                                value="Agregar Registro"                              
+                                update=":formNomina"
+                                action="#{nominaCtrl.addRowNomina()}"/>
+                        </b:panelGrid>
+                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                            <p:outputLabel for="mesNomina" value="Mes:&nbsp;" />
+                            <p:datePicker id="mesNomina" view="month" value="#{nominaCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
+                            <p:commandButton action="#{nominaCtrl.reloadNomina}" update="formNomina" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                        </b:panelGrid>
+                        <p:remoteCommand name="onCellDelete" update="formNomina:nominaTbl"/>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                        </p:confirmDialog>
+                        <p:dataTable 
+                            id="nominaTbl" 
+                            styleClass="nominaTbl"
+                            widgetVar="nominaWdg" 
+                            var="nomina" 
+                            value="#{nominaCtrl.nominaList}" 
+                            editable="true" 
+                            style="margin-bottom:20px">
+                            <f:facet name="header">
+                                Gastos por Nómina
+                            </f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{nominaCtrl.onRowEditNomina}" update="formNomina:nominaTbl"  />
+                            <p:column style="width:32px">
+                                <p:rowEditor />
+                                <p:commandButton icon="fa fa-fw fa-trash" title="Eliminar" style="background: none;border: none;width: auto;"
+                                                 action="#{nominaCtrl.onRowDeleteNomina()}" oncomplete="onCellDelete()">
+                                    <f:setPropertyActionListener value="#{nomina}" target="#{nominaCtrl.nominaSelected}" />
+                                    <p:confirm header="Confirmación" message="¿Está seguro de eliminar el registro?" icon="fa fa-fw fa-warning" />
+                                </p:commandButton>
+                            </p:column>
+                            <p:column headerText="Nombre">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.nomNombres}" /></f:facet>
+                                    <f:facet name="input"><p:inputText id="nombre" value="#{nomina.nomNombres}" maxlength="100" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Cargo">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{nomina.cargo}" /></f:facet>
+                                    <f:facet name="input"><p:inputText id="cargo" value="#{nomina.cargo}" maxlength="100" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Remuneración">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.remuneracion}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>    
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="remuneracion" value="#{nomina.remuneracion}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Aporte Patronal">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.aportePatronal}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="aportePatronal" value="#{nomina.aportePatronal}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Impuesto a la Renta">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.impuestoRenta}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="impuestoRenta" value="#{nomina.impuestoRenta}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Fondos de Reserva">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.fondosReserva}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="fondosReserva" value="#{nomina.fondosReserva}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Décimo Tercero">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.decimoTercero}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="decimoTercero" value="#{nomina.decimoTercero}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Décimo Cuarto">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.decimoCuarto}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="decimoCuarto" value="#{nomina.decimoCuarto}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Total Descuento">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.totalDesc}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="totalDescuento" value="#{nomina.totalDesc}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Líquido a Recibir">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{nomina.liquidoRecibir}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="liquidoRecibir" value="#{nomina.liquidoRecibir}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>                    
+                        </p:dataTable>        
+                    </h:panelGrid>
+                </b:panel>
+            </h:form>
+            <!-- FACTURAS PAGADAS-->
+            <h:form id="formFacturaPagada">  
+                <b:panel title="#{facturaPagadaCtrl.titulo}">
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
+                            <p:commandButton 
+                                value="Agregar Registro"                              
+                                update=":formFacturaPagada"
+                                action="#{facturaPagadaCtrl.addRowFacturaPagada()}"/>
+                        </b:panelGrid>
+                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                            <p:outputLabel for="mesFacturaPagada" value="Mes:&nbsp;" />
+                            <p:datePicker id="mesFacturaPagada" view="month" value="#{facturaPagadaCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
+                            <p:commandButton action="#{facturaPagadaCtrl.reloadFacturaPagada}" update="formFacturaPagada" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                        </b:panelGrid>
+                        <p:remoteCommand name="onCellDeleteFP" update="formFacturaPagada:facturaPagadaTbl"/>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                        </p:confirmDialog>
+                        <p:dataTable 
+                            id="facturaPagadaTbl" 
+                            styleClass="facturaPagadaTbl"
+                            widgetVar="facturaPagadaWdg" 
+                            var="facturaPagada" 
+                            value="#{facturaPagadaCtrl.facturaPagadaList}" 
+                            editable="true" 
+                            style="margin-bottom:20px">
+                            <f:facet name="header">
+                                Facturas Pagadas
+                            </f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{facturaPagadaCtrl.onRowEditFacturaPagada}" update="formFacturaPagada:facturaPagadaTbl"  />
+                            <p:column style="width:32px">
+                                <p:rowEditor />
+                                <p:commandButton icon="fa fa-fw fa-trash" title="Eliminar" style="background: none;border: none;width: auto;"
+                                                 action="#{facturaPagadaCtrl.onRowDeleteFacturaPagada()}" oncomplete="onCellDeleteFP()">
+                                    <f:setPropertyActionListener value="#{facturaPagada}" target="#{facturaPagadaCtrl.facturaPagadaSelected}" />
+                                    <p:confirm header="Confirmación" message="¿Está seguro de eliminar el registro?" icon="fa fa-fw fa-warning" />
+                                </p:commandButton>
+                            </p:column>
+                            <p:column headerText="Número">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{facturaPagada.numero}" /></f:facet>
+                                    <f:facet name="input"><p:inputText id="numero" value="#{facturaPagada.numero}" maxlength="10" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Fecha">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{facturaPagada.fecha}" >
+                                            <f:convertDateTime pattern="yyyy/MM/dd" />
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:datePicker id="fecha" value="#{facturaPagada.fecha}" locale="es" monthNavigator="true" pattern="yyyy/MM/dd" style="width:100%"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Tipo">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{facturaPagada.tipo}" /></f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{facturaPagada.tipo}" style="width:100%">      
+                                            <f:selectItem itemLabel="Bienes y Servicios de Consumo" itemValue="Bienes y Servicios de Consumo \\(Arriendo, Servicios Básicos\\)" />
+                                            <f:selectItem itemLabel="Bienes de Larga Duración" itemValue="Bienes de Larga Duración" />
+                                            <f:selectItem itemLabel="Otros" itemValue="Otros" />
+                                        </h:selectOneMenu>
+<!--                                        <p:inputText id="tipo" value="{facturaPagada.tipo}" maxlength="50" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/>-->
+                                        
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Valor">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{facturaPagada.valor}" >
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputNumber id="valor" value="#{facturaPagada.valor}" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Detalle">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{facturaPagada.detalle}">
+                                            <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                    <f:facet name="input"><p:inputText id="detalle" value="#{facturaPagada.detalle}" maxlength="300" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                return false;
+                                            }"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                        </p:dataTable>        
+                    </h:panelGrid>
+                </b:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
