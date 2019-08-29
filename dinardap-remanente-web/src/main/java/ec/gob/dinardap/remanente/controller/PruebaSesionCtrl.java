@@ -24,6 +24,7 @@ public class PruebaSesionCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         titulo = "Contenido";
+        this.setSessionVariable("usuarioId", "1");
         this.setSessionVariable("usuario", "christian.gaona");
         this.setSessionVariable("institucionId", "186");
     }

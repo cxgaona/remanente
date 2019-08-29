@@ -1,7 +1,10 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
+import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
@@ -25,7 +28,6 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.poi.util.IOUtils;
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.event.RowEditEvent;
@@ -43,6 +45,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private RemanenteMensual remanenteMensualSelected;
     private String mesSelected;
     private Integer institucionId;
+    private Integer usuarioId;
 
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
@@ -54,6 +57,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private List<Transaccion> transaccionEgresosList;
     private List<Transaccion> transaccionList;
 
+    private Boolean btnActivated;
+
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
@@ -62,6 +67,9 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private TransaccionServicio transaccionServicio;
+
+    @EJB
+    private EstadoRemanenteMensualServicio estadoRemanenteMensualServicio;
 
     @PostConstruct
     protected void init() {
@@ -76,9 +84,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-
+        btnActivated = Boolean.TRUE;
         transaccionSelected = new Transaccion();
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         Calendar calendar = Calendar.getInstance();
@@ -92,6 +101,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             calendar.setTime(new Date());
             año = calendar.get(calendar.YEAR);
         }
+        btnActivated = Boolean.TRUE;
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
@@ -139,6 +149,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 mesSelected = "Diciembre";
                 break;
         }
+        btnActivated = Boolean.FALSE;
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
         transaccionEgresosList = new ArrayList<Transaccion>();
@@ -184,7 +195,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     }
 
     public void rowTransaccionEdit(RowEditEvent event) {
-        System.out.println("Al Cambiar el valor de otros");
         Transaccion transaccion = new Transaccion();
         transaccion = (Transaccion) event.getObject();
         transaccionServicio.editTransaccion(transaccion);
@@ -195,13 +205,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
                 remanenteMensualSelected.getMes());
-        System.out.println("===Front===");
-        for (Transaccion t : transaccionList) {
-            System.out.println("Transaccion Front ID: " + t.getTransaccionId());
-            System.out.println("Transaccion Front Catalogo: " + t.getCatalogoTransaccionId().getNombre());
-            System.out.println("Transaccion Front Valor: " + t.getValorTotal());
-            System.out.println("Transaccion Front Mes: " + t.getRemanenteMensualId().getMes());
-        }
         for (Transaccion t : transaccionRPropiedadList) {
             totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
         }
@@ -215,6 +218,22 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void rowTransaccionEditCancel() {
         System.out.println("Cancelado");
+    }
+
+    public void completarRemanenteMensual() {
+        System.out.println("===Guardar Remanente Mensual===");
+        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
+        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
+        List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
+        estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
+        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+        Usuario u = new Usuario();
+        u.setUsuarioId(usuarioId);
+        erm.setRemanenteMensualId(remanenteMensualSelected);
+        erm.setUsuarioId(u);
+        erm.setFechaRegistro(new Date());
+        erm.setDescripcion("Completo");
+        estadoRemanenteMensualServicio.create(erm);
     }
 
     public void handleFileUploadRPropiedad(FileUploadEvent event) {
@@ -233,8 +252,15 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        PrimeFaces current = PrimeFaces.current();
-        current.executeScript("PF('transaccionRPropiedadDlg').hide()");
+    }
+
+    public void verEstadoRemanenteMensualSeleccionado() {
+        System.out.println("Remanente: " + remanenteMensualSelected.getMes());
+        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
+            System.out.println("Estado: " + erm.getUsuarioId().getNombre());
+            System.out.println("Estado: " + erm.getFechaRegistro());
+            System.out.println("Estado: " + erm.getDescripcion());
+        }
     }
 
     public String getTituloPagina() {
@@ -355,6 +381,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setTransaccionList(List<Transaccion> transaccionList) {
         this.transaccionList = transaccionList;
+    }
+
+    public Boolean getBtnActivated() {
+        return btnActivated;
+    }
+
+    public void setBtnActivated(Boolean btnActivated) {
+        this.btnActivated = btnActivated;
     }
 
 }

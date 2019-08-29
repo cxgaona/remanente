@@ -25,6 +25,36 @@
                 </h:form>
             </p:dialog>
 
+            <p:dialog id="estadoRemanenteMensualDlg"
+                      header="Listado de estados del Remanentes" 
+                      modal="true"
+                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="500" 
+                      closeOnEscape="true" resizable="false">
+                <h:form id="formestadoRemanenteMensualDlg">
+                    <p:dataTable id="estadoRemanenteMensualTbl"
+                                 value="#{remanenteMensualCtrl.remanenteMensualSelected.estadoRemanenteMensualList}" 
+                                 var="estadoRemanenteMensual"
+                                 rowKey="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
+                                 reflow="true" rows="10" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15">                        
+                        <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterMatchMode="contains">
+                            <h:outputText value="#{estadoRemanenteMensual.usuarioId.nombre}" />
+                        </p:column>
+                        <p:column headerText="Fecha" sortBy="#{estadoRemanenteMensual.fechaRegistro}" filterBy="#{estadoRemanenteMensual.fechaRegistro}" filterMatchMode="contains">
+                            <h:outputText value="#{estadoRemanenteMensual.fechaRegistro}">
+                                <f:convertDateTime pattern="yyyy/MM/dd HH:mm:ss"  />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Estado" sortBy="#{estadoRemanenteMensual.descripcion}" filterBy="#{estadoRemanenteMensual.descripcion}" filterMatchMode="contains">
+                            <h:outputText value="#{estadoRemanenteMensual.descripcion}"/>
+                        </p:column>
+
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>                      
+
+
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
 
             <h:form id="formRemanenteMensual">
@@ -73,6 +103,14 @@
                             <p:column headerText="Informe de aprobación" sortBy="#{remanenteMensual.informeAprobacionUrl}" filterBy="#{remanenteMensual.informeAprobacionUrl}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.informeAprobacionUrl}" />
                             </p:column>
+                            <p:column headerText="Estado"  style="width:80px; text-align: center">
+                                <p:commandButton icon="fa fa-fw fa-list-ul" 
+                                                 title="Ver Estados" 
+                                                 onclick="PF('estadoRemanenteMensualDlg').show();"
+                                                 action="#{remanenteMensualCtrl.verEstadoRemanenteMensualSeleccionado()}">
+                                    <f:setPropertyActionListener value="#{remanenteMensual}" target="#{remanenteMensualCtrl.remanenteMensualSelected}" />
+                                </p:commandButton>
+                            </p:column>
                         </p:dataTable>
                     </h:panelGrid>                    
                 </b:panel>                
@@ -113,8 +151,8 @@
                                                              maxFractionDigits="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 0:2}"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }" /></f:facet>
+                                        return false;
+                                        }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -130,7 +168,8 @@
                             <p:column style="width:5%">
                                 <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
                                 <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? true:false}" style="background: none;border: none;width: auto;"
-                                                 onclick="PF('transaccionRPropiedadDlg').show();">
+                                                 onclick="PF('transaccion
+                                                             RPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>
@@ -175,8 +214,8 @@
                                                              maxFractionDigits="2"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }" /></f:facet>
+                                        return false;
+                                        }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -238,8 +277,8 @@
                                                              maxFractionDigits="2"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }" /></f:facet>
+                                        return false;
+                                        }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -261,7 +300,8 @@
                                                                                                          or transaccion.catalogoTransaccionId.nombre eq 'Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)'
                                                                                                          or transaccion.catalogoTransaccionId.nombre eq 'Bienes de Larga Duración' ? true:false}" 
                                                  style="background: none;border: none;width: auto;"                                                 
-                                                 onclick="PF('transaccionRPropiedadDlg').show();">
+                                                 onclick="PF('transaccion
+                                                             RPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>
@@ -278,9 +318,12 @@
                         </p:dataTable>
                     </h:panelGrid>
                 </b:panel>
-
                 <b:panel>
-                    <p:commandButton value="Completar Remanente Mensual" id="withIcon" style="margin-right:20px;" icon="fa fa-fw fa-share" />
+                    <p:commandButton value="Completar Remanente Mensual"                                      
+                                     style="margin-right:20px;" 
+                                     action="#{remanenteMensualCtrl.completarRemanenteMensual}"
+                                     icon="fa fa-fw fa-share" 
+                                     disabled="#{remanenteMensualCtrl.btnActivated}"/>
                 </b:panel>
             </h:form>
         </ui:define>
