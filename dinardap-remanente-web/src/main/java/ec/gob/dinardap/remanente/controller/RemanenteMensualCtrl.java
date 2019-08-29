@@ -13,8 +13,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -149,19 +147,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 transaccionEgresosList.add(t);
                 totalEgresos = totalEgresos.add(t.getValorTotal());
             }
-        }
-        Collections.sort(transaccionRPropiedadList, new Comparator<Transaccion>() {
-            @Override
-            public int compare(Transaccion t1, Transaccion t2) {
-                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
-            }
-        });
-
-        for (Transaccion t : transaccionRPropiedadList) {
-            System.out.println("Transaccion Propiedad ID: " + t.getTransaccionId());
-            System.out.println("Transaccion Propiedad Catalogo ID: " + t.getCatalogoTransaccionId().getCatalogoTransaccionId());
-            System.out.println("Transaccion Propiedad Catalogo ID: " + t.getCatalogoTransaccionId().getNombre());
-        }
+        }     
     }
 
     public void rowTransaccionEdit(RowEditEvent event) {
