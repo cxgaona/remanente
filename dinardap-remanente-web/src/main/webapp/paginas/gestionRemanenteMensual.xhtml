@@ -29,8 +29,8 @@
                       header="Listado de estados del Remanentes" 
                       modal="true"
                       widgetVar="estadoRemanenteMensualDlg" width="1000" height="500" 
-                      closeOnEscape="true" resizable="false">
-                <h:form id="formestadoRemanenteMensualDlg">
+                      resizable="false">
+                <h:form id="formEstadoRemanenteMensualDlg">
                     <p:dataTable id="estadoRemanenteMensualTbl"
                                  value="#{remanenteMensualCtrl.remanenteMensualSelected.estadoRemanenteMensualList}" 
                                  var="estadoRemanenteMensual"
@@ -106,8 +106,8 @@
                             <p:column headerText="Estado"  style="width:80px; text-align: center">
                                 <p:commandButton icon="fa fa-fw fa-list-ul" 
                                                  title="Ver Estados" 
-                                                 onclick="PF('estadoRemanenteMensualDlg').show();"
-                                                 action="#{remanenteMensualCtrl.verEstadoRemanenteMensualSeleccionado()}">
+                                                 update="formEstadoRemanenteMensualDlg:estadoRemanenteMensualTbl"
+                                                 onclick="PF('estadoRemanenteMensualDlg').show();">
                                     <f:setPropertyActionListener value="#{remanenteMensual}" target="#{remanenteMensualCtrl.remanenteMensualSelected}" />
                                 </p:commandButton>
                             </p:column>
@@ -118,6 +118,7 @@
 
             <h:form id="formTransacciones" enctype="multipart/form-data" >
                 <b:panel title="Transacción Remanente Mensual (Mes: #{remanenteMensualCtrl.mesSelected})">
+
                     <p:remoteCommand name="onCellEdit" 
                                      update="formTransacciones:transaccionRPropiedadTbl,
                                      formTransacciones:transaccionRMercantilTbl,
@@ -151,8 +152,8 @@
                                                              maxFractionDigits="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 0:2}"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                        return false;
-                                        }" /></f:facet>
+                                                return false;
+                                            }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -168,8 +169,7 @@
                             <p:column style="width:5%">
                                 <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
                                 <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? true:false}" style="background: none;border: none;width: auto;"
-                                                 onclick="PF('transaccion
-                                                             RPropiedadDlg').show();">
+                                                 onclick="PF('transaccionRPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>
@@ -214,8 +214,8 @@
                                                              maxFractionDigits="2"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                        return false;
-                                        }" /></f:facet>
+                                                return false;
+                                            }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -277,8 +277,8 @@
                                                              maxFractionDigits="2"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                        return false;
-                                        }" /></f:facet>
+                                                return false;
+                                            }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -301,7 +301,7 @@
                                                                                                          or transaccion.catalogoTransaccionId.nombre eq 'Bienes de Larga Duración' ? true:false}" 
                                                  style="background: none;border: none;width: auto;"                                                 
                                                  onclick="PF('transaccion
-                                                             RPropiedadDlg').show();">
+                                                                 RPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>

@@ -156,7 +156,16 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        //Traer todas las transacciones de ese mes seleccionado
+        Collections.sort(remanenteMensualSelected.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+            @Override
+            public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
+                return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+            }
+        });
+        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo")) {
+            btnActivated = Boolean.TRUE;
+        }
+
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
