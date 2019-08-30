@@ -8,6 +8,7 @@ import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.dao.TransaccionDao;
+import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.util.ArrayList;
@@ -42,5 +43,11 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);
         return transaccionList;
+    }
+    @Override
+    public Transaccion getTransaccionByInstitucionFechaTipo(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
+        Transaccion transaccion = new Transaccion();
+        transaccion = transaccionDao.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
+        return transaccion;
     }
 }
