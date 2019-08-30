@@ -286,22 +286,14 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Personal (Remuneraciones)' 
-                                                             or transaccion.catalogoTransaccionId.nombre eq 'Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)'
-                                                             or transaccion.catalogoTransaccionId.nombre eq 'Bienes de Larga Duración' 
-                                                             ? 'visible':'hidden'}">
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank">
                                         <img width="57" height="37" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
                             <p:column style="width:5%">
-                                <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
-                                <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Personal (Remuneraciones)' 
-                                                                                                         or transaccion.catalogoTransaccionId.nombre eq 'Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)'
-                                                                                                         or transaccion.catalogoTransaccionId.nombre eq 'Bienes de Larga Duración' ? true:false}" 
+                                <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" 
                                                  style="background: none;border: none;width: auto;"                                                 
-                                                 onclick="PF('transaccion
-                                                                 RPropiedadDlg').show();">
+                                                 onclick="PF('transaccionRPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>
