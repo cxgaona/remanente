@@ -52,8 +52,7 @@ public class FacturaPagada implements Serializable {
     @Size(max = 10)
     @Column(name = "numero")
     private String numero;
-    @Size(max = 50)
-    @Column(name = "tipo")
+    @Column(name = "tipo", length = 60)
     private String tipo;
     @Size(max = 300)
     @Column(name = "detalle")
@@ -163,5 +162,5 @@ public class FacturaPagada implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.FacturaPagada[ facturaPagadaId=" + facturaPagadaId + " ]";
     }
-    
+
 }
