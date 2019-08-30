@@ -55,15 +55,27 @@
                                 <p:selectBooleanCheckbox value="#{usuario.administrador}" disabled="true" />
                             </p:column>
                         </p:dataTable>  
-                        <b:panel>
-                            <h:panelGrid columns="2" style="width: 50%;">
+                        <b:panel style="width: 50%">
+                            <b:panelGrid colSpans="2,10" style="width: 50%; margin: 4px 5px;">
+                                <p:outputLabel for="nombre" value="Nombre:" />
+                                <p:inputText id="nombre" value="" />
                                 <p:commandButton value="Completar Remanente Mensual"                                      
                                                  style="margin-right:20px;" 
                                                  icon="fa fa-fw fa-share" />
                                 <p:commandButton value="Completar Remanente Mensual"                                      
                                                  style="margin-right:20px;" 
                                                  icon="fa fa-fw fa-share" />
-                            </h:panelGrid>
+                            </b:panelGrid>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel for="nombre" value="Nombre:" />
+                                <p:inputText id="nombre" value="" />
+                                <p:commandButton value="Completar Remanente Mensual"                                      
+                                                 style="margin-right:20px;" 
+                                                 icon="fa fa-fw fa-share" />
+                                <p:commandButton value="Completar Remanente Mensual"                                      
+                                                 style="margin-right:20px;" 
+                                                 icon="fa fa-fw fa-share" />
+                            </p:panelGrid>
                         </b:panel>
                     </h:panelGrid>                    
                 </b:panel>                
