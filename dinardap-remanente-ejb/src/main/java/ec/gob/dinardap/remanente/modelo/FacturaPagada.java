@@ -162,5 +162,5 @@ public class FacturaPagada implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.FacturaPagada[ facturaPagadaId=" + facturaPagadaId + " ]";
     }
-    
+
 }
