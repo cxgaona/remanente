@@ -9,6 +9,8 @@
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{gestionUsuariosCtrl.tituloPagina}</h1>
             <h:form id="formUsuario">
+                <p:remoteCommand name="onSelectRowUsuario" 
+                                 update="formUsuarioSelected"/>
                 <b:panel title="Usuarios">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <p:dataTable id="usuarioTbl"
@@ -20,9 +22,9 @@
                                      reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25">
-                            <!--<p:ajax event="rowSelect" listener="{remanenteMensualCtrl.onRowSelectRemanenteMensual}" update="formTransacciones" />-->
+                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update=":formUsuarioSelected"/>
                             <p:column headerText="ID Usuario" rendered="false">
-                                <h:outputText value="#{usuario.UsuarioId}"/>
+                                <h:outputText value="#{usuario.usuarioId}"/>
                             </p:column>
                             <p:column headerText="Nombre" sortBy="#{usuario.nombre}" filterBy="#{usuario.nombre}" filterMatchMode="contains">
                                 <h:outputText value="#{usuario.nombre}" />
@@ -54,31 +56,56 @@
                             <p:column headerText="Administrador" sortBy="#{usuario.administrador}" width="10%">
                                 <p:selectBooleanCheckbox value="#{usuario.administrador}" disabled="true" />
                             </p:column>
-                        </p:dataTable>  
-                        <b:panel style="width: 50%">
-                            <b:panelGrid colSpans="2,10" style="width: 50%; margin: 4px 5px;">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                            </b:panelGrid>
-                            <p:panelGrid columns="2">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                            </p:panelGrid>
-                        </b:panel>
-                    </h:panelGrid>                    
-                </b:panel>                
+                        </p:dataTable>                          
+                    </h:panelGrid>
+                    <p:commandButton value="Nuevo Usuario"
+                                     style="margin-right:20px;" 
+                                     action="#{gestionUsuariosCtrl.nuevoUsuario}"
+                                     icon="fa fa-fw fa-plus-square"
+                                     update=":formUsuarioSelected"/>
+                </b:panel>
+            </h:form>
+            <h:form id="formUsuarioSelected" >
+                <b:panel style="width: 50%" rendered="#{gestionUsuariosCtrl.formUsuarioSelectedActivated}">
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
+                        <p:selectOneMenu id="tipoInstitucion" value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.tipo}" style="width: 70%;"
+                                         valueChangeListener="#{gestionUsuariosCtrl.change}">
+                            <p:ajax listener="#{gestionUsuariosCtrl.change}"/>
+                            <f:selectItem itemLabel="Dirección Regional" itemValue="REGIONAL" />
+                            <f:selectItem itemLabel="GAD" itemValue="GAD" />
+                            <f:selectItem itemLabel="Registro Mixto" itemValue="REGISTRO MIXTO" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="institucion" value="Institución:" />
+                        <p:autoComplete id="institucion" value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.nombre}" style="width: 100%" inputStyle="width: 90%" />
+
+                        <p:outputLabel for="nombre" value="Nombre:" />
+                        <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" />
+
+                        <p:outputLabel for="usuario" value="Usuario:" />
+                        <p:inputText id="usuario" value="#{gestionUsuariosCtrl.usuarioSelected.usuario}" style="width: 90%" />
+
+                        <p:outputLabel for="contrasena" value="Contraseña:" />
+                        <p:password id="contrasena" value="#{gestionUsuariosCtrl.usuarioSelected.contrasena}" 
+                                    feedback="true"
+                                    promptLabel="Ingrese la contraseña" weakLabel="Baja"
+                                    goodLabel="Media" strongLabel="Alta" />
+
+                        <p:outputLabel value="Perfil:" />
+                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.registrador}" itemLabel="Registrador"/>
+                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.validador}" itemLabel="Validador"/>
+                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.verificador}" itemLabel="Verificador"/>
+                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.administrador}" itemLabel="Administrador"/>
+                        </h:panelGrid>
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton value="#{gestionUsuariosCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save"/>
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{gestionUsuariosCtrl.cancelar}" update="formUsuarioSelected"/>
+                    </b:panelGrid>
+                </b:panel>
+
             </h:form>
         </ui:define>
     </ui:composition>

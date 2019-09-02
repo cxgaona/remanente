@@ -425,3 +425,8 @@ panel-heading{
 ui-fileupload ui-widget ui-fileupload-responsive{
     width: 50% !important;
 }
+
+.panel_boost .row{
+    margin: 8px 0;   
+    font-weight: normal !important;
+}
