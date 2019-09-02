@@ -69,8 +69,11 @@
                 <b:panel style="width: 50%" rendered="#{gestionUsuariosCtrl.formUsuarioSelectedActivated}">
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
                         <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
-                        <p:selectOneMenu id="tipoInstitucion" value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.tipo}" style="width: 70%;"
-                                         valueChangeListener="#{gestionUsuariosCtrl.change}">
+                        <p:selectOneMenu id="tipoInstitucion" 
+                                         value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.tipo}" 
+                                         valueChangeListener="#{gestionUsuariosCtrl.change}" 
+                                         converter="converterInstitucionTipo"
+                                         style="width: 70%;">
                             <p:ajax listener="#{gestionUsuariosCtrl.change}"/>
                             <f:selectItem itemLabel="Dirección Regional" itemValue="REGIONAL" />
                             <f:selectItem itemLabel="GAD" itemValue="GAD" />

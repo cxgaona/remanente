@@ -38,8 +38,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void change() {
-        System.out.println("Aqui: " + usuarioSelected.getInstitucionId().getTipo());
-
+//        System.out.println("Aqui: " + usuarioSelected.getInstitucionId().getTipo());
     }
 
     public void cancelar() {
@@ -59,8 +58,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void selectTipoInstitucion(ValueChangeEvent even) {
-        System.out.println("Cambio de institucion");
-        System.out.println("valor: " + even.getNewValue());
+        
     }
 
     public List<String> completeNombreInstitucion(String query) {

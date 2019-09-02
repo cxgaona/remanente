@@ -6,7 +6,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -16,23 +15,24 @@ import javax.faces.convert.FacesConverter;
  *
  * @author christian.gaona
  */
-@FacesConverter(value = "converterPrueba")
-public class ConverterPrueba implements Converter<Object> {
+@FacesConverter("converterInstitucionTipo")
+public class GestionUsuariosConverter1 implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        InstitucionRequerida ir = null;
-        if (value.isEmpty()) {
-            ir = new InstitucionRequerida();
-        } else {
-            System.out.println("Tiene Institucion asignada");
+        System.out.println("Valor: " + value);
+        InstitucionRequerida ir = new InstitucionRequerida();
+        if (value.equals("GAD")) {
+            ir.setTipo("GAD");
+        } else if (value.equals("REGIONAL")) {
+            ir.setTipo("REGIONAL");
         }
         return ir;
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object t) {
-        System.out.println("oBTENER VALOR" + t);
+//        System.out.println("Obtener valor: " + t);
         return t.toString();
     }
 
