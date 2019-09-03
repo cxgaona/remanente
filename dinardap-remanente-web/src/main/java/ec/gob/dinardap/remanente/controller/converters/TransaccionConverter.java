@@ -6,6 +6,7 @@
 package ec.gob.dinardap.remanente.controller.converters;
 
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
+import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import javax.annotation.ManagedBean;
 import javax.ejb.EJB;
@@ -21,34 +22,24 @@ import javax.inject.Named;
  * @author enery
  */
 @ManagedBean
-@Named(value = "institucionConverter")
-public class InstitucionConverter implements Converter {
-
-    @EJB
-    private InstitucionRequeridaServicio service;
+@Named(value = "transaccionConverter")
+public class TransaccionConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        InstitucionRequerida ir = new InstitucionRequerida();
-        if (value != null && value.trim().length() > 0) {
-            try {
-                ir = service.findByPk(Integer.parseInt(value));
-                return ir;
-            } catch (NumberFormatException e) {
-                throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid Institución"));
-            }
-        } else {
-            return ir;
-        }
+        System.out.println("Valor en getAsObject: " + value);
+        return null;
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object object) {
-        if (object != null) {
-            return String.valueOf(((InstitucionRequerida) object).getInstitucionId());
-        } else {
-            return null;
-        }
+//        if (object != null) {
+//            if(((Transaccion) object).get)
+//            return String.valueOf(((Transaccion) object).getValorTotal());
+//        } else {
+//            return null;
+//        }
+        System.out.println("Valor en getAsString: " + ((Transaccion) object).getTransaccionId());
+        return null;
     }
-
 }

@@ -24,7 +24,6 @@
                         oncomplete="onCellEdit();"/>
                 </h:form>
             </p:dialog>
-
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Listado de estados del Remanentes" 
                       modal="true"
@@ -52,12 +51,8 @@
 
                     </p:dataTable>
                 </h:form>
-            </p:dialog>                      
-
-
-            
+            </p:dialog>                   
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
-
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales Chris 1 - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
@@ -119,7 +114,6 @@
 
             <h:form id="formTransacciones" enctype="multipart/form-data" >
                 <b:panel title="Transacción Remanente Mensual (Mes: #{remanenteMensualCtrl.mesSelected})">
-
                     <p:remoteCommand name="onCellEdit" 
                                      update="formTransacciones:transaccionRPropiedadTbl,
                                      formTransacciones:transaccionRMercantilTbl,
@@ -147,7 +141,7 @@
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="#{1 eq 1? 'number':'currency'}"
+                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 'number':'currency'}"
                                                              currencySymbol="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? '':'$'}"
                                                              maxIntegerDigits="10"
                                                              maxFractionDigits="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 0:2}"/>

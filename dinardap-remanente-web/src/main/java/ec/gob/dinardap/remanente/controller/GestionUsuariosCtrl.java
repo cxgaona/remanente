@@ -10,13 +10,16 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 @Named(value = "gestionUsuariosCtrl")
 @ViewScoped
 public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
+
+    private Boolean onEdit;
+    private Boolean onCreate;
+    private Boolean renderEdition;
 
     private List<Usuario> usuarioActivoList;
     private List<InstitucionRequerida> institucionRequeridaList;
@@ -25,7 +28,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     private String nombre;
 
-    private Boolean formUsuarioSelectedActivated;
+//    private Boolean formUsuarioSelectedActivated;
     private String btnGuardar;
 
     private String tipoInstitucion;
@@ -38,33 +41,34 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+        //===
         tituloPagina = "Gestión de Usuarios";
         nombre = "";
         btnGuardar = "";
         tipoInstitucion = "";
+        //===
         institucionRequeridaList = new ArrayList<InstitucionRequerida>();
-        formUsuarioSelectedActivated = Boolean.FALSE;
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
     }
 
-    public void change() {
-//        System.out.println("Aqui: " + usuarioSelected.getInstitucionId().getTipo());
-    }
-
-    public void cancelar() {
-        usuarioSelected = new Usuario();
-        formUsuarioSelectedActivated = Boolean.FALSE;
-    }
-
     public void nuevoUsuario() {
+        renderEdition = Boolean.TRUE;
+        onCreate = Boolean.TRUE;
+        onEdit = Boolean.FALSE;
         usuarioSelected = new Usuario();
         btnGuardar = "Guardar";
-        formUsuarioSelectedActivated = Boolean.TRUE;
+        tipoInstitucion = "Dirección Regional";
+        institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
     }
 
     public void onRowSelectUsuario() {
-        formUsuarioSelectedActivated = Boolean.TRUE;
+        renderEdition = Boolean.TRUE;
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.TRUE;
         btnGuardar = "Actualizar";
         if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
@@ -78,9 +82,39 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         }
     }
 
+    public void cancelar() {
+        usuarioActivoList = new ArrayList<Usuario>();
+        usuarioSelected = new Usuario();
+        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+        onEdit = Boolean.FALSE;
+        onCreate = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+    }
+
+    public void guardar() {
+        if (onCreate) {
+            usuarioSelected.setEstado("A");
+            usuarioServicio.createUsuario(usuarioSelected);
+            usuarioActivoList = new ArrayList<Usuario>();
+            usuarioSelected = new Usuario();
+            usuarioActivoList = usuarioServicio.getUsuariosActivos();
+            onEdit = Boolean.FALSE;
+            onCreate = Boolean.FALSE;
+            renderEdition = Boolean.FALSE;
+        } else if (onEdit) {
+            usuarioServicio.editUsuario(usuarioSelected);
+            usuarioActivoList = new ArrayList<Usuario>();
+            usuarioSelected = new Usuario();
+            usuarioActivoList = usuarioServicio.getUsuariosActivos();
+            onEdit = Boolean.FALSE;
+            onCreate = Boolean.FALSE;
+            renderEdition = Boolean.FALSE;
+        }
+    }
+
     public void seleccionarTipoInstitucion() {
-        System.out.println("===En selección de tipo de Institución===");
-        System.out.println("Seleccion: " + tipoInstitucion);
+        InstitucionRequerida ir = new InstitucionRequerida();
+        usuarioSelected.setInstitucionId(ir);
         if (tipoInstitucion.equals("Registro Propiedad / Mercantil")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
             institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
@@ -91,7 +125,6 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             tipoInstitucion = "Dirección Regional";
             institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
         }
-
     }
 
     public List<InstitucionRequerida> completeNombreInstitucion(String query) {
@@ -102,6 +135,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             }
         }
         return filteredInstituciones;
+    }
+
+    //Getters & Setters
+    public Boolean getRenderEdition() {
+        return renderEdition;
     }
 
     public String getTituloPagina() {
@@ -126,14 +164,6 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     public void setUsuarioSelected(Usuario usuarioSelected) {
         this.usuarioSelected = usuarioSelected;
-    }
-
-    public Boolean getFormUsuarioSelectedActivated() {
-        return formUsuarioSelectedActivated;
-    }
-
-    public void setFormUsuarioSelectedActivated(Boolean formUsuarioSelectedActivated) {
-        this.formUsuarioSelectedActivated = formUsuarioSelectedActivated;
     }
 
     public String getBtnGuardar() {
@@ -166,6 +196,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Boolean getOnCreate() {
+        return onCreate;
     }
 
 }
