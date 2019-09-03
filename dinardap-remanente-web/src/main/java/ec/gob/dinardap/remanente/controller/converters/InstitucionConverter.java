@@ -7,6 +7,7 @@ package ec.gob.dinardap.remanente.controller.converters;
 
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.remanente.servicio.impl.InstitucionRequeridaServicioImpl;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -23,16 +24,16 @@ import javax.faces.convert.FacesConverter;
 @FacesConverter("institucionConverter")
 public class InstitucionConverter implements Converter {
 
-    @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
-
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if (value != null && value.trim().length() > 0) {
             try {
+                System.out.println("===Converter===");
+                System.out.println("Value: " + value);
+                InstitucionRequeridaServicio irs=new InstitucionRequeridaServicioImpl();
                 InstitucionRequerida ir = new InstitucionRequerida();
-                ir = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(value));
-                System.out.println("ir: "+ir.getProvinciaCanton());
+                ir = irs.getInstitucionById(Integer.parseInt(value));
+                System.out.println("ir: " + ir.getProvinciaCanton());
                 return ir;
             } catch (NumberFormatException e) {
                 throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid Institución."));
