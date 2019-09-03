@@ -73,8 +73,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
+        
+        
 
-        tituloPagina = "Gestión Remanente Mensual";
+        tituloPagina = "Gestión Remanente Mensual cambios";
         año = 0;
         mesSelected = "Sin Selección";
         remanenteMensualSelected = new RemanenteMensual();

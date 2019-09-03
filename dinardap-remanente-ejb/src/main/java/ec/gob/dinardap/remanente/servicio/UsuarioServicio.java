@@ -11,8 +11,8 @@ public interface UsuarioServicio extends GenericService<Usuario, Integer> {
 
     public List<Usuario> getUsuariosActivos();
 
-    public void createUsuarioACtivo();
+    public void createUsuario(Usuario usuario);
 
-    public void editUsuarioActivo();
+    public void editUsuario(Usuario usuario);
 
 }
