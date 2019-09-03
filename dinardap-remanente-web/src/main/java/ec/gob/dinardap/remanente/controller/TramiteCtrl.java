@@ -33,7 +33,7 @@ public class TramiteCtrl extends BaseCtrl implements Serializable {
     @EJB
     private CatalogoTransaccionServicio catalogoTransaccionServicio;
 
-    private String titulo;
+    private String tituloMercantil, tituloPropiedad;
     private List<Tramite> tramiteList;
     private Integer anio, mes;
     private Integer institucionId;
@@ -44,7 +44,8 @@ public class TramiteCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
-        titulo = "Trámite";
+        tituloPropiedad = "Trámite Propiedad";
+        tituloMercantil = "Trámite Mercantil";
         tramiteList = new ArrayList<Tramite>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -140,19 +141,27 @@ public class TramiteCtrl extends BaseCtrl implements Serializable {
     }
 
     public void onRowDeleteFacturaPagada() {
-        facturaPagadaServicio.borrarFacturaPagada(facturaPagadaSelected);
+        /*facturaPagadaServicio.borrarFacturaPagada(facturaPagadaSelected);
         facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 10);
         facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 11);
         facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 12);
-        reloadFacturaPagada();
+        reloadFacturaPagada();*/
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String getTituloPropiedad() {
+        return tituloPropiedad;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setTituloPropiedad(String tituloPropiedad) {
+        this.tituloPropiedad = tituloPropiedad;
+    }
+    
+    public String getTituloMercantil() {
+        return tituloMercantil;
+    }
+
+    public void setTituloMercantil(String tituloMercantil) {
+        this.tituloMercantil = tituloMercantil;
     }
 
     public Integer getAnio() {
@@ -171,13 +180,7 @@ public class TramiteCtrl extends BaseCtrl implements Serializable {
         this.mes = mes;
     }
 
-    public List<FacturaPagada> getFacturaPagadaList() {
-        return facturaPagadaList;
-    }
-
-    public void setFacturaPagadaList(List<FacturaPagada> facturaPagadaList) {
-        this.facturaPagadaList = facturaPagadaList;
-    }
+  
 
     public Date getFecha() {
         return fecha;
@@ -187,12 +190,32 @@ public class TramiteCtrl extends BaseCtrl implements Serializable {
         this.fecha = fecha;
     }
 
-    public FacturaPagada getFacturaPagadaSelected() {
-        return facturaPagadaSelected;
+    public List<Tramite> getTramiteList() {
+        return tramiteList;
     }
 
-    public void setFacturaPagadaSelected(FacturaPagada facturaPagadaSelected) {
-        this.facturaPagadaSelected = facturaPagadaSelected;
+    public void setTramiteList(List<Tramite> tramiteList) {
+        this.tramiteList = tramiteList;
     }
+
+    public Tramite getTramiteSelected() {
+        return tramiteSelected;
+    }
+
+    public void setTramiteSelected(Tramite tramiteSelected) {
+        this.tramiteSelected = tramiteSelected;
+    }
+
+    public List<CatalogoTransaccion> getCatalogoList() {
+        return catalogoList;
+    }
+
+    public void setCatalogoList(List<CatalogoTransaccion> catalogoList) {
+        this.catalogoList = catalogoList;
+    }
+    
+    
+
+  
 
 }

@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">    
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">        
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tramiteCtrl.tituloPropiedad}</h1>
+            <h:form id="formUsuario">
+                <p:remoteCommand name="onSelectRowTramite" 
+                                 update="formTramiteSelected"/>
+                <b:panel title="Trámites Propiedad">
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <p:dataTable id="tramiteTbl"
+                                     value="#{tramiteCtrl.tramiteList}" 
+                                     var="tramite"
+                                     
+                                     reflow="true" rows="10" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25">
+                            <p:ajax event="rowSelect" update=":formTramiteSelected"/>
+<!--                            rowKey="{usuario.usuarioId}"
+                                     selectionMode="single"
+                                     selection="{gestionUsuariosCtrl.usuarioSelected}"
+                            listener="{gestionUsuariosCtrl.onRowSelectUsuario}"-->
+                            <p:column headerText="ID Tramite" rendered="false">
+                                <h:outputText value="{usuario.usuarioId}"/>
+                            </p:column>
+                            <p:column headerText="Número"  filterMatchMode="contains">
+                                <!--sortBy="{usuario.nombre}" filterBy="{usuario.nombre}"-->
+                                <h:outputText value="{usuario.nombre}" />
+                            </p:column>
+                            <p:column headerText="Fecha"  filterMatchMode="contains">
+                                <!--sortBy="{usuario.institucionId.nombre}" filterBy="{usuario.institucionId.nombre}"-->
+                                <h:outputText value="{usuario.institucionId.nombre}" />
+                            </p:column>
+                            <p:column headerText="Tipo Institución" 
+                                      
+                                      filterMatchMode="contains">
+                                <!--sortBy="{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':usuario.institucionId.tipo eq 'GAD'?' Gobierno Autónomo Descentralizado':'Registro Propiedad / Mercantil'}"--> 
+                                      <!--filterBy="{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':usuario.institucionId.tipo eq 'GAD'?' Gobierno Autónomo Descentralizado':'Registro Propiedad / Mercantil'}"--> 
+                                <h:outputText value="{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':usuario.institucionId.tipo eq 'GAD'?' Gobierno Autónomo Descentralizado':'Registro Propiedad / Mercantil'}" />
+                            </p:column>
+                            <p:column headerText="Login"  filterMatchMode="contains">
+                                <!--sortBy="{usuario.usuario}" filterBy="{usuario.usuario}"-->
+                                <h:outputText value="{usuario.usuario}" />
+                            </p:column>
+                            <p:column headerText="Contraseña"  filterMatchMode="contains" rendered="false">
+                                <!--sortBy="{usuario.contrasena}" filterBy="{usuario.contrasena}"-->
+                                <h:outputText value="{usuario.contrasena}" />
+                            </p:column>
+                            <p:column headerText="Registrador"  width="10%">
+                                <!--sortBy="{usuario.registrador}"-->
+                                <p:selectBooleanCheckbox value="{usuario.registrador}" disabled="true" />
+                            </p:column>                            
+                            <p:column headerText="Validador"  width="10%">
+                                <!--sortBy="{usuario.validador}"-->
+                                <p:selectBooleanCheckbox value="{usuario.validador}" disabled="true"/>
+                            </p:column>
+                            <p:column headerText="Verificador"  width="10%">
+                                <!--sortBy="{usuario.verificador}"-->
+                                <p:selectBooleanCheckbox value="{usuario.verificador}" disabled="true" />
+                            </p:column>
+                            <p:column headerText="Administrador"  width="10%">
+                                <!--sortBy="{usuario.administrador}"-->
+                                <p:selectBooleanCheckbox value="{usuario.administrador}" disabled="true" />
+                            </p:column>
+                        </p:dataTable>                          
+                    </h:panelGrid>
+                    <p:commandButton value="Nuevo Tramite Propiedad"
+                                     style="margin-right:20px;" 
+                                     
+                                     icon="fa fa-fw fa-plus-square"
+                                     update=":formTramiteSelected"/>
+                    <!--action="{gestionUsuariosCtrl.nuevoUsuario}"-->
+                </b:panel>
+            </h:form>
+            <h:form id="formTramiteSelected" >
+                <b:panel style="width: 50%" >
+                    <!--rendered="{gestionUsuariosCtrl.formUsuarioSelectedActivated}"-->
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
+                        <p:selectOneMenu id="tipoInstitucion" value="{gestionUsuariosCtrl.usuarioSelected.institucionId.tipo}" style="width: 70%;"
+                                         >
+                            <!--valueChangeListener="{gestionUsuariosCtrl.change}"-->
+                            <!--<p:ajax listener="{gestionUsuariosCtrl.change}"/>-->
+                            <f:selectItem itemLabel="Dirección Regional" itemValue="REGIONAL" />
+                            <f:selectItem itemLabel="GAD" itemValue="GAD" />
+                            <f:selectItem itemLabel="Registro Mixto" itemValue="REGISTRO MIXTO" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="institucion" value="Institución:" />
+                        <p:autoComplete id="institucion" value="{gestionUsuariosCtrl.usuarioSelected.institucionId.nombre}" style="width: 100%" inputStyle="width: 90%" />
+
+                        <p:outputLabel for="nombre" value="Nombre:" />
+                        <p:inputText id="nombre" value="{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" />
+
+                        <p:outputLabel for="usuario" value="Usuario:" />
+                        <p:inputText id="usuario" value="{gestionUsuariosCtrl.usuarioSelected.usuario}" style="width: 90%" />
+
+                        <p:outputLabel for="contrasena" value="Contraseña:" />
+                        <p:password id="contrasena" value="{gestionUsuariosCtrl.usuarioSelected.contrasena}" 
+                                    feedback="true"
+                                    promptLabel="Ingrese la contraseña" weakLabel="Baja"
+                                    goodLabel="Media" strongLabel="Alta" />
+
+                        <p:outputLabel value="Perfil:" />
+                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                            <p:selectBooleanCheckbox value="{gestionUsuariosCtrl.usuarioSelected.registrador}" itemLabel="Registrador"/>
+                            <p:selectBooleanCheckbox value="{gestionUsuariosCtrl.usuarioSelected.validador}" itemLabel="Validador"/>
+                            <p:selectBooleanCheckbox value="{gestionUsuariosCtrl.usuarioSelected.verificador}" itemLabel="Verificador"/>
+                            <p:selectBooleanCheckbox value="{gestionUsuariosCtrl.usuarioSelected.administrador}" itemLabel="Administrador"/>
+                        </h:panelGrid>
+                        
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Tipo:" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneButton value="">
+                                <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
+                                <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />                    
+                            </p:selectOneButton>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Número:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="numero" value="" maxlength="10">  
+                                <!--<p:ajax update="output1" />-->  
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Fecha:" />
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="spanish" value="" locale="es" monthNavigator="true" pattern="yyyy-MM-dd"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="No. Comprobante de Pago:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="comprobante" maxlength="10" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Valor: $" />
+                        </p:column>
+                        <p:column>
+                            <p:inputNumber id="valor" value="">  
+                                <!--<p:ajax update="output2" />  -->
+                            </p:inputNumber>                            
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Acto:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputTextarea id="acto" rows="3" cols="50" maxlength="300" autoResize="false" />
+                        </p:column>
+                    </p:row>
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton value="{gestionUsuariosCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save"/>
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban"  update="formTramiteSelected"/>
+                        <!--action="{gestionUsuariosCtrl.cancelar}"-->
+                    </b:panelGrid>
+                </b:panel>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
