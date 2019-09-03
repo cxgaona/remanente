@@ -80,7 +80,15 @@
 
 
                         <p:outputLabel for="institucion" value="Institución:" />
-                        <p:autoComplete id="institucion" value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.nombre}" style="width: 100%" inputStyle="width: 90%" completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"/>
+                        <p:autoComplete id="institucion" 
+                                        value="#{gestionUsuariosCtrl.usuarioSelected.institucionId}" 
+                                        completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"
+                                        converter="institucionConverter"
+                                        var="institucion"
+                                        itemLabel="#{institucion.nombre}"
+                                        itemValue="#{institucion}"
+                                        style="width: 100%" 
+                                        inputStyle="width: 90%"/>
 
                         <p:outputLabel for="nombre" value="Nombre:" />
                         <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" />

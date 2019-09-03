@@ -22,7 +22,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private List<InstitucionRequerida> institucionRequeridaList;
     private String tituloPagina;
     private Usuario usuarioSelected;
-    
+
     private String nombre;
 
     private Boolean formUsuarioSelectedActivated;
@@ -39,7 +39,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         tituloPagina = "Gestión de Usuarios";
-        nombre="";
+        nombre = "";
         btnGuardar = "";
         tipoInstitucion = "";
         institucionRequeridaList = new ArrayList<InstitucionRequerida>();
@@ -94,8 +94,14 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     }
 
-    public List<InstitucionRequerida> completeNombreInstitucion(String query) {        
-        return institucionRequeridaList;
+    public List<InstitucionRequerida> completeNombreInstitucion(String query) {
+        List<InstitucionRequerida> filteredInstituciones = new ArrayList<InstitucionRequerida>();
+        for (InstitucionRequerida ir : institucionRequeridaList) {
+            if (ir.getNombre().toLowerCase().contains(query)) {
+                filteredInstituciones.add(ir);
+            }
+        }
+        return filteredInstituciones;
     }
 
     public String getTituloPagina() {
@@ -161,7 +167,5 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    
-    
 
 }
