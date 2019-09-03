@@ -1,6 +1,8 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,21 +19,30 @@ import javax.inject.Named;
 public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     private List<Usuario> usuarioActivoList;
+    private List<InstitucionRequerida> institucionRequeridaList;
     private String tituloPagina;
     private Usuario usuarioSelected;
+    
+    private String nombre;
 
     private Boolean formUsuarioSelectedActivated;
     private String btnGuardar;
-    private Boolean onAdd;
-    private Boolean onEdit;
+
+    private String tipoInstitucion;
 
     @EJB
     private UsuarioServicio usuarioServicio;
 
+    @EJB
+    private InstitucionRequeridaServicio institucionRequeridaServicio;
+
     @PostConstruct
     protected void init() {
         tituloPagina = "Gestión de Usuarios";
+        nombre="";
         btnGuardar = "";
+        tipoInstitucion = "";
+        institucionRequeridaList = new ArrayList<InstitucionRequerida>();
         formUsuarioSelectedActivated = Boolean.FALSE;
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
@@ -55,18 +66,36 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void onRowSelectUsuario() {
         formUsuarioSelectedActivated = Boolean.TRUE;
         btnGuardar = "Actualizar";
-    }
-
-    public void selectTipoInstitucion(ValueChangeEvent even) {
-        
-    }
-
-    public List<String> completeNombreInstitucion(String query) {
-        List<String> results = new ArrayList<String>();
-        for (int i = 0; i < 10; i++) {
-            results.add(query + i);
+        if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
+            tipoInstitucion = "Registro Propiedad / Mercantil";
+            institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
+        } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
+            tipoInstitucion = "GAD";
+            institucionRequeridaList = institucionRequeridaServicio.getGADList();
+        } else if (usuarioSelected.getInstitucionId().getTipo().equals("REGIONAL")) {
+            tipoInstitucion = "Dirección Regional";
+            institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
         }
-        return results;
+    }
+
+    public void seleccionarTipoInstitucion() {
+        System.out.println("===En selección de tipo de Institución===");
+        System.out.println("Seleccion: " + tipoInstitucion);
+        if (tipoInstitucion.equals("Registro Propiedad / Mercantil")) {
+            tipoInstitucion = "Registro Propiedad / Mercantil";
+            institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
+        } else if (tipoInstitucion.equals("GAD")) {
+            tipoInstitucion = "GAD";
+            institucionRequeridaList = institucionRequeridaServicio.getGADList();
+        } else if (tipoInstitucion.equals("Dirección Regional")) {
+            tipoInstitucion = "Dirección Regional";
+            institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+        }
+
+    }
+
+    public List<InstitucionRequerida> completeNombreInstitucion(String query) {        
+        return institucionRequeridaList;
     }
 
     public String getTituloPagina() {
@@ -108,5 +137,31 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void setBtnGuardar(String btnGuardar) {
         this.btnGuardar = btnGuardar;
     }
+
+    public String getTipoInstitucion() {
+        return tipoInstitucion;
+    }
+
+    public void setTipoInstitucion(String tipoInstitucion) {
+        this.tipoInstitucion = tipoInstitucion;
+    }
+
+    public List<InstitucionRequerida> getInstitucionRequeridaList() {
+        return institucionRequeridaList;
+    }
+
+    public void setInstitucionRequeridaList(List<InstitucionRequerida> institucionRequeridaList) {
+        this.institucionRequeridaList = institucionRequeridaList;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    
 
 }

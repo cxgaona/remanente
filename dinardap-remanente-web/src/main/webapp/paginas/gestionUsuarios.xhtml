@@ -22,7 +22,7 @@
                                      reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25">
-                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update=":formUsuarioSelected"/>
+                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected"/>
                             <p:column headerText="ID Usuario" rendered="false">
                                 <h:outputText value="#{usuario.usuarioId}"/>
                             </p:column>
@@ -62,7 +62,7 @@
                                      style="margin-right:20px;" 
                                      action="#{gestionUsuariosCtrl.nuevoUsuario}"
                                      icon="fa fa-fw fa-plus-square"
-                                     update=":formUsuarioSelected"/>
+                                     update="formUsuarioSelected"/>
                 </b:panel>
             </h:form>
             <h:form id="formUsuarioSelected" >
@@ -70,18 +70,17 @@
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
                         <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
                         <p:selectOneMenu id="tipoInstitucion" 
-                                         value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.tipo}" 
-                                         valueChangeListener="#{gestionUsuariosCtrl.change}" 
-                                         converter="converterInstitucionTipo"
+                                         value="#{gestionUsuariosCtrl.tipoInstitucion}"
                                          style="width: 70%;">
-                            <p:ajax listener="#{gestionUsuariosCtrl.change}"/>
-                            <f:selectItem itemLabel="Dirección Regional" itemValue="REGIONAL" />
+                            <p:ajax listener="#{gestionUsuariosCtrl.seleccionarTipoInstitucion}"/>
+                            <f:selectItem itemLabel="Dirección Regional" itemValue="Dirección Regional" />
                             <f:selectItem itemLabel="GAD" itemValue="GAD" />
-                            <f:selectItem itemLabel="Registro Mixto" itemValue="REGISTRO MIXTO" />
+                            <f:selectItem itemLabel="Registro Propiedad / Mercantil" itemValue="Registro Propiedad / Mercantil" />
                         </p:selectOneMenu>
 
+
                         <p:outputLabel for="institucion" value="Institución:" />
-                        <p:autoComplete id="institucion" value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.nombre}" style="width: 100%" inputStyle="width: 90%" />
+                        <p:autoComplete id="institucion" value="#{gestionUsuariosCtrl.usuarioSelected.institucionId.nombre}" style="width: 100%" inputStyle="width: 90%" completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"/>
 
                         <p:outputLabel for="nombre" value="Nombre:" />
                         <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" />
