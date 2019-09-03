@@ -55,27 +55,26 @@
                                 <p:selectBooleanCheckbox value="#{usuario.administrador}" disabled="true" />
                             </p:column>
                         </p:dataTable>  
-                        <b:panel style="width: 50%">
-                            <b:panelGrid colSpans="2,10" style="width: 50%; margin: 4px 5px;">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                            </b:panelGrid>
-                            <p:panelGrid columns="2">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                                <p:commandButton value="Completar Remanente Mensual"                                      
-                                                 style="margin-right:20px;" 
-                                                 icon="fa fa-fw fa-share" />
-                            </p:panelGrid>
+                        <b:panel style="width: 50%; margin: 3px 0">
+                            <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="formUsuario">
+                                <p:outputLabel for="nombreUsuario" value="Nombre:" />
+                                <p:inputText style="width: 100%" id="nombreUsuario" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" />
+
+                                <p:outputLabel for="loginUsuario" value="Login:" />
+                                <p:inputText style="width: 100%" id="loginUsuario" value="#{gestionUsuariosCtrl.usuarioSelected.usuario}" />
+
+                                <p:outputLabel for="contrasenaUsuario" value="Constraseña:" />
+                                <p:password id="contrasenaUsuario" value="#{gestionUsuariosCtrl.usuarioSelected.contrasena}" feedback="true" inline="true" 
+                                            promptLabel="Ingrese su contraseña" weakLabel="Baja"
+                                            goodLabel="Media" strongLabel="Alta" />
+
+                                <!--                                <p:commandButton value="Completar Remanente Mensual"                                      
+                                                                                 style="margin-right:20px;" 
+                                                                                 icon="fa fa-fw fa-share" />
+                                                                <p:commandButton value="Completar Remanente Mensual"                                      
+                                                                                 style="margin-right:20px;" 
+                                                                                 icon="fa fa-fw fa-share" />-->
+                            </b:panelGrid>                            
                         </b:panel>
                     </h:panelGrid>                    
                 </b:panel>                

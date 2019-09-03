@@ -55,10 +55,11 @@
             </p:dialog>                      
 
 
+            
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
 
             <h:form id="formRemanenteMensual">
-                <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
+                <b:panel title="Remanentes Mensuales Chris 1 - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
@@ -146,7 +147,7 @@
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 'number':'currency'}"
+                                            <f:convertNumber type="#{1 eq 1? 'number':'currency'}"
                                                              currencySymbol="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? '':'$'}"
                                                              maxIntegerDigits="10"
                                                              maxFractionDigits="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 0:2}"/>
