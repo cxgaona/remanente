@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
+import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -73,8 +75,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
-        
-        
 
         tituloPagina = "Gestión Remanente Mensual";
         año = 0;
@@ -89,12 +89,21 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         btnActivated = Boolean.TRUE;
         transaccionSelected = new Transaccion();
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        System.out.println("===Variable ===");
+        System.out.println(this.getSessionVariable("institucionId"));
+        System.out.println(this.getSessionVariable("perfil"));
+//        Integer.parseInt(this.getSessionVariable("institucionId"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
+//                Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, calendar.get(Calendar.YEAR));
+
+        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "lo q sea";
+        EncriptarCadenas.encriptarCadenaSha1(a);
+        System.out.println("a = " + EncriptarCadenas.encriptarCadenaSha1(a));
     }
 
     public void loadRemanenteMensualByAño() {

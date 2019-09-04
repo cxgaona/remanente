@@ -141,10 +141,10 @@
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 'number':'currency'}"
-                                                             currencySymbol="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? '':'$'}"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="#{transaccion.catalogoTransaccionId.nombre eq 'Número de trámites Registro de la Propiedad'? 0:2}"/>
+                                            |                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4' ? 'number':'currency'}"
+                                                                                                          currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4'? '':'$'}"
+                                                                                                          maxIntegerDigits="10"
+                                                                                                          maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4' ? 0:2}"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
                                                 return false;

@@ -130,14 +130,14 @@
         <servlet-name>Faces Servlet</servlet-name>
     </filter-mapping>
 	
-    <!--	<filter>
-            <filter-name>FiltroAutorizacion</filter-name>
-            <filter-class>ec.gob.dinardap.autorizacion.util.FiltroAutorizacion</filter-class>
-    </filter>-->
-    <!--	<filter-mapping>
-            <filter-name>FiltroAutorizacion</filter-name>
-            <url-pattern>/paginas/*</url-pattern>
-    </filter-mapping>-->
+    <filter>
+        <filter-name>FiltroAutorizacionIndependiente</filter-name>
+        <filter-class>ec.gob.dinardap.autorizacion.util.FiltroAutorizacionIndependiente</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FiltroAutorizacionIndependiente</filter-name>
+        <url-pattern>/paginas/*</url-pattern>
+    </filter-mapping>
 
     <!-- Servlet -->
     <servlet>
