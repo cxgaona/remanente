@@ -76,7 +76,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         
         
 
-        tituloPagina = "Gestión Remanente Mensual cambios";
+        tituloPagina = "Gestión Remanente Mensual";
         año = 0;
         mesSelected = "Sin Selección";
         remanenteMensualSelected = new RemanenteMensual();
