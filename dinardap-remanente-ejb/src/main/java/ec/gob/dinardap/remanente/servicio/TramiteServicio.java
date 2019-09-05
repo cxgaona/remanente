@@ -12,7 +12,7 @@ public interface TramiteServicio extends GenericService<Tramite, Integer> {
 
     public void crearTramite(Tramite tramite);
     
-    public List<Tramite> getTramiteByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
+    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad);
     
     public void editTramite(Tramite tramite);
     

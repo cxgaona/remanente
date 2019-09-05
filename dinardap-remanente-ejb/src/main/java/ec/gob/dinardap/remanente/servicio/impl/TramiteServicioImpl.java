@@ -34,9 +34,9 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
     }
 
     @Override
-    public List<Tramite> getTramiteByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes) {
+    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad) {
         List<Tramite> tramiteList = new ArrayList<Tramite>();
-        tramiteList = tramiteDao.getTramiteByInstitucionFecha(idInstitucion, anio, mes);
+        tramiteList = tramiteDao.getTramiteByInstitucionFechaActividad(idInstitucion, anio, mes, actividad);
         return tramiteList;
     }
 

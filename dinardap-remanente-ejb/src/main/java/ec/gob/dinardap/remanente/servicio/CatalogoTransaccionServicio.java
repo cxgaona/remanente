@@ -11,4 +11,5 @@ import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 public interface CatalogoTransaccionServicio extends GenericService<CatalogoTransaccion, Integer> {
 
     public List<CatalogoTransaccion> getCatalogoTransaccionList();
+    public List<CatalogoTransaccion> getCatalogoTransaccionListTipo(String tipo);    
 }

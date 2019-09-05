@@ -9,5 +9,5 @@ import java.util.List;
 @Local
 public interface TramiteDao extends GenericDao<Tramite, Integer> {
 
-    public List<Tramite> getTramiteByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
+    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad);
 }
