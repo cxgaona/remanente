@@ -7,17 +7,12 @@
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/generalLogin.xhtml">
         <ui:define name="content">
-            <b:container>         
+            <b:container> 
                 <b:panel>
-                    <h:form id="loginForm">                    
-                        <p:growl id="messages" showDetail="true" life="2000"/>
-                        <f:facet name="heading">
-                            <i class="fa fa-users" style="padding-right:20px" />
-                            <h:outputText value="Ingreso al Sistema" />
-                        </f:facet>
+                    <h:form id="loginForm">                      
                         <b:row>
                             <b:column col-md="3" col-xs="12" offset="5" >
-                                <b:inputText placeholder="Usuario" required="true" id="username" value="HOla">
+                                <b:inputText placeholder="Usuario" required="true" id="username" value="#{loginCtrl.usuario}">
                                     <f:facet name="prepend">
                                         <b:icon name="user" />
                                     </f:facet>
@@ -27,7 +22,7 @@
                         </b:row>                    
                         <b:row>
                             <b:column col-md="3" col-xs="12" offset="5" >
-                                <b:inputSecret required="true" placeholder="Clave" id="password" value="HOLAP">
+                                <b:inputSecret required="true" placeholder="Clave" id="password" value="#{loginCtrl.contraseña}">
                                     <f:facet name="prepend">
                                         <b:iconAwesome name="key"/>
                                     </f:facet>
@@ -36,20 +31,20 @@
                         </b:row>                 
                         <b:row>
                             <b:column col-md="3" offset="5">
-                                <b:commandButton 
-                                    styleClass="boton"
-                                    value="Ingresar" 
-
-                                    update=":loginForm" 
-                                    ajax="false"  
-                                    look="primary"
-                                    style="width:100%" />
+                                <b:panelGrid colSpans="6,6" style="width: 100%; margin: 5px 0; text-align: center;">                        
+                                    <p:commandButton value="Ingresar" id="guardarBtn" icon="fa fa-fw fa-unlock-alt" 
+                                                     action="#{loginCtrl.ingresar}"
+                                                     update="loginForm, msgMensajes"/>
+                                    <p:commandButton value="Cancelar" id="cancelarBtn" icon="fa fa-fw fa-lock"
+                                                     action="#{loginCtrl.cancelar}"
+                                                     update="loginForm, msgMensajes"/>
+                                </b:panelGrid>                              
                             </b:column>
                         </b:row>                    
-                        <b:row>
+                        <b:row style="text-align: center">
                             <b:column col-md="3" offset="5">
-                                <b:commandButton styleClass="boton" value="Olvide mi clave"
-                                                 look="danger" style="width:100%" />
+                                <p:commandButton value="Olvidé mi Constraseña" id="recuperarBtn" icon="fa fa-fw fa-send"
+                                                 action="#{loginCtrl.recuperarContrasena}"/>
                             </b:column>
                         </b:row>
                     </h:form>

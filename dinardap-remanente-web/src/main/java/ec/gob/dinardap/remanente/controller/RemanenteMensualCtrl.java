@@ -101,7 +101,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         calendar.setTime(new Date());
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, calendar.get(Calendar.YEAR));
 
-        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "lo q sea";
+        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
         EncriptarCadenas.encriptarCadenaSha1(a);
         System.out.println("a = " + EncriptarCadenas.encriptarCadenaSha1(a));
     }

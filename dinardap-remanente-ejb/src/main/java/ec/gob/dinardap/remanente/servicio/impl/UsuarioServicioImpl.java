@@ -15,15 +15,15 @@ import java.util.List;
 
 @Stateless(name = "UsuarioServicio")
 public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> implements UsuarioServicio {
-    
+
     @EJB
     private UsuarioDao usuarioDao;
-    
+
     @Override
     public GenericDao<Usuario, Integer> getDao() {
         return usuarioDao;
     }
-    
+
     @Override
     public List<Usuario> getUsuariosActivos() {
         List<Usuario> usuarioList = new ArrayList<Usuario>();
@@ -36,15 +36,22 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
         usuarioList = findByCriterias(criteria);
         return usuarioList;
     }
-    
+
     @Override
     public void createUsuario(Usuario usuario) {
         this.create(usuario);
     }
-    
+
     @Override
     public void editUsuario(Usuario usuario) {
         this.update(usuario);
     }
-    
+
+    @Override
+    public Usuario login(String usuario, String contraseña) {
+        Usuario u = new Usuario();
+        u = usuarioDao.login(usuario, contraseña);
+        return u;
+    }
+
 }

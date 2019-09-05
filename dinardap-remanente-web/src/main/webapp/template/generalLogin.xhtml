@@ -5,6 +5,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui">    
     <h:head>
+        <p:growl id="msgMensajes"  sticky="false" life="5000" />
         <title>#{etiquetas['institucion']}</title>
         <meta name="author" content="Christian Gaona" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,8 +26,7 @@
             </ui:insert>
         </div>
         <div class="contenido">
-            <ui:insert name="content">
-                Contenido por defecto Login
+            <ui:insert name="content">                
             </ui:insert>
         </div>
         <div class="pie">

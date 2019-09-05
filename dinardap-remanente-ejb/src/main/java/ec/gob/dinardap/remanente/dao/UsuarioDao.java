@@ -7,4 +7,6 @@ import ec.gob.dinardap.remanente.modelo.Usuario;
 
 @Local
 public interface UsuarioDao extends GenericDao<Usuario, Integer> {
+
+    public Usuario login(String usuario, String contraseña);
 }
