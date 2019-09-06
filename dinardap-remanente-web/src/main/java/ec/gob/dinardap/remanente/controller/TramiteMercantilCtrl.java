@@ -7,6 +7,7 @@ import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +42,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     private Boolean onEdit;
     private Boolean onCreate;
     private Boolean renderEdition;
+    private Boolean disableDelete;
     private String btnGuardar;
 
     @PostConstruct
@@ -60,13 +62,23 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
+        disableDelete = Boolean.TRUE;
         btnGuardar = "";
     }
-  
+
+    public Boolean getDisableDelete() {
+        return disableDelete;
+    }
+
+    public void setDisableDelete(Boolean disableDelete) {
+        this.disableDelete = disableDelete;
+    }
+
     public void nuevoTramite() {
         renderEdition = Boolean.TRUE;
         onCreate = Boolean.TRUE;
         onEdit = Boolean.FALSE;
+        disableDelete = Boolean.TRUE;
         tramiteSelected = new Tramite();
         btnGuardar = "Guardar";
         //tipoInstitucion = "Dirección Regional";
@@ -78,6 +90,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.TRUE;
         onCreate = Boolean.FALSE;
         onEdit = Boolean.TRUE;
+        disableDelete = Boolean.FALSE;
         btnGuardar = "Actualizar";
 
     }
@@ -94,7 +107,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     public void guardar() {
         tramiteSelected.setActividadRegistral(actividadRegistral);
         if (onCreate) {
-            tramiteSelected.setFechaRegistro(new Date()); 
+            tramiteSelected.setFechaRegistro(new Date());
             catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
             for (CatalogoTransaccion ct : catalogoList) {
                 if (ct.getNombre().equals(tramiteSelected.getTipo())) {
@@ -102,15 +115,10 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 }
             }
             Transaccion t = new Transaccion();
-            t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);            
+            t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
             tramiteSelected.setTransaccionId(t);
+            tramiteSelected.setFechaRegistro(new Date());
             tramiteServicio.crearTramite(tramiteSelected);
-            tramiteList = new ArrayList<Tramite>();
-            tramiteSelected = new Tramite();
-            //reloadTramite();
-            onEdit = Boolean.FALSE;
-            onCreate = Boolean.FALSE;
-            renderEdition = Boolean.FALSE;
         } else if (onEdit) {
             catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
             for (CatalogoTransaccion ct : catalogoList) {
@@ -119,32 +127,27 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 }
             }
             Transaccion t = new Transaccion();
-            t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);            
+            t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
             tramiteSelected.setTransaccionId(t);
+            tramiteSelected.setFechaRegistro(new Date());
             tramiteServicio.editTramite(tramiteSelected);
-            tramiteList = new ArrayList<Tramite>();
-            tramiteSelected = new Tramite();
-            //reloadTramite();
-            onEdit = Boolean.FALSE;
-            onCreate = Boolean.FALSE;
-            renderEdition = Boolean.FALSE;
-        }
-        //llamar a la funcion de actualizacion de valores
+        }              
+        actualizarTransaccionValores();        
+        tramiteSelected = new Tramite();
+        reloadTramite();
+        actualizarTransaccionConteo();
+        onEdit = Boolean.FALSE;
+        onCreate = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+        disableDelete = Boolean.TRUE;
+    }
+
+    public void actualizarTransaccionValores() {
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
                 tramiteSelected.getTransaccionId().getRemanenteMensualId().getMes());
         for (Transaccion tl : transaccionList) {
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
-                tramiteServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 1);
-            }
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
-                tramiteServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 2);
-            }
             if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(5)) {
                 tramiteServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                         tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
@@ -158,21 +161,40 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         }
     }
 
+    public void actualizarTransaccionConteo() {
+        Integer cantidadTramites = 0;
+        for (Tramite trl : tramiteList) {
+            if (trl.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId().equals(5)) {
+                cantidadTramites++;
+            }
+            if (trl.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId().equals(6)) {
+                cantidadTramites++;
+            }
+        }
+        Transaccion t = new Transaccion();
+        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 8);
+        t.setValorTotal(new BigDecimal(cantidadTramites));
+        transaccionServicio.editTransaccion(t);
+    }
+
     public void reloadTramite() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fecha);
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
-
+        tramiteList = new ArrayList<Tramite>();
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil");
+        disableDelete = Boolean.TRUE;
+        renderEdition = Boolean.FALSE;
     }
 
-    public void onRowDeleteFacturaPagada() {
-        /*facturaPagadaServicio.borrarFacturaPagada(facturaPagadaSelected);
-        facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 10);
-        facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 11);
-        facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 12);
-        reloadFacturaPagada();*/
+    public void borrarTramite() {
+        tramiteServicio.borrarTramite(tramiteSelected);
+        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 5);
+        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 6);
+        reloadTramite();
+        actualizarTransaccionConteo();   
+        disableDelete = Boolean.TRUE;
     }
 
     public String getTituloMercantil() {
@@ -287,5 +309,4 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         this.btnGuardar = btnGuardar;
     }
 
-    
 }
