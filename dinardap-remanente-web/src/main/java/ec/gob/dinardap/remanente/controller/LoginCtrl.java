@@ -35,15 +35,22 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
         String cadena = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña;
         u = usuarioServicio.login(usuario, EncriptarCadenas.encriptarCadenaSha1(cadena));
         if (u != null) {
-            System.out.println("UsuarioRecuperado: "+u.getUsuarioId());
-            System.out.println("UsuarioRecuperado: "+u.getNombre());
-            System.out.println("UsuarioRecuperado: "+u.getRegistrador());
-            System.out.println("UsuarioRecuperado: "+u.getVerificador());
-            System.out.println("UsuarioRecuperado: "+u.getValidador());
-            System.out.println("UsuarioRecuperado: "+u.getAdministrador());
-            this.setSessionVariable("perfil", "Registrador");
-            this.setSessionVariable("institucionId", "186");
-            this.setSessionVariable("usuarioId", "1");
+            String variableSesionPerfil = "";
+            if (u.getRegistrador()) {
+                variableSesionPerfil += "REM-Registrador,";
+            }
+            if (u.getVerificador()) {
+                variableSesionPerfil += "REM-Verificador,";
+            }
+            if (u.getValidador()) {
+                    variableSesionPerfil += "REM-Validador,";
+            }
+            if (u.getAdministrador()) {
+                variableSesionPerfil += "REM-Administrador,";
+            }
+            this.setSessionVariable("perfil", variableSesionPerfil);
+            this.setSessionVariable("usuarioId", u.getUsuarioId().toString());
+            this.setSessionVariable("institucionId", u.getInstitucionId().getInstitucionId().toString());
             FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {
             u = new Usuario();
@@ -54,7 +61,6 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
     }
 
     public void cancelar() {
-        System.out.println("===Función cancelar===");
         usuario = "";
         contraseña = "";
     }
