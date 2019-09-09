@@ -42,33 +42,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
 
     @Override
     public void editFacturaPagada(FacturaPagada facturaPagada) {
-        this.update(facturaPagada);
-        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
-        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getMes());        
-        for (Transaccion t:transaccionList ) {
-            if (t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)) {
-                actualizarTransaccionValor(t.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                t.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                t.getRemanenteMensualId().getMes(),10);
-            }
-            if (t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)) {
-                actualizarTransaccionValor(t.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                t.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                t.getRemanenteMensualId().getMes(),11);
-            }
-            if (t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
-                actualizarTransaccionValor(t.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                t.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                t.getRemanenteMensualId().getMes(),12);
-            }
-        }
-        
-        actualizarTransaccionValor(facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getMes(),10);
-        
+        this.update(facturaPagada);           
     }
 
     @Override
@@ -88,7 +62,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
         for (FacturaPagada fp : t.getFacturaPagadaList()) {            
             valorTotalTransaccion = valorTotalTransaccion.add(fp.getValor());
         }
-        t.setValorTotal(valorTotalTransaccion);
+        t.setValorTotal(valorTotalTransaccion);        
         transaccionServicio.editTransaccion(t);
     }
 

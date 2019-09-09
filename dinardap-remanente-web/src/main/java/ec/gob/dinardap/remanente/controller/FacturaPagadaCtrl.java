@@ -54,14 +54,13 @@ public class FacturaPagadaCtrl extends BaseCtrl implements Serializable {
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, anio, mes);
         facturaPagadaSelected = new FacturaPagada();
-        idCatalogoTransaccion = 11;
     }
 
     public void addRowFacturaPagada() {
         FacturaPagada newFacturaPagada = new FacturaPagada();
         newFacturaPagada.setFecha(new Date());
         newFacturaPagada.setNumero(null);
-        newFacturaPagada.setTipo(null);
+        newFacturaPagada.setTipo("Otros");
         newFacturaPagada.setDetalle(null);
         newFacturaPagada.setValor(BigDecimal.ZERO);
         newFacturaPagada.setFechaRegistro(new Date());
@@ -88,6 +87,27 @@ public class FacturaPagadaCtrl extends BaseCtrl implements Serializable {
         facturaPagada.setTransaccionId(t);
         facturaPagada.setFechaRegistro(new Date());
         facturaPagadaServicio.editFacturaPagada(facturaPagada);
+        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
+        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                facturaPagada.getTransaccionId().getRemanenteMensualId().getMes());        
+        for (Transaccion tl:transaccionList ) {            
+            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)) {
+                facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                tl.getRemanenteMensualId().getMes(),10);                
+            }
+            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)) {
+                facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                tl.getRemanenteMensualId().getMes(),11);                
+            }
+            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
+                facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                tl.getRemanenteMensualId().getMes(),12);
+            }
+        }
     }
 
     public void reloadFacturaPagada() {

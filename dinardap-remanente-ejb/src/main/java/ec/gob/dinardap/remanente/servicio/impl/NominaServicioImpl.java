@@ -59,11 +59,13 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
     
     @Override
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes) {
-        BigDecimal valorTotalTransaccion = new BigDecimal(0);
+        BigDecimal valorTotalTransaccion = new BigDecimal(0);        
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, 9);
-        for (Nomina n : t.getNominaList()) {
-            valorTotalTransaccion = valorTotalTransaccion.add(n.getLiquidoRecibir());
+        for (Nomina n : t.getNominaList()) {            
+            valorTotalTransaccion = valorTotalTransaccion.add(n.getRemuneracion());
+            valorTotalTransaccion = valorTotalTransaccion.add(n.getDecimoTercero());
+            valorTotalTransaccion = valorTotalTransaccion.add(n.getDecimoCuarto());
         }
         t.setValorTotal(valorTotalTransaccion);
         transaccionServicio.editTransaccion(t);
