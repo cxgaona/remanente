@@ -126,7 +126,7 @@
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
-                                     editable="true">  
+                                     editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
@@ -141,10 +141,10 @@
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{transaccion.valorTotal}">
-                                            |                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4' ? 'number':'currency'}"
-                                                                                                          currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4'? '':'$'}"
-                                                                                                          maxIntegerDigits="10"
-                                                                                                          maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4' ? 0:2}"/>
+                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4' ? 'number':'currency'}"
+                                                             currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4'? '':'$'}"
+                                                             maxIntegerDigits="10"
+                                                             maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString() == '4' ? 0:2}"/>
                                         </h:outputText></f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
                                                 return false;
@@ -162,8 +162,12 @@
                                 </center>
                             </p:column>
                             <p:column style="width:5%">
-                                <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
-                                <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? true:false}" style="background: none;border: none;width: auto;"
+                                <p:rowEditor 
+                                    rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros'? true:false}"/>
+                                <p:commandButton icon="fa fa-fw fa-file-pdf-o" 
+                                                 title="Subir" 
+                                                 rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? true:false}" 
+                                                 style="background: none;border: none;width: auto;"
                                                  onclick="PF('transaccionRPropiedadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
@@ -188,7 +192,7 @@
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
-                                     editable="true">  
+                                     editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
@@ -243,7 +247,6 @@
                         </p:dataTable>
                     </h:panelGrid>
                     <h:panelGrid columns="1" style="width: 60%;">
-
                         <p:dataTable id="transaccionEgresosTbl"
                                      styleClass="transaccionEgresosTbl"
                                      value="#{remanenteMensualCtrl.transaccionEgresosList}"
@@ -251,7 +254,7 @@
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
-                                     editable="true">  
+                                     editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>

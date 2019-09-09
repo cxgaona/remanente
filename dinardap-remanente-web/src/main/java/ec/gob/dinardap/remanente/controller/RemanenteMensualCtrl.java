@@ -184,10 +184,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         for (Transaccion t : transaccionList) {
             if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Propiedad")) {
                 transaccionRPropiedadList.add(t);
-                totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
+                if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
+                    totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
+                }
             } else if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Mercantil")) {
                 transaccionRMercantilList.add(t);
-                totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
+                if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
+                    totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
+                }
             } else if (t.getCatalogoTransaccionId().getTipo().equals("Egreso")) {
                 transaccionEgresosList.add(t);
                 totalEgresos = totalEgresos.add(t.getValorTotal());
@@ -226,10 +230,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
                 remanenteMensualSelected.getMes());
         for (Transaccion t : transaccionRPropiedadList) {
-            totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
+            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
+                totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
+            }
         }
         for (Transaccion t : transaccionRMercantilList) {
-            totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
+            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
+                totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
+            }
         }
         for (Transaccion t : transaccionEgresosList) {
             totalEgresos = totalEgresos.add(t.getValorTotal());
