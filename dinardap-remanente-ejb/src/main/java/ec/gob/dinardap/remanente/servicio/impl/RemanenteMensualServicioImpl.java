@@ -73,4 +73,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         
         return remanenteMensualList;
     }
+
+    @Override
+    public void editRemanenteMensual(RemanenteMensual remanenteMensual) {
+        this.update(remanenteMensual);
+    }
 }

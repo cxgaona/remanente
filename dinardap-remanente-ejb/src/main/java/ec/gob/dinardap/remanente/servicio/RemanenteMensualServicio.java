@@ -11,5 +11,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 public interface RemanenteMensualServicio extends GenericService<RemanenteMensual, Integer> {
 
     public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionId,Integer año);
+    
+    public void editRemanenteMensual(RemanenteMensual remanenteMensual);
 
 }
