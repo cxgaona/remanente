@@ -53,6 +53,8 @@ public class Usuario implements Serializable {
     @Size(max = 50)
     @Column(name = "usuario")
     private String usuario;
+    @Column(name = "email", length = 300)
+    private String email;
     @Size(max = 500)
     @Column(name = "contrasena")
     private String contrasena;
@@ -225,9 +227,17 @@ public class Usuario implements Serializable {
         return true;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.Usuario[ usuarioId=" + usuarioId + " ]";
     }
-    
+
 }
