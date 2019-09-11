@@ -27,7 +27,7 @@
                                      reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25">
-                            <p:ajax event="rowSelect" listener="#{tramiteMercantilCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite"/>
+                            <p:ajax event="rowSelect" listener="#{tramiteMercantilCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                             <p:column headerText="ID Tramite" rendered="false">
                                 <h:outputText value="#{tramite.tramiteId}"/>
                             </p:column>
@@ -57,7 +57,9 @@
                                      style="margin-right:20px;" 
                                      action="#{tramiteMercantilCtrl.nuevoTramite}"
                                      icon="fa fa-fw fa-plus-square"
-                                     update="formTramiteSelected, formTramite:btnBorrarTramite"/>
+                                     id="btnNuevoTramite"
+                                     disabled="#{tramiteMercantilCtrl.disableNuevoT}"
+                                     update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                     <p:commandButton value="Borrar Trámite"
                                      style="margin-right:20px;" 
                                      action="#{tramiteMercantilCtrl.borrarTramite}"

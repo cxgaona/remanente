@@ -49,12 +49,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
-                System.out.println("===" + rm.getMes() + "===");
-                System.out.println("erm: " + erm.getEstadoRemanenteMensualId());
-                System.out.println("erm: " + erm.getRemanenteMensualId().getRemanenteMensualId());
-                System.out.println("erm: " + erm.getUsuarioId().getUsuario());
-                System.out.println("erm: " + erm.getFechaRegistro());
-                System.out.println("erm: " + erm.getDescripcion());
+                erm.getEstadoRemanenteMensualId();
             }
         }
         /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
@@ -63,9 +58,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
 
         for (RemanenteMensual rm : remanenteMensualList) {
             for (Transaccion t : rm.getTransaccionList()) {
-                System.out.println("T: " + t.getCatalogoTransaccionId().getNombre());
-                System.out.println("T: " + t.getValorTotal());
-                System.out.println("T: " + t.getRespaldoUrl());
+                t.getTransaccionId();
             }
         }
         /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
@@ -77,5 +70,24 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     @Override
     public void editRemanenteMensual(RemanenteMensual remanenteMensual) {
         this.update(remanenteMensual);
+    }
+
+    @Override
+    public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer idInstitucion, Integer anio, Integer mes) {
+        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+            "remanenteCuatrimestral.remanenteAnual.anio","mes"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {idInstitucion, anio, mes};
+        String[] orderBy = {"remanenteMensualId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        remanenteMensualList = findByCriterias(criteria);
+        for(RemanenteMensual rm:remanenteMensualList){
+            for(EstadoRemanenteMensual erm:rm.getEstadoRemanenteMensualList()){
+               erm.getEstadoRemanenteMensualId();
+            }
+        }
+        return remanenteMensualList;
     }
 }

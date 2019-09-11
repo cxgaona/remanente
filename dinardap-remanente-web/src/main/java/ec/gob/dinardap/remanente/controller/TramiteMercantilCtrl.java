@@ -1,9 +1,12 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.io.Serializable;
@@ -31,6 +34,9 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     @EJB
     private CatalogoTransaccionServicio catalogoTransaccionServicio;
 
+    @EJB
+    private RemanenteMensualServicio remanenteMensualServicio;
+    
     private String tituloMercantil, tituloPropiedad, actividadRegistral;
     private List<Tramite> tramiteList;
     private Integer anio, mes;
@@ -39,11 +45,14 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     private Tramite tramiteSelected;
     private Integer idCatalogoTransaccion;
     private List<CatalogoTransaccion> catalogoList;
+    private List<RemanenteMensual> remanenteMensualList;
     private Boolean onEdit;
     private Boolean onCreate;
     private Boolean renderEdition;
     private Boolean disableDelete;
     private String btnGuardar;
+    private Boolean disableNuevoT;
+    private RemanenteMensual remanenteMensualSelected;
 
     @PostConstruct
     protected void init() {
@@ -59,11 +68,13 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil");
         tramiteSelected = new Tramite();
+        obtenerRemanenteMensual();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
+        disableNuevoT = Boolean.FALSE;        
     }
 
     public Boolean getDisableDelete() {
@@ -92,7 +103,28 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.TRUE;
         disableDelete = Boolean.FALSE;
         btnGuardar = "Actualizar";
-
+        obtenerRemanenteMensual();
+    }
+    
+    public void obtenerRemanenteMensual() {
+        remanenteMensualList = new ArrayList<RemanenteMensual>();
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
+        remanenteMensualSelected = new RemanenteMensual();
+        for (RemanenteMensual rm : remanenteMensualList) {
+            System.out.println("rm" + rm.getMes());
+            for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
+                System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
+            }
+        }
+        remanenteMensualSelected = remanenteMensualList.get(0);
+        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")) {
+            disableNuevoT = Boolean.FALSE;
+        } else {
+            renderEdition  = Boolean.FALSE;
+            disableDelete = Boolean.TRUE;
+            disableNuevoT = Boolean.TRUE;
+        }
     }
 
     public void cancelar() {
@@ -186,6 +218,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil");
         disableDelete = Boolean.TRUE;
         renderEdition = Boolean.FALSE;
+        obtenerRemanenteMensual();
     }
 
     public void borrarTramite() {
@@ -307,6 +340,30 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
 
     public void setBtnGuardar(String btnGuardar) {
         this.btnGuardar = btnGuardar;
+    }
+
+    public List<RemanenteMensual> getRemanenteMensualList() {
+        return remanenteMensualList;
+    }
+
+    public void setRemanenteMensualList(List<RemanenteMensual> remanenteMensualList) {
+        this.remanenteMensualList = remanenteMensualList;
+    }
+
+    public Boolean getDisableNuevoT() {
+        return disableNuevoT;
+    }
+
+    public void setDisableNuevoT(Boolean disableNuevoT) {
+        this.disableNuevoT = disableNuevoT;
+    }
+
+    public RemanenteMensual getRemanenteMensualSelected() {
+        return remanenteMensualSelected;
+    }
+
+    public void setRemanenteMensualSelected(RemanenteMensual remanenteMensualSelected) {
+        this.remanenteMensualSelected = remanenteMensualSelected;
     }
 
 }

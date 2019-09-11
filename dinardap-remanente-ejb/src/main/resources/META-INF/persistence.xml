@@ -17,7 +17,7 @@
         <properties>            
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.hbm2ddl.auto" value="validate" />
-            <property name="hibernate.default_schema" value="ec_dinardap_remanente_2" />
+            <property name="hibernate.default_schema" value="ec_dinardap_remanente" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
             <property name="hibernate.archive.autodetection" value="class, hbm"/>
         </properties>

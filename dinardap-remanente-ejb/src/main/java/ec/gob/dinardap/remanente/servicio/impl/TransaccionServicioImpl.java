@@ -8,7 +8,6 @@ import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.dao.TransaccionDao;
-import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.util.ArrayList;
