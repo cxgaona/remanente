@@ -37,16 +37,16 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
         if (u != null) {
             String variableSesionPerfil = "";
             if (u.getRegistrador()) {
-                variableSesionPerfil += "REM-Registrador";
+                variableSesionPerfil += "REM-Registrador, ";
             }
             if (u.getVerificador()) {
-                variableSesionPerfil += "REM-Verificador";
+                variableSesionPerfil += "REM-Verificador, ";
             }
             if (u.getValidador()) {
-                    variableSesionPerfil += "REM-Validador";
+                    variableSesionPerfil += "REM-Validador, ";
             }
             if (u.getAdministrador()) {
-                variableSesionPerfil += "REM-Administrador";
+                variableSesionPerfil += "REM-Administrador, ";
             }
             this.setSessionVariable("perfil", variableSesionPerfil);
             this.setSessionVariable("usuarioId", u.getUsuarioId().toString());
