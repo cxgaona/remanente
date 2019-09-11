@@ -86,7 +86,6 @@ public class NominaCtrl extends BaseCtrl implements Serializable {
         calendar.setTime(fecha);
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
-
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
     }
 

@@ -4,6 +4,7 @@ import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
@@ -48,6 +49,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     private String mesSelected;
     private Integer institucionId;
     private Integer usuarioId;
+    private String tituloDetalleDlg;
 
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
@@ -58,6 +60,8 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     private List<Transaccion> transaccionRMercantilList;
     private List<Transaccion> transaccionEgresosList;
     private List<Transaccion> transaccionList;
+    private List<Tramite> tramiteRPropiedadList;
+    private List<Tramite> tramiteRMercantilList;
 
     private Boolean btnActivated;
     private Boolean displayComment;
@@ -82,6 +86,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         tituloPagina = "Gestión Remanente Mensual";
         año = 0;
         año = calendar.get(Calendar.YEAR);
+        tituloDetalleDlg = "";
         mesSelected = "Sin Selección";
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
@@ -95,15 +100,9 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         comentariosRechazo = "";
         transaccionSelected = new Transaccion();
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
-        System.out.println("===Variable ===");
-        System.out.println(this.getSessionVariable("institucionId"));
-        System.out.println(this.getSessionVariable("perfil"));
-//        Integer.parseInt(this.getSessionVariable("institucionId"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-//                Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
-        
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
 
 //        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
@@ -179,9 +178,9 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
             }
         });
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo") ) {
+        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo")) {
             btnActivated = Boolean.FALSE;
-        }else{
+        } else {
             btnActivated = Boolean.TRUE;
         }
 
@@ -272,22 +271,46 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         estadoRemanenteMensualServicio.create(erm);
         btnActivated = Boolean.TRUE;
         displayComment = Boolean.FALSE;
-        comentariosRechazo="Remanente Mensual Aprobado";
+        comentariosRechazo = "Remanente Mensual Aprobado";
         remanenteMensualSelected.setComentarios(comentariosRechazo);
         remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
     }
-    
-    public void habilitarComentarioRechazo(){        
-        btnActivated = Boolean.TRUE;
-        displayComment = Boolean.TRUE;       
+
+    public void detalleRPropiedad() {
+        System.out.println("===En el detalle del registro de la propiedad===");
+        tituloDetalleDlg = "Trámites Registro de la Propiedad";
+        tramiteRPropiedadList = new ArrayList<Tramite>();
+        for (Transaccion transaccion : transaccionRPropiedadList) {
+            System.out.println("Transaccion: "+transaccion.getTransaccionId());
+            System.out.println("Transaccion: "+transaccion.getCatalogoTransaccionId());
+            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadList.add(tramite);
+                }
+            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadList.add(tramite);
+                }
+            }
+        }
+        for (Tramite t : tramiteRPropiedadList) {
+            System.out.println("Tramite: " + t.getTramiteId());
+            System.out.println("Tramite: " + t.getTipo());
+            System.out.println("Tramite: " + t.getValor());
+        }
     }
-    
+
+    public void habilitarComentarioRechazo() {
+        btnActivated = Boolean.TRUE;
+        displayComment = Boolean.TRUE;
+    }
+
     public void cancelar() {
         btnActivated = Boolean.FALSE;
         displayComment = Boolean.FALSE;
     }
-    
+
     public void rechazarRemanenteMensual() {
         System.out.println("===Guardar Remanente Mensual===");
         System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
@@ -478,6 +501,14 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
 
     public void setComentariosRechazo(String comentariosRechazo) {
         this.comentariosRechazo = comentariosRechazo;
+    }
+
+    public String getTituloDetalleDlg() {
+        return tituloDetalleDlg;
+    }
+
+    public void setTituloDetalleDlg(String tituloDetalleDlg) {
+        this.tituloDetalleDlg = tituloDetalleDlg;
     }
 
 }

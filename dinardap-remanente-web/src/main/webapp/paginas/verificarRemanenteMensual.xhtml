@@ -52,6 +52,12 @@
                     </p:dataTable>
                 </h:form>
             </p:dialog>                   
+            <p:dialog id="tramiteRegistroPropiedadDlg"
+                      header="#{verificarRemanenteMensualCtrl.tituloDetalleDlg}" 
+                      modal="true"
+                      widgetVar="tramiteRegistroPropiedadDlg" width="1000" height="auto" 
+                      resizable="true">                
+            </p:dialog>                   
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{verificarRemanenteMensualCtrl.tituloPagina}</h1>   
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{verificarRemanenteMensualCtrl.nombreInstitucion}">
@@ -131,8 +137,15 @@
                             <p:ajax event="rowEdit" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
-                                <p:column colspan="3">
-                                    <h:outputText value="Ingresos Registro de la Propiedad" />
+                                <p:column colspan="2">
+                                    <h:outputText value="Ingresos Registro de la Propiedad" />                                    
+                                </p:column>
+                                <p:column colspan="1" style="text-align: center"> 
+                                    <p:commandButton icon="fa fa-fw fa-search" 
+                                                     title="Detalle de transacción"                                                      
+                                                     onclick="PF('tramiteRegistroPropiedadDlg').show();"
+                                                     action="#{verificarRemanenteMensualCtrl.detalleRPropiedad}"                                                     
+                                                     />
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
@@ -159,7 +172,7 @@
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
                                        style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
-                                        <img width="57" height="37" src="../resource/images/verPDF.png"/></a>
+                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
                             <p:summaryRow id="summaryRowIngRPropiedad">
@@ -214,7 +227,7 @@
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
                                        style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
-                                        <img width="57" height="37" src="../resource/images/verPDF.png"/></a>
+                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
                             <p:summaryRow id="summaryRowIngRPropiedad">
@@ -268,7 +281,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank">
-                                        <img width="57" height="37" src="../resource/images/verPDF.png"/></a>
+                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
                             <p:summaryRow id="summaryRowIngRPropiedad">
