@@ -38,9 +38,9 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.UploadedFile;
 
-@Named(value = "verificarRemanenteMensualCtrl")
+@Named(value = "validarRemanenteMensualCtrl")
 @ViewScoped
-public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializable {
+public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     private UploadedFile file;
     private String tituloPagina;
@@ -181,7 +181,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
             }
         });
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo")) {
+        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")) {
             btnActivated = Boolean.FALSE;
         } else {
             btnActivated = Boolean.TRUE;
@@ -270,11 +270,11 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         erm.setRemanenteMensualId(remanenteMensualSelected);
         erm.setUsuarioId(u);
         erm.setFechaRegistro(new Date());
-        erm.setDescripcion("Verificado-Aprobado");
+        erm.setDescripcion("Validado-Aprobado");
         estadoRemanenteMensualServicio.create(erm);
         btnActivated = Boolean.TRUE;
         displayComment = Boolean.FALSE;
-        comentariosRechazo = "Remanente Mensual Verificado";
+        comentariosRechazo = "Remanente Mensual Validado";
         remanenteMensualSelected.setComentarios(comentariosRechazo);
         remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
@@ -362,7 +362,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         erm.setRemanenteMensualId(remanenteMensualSelected);
         erm.setUsuarioId(u);
         erm.setFechaRegistro(new Date());
-        erm.setDescripcion("Verificado-Rechazado");
+        erm.setDescripcion("Validado-Rechazado");
         estadoRemanenteMensualServicio.create(erm);
         btnActivated = Boolean.TRUE;
         displayComment = Boolean.FALSE;
@@ -383,9 +383,9 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
             transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
             transaccionServicio.editTransaccion(transaccionSelected);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(VerificarRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ValidarRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(VerificarRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ValidarRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

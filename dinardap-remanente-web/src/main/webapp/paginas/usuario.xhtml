@@ -45,7 +45,7 @@
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
                         <p:commandButton value="Actualizar" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" update="msgMensajes" action="#{usuarioCtrl.actualizarContraseña}"  />
-                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" />
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{usuarioCtrl.cancelar}" update="formUsuario"/>
                     </b:panelGrid>
                 </b:panel>
             </h:form>

@@ -28,32 +28,32 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
-        System.out.println("===Inicio de página===");
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         System.out.println("idUsuario = " + usuarioId);
         usuario = new Usuario();
         usuario = usuarioServicio.findByPk(usuarioId);
         tituloPagina = "Usuario: " + usuario.getNombre();
-        System.out.println("Usuario: " + usuario.getNombre());
-        System.out.println("Usuario: " + usuario.getContrasena());
-        System.out.println("Usuario: " + usuario.getInstitucionId().getNombre());
     }
 
     public void actualizarContraseña() {
-        System.out.println("===Actualizando contraseña===");
         String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaActual);
         if (usuario.getContrasena().equals(contraseñaActualEncriptada)) {
-            System.out.println("Proceso de actualizacion para la contraseña");
             if (contraseñaNueva1.equals(contraseñaNueva2)) {
                 usuario.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaNueva1));
-                usuarioServicio.editUsuario(usuario);                
+                usuarioServicio.editUsuario(usuario);
                 addInfoMessage("Contraseña Actualizada satisfactoriamente", "");
             } else {
-                addErrorMessage("1","La nueva contraseña no coincide", "No sale el detalle");
+                addErrorMessage("1", "La nueva contraseña no coincide", "");
             }
         } else {
-            addErrorMessage("2","Contraseña actual incorrecta", "No sale el detalle");
+            addErrorMessage("2", "Contraseña actual incorrecta", "");
         }
+    }
+    
+    public void cancelar(){
+        contraseñaActual="";
+        contraseñaNueva1="";
+        contraseñaNueva2="";
     }
 
     public Usuario getUsuario() {
