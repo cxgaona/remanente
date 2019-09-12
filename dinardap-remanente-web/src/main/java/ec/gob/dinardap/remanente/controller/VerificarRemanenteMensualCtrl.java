@@ -3,6 +3,8 @@ package ec.gob.dinardap.remanente.controller;
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.FacturaPagada;
+import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -60,8 +62,9 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     private List<Transaccion> transaccionRMercantilList;
     private List<Transaccion> transaccionEgresosList;
     private List<Transaccion> transaccionList;
-    private List<Tramite> tramiteRPropiedadList;
-    private List<Tramite> tramiteRMercantilList;
+    private List<Tramite> tramiteRPropiedadMercantilList;
+    private List<Nomina> egresoNominaList;
+    private List<FacturaPagada> egresoFacturaList;
 
     private Boolean btnActivated;
     private Boolean displayComment;
@@ -278,26 +281,62 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     }
 
     public void detalleRPropiedad() {
-        System.out.println("===En el detalle del registro de la propiedad===");
-        tituloDetalleDlg = "Trámites Registro de la Propiedad";
-        tramiteRPropiedadList = new ArrayList<Tramite>();
+        tituloDetalleDlg = "Registro de la Propiedad";
+        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
         for (Transaccion transaccion : transaccionRPropiedadList) {
-            System.out.println("Transaccion: "+transaccion.getTransaccionId());
-            System.out.println("Transaccion: "+transaccion.getCatalogoTransaccionId());
             if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
                 for (Tramite tramite : transaccion.getTramiteList()) {
-                    tramiteRPropiedadList.add(tramite);
+                    tramiteRPropiedadMercantilList.add(tramite);
                 }
             } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
                 for (Tramite tramite : transaccion.getTramiteList()) {
-                    tramiteRPropiedadList.add(tramite);
+                    tramiteRPropiedadMercantilList.add(tramite);
                 }
             }
         }
-        for (Tramite t : tramiteRPropiedadList) {
-            System.out.println("Tramite: " + t.getTramiteId());
-            System.out.println("Tramite: " + t.getTipo());
-            System.out.println("Tramite: " + t.getValor());
+    }
+
+    public void detalleRMercantil() {
+        tituloDetalleDlg = "Registro Mercantil";
+        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
+        for (Transaccion transaccion : transaccionRMercantilList) {
+            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(5)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadMercantilList.add(tramite);
+                }
+            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(6)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadMercantilList.add(tramite);
+                }
+            }
+        }
+    }
+
+    public void detalleEgresos() {
+        egresoNominaList = new ArrayList<Nomina>();
+        egresoFacturaList = new ArrayList<FacturaPagada>();
+        for (Transaccion transaccion : transaccionEgresosList) {
+            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(9)) {
+                for (Nomina nomina : transaccion.getNominaList()) {
+                    egresoNominaList.add(nomina);
+                }
+            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)
+                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)
+                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
+                for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
+                    egresoFacturaList.add(facturaPagada);
+                }
+            }
+        }
+
+        for (Nomina n : egresoNominaList) {
+            System.out.println("Nomina: " + n.getNominaId());
+            System.out.println("Nomina: " + n.getNomNombres());
+        }
+
+        for (FacturaPagada fp : egresoFacturaList) {
+            System.out.println("Factura: " + fp.getFacturaPagadaId());
+            System.out.println("Factura: " + fp.getDetalle());
         }
     }
 
@@ -509,6 +548,30 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
 
     public void setTituloDetalleDlg(String tituloDetalleDlg) {
         this.tituloDetalleDlg = tituloDetalleDlg;
+    }
+
+    public List<Tramite> getTramiteRPropiedadMercantilList() {
+        return tramiteRPropiedadMercantilList;
+    }
+
+    public void setTramiteRPropiedadMercantilList(List<Tramite> tramiteRPropiedadMercantilList) {
+        this.tramiteRPropiedadMercantilList = tramiteRPropiedadMercantilList;
+    }
+
+    public List<Nomina> getEgresoNominaList() {
+        return egresoNominaList;
+    }
+
+    public void setEgresoNominaList(List<Nomina> egresoNominaList) {
+        this.egresoNominaList = egresoNominaList;
+    }
+
+    public List<FacturaPagada> getEgresoFacturaList() {
+        return egresoFacturaList;
+    }
+
+    public void setEgresoFacturaList(List<FacturaPagada> egresoFacturaList) {
+        this.egresoFacturaList = egresoFacturaList;
     }
 
 }

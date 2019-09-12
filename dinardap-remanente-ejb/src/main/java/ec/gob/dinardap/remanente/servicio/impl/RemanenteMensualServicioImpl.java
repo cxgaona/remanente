@@ -61,16 +61,16 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
 
         BigDecimal valorFacturasPagadas = new BigDecimal(0);
 
-        for (RemanenteMensual rm : remanenteMensualList) {
-            for (Transaccion t : rm.getTransaccionList()) {
-                System.out.println("T: " + t.getCatalogoTransaccionId().getNombre());
-                System.out.println("T: " + t.getValorTotal());
-                System.out.println("T: " + t.getRespaldoUrl());
+        for (RemanenteMensual remanenteMensual : remanenteMensualList) {
+            for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+                transaccion.getTransaccionId();
+                for (Tramite tramite : transaccion.getTramiteList()) {                    
+                    tramite.getTramiteId();
+                }
             }
         }
         /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
 
-        
         return remanenteMensualList;
     }
 
