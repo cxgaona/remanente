@@ -12,23 +12,26 @@
     -->
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{nominaCtrl.tituloEgreso}</h1>           
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{egresosCtrl.tituloEgreso}</h1>
+            <h:form id="formFiltro" styleClass="formFiltro">
+                <b:panel>
+                    <p:outputLabel for="mes" value="Mes:&nbsp;" />
+                            <p:datePicker id="mes" view="month" value="#{egresosCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
+                            <p:commandButton action="#{egresosCtrl.reloadNomina}" update="formNomina, formFacturaPagada" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panel>               
+            </h:form>
             <!-- NOMINA -->
             <h:form id="formNomina">  
-                <b:panel title="#{nominaCtrl.titulo}">
+                <b:panel title="#{egresosCtrl.tituloN}">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
                             <p:commandButton 
                                 value="Agregar Registro"
                                 icon="fa fa-fw fa-plus-square"
                                 update=":formNomina"
-                                action="#{nominaCtrl.addRowNomina()}"/>
-                        </b:panelGrid>
-                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
-                            <p:outputLabel for="mesNomina" value="Mes:&nbsp;" />
-                            <p:datePicker id="mesNomina" view="month" value="#{nominaCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
-                            <p:commandButton action="#{nominaCtrl.reloadNomina}" update="formNomina" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
-                        </b:panelGrid>
+                                action="#{egresosCtrl.addRowNomina()}"
+                                disabled="#{egresosCtrl.disableNuevoRegistro}"/>
+                        </b:panelGrid>                       
                         <p:remoteCommand name="onCellDelete" update="formNomina:nominaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
@@ -39,19 +42,19 @@
                             styleClass="nominaTbl"
                             widgetVar="nominaWdg" 
                             var="nomina" 
-                            value="#{nominaCtrl.nominaList}" 
+                            value="#{egresosCtrl.nominaList}" 
                             editable="true" 
                             style="margin-bottom:20px">
                             <f:facet name="header">
                                 Gastos por Nómina
                             </f:facet>
 
-                            <p:ajax event="rowEdit" listener="#{nominaCtrl.onRowEditNomina}" update="formNomina:nominaTbl"  />
-                            <p:column style="width:32px">
+                            <p:ajax event="rowEdit" listener="#{egresosCtrl.onRowEditNomina}" update="formNomina:nominaTbl"  />
+                            <p:column style="width:32px" rendered="#{egresosCtrl.renderEdition}">
                                 <p:rowEditor />
                                 <p:commandButton icon="fa fa-fw fa-trash" title="Eliminar" style="background: none;border: none;width: auto;"
-                                                 action="#{nominaCtrl.onRowDeleteNomina()}" oncomplete="onCellDelete()">
-                                    <f:setPropertyActionListener value="#{nomina}" target="#{nominaCtrl.nominaSelected}" />
+                                                 action="#{egresosCtrl.onRowDeleteNomina()}" oncomplete="onCellDelete()">
+                                    <f:setPropertyActionListener value="#{nomina}" target="#{egresosCtrl.nominaSelected}" />
                                     <p:confirm header="Confirmación" message="¿Está seguro de eliminar el registro?" icon="fa fa-fw fa-warning" />
                                 </p:commandButton>
                             </p:column>
@@ -173,20 +176,16 @@
             </h:form>
             <!-- FACTURAS PAGADAS-->
             <h:form id="formFacturaPagada">  
-                <b:panel title="#{facturaPagadaCtrl.titulo}">
+                <b:panel title="#{egresosCtrl.tituloFP}">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
                             <p:commandButton 
                                 value="Agregar Registro"  
                                 icon="fa fa-fw fa-plus-square"
                                 update=":formFacturaPagada"
-                                action="#{facturaPagadaCtrl.addRowFacturaPagada()}"/>
-                        </b:panelGrid>
-                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
-                            <p:outputLabel for="mesFacturaPagada" value="Mes:&nbsp;" />
-                            <p:datePicker id="mesFacturaPagada" view="month" value="#{facturaPagadaCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
-                            <p:commandButton action="#{facturaPagadaCtrl.reloadFacturaPagada}" update="formFacturaPagada" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
-                        </b:panelGrid>
+                                action="#{egresosCtrl.addRowFacturaPagada()}"
+                                disabled="#{egresosCtrl.disableNuevoRegistro}"/>
+                        </b:panelGrid>                        
                         <p:remoteCommand name="onCellDeleteFP" update="formFacturaPagada:facturaPagadaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
@@ -197,19 +196,19 @@
                             styleClass="facturaPagadaTbl"
                             widgetVar="facturaPagadaWdg" 
                             var="facturaPagada" 
-                            value="#{facturaPagadaCtrl.facturaPagadaList}" 
+                            value="#{egresosCtrl.facturaPagadaList}" 
                             editable="true" 
                             style="margin-bottom:20px">
                             <f:facet name="header">
                                 Facturas Pagadas
                             </f:facet>
 
-                            <p:ajax event="rowEdit" listener="#{facturaPagadaCtrl.onRowEditFacturaPagada}" update="formFacturaPagada:facturaPagadaTbl"  />
-                            <p:column style="width:32px">
+                            <p:ajax event="rowEdit" listener="#{egresosCtrl.onRowEditFacturaPagada}" update="formFacturaPagada:facturaPagadaTbl"  />
+                            <p:column style="width:32px" rendered="#{egresosCtrl.renderEdition}">
                                 <p:rowEditor />
                                 <p:commandButton icon="fa fa-fw fa-trash" title="Eliminar" style="background: none;border: none;width: auto;"
-                                                 action="#{facturaPagadaCtrl.onRowDeleteFacturaPagada()}" oncomplete="onCellDeleteFP()">
-                                    <f:setPropertyActionListener value="#{facturaPagada}" target="#{facturaPagadaCtrl.facturaPagadaSelected}" />
+                                                 action="#{egresosCtrl.onRowDeleteFacturaPagada()}" oncomplete="onCellDeleteFP()">
+                                    <f:setPropertyActionListener value="#{facturaPagada}" target="#{egresosCtrl.facturaPagadaSelected}" />
                                     <p:confirm header="Confirmación" message="¿Está seguro de eliminar el registro?" icon="fa fa-fw fa-warning" />
                                 </p:commandButton>
                             </p:column>
@@ -241,10 +240,10 @@
                                             <f:selectItem itemLabel="Bienes y Servicios de Consumo" itemValue="Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)" />
                                             <f:selectItem itemLabel="Bienes de Larga Duración" itemValue="Bienes de Larga Duración" />
                                         </h:selectOneMenu>
-<!--                                        <p:inputText id="tipo" value="{facturaPagada.tipo}" maxlength="50" style="width:100%" onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }"/>-->
-                                        
+                                        <!--                                        <p:inputText id="tipo" value="{facturaPagada.tipo}" maxlength="50" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                                                                        return false;
+                                                                                    }"/>-->
+
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
