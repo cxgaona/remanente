@@ -20,14 +20,14 @@
                     <h:panelGrid columns="1" style="width: 100%;">
                         <p:dataTable id="tramiteTbl"
                                      value="#{tramitePropiedadCtrl.tramiteList}" 
-                                     var="tramite"
+                                     var="tramite"                                     
                                      rowKey="#{tramite.tramiteId}"
                                      selectionMode="single"
                                      selection="#{tramitePropiedadCtrl.tramiteSelected}"
                                      reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25">
-                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite"/>
+                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                             <p:column headerText="ID Tramite" rendered="false">
                                 <h:outputText value="#{tramite.tramiteId}"/>
                             </p:column>
@@ -57,7 +57,9 @@
                                      style="margin-right:20px;" 
                                      action="#{tramitePropiedadCtrl.nuevoTramite}"
                                      icon="fa fa-fw fa-plus-square"
-                                     update="formTramiteSelected, formTramite:btnBorrarTramite"/>
+                                     id="btnNuevoTramite"
+                                     disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                                     update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                     <p:commandButton value="Borrar Trámite"
                                      style="margin-right:20px;" 
                                      action="#{tramitePropiedadCtrl.borrarTramite}"
