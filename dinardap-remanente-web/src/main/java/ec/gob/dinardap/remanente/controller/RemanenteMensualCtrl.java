@@ -1,7 +1,5 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
-import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -40,6 +38,7 @@ import org.primefaces.model.UploadedFile;
 public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     private UploadedFile file;
+    private UploadedFile fileSolicitud;
     private String tituloPagina;
     private String nombreInstitucion;
     private Integer año;
@@ -61,6 +60,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     private Boolean btnActivated;
     private Boolean displayUploadEdit;
+    private Boolean displaySolicitud;
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
@@ -91,6 +91,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalEgresos = new BigDecimal(0);
         btnActivated = Boolean.TRUE;
         displayUploadEdit = Boolean.FALSE;
+        displaySolicitud = Boolean.FALSE;
         transaccionSelected = new Transaccion();
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         System.out.println("===Variable ===");
@@ -101,7 +102,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 //                Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
-        
+
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
 
 //        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
@@ -117,6 +118,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         }
         btnActivated = Boolean.TRUE;
         displayUploadEdit = Boolean.FALSE;
+        displaySolicitud = Boolean.FALSE;
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         remanenteMensualSelected = new RemanenteMensual();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
@@ -178,13 +180,23 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
             }
         });
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente") ||
-            remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado") ) {
+        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")) {
             btnActivated = Boolean.FALSE;
             displayUploadEdit = Boolean.TRUE;
-        }else{
+        } else {
             btnActivated = Boolean.TRUE;
             displayUploadEdit = Boolean.FALSE;
+        }
+
+        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado")) {
+            System.out.println("Entro en el if");
+            System.out.println(remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion());
+            displaySolicitud = Boolean.TRUE;
+        } else {
+            displaySolicitud = Boolean.FALSE;
         }
 
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
@@ -288,6 +300,35 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             fos.close();
             transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
             transaccionServicio.editTransaccion(transaccionSelected);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void handleFileUploadSolicitud(FileUploadEvent event) {
+        UploadedFile file = event.getFile();
+        try {
+            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+            String path = FacesUtils.getPath() + "/archivos/solicitudCambio/";
+            String realPath = path + "sc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf";
+            FileOutputStream fos = new FileOutputStream(realPath);
+            fos.write(fileByte);
+            fos.close();
+            remanenteMensualSelected.setSolicitudCambioUrl("/archivos/solicitudCambio/" + "sc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
+            remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+
+            EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+            Usuario u = new Usuario();
+            u.setUsuarioId(usuarioId);
+            erm.setRemanenteMensualId(remanenteMensualSelected);
+            erm.setUsuarioId(u);
+            erm.setFechaRegistro(new Date());
+            erm.setDescripcion("CambioSolicitado");
+            estadoRemanenteMensualServicio.create(erm);
+            displaySolicitud = Boolean.FALSE;
+            remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -438,6 +479,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setDisplayUploadEdit(Boolean displayUploadEdit) {
         this.displayUploadEdit = displayUploadEdit;
+    }
+
+    public Boolean getDisplaySolicitud() {
+        return displaySolicitud;
+    }
+
+    public void setDisplaySolicitud(Boolean displaySolicitud) {
+        this.displaySolicitud = displaySolicitud;
     }
 
 }

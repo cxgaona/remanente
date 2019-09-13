@@ -11,6 +11,7 @@
                       id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
                 <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
                     <p:fileUpload
+                        messageTemplate="Tipo de Archivo no Válido"
                         value="#{remanenteMensualCtrl.file}"
                         style="width:100%"
                         mode="advanced"
@@ -20,7 +21,7 @@
                         label=""
                         uploadLabel=""
                         cancelLabel=""
-                        fileUploadListener="#{remanenteMensualCtrl.handleFileUploadRPropiedad}"                        
+                        fileUploadListener="#{remanenteMensualCtrl.handleFileUploadRPropiedad}"
                         oncomplete="onCellEdit();"/>
                 </h:form>
             </p:dialog>
@@ -60,11 +61,7 @@
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
                             <p:inputMask id="anioSelected" value="#{remanenteMensualCtrl.año}" mask="9999" style="width: 100%"/>
                             <p:commandButton action="#{remanenteMensualCtrl.loadRemanenteMensualByAño}" 
-                                             update=":formRemanenteMensual,
-                                             :formTransacciones,
-                                             @(.transaccionRPropiedadTbl), 
-                                             @(.transaccionRMercantilTbl), 
-                                             @(.transaccionEgresosTbl)"
+                                             update=":formRemanenteMensual"
                                              style="margin-right:20px;" 
                                              icon="fa fa-fw fa-refresh"/>
                         </b:panelGrid>
@@ -78,7 +75,7 @@
                                      reflow="true" rows="4" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="4,8,12">
-                            <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelectRemanenteMensual}" update="formTransacciones" />
+                            <p:ajax event="rowSelect" listener="#{remanenteMensualCtrl.onRowSelectRemanenteMensual}" update="formTransacciones, formRemanenteMensual" />
                             <p:column headerText="ID Institución" rendered="false">
                                 <h:outputText value="#{remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId}"/>
                             </p:column>
@@ -93,8 +90,13 @@
                             <p:column headerText="Comentarios" sortBy="#{remanenteMensual.comentarios}" filterBy="#{remanenteMensual.comentarios}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.comentarios}"/>
                             </p:column>
-                            <p:column headerText="Solicitud de cambio" sortBy="#{remanenteMensual.solicitudCambioUrl}" filterBy="#{remanenteMensual.solicitudCambioUrl}" filterMatchMode="contains">
-                                <h:outputText value="#{remanenteMensual.solicitudCambioUrl}" />
+                            <p:column headerText="Solicitud de cambio" sortBy="#{remanenteMensual.solicitudCambioUrl}" filterBy="#{remanenteMensual.solicitudCambioUrl}" filterMatchMode="contains">                                
+                                <center>
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.solicitudCambioUrl}" 
+                                       style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}"
+                                       target="_blank">
+                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                </center>
                             </p:column>
                             <p:column headerText="Informe de aprobación" sortBy="#{remanenteMensual.informeAprobacionUrl}" filterBy="#{remanenteMensual.informeAprobacionUrl}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.informeAprobacionUrl}" />
@@ -108,6 +110,23 @@
                                 </p:commandButton>
                             </p:column>
                         </p:dataTable>
+                        <b:panelGrid id="panelSolicitud" colSpans="4,8" style="width: 48%; margin: 4px 5px;" rendered="#{remanenteMensualCtrl.displaySolicitud}">                                                        
+                            <p:outputLabel value="Solicitud de cambio: " />
+                            <p:fileUpload                                
+                                id="solicitudCambio"
+                                messageTemplate="Tipo de Archivo no Válido"
+                                style="width:100%"
+                                mode="advanced"
+                                dragDropSupport="true"
+                                sizeLimit="9000000"
+                                allowTypes="/(\.|\/)(pdf)$/"
+                                label=""
+                                uploadLabel=""
+                                cancelLabel=""                                
+                                oncomplete="onCellEdit();"
+                                fileUploadListener="#{remanenteMensualCtrl.handleFileUploadSolicitud}"
+                                update="formRemanenteMensual, estadoRemanenteMensualDlg"/>
+                        </b:panelGrid>
                     </h:panelGrid>                    
                 </b:panel>                
             </h:form>             
@@ -324,13 +343,13 @@
                     <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
                 </p:confirmDialog>
                 <p:remoteCommand name="onConfirmButton" 
-                                     update="
-                                     formTransacciones:btnCompletar,
-                                     formTransacciones:transaccionRPropiedadTbl,
-                                     formTransacciones:transaccionRMercantilTbl,
-                                     formTransacciones:transaccionEgresosTbl,
-                                     formRemanenteMensual:remanenteMensualTbl,
-                                     estadoRemanenteMensualDlg"/>
+                                 update="
+                                 formTransacciones:btnCompletar,
+                                 formTransacciones:transaccionRPropiedadTbl,
+                                 formTransacciones:transaccionRMercantilTbl,
+                                 formTransacciones:transaccionEgresosTbl,
+                                 formRemanenteMensual:remanenteMensualTbl,
+                                 estadoRemanenteMensualDlg"/>
             </h:form>
         </ui:define>
     </ui:composition>
