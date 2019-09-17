@@ -4,6 +4,7 @@ import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Nomina;
+import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -34,7 +35,6 @@ import javax.inject.Named;
 import org.apache.poi.util.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 
-import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.UploadedFile;
 
 @Named(value = "adminRemanenteMensualCtrl")
@@ -45,7 +45,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private InstitucionRequerida institucionSelected;
     private Boolean displaySolicitud;
 
-    private UploadedFile file;
     private String tituloPagina;
     private String nombreInstitucion;
     private Integer año;
@@ -121,7 +120,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         transaccionEgresosList = new ArrayList<Transaccion>();
 
         transaccionSelected = new Transaccion();
-
         displaySolicitud = Boolean.FALSE;
     }
 
@@ -201,8 +199,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         }
 
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioSolicitado")) {
-            System.out.println("Entro en el if");
-            System.out.println(remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion());
             displaySolicitud = Boolean.TRUE;
         } else {
             displaySolicitud = Boolean.FALSE;
@@ -246,37 +242,61 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
             }
         });
-
     }
 
-    public void rowTransaccionEdit(RowEditEvent event) {
-        Transaccion transaccion = new Transaccion();
-        transaccion = (Transaccion) event.getObject();
-        transaccionServicio.editTransaccion(transaccion);
-        totalIngRPropiedad = new BigDecimal(0);
-        totalIngRMercantil = new BigDecimal(0);
-        totalEgresos = new BigDecimal(0);
-        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes());
-        for (Transaccion t : transaccionRPropiedadList) {
-            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
-                totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
-            }
-        }
-        for (Transaccion t : transaccionRMercantilList) {
-            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
-                totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
-            }
-        }
-        for (Transaccion t : transaccionEgresosList) {
-            totalEgresos = totalEgresos.add(t.getValorTotal());
+    public void handleFileUploadSolicitud(FileUploadEvent event) {
+        UploadedFile file = event.getFile();
+        try {
+            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+            String path = FacesUtils.getPath() + "/archivos/informeSolicitudCambio/";
+            String realPath = path + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf";
+            FileOutputStream fos = new FileOutputStream(realPath);
+            fos.write(fileByte);
+            fos.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void rowTransaccionEditCancel() {
-        System.out.println("Cancelado");
+    public void aprobarSolicitudCambio() {
+//        remanenteMensualSelected.setInformeAprobacionUrl("/archivos/informeSolicitudCambio/" + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
+//        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+//        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+//        Usuario u = new Usuario();
+//        u.setUsuarioId(usuarioId);
+//        erm.setRemanenteMensualId(remanenteMensualSelected);
+//        erm.setUsuarioId(u);
+//        erm.setFechaRegistro(new Date());
+//        erm.setDescripcion("CambioAprobado");
+//        estadoRemanenteMensualServicio.create(erm);
+//        displaySolicitud = Boolean.FALSE;
+//        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        crearVersionRemanente(remanenteMensualSelected);
+    }
+
+    public void rechazarSolicitudCambio() {
+        remanenteMensualSelected.setInformeAprobacionUrl("/archivos/informeSolicitudCambio/" + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
+        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+        Usuario u = new Usuario();
+        u.setUsuarioId(usuarioId);
+        erm.setRemanenteMensualId(remanenteMensualSelected);
+        erm.setUsuarioId(u);
+        erm.setFechaRegistro(new Date());
+        erm.setDescripcion("CambioRechazado");
+        estadoRemanenteMensualServicio.create(erm);
+        displaySolicitud = Boolean.FALSE;
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+    }
+
+    public void crearVersionRemanente(RemanenteMensual remanenteMensual) {
+        System.out.println("===Crear Nueva Versión RemanenteMensual===");
+        System.out.println("RemanenteMensual: " + remanenteMensual.getRemanenteMensualId());
+//        RemanenteMensual rm = new RemanenteMensual();
+//        rm = remanenteMensual;
+        remanenteMensualServicio.createRemanenteMensual(remanenteMensual);
     }
 
     public void detalleRPropiedad() {
@@ -327,68 +347,9 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 }
             }
         }
-
-        for (Nomina n : egresoNominaList) {
-            System.out.println("Nomina: " + n.getNominaId());
-            System.out.println("Nomina: " + n.getNomNombres());
-        }
-
-        for (FacturaPagada fp : egresoFacturaList) {
-            System.out.println("Factura: " + fp.getFacturaPagadaId());
-            System.out.println("Factura: " + fp.getDetalle());
-        }
     }
 
-    public void habilitarComentarioRechazo() {
-        btnActivated = Boolean.TRUE;
-        displayComment = Boolean.TRUE;
-    }
-
-    public void cancelar() {
-        btnActivated = Boolean.FALSE;
-        displayComment = Boolean.FALSE;
-    }
-
-    public void verEstadoRemanenteMensualSeleccionado() {
-        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
-            erm.getUsuarioId().getUsuarioId();
-        }
-    }
-
-    public void aprobar() {
-        remanenteMensualSelected.setInformeAprobacionUrl("/archivos/informeSolicitudCambio/" + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
-        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
-        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
-        Usuario u = new Usuario();
-        u.setUsuarioId(usuarioId);
-        erm.setRemanenteMensualId(remanenteMensualSelected);
-        erm.setUsuarioId(u);
-        erm.setFechaRegistro(new Date());
-        erm.setDescripcion("CambioAprobado");
-        estadoRemanenteMensualServicio.create(erm);
-        displaySolicitud = Boolean.FALSE;
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-    }
-
-    public void rechazar() {
-    }
-
-    public void handleFileUploadSolicitud(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
-        try {
-            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/informeSolicitudCambio/";
-            String realPath = path + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
+    /*===Getters & Setters===*/
     public String getTituloPagina() {
         return tituloPagina;
     }

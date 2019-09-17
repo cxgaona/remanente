@@ -45,7 +45,7 @@ public class RemanenteMensual implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "REMANENTE_MENSUAL_GENERATOR", sequenceName = "remanente_mensual_remanente_mensual_id_seq")
+    @SequenceGenerator(name = "REMANENTE_MENSUAL_GENERATOR", sequenceName = "remanente_mensual_remanente_mensual_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REMANENTE_MENSUAL_GENERATOR")
     @Column(name = "remanente_mensual_id")
     private Integer remanenteMensualId;
@@ -229,7 +229,7 @@ public class RemanenteMensual implements Serializable {
 
     @Override
     public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.RemanenteMensual[ remanenteMensualId=" + remanenteMensualId + " ]";
+        return "RemanenteMensual{" + "remanenteMensualId=" + remanenteMensualId + ", mes=" + mes + ", fechaRegistro=" + fechaRegistro + ", total=" + total + ", comentarios=" + comentarios + ", solicitudCambioUrl=" + solicitudCambioUrl + ", informeAprobacionUrl=" + informeAprobacionUrl + ", bandejaList=" + bandejaList + ", remanenteCuatrimestral=" + remanenteCuatrimestral + ", remanenteMensualList=" + remanenteMensualList + ", remanenteMensualOrigenId=" + remanenteMensualOrigenId + ", estadoRemanenteMensualList=" + estadoRemanenteMensualList + ", transaccionList=" + transaccionList + '}';
     }
 
 }

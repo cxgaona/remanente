@@ -41,7 +41,7 @@ public class InstitucionRequerida implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "INSTITUCION_REQUERIDA_GENERATOR", sequenceName = "institucion_requerida_institucion_id_seq")
+    @SequenceGenerator(name = "INSTITUCION_REQUERIDA_GENERATOR", sequenceName = "institucion_requerida_institucion_id_seq",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INSTITUCION_REQUERIDA_GENERATOR")
     @Column(name = "institucion_id")
     private Integer institucionId;

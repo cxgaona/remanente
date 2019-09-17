@@ -7,15 +7,14 @@
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
-
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminRemanenteMensualCtrl.tituloPagina}</h1>  
 
+            <!--Dialogos-->
             <!--Trámites-->
-
             <p:dialog id="estadoRemanenteMensualDlg"
-                      header="Listado de estados del Remanentes" 
+                      header="Estados de Remanente" 
                       modal="true"
-                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="500" 
+                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="auto" 
                       resizable="false">
                 <h:form id="formEstadoRemanenteMensualDlg">
                     <p:dataTable id="estadoRemanenteMensualTbl"
@@ -24,7 +23,10 @@
                                  rowKey="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
                                  reflow="true" rows="10" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,15">                        
+                                 rowsPerPageTemplate="5,10,15">
+                        <f:facet name="header">
+                            #{adminRemanenteMensualCtrl.tituloDetalleDlg}
+                        </f:facet>
                         <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.usuarioId.nombre}" />
                         </p:column>
@@ -36,30 +38,23 @@
                         <p:column headerText="Estado" sortBy="#{estadoRemanenteMensual.descripcion}" filterBy="#{estadoRemanenteMensual.descripcion}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.descripcion}"/>
                         </p:column>
-
                     </p:dataTable>
                 </h:form>
             </p:dialog>                
 
-            <p:dialog id="tramiteRegistroPropiedadDlg"
+            <p:dialog id="tramiteRegistroDlg"
                       header="Trámites Registro de la Propiedad / Mercantil" 
                       modal="true"
-                      widgetVar="tramiteRegistroPropiedadDlg" width="90%" height="auto" 
+                      widgetVar="tramiteRegistroDlg" width="90%" height="auto" 
                       resizable="false">    
-                <h:form id="formTramiteRegistroPropiedadDlg">
+                <h:form id="formTramiteRegistroDlg">
                     <p:dataTable id="tramiteTbl"
                                  value="#{adminRemanenteMensualCtrl.tramiteRPropiedadMercantilList}" 
                                  var="tramite"
                                  rowKey="#{tramite.tramiteId}"                                 
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,25">                        
-                        <p:column headerText="ID Tramite" rendered="false">
-                            <f:facet name="header">
-                                #{adminRemanenteMensualCtrl.tituloDetalleDlg}
-                            </f:facet>  
-                            <h:outputText value="#{tramite.tramiteId}"/>
-                        </p:column>
+                                 rowsPerPageTemplate="5,10,15">                        
                         <p:column headerText="Tipo" sortBy="#{tramite.tipo}" filterBy="#{tramite.tipo}" filterMatchMode="contains">
                             <h:outputText value="#{tramite.tipo}" />
                         </p:column>
@@ -103,7 +98,7 @@
                                  style="margin-bottom: 10px">
                         <f:facet name="header">
                             Gastos por Nómina
-                        </f:facet>                        
+                        </f:facet>
                         <p:column headerText="Nombre" 
                                   sortBy="#{nomina.nomNombres}" 
                                   filterBy="#{nomina.nomNombres}" 
@@ -198,6 +193,8 @@
                 </h:form>
             </p:dialog>  
 
+            <!--Dialogos-->
+
             <h:form id="formInstitucion">
                 <b:panel title="Instituciones">
                     <h:panelGrid columns="1" style="width: 100%;">                        
@@ -211,10 +208,11 @@
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,15,25">
                             <p:ajax event="rowSelect" listener="#{adminRemanenteMensualCtrl.onRowSelectInstitucion}" 
-                                    update="formRemanenteMensual, formTransacciones:transaccionRPropiedadTbl, formTransacciones:transaccionRMercantilTbl, formTransacciones:transaccionEgresosTbl"/>
-                            <p:column headerText="ID Institución" rendered="false">
-                                <h:outputText value="#{institucion.institucionId}"/>
-                            </p:column>
+                                    update="
+                                    formRemanenteMensual,
+                                    formTransacciones:transaccionRPropiedadTbl, 
+                                    formTransacciones:transaccionRMercantilTbl, 
+                                    formTransacciones:transaccionEgresosTbl"/>                            
                             <p:column headerText="Institución" 
                                       sortBy="#{institucion.nombre}" 
                                       filterBy="#{institucion.nombre}" filterMatchMode="contains">
@@ -315,8 +313,8 @@
                                 fileUploadListener="#{adminRemanenteMensualCtrl.handleFileUploadSolicitud}"/>
                             <p:outputLabel value="Solicitud de cambio: " rendered="false"/>
                             <b:panelGrid colSpans="6,6" style="width: 70%; margin: 4px 5px;">
-                                <p:commandButton value="Aprobar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{adminRemanenteMensualCtrl.aprobar}" update="formRemanenteMensual"/>
-                                <p:commandButton value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazar}" update="formRemanenteMensual"/>
+                                <p:commandButton value="Aprobar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{adminRemanenteMensualCtrl.aprobarSolicitudCambio}" update="formRemanenteMensual"/>
+                                <p:commandButton value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual"/>
                             </b:panelGrid>                            
                         </b:panelGrid>                        
                     </h:panelGrid>                    
@@ -326,7 +324,8 @@
             <h:form id="formTransacciones" enctype="multipart/form-data" >
                 <b:panel title="Transacción Remanente Mensual (Mes: #{adminRemanenteMensualCtrl.mesSelected})">
                     <p:remoteCommand name="onCellEdit" 
-                                     update="formTransacciones:transaccionRPropiedadTbl,
+                                     update="
+                                     formTransacciones:transaccionRPropiedadTbl,
                                      formTransacciones:transaccionRMercantilTbl,
                                      formTransacciones:transaccionEgresosTbl"/>
                     <h:panelGrid columns="1" style="width: 60%;"> 
@@ -338,8 +337,6 @@
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
                                      editable="#{!adminRemanenteMensualCtrl.btnActivated}">  
-                            <p:ajax event="rowEdit" listener="#{adminRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{adminRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Ingresos Registro de la Propiedad" />                                    
@@ -347,32 +344,23 @@
                                 <p:column colspan="1" style="text-align: center"> 
                                     <p:commandButton icon="fa fa-fw fa-search" 
                                                      title="Detalle de transacción"                                                      
-                                                     onclick="PF('tramiteRegistroPropiedadDlg').show();"
+                                                     onclick="PF('tramiteRegistroDlg').show();"
                                                      action="#{adminRemanenteMensualCtrl.detalleRPropiedad}" 
-                                                     update="formTramiteRegistroPropiedadDlg"/>
+                                                     update="formTramiteRegistroDlg"/>
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
                                 <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
                             </p:column>                            
                             <p:column headerText="Valor" width="20%" style="text-align: right">
-                                <p:cellEditor>
-                                    <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 'number':'currency'}"
-                                                             currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? '':'$'}"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 0:2}"/>
-                                        </h:outputText></f:facet>
-                                    <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }" /></f:facet>
-                                </p:cellEditor>
+                                <h:outputText value="#{transaccion.valorTotal}">
+                                    <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 'number':'currency'}"
+                                                     currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? '':'$'}"
+                                                     maxIntegerDigits="10"
+                                                     maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 0:2}"/>
+                                </h:outputText>                               
                             </p:column >                              
-                            <p:column width="15%" >
-                                <f:facet name="header">
-                                    <h:outputText value="Archivo"/>
-                                </f:facet>
+                            <p:column headerText="Archivo" width="15%" >                                
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
                                        style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
@@ -400,8 +388,6 @@
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
                                      editable="#{!adminRemanenteMensualCtrl.btnActivated}">  
-                            <p:ajax event="rowEdit" listener="#{adminRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{adminRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>                            
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Ingresos Registro Mercantil" />
@@ -411,30 +397,21 @@
                                                      title="Detalle de transacción"                                                      
                                                      onclick="PF('tramiteRegistroPropiedadDlg').show();"
                                                      action="#{adminRemanenteMensualCtrl.detalleRMercantil()}" 
-                                                     update="formTramiteRegistroPropiedadDlg"/>
+                                                     update="formTramiteRegistroDlg"/>
                                 </p:column>
                             </p:headerRow>  
                             <p:column headerText="Detalle" width="60%">
                                 <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
                             </p:column>
                             <p:column headerText="Valor" width="20%" style="text-align: right">
-                                <p:cellEditor>
-                                    <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="currency"
-                                                             currencySymbol="$"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="2"/>
-                                        </h:outputText></f:facet>
-                                    <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }" /></f:facet>
-                                </p:cellEditor>
+                                <h:outputText value="#{transaccion.valorTotal}">
+                                    <f:convertNumber type="currency"
+                                                     currencySymbol="$"
+                                                     maxIntegerDigits="10"
+                                                     maxFractionDigits="2"/>
+                                </h:outputText>
                             </p:column >                              
-                            <p:column width="15%" >
-                                <f:facet name="header">
-                                    <h:outputText value="Archivo"/>
-                                </f:facet>
+                            <p:column headerText="Archivo" width="15%" >                                
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
                                        style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
@@ -461,9 +438,7 @@
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
-                                     editable="#{!adminRemanenteMensualCtrl.btnActivated}">  
-                            <p:ajax event="rowEdit" listener="#{adminRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{adminRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
+                                     editable="#{!adminRemanenteMensualCtrl.btnActivated}">                              
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Gastos Actividad Registral (Propiedad y Mercantil)" /> 
@@ -480,20 +455,14 @@
                                 <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
                             </p:column>
                             <p:column headerText="Valor" width="20%" style="text-align: right">
-                                <p:cellEditor>
-                                    <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="currency"
-                                                             currencySymbol="$"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="2"/>
-                                        </h:outputText></f:facet>
-                                    <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }" /></f:facet>
-                                </p:cellEditor>
+                                <h:outputText value="#{transaccion.valorTotal}">
+                                    <f:convertNumber type="currency"
+                                                     currencySymbol="$"
+                                                     maxIntegerDigits="10"
+                                                     maxFractionDigits="2"/>
+                                </h:outputText>
                             </p:column >                              
-                            <p:column width="15%" >
+                            <p:column width="15%" headerText="Archivo">
                                 <f:facet name="header">
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
