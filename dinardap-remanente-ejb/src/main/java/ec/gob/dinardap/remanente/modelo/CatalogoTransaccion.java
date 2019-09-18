@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -33,11 +34,14 @@ import javax.validation.constraints.Size;
 public class CatalogoTransaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "CATALOGO_TRANSACCION_GENERATOR", sequenceName = "catalogo_transaccion_catalogo_transaccion_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATALOGO_TRANSACCION_GENERATOR")
     @Column(name = "catalogo_transaccion_id")
     private Integer catalogoTransaccionId;
+    
     @Size(max = 20)
     @Column(name = "tipo")
     private String tipo;

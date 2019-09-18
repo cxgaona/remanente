@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -41,12 +42,14 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Usuario.findByEstado", query = "SELECT u FROM Usuario u WHERE u.estado = :estado")})
 public class Usuario implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;   
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "USUARIO_GENERATOR", sequenceName = "usuario_usuario_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USUARIO_GENERATOR")
     @Column(name = "usuario_id")
     private Integer usuarioId;
+    
     @Size(max = 300)
     @Column(name = "nombre")
     private String nombre;

@@ -202,7 +202,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes());
+                remanenteMensualSelected.getMes(),
+                remanenteMensualSelected.getRemanenteMensualId());
         for (Transaccion t : transaccionList) {
             if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Propiedad")) {
                 transaccionRPropiedadList.add(t);
@@ -250,7 +251,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes());
+                remanenteMensualSelected.getMes(),
+                remanenteMensualSelected.getRemanenteMensualId());
         for (Transaccion t : transaccionRPropiedadList) {
             if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
                 totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());

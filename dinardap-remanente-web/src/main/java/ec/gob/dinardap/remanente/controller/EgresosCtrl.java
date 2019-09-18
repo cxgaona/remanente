@@ -33,13 +33,13 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private TransaccionServicio transaccionServicio;
-    
+
     @EJB
     private FacturaPagadaServicio facturaPagadaServicio;
 
     @EJB
     private CatalogoTransaccionServicio catalogoTransaccionServicio;
-    
+
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
@@ -62,7 +62,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         tituloEgreso = "Egresos";
-        tituloN = "Nómina";        
+        tituloN = "Nómina";
         tituloFP = "Factura Pagada";
         facturaPagadaList = new ArrayList<FacturaPagada>();
         Calendar calendar = Calendar.getInstance();
@@ -71,12 +71,12 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
-        nominaList = new ArrayList<Nomina>();     
+        nominaList = new ArrayList<Nomina>();
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
         nominaSelected = new Nomina();
         facturaPagadaList = new ArrayList<FacturaPagada>();
         facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, anio, mes);
-        facturaPagadaSelected = new FacturaPagada();        
+        facturaPagadaSelected = new FacturaPagada();
         disableNuevoRegistro = Boolean.FALSE;
         renderEdition = Boolean.TRUE;
         obtenerRemanenteMensual();
@@ -129,7 +129,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         nominaServicio.actualizarTransaccionValor(institucionId, anio, mes);
         reloadNomina();
     }
-    
+
     public void obtenerRemanenteMensual() {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
@@ -144,13 +144,13 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")) {
             disableNuevoRegistro = Boolean.FALSE;
-            renderEdition  = Boolean.TRUE;
+            renderEdition = Boolean.TRUE;
         } else {
-            renderEdition  = Boolean.FALSE;            
+            renderEdition = Boolean.FALSE;
             disableNuevoRegistro = Boolean.TRUE;
         }
     }
-    
+
     public void addRowFacturaPagada() {
         FacturaPagada newFacturaPagada = new FacturaPagada();
         newFacturaPagada.setFecha(new Date());
@@ -172,9 +172,9 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         FacturaPagada facturaPagada = new FacturaPagada();
         facturaPagada = (FacturaPagada) event.getObject();
         catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionList();
-        for (CatalogoTransaccion ct:catalogoList ) {
+        for (CatalogoTransaccion ct : catalogoList) {
             if (ct.getNombre().equals(facturaPagada.getTipo())) {
-                idCatalogoTransaccion=ct.getCatalogoTransaccionId();
+                idCatalogoTransaccion = ct.getCatalogoTransaccionId();
             }
         }
         Transaccion t = new Transaccion();
@@ -185,24 +185,25 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getMes());        
-        for (Transaccion tl:transaccionList ) {            
+                facturaPagada.getTransaccionId().getRemanenteMensualId().getMes(),
+                facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteMensualId());
+        for (Transaccion tl : transaccionList) {
             if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)) {
                 facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                tl.getRemanenteMensualId().getMes(),10);                
+                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                        tl.getRemanenteMensualId().getMes(), 10);
             }
             if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)) {
                 facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                tl.getRemanenteMensualId().getMes(),11);                
+                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                        tl.getRemanenteMensualId().getMes(), 11);
             }
             if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
                 facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                tl.getRemanenteMensualId().getMes(),12);
+                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                        tl.getRemanenteMensualId().getMes(), 12);
             }
-        }        
+        }
     }
 
     public void reloadFacturaPagada() {

@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -40,9 +41,13 @@ import javax.validation.constraints.Size;
 public class Transaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    
     @Basic(optional = false)
+    
+    @Id
+    @SequenceGenerator(name = "TRANSACCION_GENERATOR", sequenceName = "transaccion_transaccion_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRANSACCION_GENERATOR")
     @Column(name = "transaccion_id")
     private Integer transaccionId;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation

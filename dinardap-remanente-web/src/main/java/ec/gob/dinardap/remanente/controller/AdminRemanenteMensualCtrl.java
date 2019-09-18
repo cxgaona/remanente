@@ -4,7 +4,6 @@ import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Nomina;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -141,6 +140,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     }
 
     public void onRowSelectRemanenteMensual() {
+        System.out.println("===Seleccion de remanente===");
+        System.out.println("RemanenteSeleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
         switch (remanenteMensualSelected.getMes()) {
             case 1:
                 mesSelected = "Enero";
@@ -179,6 +180,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 mesSelected = "Diciembre";
                 break;
         }
+        remanenteMensualSelected.getRemanenteMensualId();
         btnActivated = Boolean.FALSE;
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
@@ -186,6 +188,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
+        System.out.println("RemanenteSeleccionado1: " + remanenteMensualSelected.getRemanenteMensualId());
         Collections.sort(remanenteMensualSelected.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
             @Override
             public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
@@ -203,11 +206,13 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         } else {
             displaySolicitud = Boolean.FALSE;
         }
+        System.out.println("Antes del servicio de transacciones");
 
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes());
+                remanenteMensualSelected.getMes(),
+                remanenteMensualSelected.getRemanenteMensualId());
         for (Transaccion t : transaccionList) {
             if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Propiedad")) {
                 transaccionRPropiedadList.add(t);
@@ -272,8 +277,10 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 //        erm.setDescripcion("CambioAprobado");
 //        estadoRemanenteMensualServicio.create(erm);
 //        displaySolicitud = Boolean.FALSE;
-//        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        System.out.println("remaneneteOriginal Seleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
         crearVersionRemanente(remanenteMensualSelected);
+        remanenteMensualSelected = new RemanenteMensual();
+//        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);        
     }
 
     public void rechazarSolicitudCambio() {
@@ -292,11 +299,28 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     }
 
     public void crearVersionRemanente(RemanenteMensual remanenteMensual) {
-        System.out.println("===Crear Nueva Versión RemanenteMensual===");
-        System.out.println("RemanenteMensual: " + remanenteMensual.getRemanenteMensualId());
-//        RemanenteMensual rm = new RemanenteMensual();
-//        rm = remanenteMensual;
-        remanenteMensualServicio.createRemanenteMensual(remanenteMensual);
+        RemanenteMensual rmn = new RemanenteMensual();
+        rmn = remanenteMensualServicio.crearVersionRemanenteMensual(remanenteMensual);
+        //Creación de nuevo estado
+        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+        Usuario u = new Usuario();
+        u.setUsuarioId(usuarioId);
+        erm.setRemanenteMensualId(rmn);
+        erm.setUsuarioId(u);
+        erm.setFechaRegistro(new Date());
+        erm.setDescripcion("GeneradoNuevaVersion");
+        estadoRemanenteMensualServicio.create(erm);
+        //Creación de transacciones
+        for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+            transaccion.setTransaccionId(null);
+            transaccion.setFechaRegistro(new Date());
+            transaccion.setRemanenteMensualId(rmn);
+            transaccionServicio.create(transaccion);
+        }
+        //Creación de trámites 
+        for(Tramite tramite:)
+        //Creacion de nómina
+        //Creación de facturas pagadas
     }
 
     public void detalleRPropiedad() {

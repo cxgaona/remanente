@@ -178,7 +178,8 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                tramiteSelected.getTransaccionId().getRemanenteMensualId().getMes());
+                tramiteSelected.getTransaccionId().getRemanenteMensualId().getMes(),
+                tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteMensualId());
         for (Transaccion tl : transaccionList) {
             if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
                 tramiteServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),

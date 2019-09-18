@@ -33,18 +33,22 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
     }
 
     @Override
-    public List<Transaccion> getTransaccionByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes) {
+    public List<Transaccion> getTransaccionByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes, Integer remanenteMensualID) {
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         String[] criteriaNombres = {"remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
             "remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio",
-            "remanenteMensualId.mes"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {institucionId, año, mes};
+            "remanenteMensualId.mes",
+            "remanenteMensualId.remanenteMensualId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS,
+            CriteriaTypeEnum.INTEGER_EQUALS,
+            CriteriaTypeEnum.INTEGER_EQUALS,
+            CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {institucionId, año, mes,remanenteMensualID};
         String[] orderBy = {"catalogoTransaccionId.catalogoTransaccionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);
-        for (Transaccion transaccion : transaccionList) {
+        for (Transaccion transaccion : transaccionList) {            
             for (Tramite tramite : transaccion.getTramiteList()) {
                 tramite.getTramiteId();
             }

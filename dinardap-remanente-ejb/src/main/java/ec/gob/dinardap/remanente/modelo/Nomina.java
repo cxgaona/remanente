@@ -47,7 +47,7 @@ public class Nomina implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @SequenceGenerator(name = "NOMINA_GENERATOR", sequenceName = "nomina_nomina_id_seq",allocationSize = 1)
+    @SequenceGenerator(name = "NOMINA_GENERATOR", sequenceName = "nomina_nomina_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NOMINA_GENERATOR")
     @Column(name = "nomina_id")
     private Integer nominaId;

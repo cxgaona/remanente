@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,11 +37,15 @@ import javax.validation.constraints.Size;
 public class EstadoRemanenteMensual implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
     @Basic(optional = false)
+    
+    @Id
+    @SequenceGenerator(name = "ESTADO_REMANENTE_MENSUAL_GENERATOR", sequenceName = "estado_remanente_mensual_estado_remanente_mensual_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ESTADO_REMANENTE_MENSUAL_GENERATOR")
     @Column(name = "estado_remanente_mensual_id")
     private Integer estadoRemanenteMensualId;
+    
     @Column(name = "fecha_registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;

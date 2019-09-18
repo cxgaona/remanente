@@ -17,6 +17,7 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -34,11 +35,13 @@ import javax.validation.constraints.Size;
 public class Bandeja implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "BANDEJA_GENERATOR", sequenceName = "bandeja_bandeja_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BANDEJA_GENERATOR")
     @Column(name = "bandeja_id")
     private Integer bandejaId;
+    
     @Size(max = 300)
     @Column(name = "descripcion")
     private String descripcion;
@@ -148,5 +151,5 @@ public class Bandeja implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.Bandeja[ bandejaId=" + bandejaId + " ]";
     }
-    
+
 }
