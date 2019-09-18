@@ -317,8 +317,22 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
             transaccion.setRemanenteMensualId(rmn);
             transaccionServicio.create(transaccion);
         }
-        //Creación de trámites 
-        for(Tramite tramite:)
+        //Creación de trámites         
+        for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+            for (Tramite tramite : transaccion.getTramiteList()) {
+                System.out.println("Trámite: " + tramite.getTramiteId());
+            }
+            for (Nomina nomina : transaccion.getNominaList()) {
+                System.out.println("Nomina: " + nomina.getNominaId());
+            }
+            for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
+                System.out.println("FP: " + facturaPagada.getFacturaPagadaId());
+            }
+            transaccion.setTransaccionId(null);
+            transaccion.setFechaRegistro(new Date());
+            transaccion.setRemanenteMensualId(rmn);
+            transaccionServicio.create(transaccion);
+        }
         //Creacion de nómina
         //Creación de facturas pagadas
     }
