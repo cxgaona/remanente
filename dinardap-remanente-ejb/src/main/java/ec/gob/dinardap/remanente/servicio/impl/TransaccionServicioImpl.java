@@ -43,12 +43,12 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
             CriteriaTypeEnum.INTEGER_EQUALS,
             CriteriaTypeEnum.INTEGER_EQUALS,
             CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {institucionId, año, mes,remanenteMensualID};
+        Object[] criteriaValores = {institucionId, año, mes, remanenteMensualID};
         String[] orderBy = {"catalogoTransaccionId.catalogoTransaccionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);
-        for (Transaccion transaccion : transaccionList) {            
+        for (Transaccion transaccion : transaccionList) {
             for (Tramite tramite : transaccion.getTramiteList()) {
                 tramite.getTramiteId();
             }
@@ -67,5 +67,30 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
         Transaccion transaccion = new Transaccion();
         transaccion = transaccionDao.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
         return transaccion;
+    }
+
+    @Override
+    public Transaccion crearTransaccion(Transaccion transaccion) {
+        this.create(transaccion);
+        Transaccion t= new Transaccion();
+        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
+        String[] criteriaNombres = {"remanenteMensualId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {transaccion.getRemanenteMensualId().getRemanenteMensualId()};
+        String[] orderBy = {"transaccionId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        transaccionList = findByCriterias(criteria);        
+        System.out.println("SIZE: "+transaccionList.size());
+        for (Transaccion tAux : transaccionList) {            
+            System.out.println("TransaccionAUX: "+tAux.getTransaccionId());
+            System.out.println("TransaccionAUX: "+tAux.getCatalogoTransaccionId().getNombre());
+            System.out.println("TransaccionAUX: "+tAux.getValorTotal());         
+        }
+        for (Transaccion tAux : transaccionList) {            
+            t = tAux;
+            break;
+        }
+        return t;
     }
 }

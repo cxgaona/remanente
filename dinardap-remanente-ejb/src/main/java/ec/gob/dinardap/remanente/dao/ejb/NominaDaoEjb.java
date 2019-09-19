@@ -7,6 +7,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 import ec.gob.dinardap.remanente.dao.NominaDao1;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 
 @Stateless(name = "NominaDao1")
 public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implements NominaDao1 {
@@ -17,15 +18,19 @@ public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implement
 
     @Override
     public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes) {
-        Query query = em.createQuery("SELECT n FROM Nomina n WHERE "
-                + "n.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
-                + "n.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
-                + "n.transaccionId.remanenteMensualId.mes=:mes");
+        Query query = em.createQuery("SELECT n FROM Nomina n WHERE n.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND n.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND n.transaccionId.remanenteMensualId.mes=:mes");
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);
         query.setParameter("mes", mes);
         List<Nomina> nominaList = new ArrayList<Nomina>();
-        nominaList = query.getResultList();        
+        nominaList = query.getResultList();
+        List<Nomina> nominaListActiva = new ArrayList<Nomina>();
+        for (Nomina nomina : nominaList) {
+            System.out.println("Ultimo estado: " + nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1));
+            if (nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).equals("CambioSolicitado")) {                
+
+            }
+        }
         return nominaList;
     }
 

@@ -9,8 +9,11 @@ import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
+import ec.gob.dinardap.remanente.servicio.FacturaPagadaServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.remanente.servicio.NominaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
+import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.FileNotFoundException;
@@ -82,6 +85,13 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 
     @EJB
     private EstadoRemanenteMensualServicio estadoRemanenteMensualServicio;
+
+    @EJB
+    private TramiteServicio tramiteServicio;
+    @EJB
+    private NominaServicio nominaServicio;
+    @EJB
+    private FacturaPagadaServicio facturaPagadaServicio;
 
     @PostConstruct
     protected void init() {
@@ -317,24 +327,50 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
             transaccion.setRemanenteMensualId(rmn);
             transaccionServicio.create(transaccion);
         }
-        //Creación de trámites         
-        for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
-            for (Tramite tramite : transaccion.getTramiteList()) {
-                System.out.println("Trámite: " + tramite.getTramiteId());
+        List<Transaccion> transaccionListNuevoRemanente = new ArrayList<Transaccion>();
+        transaccionListNuevoRemanente = transaccionServicio.getTransaccionByInstitucionAñoMes(rmn.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                rmn.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                rmn.getMes(),
+                rmn.getRemanenteMensualId());
+        for (Transaccion transaccionOrigen : remanenteMensual.getTransaccionList()) {
+            //Creación de trámites              
+            for (Tramite tramiteOrigen : transaccionOrigen.getTramiteList()) {
+                for (Transaccion transaccionNueva : transaccionListNuevoRemanente) {
+                    if (tramiteOrigen.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId()
+                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {
+                        tramiteOrigen.setTramiteId(null);
+                        tramiteOrigen.setTransaccionId(transaccionNueva);
+                        tramiteServicio.crearTramite(tramiteOrigen);
+                        break;
+                    }
+                }
             }
-            for (Nomina nomina : transaccion.getNominaList()) {
-                System.out.println("Nomina: " + nomina.getNominaId());
+            //Creacion de nómina
+            for (Nomina nominaOrigen : transaccionOrigen.getNominaList()) {
+                for (Transaccion transaccionNueva : transaccionListNuevoRemanente) {
+                    if (nominaOrigen.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId()
+                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {                        
+                        nominaOrigen.setNominaId(null);
+                        nominaOrigen.setTransaccionId(transaccionNueva);
+                        nominaServicio.crearNomina(nominaOrigen);
+                        break;
+                    }
+                }
             }
-            for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
-                System.out.println("FP: " + facturaPagada.getFacturaPagadaId());
+            //Creación de facturas pagadas
+            for (FacturaPagada facturaPagadaOrigen : transaccionOrigen.getFacturaPagadaList()) {
+                for (Transaccion transaccionNueva : transaccionListNuevoRemanente) {
+                    if (facturaPagadaOrigen.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId()
+                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {                        
+                        facturaPagadaOrigen.setFacturaPagadaId(null);
+                        facturaPagadaOrigen.setTransaccionId(transaccionNueva);
+                        facturaPagadaServicio.crearFacturaPagada(facturaPagadaOrigen);
+                        break;
+                    }
+                }
             }
-            transaccion.setTransaccionId(null);
-            transaccion.setFechaRegistro(new Date());
-            transaccion.setRemanenteMensualId(rmn);
-            transaccionServicio.create(transaccion);
         }
-        //Creacion de nómina
-        //Creación de facturas pagadas
+
     }
 
     public void detalleRPropiedad() {

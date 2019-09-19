@@ -117,8 +117,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fecha);
         anio = calendar.get(Calendar.YEAR);
-        mes = calendar.get(Calendar.MONTH) + 1;
-
+        mes = calendar.get(Calendar.MONTH) + 1;             
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
         reloadFacturaPagada();
         obtenerRemanenteMensual();
@@ -142,7 +141,8 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         }
         remanenteMensualSelected = remanenteMensualList.get(0);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")) {
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoRegistro = Boolean.FALSE;
             renderEdition = Boolean.TRUE;
         } else {
