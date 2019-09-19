@@ -27,10 +27,14 @@ public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implement
         List<Nomina> nominaListActiva = new ArrayList<Nomina>();
         for (Nomina nomina : nominaList) {
             System.out.println("Ultimo estado: " + nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1));
-            if (nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).equals("CambioSolicitado")) {                
-
+            if (!nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(nomina.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).equals("CambioSolicitado")) {
+                nominaListActiva.add(nomina);
             }
         }
+        for (Nomina nomina : nominaListActiva) {
+            System.out.println("nominaActiva: "+nomina.getNomNombres());
+        }
+
         return nominaList;
     }
 
