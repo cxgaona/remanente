@@ -211,7 +211,7 @@
             </p:dialog>                
 
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{verificarRemanenteMensualCtrl.tituloPagina}</h1> 
-            
+
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{verificarRemanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
@@ -324,7 +324,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -386,7 +386,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -447,7 +447,8 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank">
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
+                                       style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>

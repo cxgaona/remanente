@@ -98,7 +98,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         rm.setSolicitudCambioUrl(null);
         rm.setInformeAprobacionUrl(null);
         this.create(rm);
-        
+
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         String[] criteriaNombres = {"remanenteMensualOrigenId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
@@ -107,9 +107,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
-        System.out.println("Size: "+remanenteMensualList.size());
+        System.out.println("Size: " + remanenteMensualList.size());
         for (RemanenteMensual rmAux : remanenteMensualList) {
-            rmAux.getRemanenteMensualOrigenId();            
+            rmAux.getRemanenteMensualOrigenId();
             rmn = rmAux;
             break;
         }

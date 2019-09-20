@@ -7,6 +7,7 @@
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
             <p:dialog header = "Selección de Archivo... "
                       id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
                 <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
@@ -52,8 +53,157 @@
 
                     </p:dataTable>
                 </h:form>
-            </p:dialog>                   
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
+            </p:dialog>  
+
+            <p:dialog id="tramiteRegistroDlg"
+                      header="Trámites Registro de la Propiedad / Mercantil" 
+                      modal="true"
+                      widgetVar="tramiteRegistroDlg" width="90%" height="auto" 
+                      resizable="false">    
+                <h:form id="formTramiteRegistroDlg">
+                    <p:dataTable id="tramiteTbl"
+                                 value="#{remanenteMensualCtrl.tramiteRPropiedadMercantilList}" 
+                                 var="tramite"
+                                 rowKey="#{tramite.tramiteId}"                                 
+                                 reflow="true" rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15">                        
+                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
+                            <h:outputText value="#{tramite.tipo}" />
+                        </p:column>
+                        <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
+                            <h:outputText value="#{tramite.numero}" />
+                        </p:column>
+                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
+                            <h:outputText value="#{tramite.fecha}" />
+                        </p:column>
+                        <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
+                            <h:outputText value="#{tramite.numeroComprobantePago}" />
+                        </p:column>                            
+                        <p:column headerText="Valor" sortBy="#{tramite.valor}">
+                            <h:outputText value="#{tramite.valor}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains">
+                            <h:outputText value="#{tramite.acto}" />
+                        </p:column>                            
+                    </p:dataTable>   
+                </h:form>
+            </p:dialog>
+            <!--Egresos-->
+            <p:dialog id="egresosDlg"
+                      header="Egresos Registro de la Propiedad / Mercantil" 
+                      modal="true"
+                      widgetVar="egresosDlg" width="95%" height="auto" 
+                      resizable="false">    
+                <h:form id="formEgresosDlg">
+                    <p:dataTable id="nominaTbl"
+                                 styleClass="nominaTbl"                        
+                                 var="nomina" 
+                                 value="#{remanenteMensualCtrl.egresoNominaList}" 
+                                 editable="true"                                  
+                                 reflow="true" rows="10" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,25"
+                                 style="margin-bottom: 10px">
+                        <f:facet name="header">
+                            Gastos por Nómina
+                        </f:facet>
+                        <p:column headerText="Nombre" 
+                                  sortBy="#{nomina.nomNombres}" 
+                                  filterBy="#{nomina.nomNombres}" 
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{nomina.nomNombres}"/>                            
+                        </p:column>
+                        <p:column headerText="Cargo"
+                                  sortBy="#{nomina.cargo}" 
+                                  filterBy="#{nomina.cargo}" 
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{nomina.cargo}" />
+                        </p:column>
+                        <p:column headerText="Remuneración">
+                            <h:outputText value="#{nomina.remuneracion}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>                              
+                        </p:column>
+                        <p:column headerText="Aporte Patronal">
+                            <h:outputText value="#{nomina.aportePatronal}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>                            
+                        </p:column>
+                        <p:column headerText="Impuesto a la Renta">
+                            <h:outputText value="#{nomina.impuestoRenta}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>                            
+                        </p:column>
+                        <p:column headerText="Fondos de Reserva">
+                            <h:outputText value="#{nomina.fondosReserva}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Décimo Tercero">
+                            <h:outputText value="#{nomina.decimoTercero}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>                            
+                        </p:column>
+                        <p:column headerText="Décimo Cuarto">
+                            <h:outputText value="#{nomina.decimoCuarto}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Total Descuento">
+                            <h:outputText value="#{nomina.totalDesc}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Líquido a Recibir">
+                            <h:outputText value="#{nomina.liquidoRecibir}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>                    
+                    </p:dataTable>    
+
+                    <p:dataTable id="facturaPagadaTbl"                                     
+                                 var="facturaPagada" 
+                                 value="#{remanenteMensualCtrl.egresoFacturaList}"                                      
+                                 reflow="true" rows="10" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,25">
+                        <f:facet name="header">
+                            Facturas Pagadas
+                        </f:facet>                            
+                        <p:column headerText="Número">
+                            <h:outputText value="#{facturaPagada.numero}" />                                
+                        </p:column>
+                        <p:column headerText="Fecha">
+                            <h:outputText value="#{facturaPagada.fecha}" >
+                                <f:convertDateTime pattern="yyyy/MM/dd" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tipo"
+                                  sortBy="#{facturaPagada.tipo}" 
+                                  filterBy="#{facturaPagada.tipo}" 
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{facturaPagada.tipo}" />  
+                        </p:column>
+                        <p:column headerText="Valor">
+                            <h:outputText value="#{facturaPagada.valor}" >
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Detalle" 
+                                  sortBy="#{facturaPagada.detalle}" 
+                                  filterBy="#{facturaPagada.detalle}" 
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{facturaPagada.detalle}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>  
+                </h:form>
+            </p:dialog>
+
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
@@ -149,8 +299,15 @@
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
-                                <p:column colspan="3">
-                                    <h:outputText value="Ingresos Registro de la Propiedad" />
+                                <p:column colspan="2">
+                                    <h:outputText value="Ingresos Registro de la Propiedad" />                                    
+                                </p:column>
+                                <p:column colspan="1" style="text-align: center"> 
+                                    <p:commandButton icon="fa fa-fw fa-search" 
+                                                     title="Detalle de transacción"                                                      
+                                                     onclick="PF('tramiteRegistroDlg').show();"
+                                                     action="#{remanenteMensualCtrl.detalleRPropiedad}" 
+                                                     update="formTramiteRegistroDlg"/>
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
@@ -159,12 +316,10 @@
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 'number':'currency'}"
-                                                             currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? '':'$'}"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 0:2}"/>
-                                        </h:outputText></f:facet>
+                                        <h:outputText value="#{transaccion}">
+                                            <f:converter converterId="valorConverter"  />
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
                                                 return false;
                                             }" /></f:facet>
@@ -176,7 +331,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -215,8 +370,15 @@
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
-                                <p:column colspan="3">
+                                <p:column colspan="2">
                                     <h:outputText value="Ingresos Registro Mercantil" />
+                                </p:column>
+                                <p:column colspan="1" style="text-align: center"> 
+                                    <p:commandButton icon="fa fa-fw fa-search" 
+                                                     title="Detalle de transacción"                                                      
+                                                     onclick="PF('tramiteRegistroDlg').show();"
+                                                     action="#{remanenteMensualCtrl.detalleRMercantil()}" 
+                                                     update="formTramiteRegistroDlg"/>
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
@@ -225,15 +387,14 @@
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="currency"
-                                                             currencySymbol="$"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="2"/>
-                                        </h:outputText></f:facet>
+                                        <h:outputText value="#{transaccion}">
+                                            <f:converter converterId="valorConverter"  />
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
                                                 return false;
-                                            }" /></f:facet>
+                                            }" />
+                                    </f:facet>
                                 </p:cellEditor>
                             </p:column >                              
                             <p:column width="15%" >
@@ -242,7 +403,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -277,10 +438,17 @@
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
-                                <p:column colspan="3">
-                                    <h:outputText value="Gastos Actividad Registral (Propiedad y Mercantil)" />
+                                <p:column colspan="2">
+                                    <h:outputText value="Gastos Actividad Registral (Propiedad y Mercantil)" /> 
                                 </p:column>
-                            </p:headerRow>                            
+                                <p:column colspan="1" style="text-align: center"> 
+                                    <p:commandButton icon="fa fa-fw fa-search" 
+                                                     title="Detalle de transacción"                                                      
+                                                     onclick="PF('egresosDlg').show();"
+                                                     action="#{remanenteMensualCtrl.detalleEgresos}" 
+                                                     update="formEgresosDlg"/>
+                                </p:column>
+                            </p:headerRow>                           
                             <p:column headerText="Detalle" width="60%">
                                 <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
                             </p:column>
@@ -303,7 +471,8 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank">
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
+                                       style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>

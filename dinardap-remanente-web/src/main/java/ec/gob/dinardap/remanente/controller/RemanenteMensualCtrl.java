@@ -1,7 +1,10 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.FacturaPagada;
+import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
@@ -47,6 +50,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private String mesSelected;
     private Integer institucionId;
     private Integer usuarioId;
+    private String tituloDetalleDlg;
 
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
@@ -57,6 +61,9 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private List<Transaccion> transaccionRMercantilList;
     private List<Transaccion> transaccionEgresosList;
     private List<Transaccion> transaccionList;
+    private List<Tramite> tramiteRPropiedadMercantilList;
+    private List<Nomina> egresoNominaList;
+    private List<FacturaPagada> egresoFacturaList;
 
     private Boolean btnActivated;
     private Boolean displayUploadEdit;
@@ -347,6 +354,56 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             System.out.println("Estado: " + erm.getDescripcion());
         }
     }
+    
+    public void detalleRPropiedad() {
+        tituloDetalleDlg = "Registro de la Propiedad";
+        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
+        for (Transaccion transaccion : transaccionRPropiedadList) {
+            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadMercantilList.add(tramite);
+                }
+            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadMercantilList.add(tramite);
+                }
+            }
+        }
+    }
+
+    public void detalleRMercantil() {
+        tituloDetalleDlg = "Registro Mercantil";
+        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
+        for (Transaccion transaccion : transaccionRMercantilList) {
+            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(5)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadMercantilList.add(tramite);
+                }
+            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(6)) {
+                for (Tramite tramite : transaccion.getTramiteList()) {
+                    tramiteRPropiedadMercantilList.add(tramite);
+                }
+            }
+        }
+    }
+    
+    public void detalleEgresos() {
+        egresoNominaList = new ArrayList<Nomina>();
+        egresoFacturaList = new ArrayList<FacturaPagada>();
+        for (Transaccion transaccion : transaccionEgresosList) {
+            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(9)) {
+                for (Nomina nomina : transaccion.getNominaList()) {
+                    egresoNominaList.add(nomina);
+                }
+            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)
+                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)
+                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
+                for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
+                    egresoFacturaList.add(facturaPagada);
+                }
+            }
+        }
+    }
 
     public String getTituloPagina() {
         return tituloPagina;
@@ -491,5 +548,41 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     public void setDisplaySolicitud(Boolean displaySolicitud) {
         this.displaySolicitud = displaySolicitud;
     }
+
+    public String getTituloDetalleDlg() {
+        return tituloDetalleDlg;
+    }
+
+    public void setTituloDetalleDlg(String tituloDetalleDlg) {
+        this.tituloDetalleDlg = tituloDetalleDlg;
+    }
+
+    public List<Tramite> getTramiteRPropiedadMercantilList() {
+        return tramiteRPropiedadMercantilList;
+    }
+
+    public void setTramiteRPropiedadMercantilList(List<Tramite> tramiteRPropiedadMercantilList) {
+        this.tramiteRPropiedadMercantilList = tramiteRPropiedadMercantilList;
+    }
+
+    public List<Nomina> getEgresoNominaList() {
+        return egresoNominaList;
+    }
+
+    public void setEgresoNominaList(List<Nomina> egresoNominaList) {
+        this.egresoNominaList = egresoNominaList;
+    }
+
+    public List<FacturaPagada> getEgresoFacturaList() {
+        return egresoFacturaList;
+    }
+
+    public void setEgresoFacturaList(List<FacturaPagada> egresoFacturaList) {
+        this.egresoFacturaList = egresoFacturaList;
+    }
+    
+    
+    
+    
 
 }

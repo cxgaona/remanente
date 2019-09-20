@@ -25,8 +25,14 @@ public class FacturaPagadaDaoEjb extends RemanenteGenericDao<FacturaPagada, Inte
         query.setParameter("anio", anio);
         query.setParameter("mes", mes);
         List<FacturaPagada> facturaPagadaList = new ArrayList<FacturaPagada>();
-        facturaPagadaList = query.getResultList();  
-        return facturaPagadaList;
+        facturaPagadaList = query.getResultList();
+        List<FacturaPagada> facturaPagadaListActiva = new ArrayList<FacturaPagada>();
+        for (FacturaPagada facturaPagada : facturaPagadaList) {
+            if (!facturaPagada.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(facturaPagada.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioAprobado")) {
+                facturaPagadaListActiva.add(facturaPagada);
+            }
+        }
+        return facturaPagadaListActiva;
     }
 
 }

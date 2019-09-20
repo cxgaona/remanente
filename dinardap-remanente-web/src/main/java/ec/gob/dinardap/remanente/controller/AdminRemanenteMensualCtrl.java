@@ -276,21 +276,21 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     }
 
     public void aprobarSolicitudCambio() {
-//        remanenteMensualSelected.setInformeAprobacionUrl("/archivos/informeSolicitudCambio/" + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
-//        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
-//        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
-//        Usuario u = new Usuario();
-//        u.setUsuarioId(usuarioId);
-//        erm.setRemanenteMensualId(remanenteMensualSelected);
-//        erm.setUsuarioId(u);
-//        erm.setFechaRegistro(new Date());
-//        erm.setDescripcion("CambioAprobado");
-//        estadoRemanenteMensualServicio.create(erm);
-//        displaySolicitud = Boolean.FALSE;
+        remanenteMensualSelected.setInformeAprobacionUrl("/archivos/informeSolicitudCambio/" + "isc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
+        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+        Usuario u = new Usuario();
+        u.setUsuarioId(usuarioId);
+        erm.setRemanenteMensualId(remanenteMensualSelected);
+        erm.setUsuarioId(u);
+        erm.setFechaRegistro(new Date());
+        erm.setDescripcion("CambioAprobado");
+        estadoRemanenteMensualServicio.create(erm);
+        displaySolicitud = Boolean.FALSE;
         System.out.println("remaneneteOriginal Seleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
         crearVersionRemanente(remanenteMensualSelected);
         remanenteMensualSelected = new RemanenteMensual();
-//        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);        
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);        
     }
 
     public void rechazarSolicitudCambio() {
@@ -340,6 +340,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                             .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {
                         tramiteOrigen.setTramiteId(null);
                         tramiteOrigen.setTransaccionId(transaccionNueva);
+                        tramiteOrigen.setFechaRegistro(new Date());
                         tramiteServicio.crearTramite(tramiteOrigen);
                         break;
                     }
@@ -352,6 +353,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                             .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {                        
                         nominaOrigen.setNominaId(null);
                         nominaOrigen.setTransaccionId(transaccionNueva);
+                        nominaOrigen.setFechaRegistro(new Date());
                         nominaServicio.crearNomina(nominaOrigen);
                         break;
                     }
@@ -364,6 +366,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                             .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {                        
                         facturaPagadaOrigen.setFacturaPagadaId(null);
                         facturaPagadaOrigen.setTransaccionId(transaccionNueva);
+                        facturaPagadaOrigen.setFechaRegistro(new Date());
                         facturaPagadaServicio.crearFacturaPagada(facturaPagadaOrigen);
                         break;
                     }

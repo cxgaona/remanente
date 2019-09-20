@@ -133,13 +133,15 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
+        
         for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("rm" + rm.getMes());
+            System.out.println("rm" + rm.getRemanenteMensualId());
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
+                System.out.println("erm:" + erm.getDescripcion());
             }
         }
-        remanenteMensualSelected = remanenteMensualList.get(0);
+        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size()-1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
