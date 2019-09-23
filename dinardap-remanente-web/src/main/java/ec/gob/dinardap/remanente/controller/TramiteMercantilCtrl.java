@@ -116,7 +116,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
             }
         }
-        remanenteMensualSelected = remanenteMensualList.get(0);
+        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size()-1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
