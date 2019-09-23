@@ -215,7 +215,7 @@
                             <p:column headerText="Número">
                                 <p:cellEditor>
                                     <f:facet name="output"><h:outputText value="#{facturaPagada.numero}" /></f:facet>
-                                    <f:facet name="input"><p:inputText id="numero" value="#{facturaPagada.numero}" maxlength="10" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                    <f:facet name="input"><p:inputNumber id="numero" value="#{facturaPagada.numero}" maxlength="10" style="width:100%" onkeypress="if (event.keyCode == 13) {
                                                 return false;
                                             }"/></f:facet>
                                 </p:cellEditor>
