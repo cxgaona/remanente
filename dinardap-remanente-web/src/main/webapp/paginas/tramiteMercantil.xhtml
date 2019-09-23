@@ -86,17 +86,22 @@
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
 
-                        <p:outputLabel for="numero" value="Número:" />
-                        <p:inputNumber id="numero" value="#{tramiteMercantilCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" />
+                        <p:outputLabel for="numero" value="Número:" />                        
+                        <p:inputText id="numero" value="#{tramiteMercantilCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>
+
 
                         <p:outputLabel for="fecha" value="Fecha:" />
                         <p:datePicker id="fecha" value="#{tramiteMercantilCtrl.tramiteSelected.fecha}" locale="es" monthNavigator="true" pattern="yyyy-MM-dd" style="width: 90%"/>
 
                         <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
-                        <p:inputNumber id="comprobante" value="#{tramiteMercantilCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" />
-
+                        <p:inputText id="comprobante" value="#{tramiteMercantilCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" >
+                            <p:keyFilter regEx="/[\d]/" />  
+                        </p:inputText>                                  
+                        
                         <p:outputLabel for="valor" value="Valor:" />
-                        <p:inputNumber id="valor" value="#{tramiteMercantilCtrl.tramiteSelected.valor}" style="width: 90%"/>
+                        <p:inputNumber id="valor" value="#{tramiteMercantilCtrl.tramiteSelected.valor}" style="width: 90%" symbol="$" emptyValue="sign"/>                        
 
                         <p:outputLabel for="acto" value="Acto:" />
                         <p:inputTextarea id="acto" rows="3" cols="40" maxlength="300" autoResize="false" value="#{tramiteMercantilCtrl.tramiteSelected.acto}"/>

@@ -36,7 +36,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
-    
+
     private String tituloMercantil, tituloPropiedad, actividadRegistral;
     private List<Tramite> tramiteList;
     private Integer anio, mes;
@@ -66,15 +66,15 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil");
-        tramiteSelected = new Tramite();
         obtenerRemanenteMensual();
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil",remanenteMensualSelected.getRemanenteMensualId());
+        tramiteSelected = new Tramite();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-        disableNuevoT = Boolean.FALSE;        
+        disableNuevoT = Boolean.FALSE;
     }
 
     public Boolean getDisableDelete() {
@@ -105,26 +105,25 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         btnGuardar = "Actualizar";
         obtenerRemanenteMensual();
     }
-    
+
     public void obtenerRemanenteMensual() {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
-        for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("rm" + rm.getMes());
-            for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
-                System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
-            }
-        }
-        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size()-1);
+        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
         } else {
-            renderEdition  = Boolean.FALSE;
+            renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
+        }
+        System.out.println("RemanenteSeleccionado " + remanenteMensualSelected.getRemanenteMensualId());
+        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
+            System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
+            System.out.println("erm:" + erm.getDescripcion());
         }
     }
 
@@ -164,8 +163,8 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             tramiteSelected.setTransaccionId(t);
             tramiteSelected.setFechaRegistro(new Date());
             tramiteServicio.editTramite(tramiteSelected);
-        }              
-        actualizarTransaccionValores();        
+        }
+        actualizarTransaccionValores();
         tramiteSelected = new Tramite();
         reloadTramite();
         actualizarTransaccionConteo();
@@ -217,10 +216,10 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         tramiteList = new ArrayList<Tramite>();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil");
-        disableDelete = Boolean.TRUE;
-        renderEdition = Boolean.FALSE;
         obtenerRemanenteMensual();
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil",remanenteMensualSelected.getRemanenteMensualId());
+        disableDelete = Boolean.TRUE;
+        renderEdition = Boolean.FALSE;        
     }
 
     public void borrarTramite() {
@@ -228,7 +227,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 5);
         tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 6);
         reloadTramite();
-        actualizarTransaccionConteo();   
+        actualizarTransaccionConteo();
         disableDelete = Boolean.TRUE;
     }
 

@@ -66,9 +66,9 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad");
-        tramiteSelected = new Tramite();
         obtenerRemanenteMensual();
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad",remanenteMensualSelected.getRemanenteMensualId());
+        tramiteSelected = new Tramite();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
@@ -217,10 +217,10 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         tramiteList = new ArrayList<Tramite>();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad");
+        obtenerRemanenteMensual();
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad",remanenteMensualSelected.getRemanenteMensualId());
         disableDelete = Boolean.TRUE;
         renderEdition = Boolean.FALSE;
-        obtenerRemanenteMensual();
     }
 
     public void borrarTramite() {
