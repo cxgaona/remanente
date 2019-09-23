@@ -29,7 +29,7 @@
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Listado de estados del Remanentes" 
                       modal="true"
-                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="500" 
+                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="auto" 
                       resizable="false">
                 <h:form id="formEstadoRemanenteMensualDlg">
                     <p:dataTable id="estadoRemanenteMensualTbl"
@@ -240,7 +240,7 @@
                             <p:column headerText="Comentarios" sortBy="#{remanenteMensual.comentarios}" filterBy="#{remanenteMensual.comentarios}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.comentarios}"/>
                             </p:column>
-                            <p:column headerText="Solicitud de cambio" sortBy="#{remanenteMensual.solicitudCambioUrl}" filterBy="#{remanenteMensual.solicitudCambioUrl}" filterMatchMode="contains">                                
+                            <p:column headerText="Solicitud de cambio">                                
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.solicitudCambioUrl}" 
                                        style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}"
@@ -248,8 +248,13 @@
                                         <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
-                            <p:column headerText="Informe de aprobación" sortBy="#{remanenteMensual.informeAprobacionUrl}" filterBy="#{remanenteMensual.informeAprobacionUrl}" filterMatchMode="contains">
-                                <h:outputText value="#{remanenteMensual.informeAprobacionUrl}" />
+                            <p:column headerText="Informe de aprobación">
+                                <center>
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.informeAprobacionUrl}" 
+                                       style="visibility:#{empty remanenteMensual.informeAprobacionUrl ? 'hidden':'visible'}"
+                                       target="_blank">
+                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                </center>
                             </p:column>
                             <p:column headerText="Estado"  style="width:80px; text-align: center">
                                 <p:commandButton icon="fa fa-fw fa-list-ul" 

@@ -28,7 +28,7 @@
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Listado de estados del Remanentes" 
                       modal="true"
-                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="500" 
+                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="auto" 
                       resizable="false">
                 <h:form id="formEstadoRemanenteMensualDlg">
                     <p:dataTable id="estadoRemanenteMensualTbl"
@@ -73,19 +73,19 @@
                             </f:facet>  
                             <h:outputText value="#{tramite.tramiteId}"/>
                         </p:column>
-                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}" filterBy="#{tramite.tipo}" filterMatchMode="contains">
+                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
                             <h:outputText value="#{tramite.tipo}" />
                         </p:column>
                         <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
                             <h:outputText value="#{tramite.numero}" />
                         </p:column>
-                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}" filterBy="#{tramite.fecha}" filterMatchMode="contains">
+                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
                             <h:outputText value="#{tramite.fecha}" />
                         </p:column>
                         <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
                             <h:outputText value="#{tramite.numeroComprobantePago}" />
                         </p:column>                            
-                        <p:column headerText="Valor" sortBy="#{tramite.valor}" filterBy="#{tramite.valor}" filterMatchMode="contains">
+                        <p:column headerText="Valor" sortBy="#{tramite.valor}">
                             <h:outputText value="#{tramite.valor}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -251,11 +251,21 @@
                             <p:column headerText="Comentarios" sortBy="#{remanenteMensual.comentarios}" filterBy="#{remanenteMensual.comentarios}" filterMatchMode="contains">
                                 <h:outputText value="#{remanenteMensual.comentarios}"/>
                             </p:column>
-                            <p:column headerText="Solicitud de cambio" sortBy="#{remanenteMensual.solicitudCambioUrl}" filterBy="#{remanenteMensual.solicitudCambioUrl}" filterMatchMode="contains">
-                                <h:outputText value="#{remanenteMensual.solicitudCambioUrl}" />
+                            <p:column headerText="Solicitud de cambio">                                
+                                <center>
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.solicitudCambioUrl}" 
+                                       style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}"
+                                       target="_blank">
+                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                </center>
                             </p:column>
-                            <p:column headerText="Informe de aprobación" sortBy="#{remanenteMensual.informeAprobacionUrl}" filterBy="#{remanenteMensual.informeAprobacionUrl}" filterMatchMode="contains">
-                                <h:outputText value="#{remanenteMensual.informeAprobacionUrl}" />
+                            <p:column headerText="Informe de aprobación">
+                                <center>
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.informeAprobacionUrl}" 
+                                       style="visibility:#{empty remanenteMensual.informeAprobacionUrl ? 'hidden':'visible'}"
+                                       target="_blank">
+                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                </center>
                             </p:column>
                             <p:column headerText="Estado"  style="width:80px; text-align: center">
                                 <p:commandButton icon="fa fa-fw fa-list-ul" 
@@ -305,12 +315,10 @@
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 'number':'currency'}"
-                                                             currencySymbol="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? '':'$'}"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="#{transaccion.catalogoTransaccionId.catalogoTransaccionId.toString eq '4' ? 0:2}"/>
-                                        </h:outputText></f:facet>
+                                        <h:outputText value="#{transaccion}">
+                                            <f:converter converterId="valorConverter"  />
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
                                                 return false;
                                             }" /></f:facet>
@@ -322,7 +330,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -367,12 +375,10 @@
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <h:outputText value="#{transaccion.valorTotal}">
-                                            <f:convertNumber type="currency"
-                                                             currencySymbol="$"
-                                                             maxIntegerDigits="10"
-                                                             maxFractionDigits="2"/>
-                                        </h:outputText></f:facet>
+                                        <h:outputText value="#{transaccion}">
+                                            <f:converter converterId="valorConverter"  />
+                                        </h:outputText>
+                                    </f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {
                                                 return false;
                                             }" /></f:facet>
@@ -384,7 +390,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -445,7 +451,8 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank">
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
+                                       style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
