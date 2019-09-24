@@ -1,21 +1,18 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
-import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
-import ec.gob.dinardap.remanente.utils.FacesUtils;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,17 +21,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.apache.poi.util.IOUtils;
-import org.primefaces.event.FileUploadEvent;
-
-import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.UploadedFile;
 
 @Named(value = "remanenteCuatrimestralCtrl")
@@ -45,14 +36,22 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private String tituloPagina;
     private String nombreInstitucion;
     private Integer año;
+    private RemanenteCuatrimestral remanenteCuatrimestralSelected;
 
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
+    private List<Row> transaccionRPropiedadList;
+    private List<Row> transaccionRMercantilList;
+    private List<Row> transaccionEgresosList;
+
+    @EJB
+    private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
+    @EJB
+    private CatalogoTransaccionServicio catalogoTransaccionServicio;
 
     //Anteriores
     private UploadedFile file;
     private UploadedFile fileSolicitud;
 
-    private RemanenteMensual remanenteMensualSelected;
     private String mesSelected;
     private Integer institucionId;
     private Integer usuarioId;
@@ -63,9 +62,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private BigDecimal totalEgresos;
     private Transaccion transaccionSelected;
 
-    private List<Transaccion> transaccionRPropiedadList;
-    private List<Transaccion> transaccionRMercantilList;
-    private List<Transaccion> transaccionEgresosList;
     private List<Transaccion> transaccionList;
     private List<Tramite> tramiteRPropiedadMercantilList;
     private List<Nomina> egresoNominaList;
@@ -96,6 +92,10 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
 
         //Inicializacion de variables
         remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
+        remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
+        transaccionRPropiedadList = new ArrayList<Row>();
+        transaccionRMercantilList = new ArrayList<Row>();
+        transaccionEgresosList = new ArrayList<Row>();
 
         //FechaACtual
         Calendar calendar = Calendar.getInstance();
@@ -103,14 +103,9 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         año = calendar.get(Calendar.YEAR);
         tituloPagina = "Gestión Remanente Cuatrimestral";
 
-        
         //Proceso
-        remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
 
-        remanenteMensualSelected = new RemanenteMensual();
-        transaccionRPropiedadList = new ArrayList<Transaccion>();
-        transaccionRMercantilList = new ArrayList<Transaccion>();
-        transaccionEgresosList = new ArrayList<Transaccion>();
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
@@ -119,304 +114,317 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         displaySolicitud = Boolean.FALSE;
         transaccionSelected = new Transaccion();
 
-//        Integer.parseInt(this.getSessionVariable("institucionId"));
-        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-//                Integer.parseInt(this.getSessionVariable("usuarioId"));
-        nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
 //        remanenteCuatrimestralList = new ArrayList<RemanenteMensual>();
-
 //        remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
 //        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
 //        EncriptarCadenas.encriptarCadenaSha1(a);
 //        System.out.println("a = " + EncriptarCadenas.encriptarCadenaSha1(a));
     }
 
-    public void loadRemanenteMensualByAño() {
+    public void loadRemanenteCuatrimestralByAño() {
+        remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
+        remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
         if (año == null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             año = calendar.get(calendar.YEAR);
         }
-        btnActivated = Boolean.TRUE;
-        displayUploadEdit = Boolean.FALSE;
-        displaySolicitud = Boolean.FALSE;
-//        remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-        remanenteMensualSelected = new RemanenteMensual();
-        transaccionRPropiedadList = new ArrayList<Transaccion>();
-        transaccionRMercantilList = new ArrayList<Transaccion>();
-        transaccionEgresosList = new ArrayList<Transaccion>();
-        mesSelected = "Sin Selección";
+        remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
+//        btnActivated = Boolean.TRUE;
+//        displayUploadEdit = Boolean.FALSE;
+//        displaySolicitud = Boolean.FALSE;        
+//        mesSelected = "Sin Selección";
     }
 
-    public void onRowSelectRemanenteMensual() {
-        switch (remanenteMensualSelected.getMes()) {
-            case 1:
-                mesSelected = "Enero";
-                break;
-            case 2:
-                mesSelected = "Febrero";
-                break;
-            case 3:
-                mesSelected = "Marzo";
-                break;
-            case 4:
-                mesSelected = "Abril";
-                break;
-            case 5:
-                mesSelected = "Mayo";
-                break;
-            case 6:
-                mesSelected = "Junio";
-                break;
-            case 7:
-                mesSelected = "Julio";
-                break;
-            case 8:
-                mesSelected = "Agosto";
-                break;
-            case 9:
-                mesSelected = "Septiembre";
-                break;
-            case 10:
-                mesSelected = "Octubre";
-                break;
-            case 11:
-                mesSelected = "Noviembre";
-                break;
-            case 12:
-                mesSelected = "Diciembre";
-                break;
+    public void onRowSelectRemanenteCuatrimestral() {
+        List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
+        rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
+        List<Row> rows = new ArrayList<Row>();
+        for (RemanenteMensual remanenteMensual : rms) {
+            Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
+                @Override
+                public int compare(Transaccion o1, Transaccion o2) {
+                    return new Integer(o1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
+                }
+            });
         }
-        btnActivated = Boolean.FALSE;
-        displayUploadEdit = Boolean.TRUE;
-        transaccionRPropiedadList = new ArrayList<Transaccion>();
-        transaccionRMercantilList = new ArrayList<Transaccion>();
-        transaccionEgresosList = new ArrayList<Transaccion>();
-        totalIngRPropiedad = new BigDecimal(0);
-        totalIngRMercantil = new BigDecimal(0);
-        totalEgresos = new BigDecimal(0);
-        Collections.sort(remanenteMensualSelected.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+        for (CatalogoTransaccion catalogoTransaccion : catalogoTransaccionServicio.getCatalogoTransaccionList()) {
+            Row row = new Row();
+            row.setNombre(catalogoTransaccion.getNombre());
+            rows.add(row);
+        }
+        int j = 0;
+        for (RemanenteMensual remanenteMensual : rms) {
+            int i = 0;
+            for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+                switch (j) {
+                    case 0:
+                        rows.get(i).setValorMes1(transaccion.getValorTotal());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        break;
+                    case 1:
+                        rows.get(i).setValorMes2(transaccion.getValorTotal());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        break;
+                    case 2:
+                        rows.get(i).setValorMes3(transaccion.getValorTotal());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        break;
+                    case 3:
+                        rows.get(i).setValorMes4(transaccion.getValorTotal());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        break;
+                }
+                i++;
+            }
+            j++;
+        }
+        for (Row r : rows) {
+            if (r.getTipo().equals("Ingreso-Propiedad")
+                    || r.getTipo().equals("Ingreso-Mercantil")) {
+                transaccionRPropiedadList.add(r);
+            } else if (r.getTipo().equals("Egreso")) {
+                transaccionEgresosList.add(r);
+            }
+        }
+        System.out.println("TransaccionesPropiedad");
+        for (Row r : transaccionRPropiedadList) {
+            System.out.println("Transaccion: " + r.getNombre());
+            System.out.println("Transaccion Nombre: " + r.getNombre());
+            System.out.println("Transaccion Valor1: " + r.getValorMes1());
+            System.out.println("Transaccion Valor2: " + r.getValorMes2());
+            System.out.println("Transaccion Valor3: " + r.getValorMes3());
+            System.out.println("Transaccion Valor4: " + r.getValorMes4());
+            System.out.println("Transaccion Tipo: " + r.getTipo());
+        }
+        System.out.println("TransaccionesMercantil");
+        for (Row r : transaccionRMercantilList) {
+            System.out.println("Transaccion: " + r.getNombre());
+            System.out.println("Transaccion Nombre: " + r.getNombre());
+            System.out.println("Transaccion Valor1: " + r.getValorMes1());
+            System.out.println("Transaccion Valor2: " + r.getValorMes2());
+            System.out.println("Transaccion Valor3: " + r.getValorMes3());
+            System.out.println("Transaccion Valor4: " + r.getValorMes4());
+            System.out.println("Transaccion Tipo: " + r.getTipo());
+        }
+        System.out.println("TransaccionesEgresos");
+        for (Row r : transaccionEgresosList) {
+            System.out.println("Transaccion: " + r.getNombre());
+            System.out.println("Transaccion Nombre: " + r.getNombre());
+            System.out.println("Transaccion Valor1: " + r.getValorMes1());
+            System.out.println("Transaccion Valor2: " + r.getValorMes2());
+            System.out.println("Transaccion Valor3: " + r.getValorMes3());
+            System.out.println("Transaccion Valor4: " + r.getValorMes4());
+            System.out.println("Transaccion Tipo: " + r.getTipo());
+        }
+
+    }
+
+    public List<RemanenteMensual> getRemanentesActivos(List<RemanenteMensual> remanenteMensualList) {
+        List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
+        for (RemanenteMensual remanenteMensual : remanenteMensualList) {
+            if (!remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioAprobado")) {
+                rms.add(remanenteMensual);
+            }
+        }
+        Collections.sort(rms, new Comparator<RemanenteMensual>() {
             @Override
-            public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
-                return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+            public int compare(RemanenteMensual rm1, RemanenteMensual rm2) {
+                return new Integer(rm1.getMes()).compareTo(new Integer(rm2.getMes()));
             }
         });
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
-            btnActivated = Boolean.FALSE;
-            displayUploadEdit = Boolean.TRUE;
-        } else {
-            btnActivated = Boolean.TRUE;
-            displayUploadEdit = Boolean.FALSE;
-        }
-
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado")) {
-            System.out.println("Entro en el if");
-            System.out.println(remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion());
-            displaySolicitud = Boolean.TRUE;
-        } else {
-            displaySolicitud = Boolean.FALSE;
-        }
-
-        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes(),
-                remanenteMensualSelected.getRemanenteMensualId());
-        for (Transaccion t : transaccionList) {
-            if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Propiedad")) {
-                transaccionRPropiedadList.add(t);
-                if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
-                    totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
-                }
-            } else if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Mercantil")) {
-                transaccionRMercantilList.add(t);
-                if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
-                    totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
-                }
-            } else if (t.getCatalogoTransaccionId().getTipo().equals("Egreso")) {
-                transaccionEgresosList.add(t);
-                totalEgresos = totalEgresos.add(t.getValorTotal());
-            }
-        }
-        Collections.sort(transaccionRPropiedadList, new Comparator<Transaccion>() {
-            @Override
-            public int compare(Transaccion t1, Transaccion t2) {
-                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
-            }
-        });
-        Collections.sort(transaccionRMercantilList, new Comparator<Transaccion>() {
-            @Override
-            public int compare(Transaccion t1, Transaccion t2) {
-                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
-            }
-        });
-        Collections.sort(transaccionEgresosList, new Comparator<Transaccion>() {
-            @Override
-            public int compare(Transaccion t1, Transaccion t2) {
-                return new Integer(t1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(t2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
-            }
-        });
-
+        return rms;
     }
 
-    public void rowTransaccionEdit(RowEditEvent event) {
-        Transaccion transaccion = new Transaccion();
-        transaccion = (Transaccion) event.getObject();
-        transaccionServicio.editTransaccion(transaccion);
-        totalIngRPropiedad = new BigDecimal(0);
-        totalIngRMercantil = new BigDecimal(0);
-        totalEgresos = new BigDecimal(0);
-        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes(),
-                remanenteMensualSelected.getRemanenteMensualId());
-        for (Transaccion t : transaccionRPropiedadList) {
-            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
-                totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
-            }
-        }
-        for (Transaccion t : transaccionRMercantilList) {
-            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
-                totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
-            }
-        }
-        for (Transaccion t : transaccionEgresosList) {
-            totalEgresos = totalEgresos.add(t.getValorTotal());
-        }
+//
+//    
+//
+//    public void rowTransaccionEdit(RowEditEvent event) {
+//        Transaccion transaccion = new Transaccion();
+//        transaccion = (Transaccion) event.getObject();
+//        transaccionServicio.editTransaccion(transaccion);
+//        totalIngRPropiedad = new BigDecimal(0);
+//        totalIngRMercantil = new BigDecimal(0);
+//        totalEgresos = new BigDecimal(0);
+//        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
+//                remanenteCuatrimestralSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+//                remanenteCuatrimestralSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+//                remanenteCuatrimestralSelected.getMes(),
+//                remanenteCuatrimestralSelected.getRemanenteMensualId());
+//        for (Transaccion t : transaccionRPropiedadList) {
+//            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)) {
+//                totalIngRPropiedad = totalIngRPropiedad.add(t.getValorTotal());
+//            }
+//        }
+//        for (Transaccion t : transaccionRMercantilList) {
+//            if (!t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
+//                totalIngRMercantil = totalIngRMercantil.add(t.getValorTotal());
+//            }
+//        }
+//        for (Transaccion t : transaccionEgresosList) {
+//            totalEgresos = totalEgresos.add(t.getValorTotal());
+//        }
+//    }
+//
+//    public void rowTransaccionEditCancel() {
+//        System.out.println("Cancelado");
+//    }
+//
+//    public void completarRemanenteMensual() {
+//        System.out.println("===Guardar Remanente Mensual===");
+//        System.out.println("Remanente mensual ID: " + remanenteCuatrimestralSelected.getRemanenteMensualId());
+//        System.out.println("Remanente mensual Mes: " + remanenteCuatrimestralSelected.getMes());
+//        List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
+//        estadoRemanenteMensualList = remanenteCuatrimestralSelected.getEstadoRemanenteMensualList();
+//        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+//        Usuario u = new Usuario();
+//        u.setUsuarioId(usuarioId);
+//        erm.setRemanenteMensualId(remanenteCuatrimestralSelected);
+//        erm.setUsuarioId(u);
+//        erm.setFechaRegistro(new Date());
+//        erm.setDescripcion("Completo");
+//        estadoRemanenteMensualServicio.create(erm);
+//        btnActivated = Boolean.TRUE;
+//        displayUploadEdit = Boolean.FALSE;
+////        remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+//    }
+//
+//    public void handleFileUploadRPropiedad(FileUploadEvent event) {
+//        UploadedFile file = event.getFile();
+//        try {
+//            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+//            String path = FacesUtils.getPath() + "/archivos/transacciones/";
+//            String realPath = path + transaccionSelected.getTransaccionId() + ".pdf";
+//            FileOutputStream fos = new FileOutputStream(realPath);
+//            fos.write(fileByte);
+//            fos.close();
+//            transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
+//            transaccionServicio.editTransaccion(transaccionSelected);
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IOException ex) {
+//            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
+//
+//    public void handleFileUploadSolicitud(FileUploadEvent event) {
+//        UploadedFile file = event.getFile();
+//        try {
+//            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+//            String path = FacesUtils.getPath() + "/archivos/solicitudCambio/";
+//            String realPath = path + "sc_" + remanenteCuatrimestralSelected.getRemanenteMensualId() + ".pdf";
+//            FileOutputStream fos = new FileOutputStream(realPath);
+//            fos.write(fileByte);
+//            fos.close();
+//            remanenteCuatrimestralSelected.setSolicitudCambioUrl("/archivos/solicitudCambio/" + "sc_" + remanenteCuatrimestralSelected.getRemanenteMensualId() + ".pdf");
+//            remanenteMensualServicio.editRemanenteMensual(remanenteCuatrimestralSelected);
+//
+//            EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
+//            Usuario u = new Usuario();
+//            u.setUsuarioId(usuarioId);
+//            erm.setRemanenteMensualId(remanenteCuatrimestralSelected);
+//            erm.setUsuarioId(u);
+//            erm.setFechaRegistro(new Date());
+//            erm.setDescripcion("CambioSolicitado");
+//            estadoRemanenteMensualServicio.create(erm);
+//            displaySolicitud = Boolean.FALSE;
+////            remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IOException ex) {
+//            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
+//
+//    public void verEstadoRemanenteMensualSeleccionado() {
+//        System.out.println("Remanente: " + remanenteCuatrimestralSelected.getMes());
+//        for (EstadoRemanenteMensual erm : remanenteCuatrimestralSelected.getEstadoRemanenteMensualList()) {
+//            System.out.println("Estado: " + erm.getUsuarioId().getNombre());
+//            System.out.println("Estado: " + erm.getFechaRegistro());
+//            System.out.println("Estado: " + erm.getDescripcion());
+//        }
+//    }
+//
+//    public void detalleRPropiedad() {
+//        tituloDetalleDlg = "Registro de la Propiedad";
+//        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
+//        for (Transaccion transaccion : transaccionRPropiedadList) {
+//            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
+//                for (Tramite tramite : transaccion.getTramiteList()) {
+//                    tramiteRPropiedadMercantilList.add(tramite);
+//                }
+//            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
+//                for (Tramite tramite : transaccion.getTramiteList()) {
+//                    tramiteRPropiedadMercantilList.add(tramite);
+//                }
+//            }
+//        }
+//    }
+//
+//    public void detalleRMercantil() {
+//        tituloDetalleDlg = "Registro Mercantil";
+//        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
+//        for (Transaccion transaccion : transaccionRMercantilList) {
+//            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(5)) {
+//                for (Tramite tramite : transaccion.getTramiteList()) {
+//                    tramiteRPropiedadMercantilList.add(tramite);
+//                }
+//            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(6)) {
+//                for (Tramite tramite : transaccion.getTramiteList()) {
+//                    tramiteRPropiedadMercantilList.add(tramite);
+//                }
+//            }
+//        }
+//    }
+//
+//    public void detalleEgresos() {
+//        egresoNominaList = new ArrayList<Nomina>();
+//        egresoFacturaList = new ArrayList<FacturaPagada>();
+//        for (Transaccion transaccion : transaccionEgresosList) {
+//            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(9)) {
+//                for (Nomina nomina : transaccion.getNominaList()) {
+//                    egresoNominaList.add(nomina);
+//                }
+//            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)
+//                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)
+//                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
+//                for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
+//                    egresoFacturaList.add(facturaPagada);
+//                }
+//            }
+//        }
+//    }
+    //Getters & Setters
+    public List<Row> getTransaccionRPropiedadList() {
+        return transaccionRPropiedadList;
     }
 
-    public void rowTransaccionEditCancel() {
-        System.out.println("Cancelado");
+    public void setTransaccionRPropiedadList(List<Row> transaccionRPropiedadList) {
+        this.transaccionRPropiedadList = transaccionRPropiedadList;
     }
 
-    public void completarRemanenteMensual() {
-        System.out.println("===Guardar Remanente Mensual===");
-        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
-        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
-        List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
-        estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
-        EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
-        Usuario u = new Usuario();
-        u.setUsuarioId(usuarioId);
-        erm.setRemanenteMensualId(remanenteMensualSelected);
-        erm.setUsuarioId(u);
-        erm.setFechaRegistro(new Date());
-        erm.setDescripcion("Completo");
-        estadoRemanenteMensualServicio.create(erm);
-        btnActivated = Boolean.TRUE;
-        displayUploadEdit = Boolean.FALSE;
-//        remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+    public List<Row> getTransaccionRMercantilList() {
+        return transaccionRMercantilList;
     }
 
-    public void handleFileUploadRPropiedad(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
-        try {
-            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/transacciones/";
-            String realPath = path + transaccionSelected.getTransaccionId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
-            transaccionServicio.editTransaccion(transaccionSelected);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void setTransaccionRMercantilList(List<Row> transaccionRMercantilList) {
+        this.transaccionRMercantilList = transaccionRMercantilList;
     }
 
-    public void handleFileUploadSolicitud(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
-        try {
-            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/solicitudCambio/";
-            String realPath = path + "sc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            remanenteMensualSelected.setSolicitudCambioUrl("/archivos/solicitudCambio/" + "sc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
-            remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
-
-            EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
-            Usuario u = new Usuario();
-            u.setUsuarioId(usuarioId);
-            erm.setRemanenteMensualId(remanenteMensualSelected);
-            erm.setUsuarioId(u);
-            erm.setFechaRegistro(new Date());
-            erm.setDescripcion("CambioSolicitado");
-            estadoRemanenteMensualServicio.create(erm);
-            displaySolicitud = Boolean.FALSE;
-//            remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RemanenteCuatrimestralCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public List<Row> getTransaccionEgresosList() {
+        return transaccionEgresosList;
     }
 
-    public void verEstadoRemanenteMensualSeleccionado() {
-        System.out.println("Remanente: " + remanenteMensualSelected.getMes());
-        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
-            System.out.println("Estado: " + erm.getUsuarioId().getNombre());
-            System.out.println("Estado: " + erm.getFechaRegistro());
-            System.out.println("Estado: " + erm.getDescripcion());
-        }
+    public void setTransaccionEgresosList(List<Row> transaccionEgresosList) {
+        this.transaccionEgresosList = transaccionEgresosList;
     }
 
-    public void detalleRPropiedad() {
-        tituloDetalleDlg = "Registro de la Propiedad";
-        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
-        for (Transaccion transaccion : transaccionRPropiedadList) {
-            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
-                for (Tramite tramite : transaccion.getTramiteList()) {
-                    tramiteRPropiedadMercantilList.add(tramite);
-                }
-            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
-                for (Tramite tramite : transaccion.getTramiteList()) {
-                    tramiteRPropiedadMercantilList.add(tramite);
-                }
-            }
-        }
+    public RemanenteCuatrimestral getRemanenteCuatrimestralSelected() {
+        return remanenteCuatrimestralSelected;
     }
 
-    public void detalleRMercantil() {
-        tituloDetalleDlg = "Registro Mercantil";
-        tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
-        for (Transaccion transaccion : transaccionRMercantilList) {
-            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(5)) {
-                for (Tramite tramite : transaccion.getTramiteList()) {
-                    tramiteRPropiedadMercantilList.add(tramite);
-                }
-            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(6)) {
-                for (Tramite tramite : transaccion.getTramiteList()) {
-                    tramiteRPropiedadMercantilList.add(tramite);
-                }
-            }
-        }
-    }
-
-    public void detalleEgresos() {
-        egresoNominaList = new ArrayList<Nomina>();
-        egresoFacturaList = new ArrayList<FacturaPagada>();
-        for (Transaccion transaccion : transaccionEgresosList) {
-            if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(9)) {
-                for (Nomina nomina : transaccion.getNominaList()) {
-                    egresoNominaList.add(nomina);
-                }
-            } else if (transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)
-                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)
-                    || transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
-                for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
-                    egresoFacturaList.add(facturaPagada);
-                }
-            }
-        }
+    public void setRemanenteCuatrimestralSelected(RemanenteCuatrimestral remanenteCuatrimestralSelected) {
+        this.remanenteCuatrimestralSelected = remanenteCuatrimestralSelected;
     }
 
     public String getTituloPagina() {
@@ -443,44 +451,12 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         this.nombreInstitucion = nombreInstitucion;
     }
 
-    public RemanenteMensual getRemanenteMensualSelected() {
-        return remanenteMensualSelected;
-    }
-
-    public void setRemanenteMensualSelected(RemanenteMensual remanenteMensualSelected) {
-        this.remanenteMensualSelected = remanenteMensualSelected;
-    }
-
     public String getMesSelected() {
         return mesSelected;
     }
 
     public void setMesSelected(String mesSelected) {
         this.mesSelected = mesSelected;
-    }
-
-    public List<Transaccion> getTransaccionRPropiedadList() {
-        return transaccionRPropiedadList;
-    }
-
-    public void setTransaccionRPropiedadList(List<Transaccion> transaccionRPropiedadList) {
-        this.transaccionRPropiedadList = transaccionRPropiedadList;
-    }
-
-    public List<Transaccion> getTransaccionRMercantilList() {
-        return transaccionRMercantilList;
-    }
-
-    public void setTransaccionRMercantilList(List<Transaccion> transaccionRMercantilList) {
-        this.transaccionRMercantilList = transaccionRMercantilList;
-    }
-
-    public List<Transaccion> getTransaccionEgresosList() {
-        return transaccionEgresosList;
-    }
-
-    public void setTransaccionEgresosList(List<Transaccion> transaccionEgresosList) {
-        this.transaccionEgresosList = transaccionEgresosList;
     }
 
     public BigDecimal getTotalIngRPropiedad() {
