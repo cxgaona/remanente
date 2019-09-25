@@ -15,6 +15,7 @@ import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -37,11 +38,18 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private String nombreInstitucion;
     private Integer año;
     private RemanenteCuatrimestral remanenteCuatrimestralSelected;
+    private BigDecimal totalIngRPropiedad;
+    private BigDecimal totalIngRMercantil;
+    private BigDecimal totalEgresos;
 
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
-    private List<Row> transaccionRPropiedadList;
-    private List<Row> transaccionRMercantilList;
+    private List<Row> transaccionRegistrosList;
     private List<Row> transaccionEgresosList;
+
+    private List<BigDecimal> totalIngRPropiedadList;
+    private List<BigDecimal> totalIngRMercantilList;
+    private List<BigDecimal> totalIngList;
+    private List<BigDecimal> factorIncidenciaList;
 
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
@@ -57,9 +65,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private Integer usuarioId;
     private String tituloDetalleDlg;
 
-    private BigDecimal totalIngRPropiedad;
-    private BigDecimal totalIngRMercantil;
-    private BigDecimal totalEgresos;
     private Transaccion transaccionSelected;
 
     private List<Transaccion> transaccionList;
@@ -93,9 +98,15 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         //Inicializacion de variables
         remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
-        transaccionRPropiedadList = new ArrayList<Row>();
-        transaccionRMercantilList = new ArrayList<Row>();
+        transaccionRegistrosList = new ArrayList<Row>();
         transaccionEgresosList = new ArrayList<Row>();
+        totalIngRPropiedad = new BigDecimal(0);
+        totalIngRMercantil = new BigDecimal(0);
+        totalEgresos = new BigDecimal(0);
+
+        totalIngRPropiedadList = new ArrayList<BigDecimal>();
+        totalIngRMercantilList = new ArrayList<BigDecimal>();
+        totalIngList = new ArrayList<BigDecimal>();
 
         //FechaACtual
         Calendar calendar = Calendar.getInstance();
@@ -124,6 +135,10 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     public void loadRemanenteCuatrimestralByAño() {
         remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
+        totalIngRPropiedad = new BigDecimal(0);
+        totalIngRMercantil = new BigDecimal(0);
+        totalEgresos = new BigDecimal(0);
+
         if (año == null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -138,6 +153,12 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
 
     public void onRowSelectRemanenteCuatrimestral() {
         List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
+        transaccionRegistrosList = new ArrayList<Row>();
+        transaccionEgresosList = new ArrayList<Row>();
+        totalIngRPropiedad = new BigDecimal(0);
+        totalIngRMercantil = new BigDecimal(0);
+        totalEgresos = new BigDecimal(0);
+
         rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {
@@ -180,44 +201,14 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             j++;
         }
         for (Row r : rows) {
-            if (r.getTipo().equals("Ingreso-Propiedad")
-                    || r.getTipo().equals("Ingreso-Mercantil")) {
-                transaccionRPropiedadList.add(r);
+            if (r.getTipo().equals("Ingreso-Propiedad") || r.getTipo().equals("Ingreso-Mercantil")) {
+                r.setTipoIE("Ingreso");
+                transaccionRegistrosList.add(r);
             } else if (r.getTipo().equals("Egreso")) {
+                r.setTipoIE("Egreso");
                 transaccionEgresosList.add(r);
             }
         }
-        System.out.println("TransaccionesPropiedad");
-        for (Row r : transaccionRPropiedadList) {
-            System.out.println("Transaccion: " + r.getNombre());
-            System.out.println("Transaccion Nombre: " + r.getNombre());
-            System.out.println("Transaccion Valor1: " + r.getValorMes1());
-            System.out.println("Transaccion Valor2: " + r.getValorMes2());
-            System.out.println("Transaccion Valor3: " + r.getValorMes3());
-            System.out.println("Transaccion Valor4: " + r.getValorMes4());
-            System.out.println("Transaccion Tipo: " + r.getTipo());
-        }
-        System.out.println("TransaccionesMercantil");
-        for (Row r : transaccionRMercantilList) {
-            System.out.println("Transaccion: " + r.getNombre());
-            System.out.println("Transaccion Nombre: " + r.getNombre());
-            System.out.println("Transaccion Valor1: " + r.getValorMes1());
-            System.out.println("Transaccion Valor2: " + r.getValorMes2());
-            System.out.println("Transaccion Valor3: " + r.getValorMes3());
-            System.out.println("Transaccion Valor4: " + r.getValorMes4());
-            System.out.println("Transaccion Tipo: " + r.getTipo());
-        }
-        System.out.println("TransaccionesEgresos");
-        for (Row r : transaccionEgresosList) {
-            System.out.println("Transaccion: " + r.getNombre());
-            System.out.println("Transaccion Nombre: " + r.getNombre());
-            System.out.println("Transaccion Valor1: " + r.getValorMes1());
-            System.out.println("Transaccion Valor2: " + r.getValorMes2());
-            System.out.println("Transaccion Valor3: " + r.getValorMes3());
-            System.out.println("Transaccion Valor4: " + r.getValorMes4());
-            System.out.println("Transaccion Tipo: " + r.getTipo());
-        }
-
     }
 
     public List<RemanenteMensual> getRemanentesActivos(List<RemanenteMensual> remanenteMensualList) {
@@ -234,6 +225,145 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             }
         });
         return rms;
+    }
+
+    public BigDecimal getValorTotalIngresos(int mes, String tipo) {
+        BigDecimal valor = new BigDecimal(BigInteger.ZERO);
+        if (tipo.equals("Ingreso-Propiedad")) {
+            for (Row r : transaccionRegistrosList) {
+                if (r.getTipo().equals("Ingreso-Propiedad")) {
+                    switch (mes) {
+                        case 1:
+                            if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")) {
+                                valor = valor.add(r.getValorMes1());
+                            }
+                            break;
+                        case 2:
+                            if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")) {
+                                valor = valor.add(r.getValorMes2());
+                            }
+                            break;
+                        case 3:
+                            if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")) {
+                                valor = valor.add(r.getValorMes3());
+                            }
+                            break;
+                        case 4:
+                            if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")) {
+                                valor = valor.add(r.getValorMes4());
+                            }
+                            break;
+                        case 5:
+                            if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")) {
+                                valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
+                            }
+                            break;
+                    }
+                }
+            }
+            totalIngRPropiedadList.add(valor);
+        } else if (tipo.equals("Ingreso-Mercantil")) {
+            for (Row r : transaccionRegistrosList) {
+                if (r.getTipo().equals("Ingreso-Mercantil")) {
+                    switch (mes) {
+                        case 1:
+                            if (!r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                                valor = valor.add(r.getValorMes1());
+                            }
+                            break;
+                        case 2:
+                            if (!r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                                valor = valor.add(r.getValorMes2());
+                            }
+                            break;
+                        case 3:
+                            if (!r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                                valor = valor.add(r.getValorMes3());
+                            }
+                            break;
+                        case 4:
+                            if (!r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                                valor = valor.add(r.getValorMes4());
+                            }
+                            break;
+                        case 5:
+                            if (!r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                                valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
+                            }
+                            break;
+                    }
+                }
+            }
+            totalIngRMercantilList.add(valor);
+        }
+        return valor;
+    }
+
+    public BigDecimal getValorIngresoTotal(int mes) {
+        BigDecimal valor = new BigDecimal(BigInteger.ZERO);
+        System.out.println("sizeP: " + totalIngRPropiedadList.size());
+        System.out.println("sizeM: " + totalIngRMercantilList.size());
+        for (BigDecimal bd : totalIngRPropiedadList) {
+            System.out.println("Valor: " + bd);
+        }
+        for (BigDecimal bd : totalIngRMercantilList) {
+            System.out.println("Valor: " + bd);
+        }
+//        if (mes == 1) {
+//            valor = valor.add(totalIngRPropiedadList.get(0));
+//            totalIngList.add(valor);
+//        } else if (mes == 2) {
+//            valor = valor.add(totalIngRPropiedadList.get(1));
+//            totalIngList.add(valor);
+//        } else if (mes == 3) {
+//            valor = valor.add(totalIngRPropiedadList.get(2));
+//            totalIngList.add(valor);
+//        } else if (mes == 4) {
+//            valor = valor.add(totalIngRPropiedadList.get(3));
+//            totalIngList.add(valor);
+//        }
+        return valor;
+    }
+
+    public BigDecimal getValorFactorIncidencia(int mes) {
+        BigDecimal valor = new BigDecimal(BigInteger.ZERO);
+        for (Row r : transaccionRegistrosList) {
+            switch (mes) {
+                case 1:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes1());
+                    }
+                    break;
+                case 2:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes2());
+                    }
+                    break;
+                case 3:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes3());
+                    }
+                    break;
+                case 4:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes4());
+                    }
+                    break;
+                case 5:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
+                    }
+                    break;
+            }
+
+        }
+
+        return valor;
     }
 
 //
@@ -395,20 +525,12 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
 //        }
 //    }
     //Getters & Setters
-    public List<Row> getTransaccionRPropiedadList() {
-        return transaccionRPropiedadList;
+    public List<Row> getTransaccionRegistrosList() {
+        return transaccionRegistrosList;
     }
 
-    public void setTransaccionRPropiedadList(List<Row> transaccionRPropiedadList) {
-        this.transaccionRPropiedadList = transaccionRPropiedadList;
-    }
-
-    public List<Row> getTransaccionRMercantilList() {
-        return transaccionRMercantilList;
-    }
-
-    public void setTransaccionRMercantilList(List<Row> transaccionRMercantilList) {
-        this.transaccionRMercantilList = transaccionRMercantilList;
+    public void setTransaccionRegistrosList(List<Row> transaccionRegistrosList) {
+        this.transaccionRegistrosList = transaccionRegistrosList;
     }
 
     public List<Row> getTransaccionEgresosList() {

@@ -15,6 +15,7 @@ public class Row {
 
     private String nombre;
     private String tipo;
+    private String tipoIE;
     private BigDecimal valorMes1;
     private BigDecimal valorMes2;
     private BigDecimal valorMes3;
@@ -78,6 +79,14 @@ public class Row {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getTipoIE() {
+        return tipoIE;
+    }
+
+    public void setTipoIE(String tipoIE) {
+        this.tipoIE = tipoIE;
     }
 
 }

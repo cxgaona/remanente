@@ -53,39 +53,252 @@
                 <b:panel title="Transacciones Período ( #{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ? 'Enero - Abril':
                                                           remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ? 'Mayo - Agosto':
                                                           remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin Selección'})">
-                    <h:panelGrid columns="1" style="width: 65%;"> 
-                        <p:dataTable id="transaccionRPropiedadTbl"                                     
-                                     value="#{remanenteCuatrimestralCtrl.transaccionRPropiedadList}"
+                    <h:panelGrid columns="1" style="width: 75%;"> 
+                        <p:dataTable id="transaccionRegistrosTbl"                                     
+                                     value="#{remanenteCuatrimestralCtrl.transaccionRegistrosList}"
                                      var="row"                             
                                      expandableRowGroups="true"  
-                                     sortBy="#{row.tipo}"> 
+                                     sortBy="#{row.tipo}"
+                                     sortOrder="descending"> 
+                            <f:facet name="header">
+                                Informe de Ingresos
+                            </f:facet>
                             <p:headerRow>
                                 <p:column colspan="6">
-                                    <h:outputText value="Ingresos Registro #{row.tipo eq 'Ingreso-Propiedad'?' de la Propiedad':' Mercantil'} " /> 
+                                    <h:outputText value="Ingresos Registro #{row.tipo eq 'Ingreso-Propiedad'?' de la Propiedad': 
+                                                                             row.tipo eq 'Ingreso-Mercantil'?' Mercantil':''} " /> 
                                 </p:column>                                
                             </p:headerRow>                            
-                            <p:column headerText="Detalle" width="50%">
+                            <p:column headerText="Detalle" width="40%">
                                 <h:outputText value="#{row.nombre}" />
+                            </p:column>
+                            <p:column headerText="#{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Enero'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Mayo'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes1" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="Enero" width="10%" style="text-align: right">
-                                <h:outputText value="#{row.valorMes1}" />
+                            <p:column headerText="#{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Febrero'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Junio'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes2" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="Febrero" width="10%" style="text-align: right">
-                                <h:outputText value="#{row.valorMes2}" />
+                            <p:column headerText="#{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Marzo'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Julio'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes3" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="Marzo" width="10%" style="text-align: right">
-                                <h:outputText value="#{row.valorMes3}" />
-                            </p:column>                                                        
-                            <p:column headerText="Abril" width="10%" style="text-align: right">
-                                <h:outputText value="#{row.valorMes4}" />
-                            </p:column>                                                        
-                            <p:column headerText="Total" width="10%" style="text-align: right">
-                                <h:outputText value="#{row.valorMes1 + row.valorMes2 + row.valorMes3 + row.valorMes4}" />
-                            </p:column>                                                        
+                            <p:column headerText="#{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Abril'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Agosto'
+                                                    :remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes4" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                                                    
+                            <p:column headerText="Total" width="12%" style="text-align: right">
+                                <h:outputText id="total" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:summaryRow id="summaryRowIngresos">
+                                <p:column style="text-align:right">
+                                    <h:outputText value="TOTAL INGRESOS #{row.tipo eq 'Ingreso-Propiedad'? 'REGISTRO DE LA PROPIEDAD':'REGISTRO MERCANTIL'}" />
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorTotalIngresos(1,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column >
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorTotalIngresos(2,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorTotalIngresos(3,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorTotalIngresos(4,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorTotalIngresos(5,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+
+                            <p:columnGroup type="footer">
+                                <p:row>                                  
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText id="ingresoTotal" value="Ingreso Total" />
+                                            <p:tooltip id="toolTipngresoTotal" for="ingresoTotal" value="Total Ingresos Registro de la Propiedad + Total Ingreso Registro Mercantil" position="top"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(1)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(2)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(3)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(4)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(5)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+                                
+                                <p:row>                                  
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText id="factorIncidencia" value="Factor de Incidencia" />
+                                            <p:tooltip id="toolTipFactorIncidencia" for="factorIncidencia" value="Total Ingresos Registro Mercantil / Ingresos Totales" position="top"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorFactorIncidencia(1)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(2)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(3)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(4)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(5)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+
+                            </p:columnGroup>
+                        </p:dataTable>
+
+                        <p:dataTable id="transaccionRegistrosTotalesTbl"                                     
+                                     value="#{remanenteCuatrimestralCtrl.transaccionRegistrosList}"
+                                     var="row"                                       
+                                     sortBy="#{row.tipoIE}">
+                            <p:column headerText="Detalle" width="40%" rendered="false">
+                                <h:outputText value="#{row.nombre}" />
+                            </p:column>
+                            <p:summaryRow id="summaryRowIngresos" >
+                                <p:column style="text-align:right" width="40%">
+                                    <h:outputText id="ingresoTotal" value="Ingreso Total" />
+                                    <p:tooltip id="toolTipngresoTotal" for="ingresoTotal" value="Total Ingresos Registro de la Propiedad + Total Ingreso Registro Mercantil" position="top"/>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(1)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column >
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(2)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(3)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(4)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(5)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+                            <p:summaryRow id="summaryRowFactorIncidencia">
+                                <p:column style="text-align:right" width="40%">
+                                    <h:outputText id="factorIncidencia" value="Ingreso Total" />
+                                    <p:tooltip id="toolTipFactorIncidencia" for="factorIncidencia" value="Total Ingresos Registro de la Propiedad + Total Ingreso Registro Mercantil" position="top"/>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(1)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column >
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(2)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(3)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(4)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right" width="12%">
+                                    <h:outputText value="#{remanenteCuatrimestralCtrl.getValorIngresoTotal(5)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
                         </p:dataTable>
                     </h:panelGrid>
-
-
                 </b:panel>                                
             </h:form>
         </ui:define>
