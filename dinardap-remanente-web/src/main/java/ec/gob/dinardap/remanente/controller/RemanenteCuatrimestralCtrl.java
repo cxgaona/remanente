@@ -309,19 +309,56 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         for (BigDecimal bd : totalIngRMercantilList) {
             System.out.println("Valor: " + bd);
         }
-//        if (mes == 1) {
-//            valor = valor.add(totalIngRPropiedadList.get(0));
-//            totalIngList.add(valor);
-//        } else if (mes == 2) {
-//            valor = valor.add(totalIngRPropiedadList.get(1));
-//            totalIngList.add(valor);
-//        } else if (mes == 3) {
-//            valor = valor.add(totalIngRPropiedadList.get(2));
-//            totalIngList.add(valor);
-//        } else if (mes == 4) {
-//            valor = valor.add(totalIngRPropiedadList.get(3));
-//            totalIngList.add(valor);
-//        }
+        if (mes == 1) {
+            valor = valor.add(totalIngRPropiedadList.get(0));
+            totalIngList.add(valor);
+        } else if (mes == 2) {
+            valor = valor.add(totalIngRPropiedadList.get(1));
+            totalIngList.add(valor);
+        } else if (mes == 3) {
+            valor = valor.add(totalIngRPropiedadList.get(2));
+            totalIngList.add(valor);
+        } else if (mes == 4) {
+            valor = valor.add(totalIngRPropiedadList.get(3));
+            totalIngList.add(valor);
+        }
+
+        for (Row r : transaccionRegistrosList) {
+            switch (mes) {
+                case 1:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes1());
+                    }
+                    break;
+                case 2:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes2());
+                    }
+                    break;
+                case 3:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes3());
+                    }
+                    break;
+                case 4:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes4());
+                    }
+                    break;
+                case 5:
+                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                        valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
+                    }
+                    break;
+            }
+
+        }
+
         return valor;
     }
 
