@@ -12,6 +12,11 @@ import java.util.List;
 @Local
 public interface RemanenteCuatrimestralServicio extends GenericService<RemanenteCuatrimestral, RemanenteCuatrimestralPK> {
 
+    public List<RemanenteCuatrimestral> getRemanenteCuatrimestralListByInstitucion(Integer institucionId, Integer año);
+    
+    
+    
+
     public List<RemanenteCuatrimestral> getRemanenteCuatrimestralList();
 
     public List<RemanenteCuatrimestral> getRemanenteCuatrimestralListByAño(RemanenteAnual remanenteAnual);

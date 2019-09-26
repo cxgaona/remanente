@@ -34,15 +34,15 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
     }
 
     @Override
-    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad) {
+    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad, Integer idRemanenteMensual) {
         List<Tramite> tramiteList = new ArrayList<Tramite>();
-        tramiteList = tramiteDao.getTramiteByInstitucionFechaActividad(idInstitucion, anio, mes, actividad);
+        tramiteList = tramiteDao.getTramiteByInstitucionFechaActividad(idInstitucion, anio, mes, actividad, idRemanenteMensual);
         return tramiteList;
     }
 
     @Override
     public void editTramite(Tramite tramite) {
-        this.update(tramite);           
+        this.update(tramite);
     }
 
     @Override
@@ -51,18 +51,18 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
         anio = tramite.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
         mes = tramite.getTransaccionId().getRemanenteMensualId().getMes();
         idInstitucion = tramite.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
-        this.delete(tramite.getTramiteId());        
+        this.delete(tramite.getTramiteId());
     }
-    
+
     @Override
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
         BigDecimal valorTotalTransaccion = new BigDecimal(0);
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
-        for (Tramite tr : t.getTramiteList()) {            
+        for (Tramite tr : t.getTramiteList()) {
             valorTotalTransaccion = valorTotalTransaccion.add(tr.getValor());
         }
-        t.setValorTotal(valorTotalTransaccion);        
+        t.setValorTotal(valorTotalTransaccion);
         transaccionServicio.editTransaccion(t);
     }
 

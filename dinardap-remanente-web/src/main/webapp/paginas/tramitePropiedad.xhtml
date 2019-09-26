@@ -31,19 +31,19 @@
                             <p:column headerText="ID Tramite" rendered="false">
                                 <h:outputText value="#{tramite.tramiteId}"/>
                             </p:column>
-                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}" filterBy="#{tramite.tipo}" filterMatchMode="contains">
+                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
                                 <h:outputText value="#{tramite.tipo}" />
                             </p:column>
                             <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
                                 <h:outputText value="#{tramite.numero}" />
                             </p:column>
-                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}" filterBy="#{tramite.fecha}" filterMatchMode="contains">
+                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
                                 <h:outputText value="#{tramite.fecha}" />
                             </p:column>
                             <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
                                 <h:outputText value="#{tramite.numeroComprobantePago}" />
                             </p:column>                            
-                            <p:column headerText="Valor" sortBy="#{tramite.valor}" filterBy="#{tramite.valor}" filterMatchMode="contains">
+                            <p:column headerText="Valor" sortBy="#{tramite.valor}">
                                 <h:outputText value="#{tramite.valor}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText>
@@ -82,21 +82,25 @@
                         <p:selectOneButton id="tipo" 
                                            value="#{tramitePropiedadCtrl.tramiteSelected.tipo}"
                                            style="width: 70%;">
+                            <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
-                            <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />                    
                         </p:selectOneButton>                        
 
                         <p:outputLabel for="numero" value="Número:" />
-                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" />
+                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
 
                         <p:outputLabel for="fecha" value="Fecha:" />
                         <p:datePicker id="fecha" value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" locale="es" monthNavigator="true" pattern="yyyy-MM-dd" style="width: 90%"/>
 
                         <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
-                        <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" />
+                        <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                                  
 
                         <p:outputLabel for="valor" value="Valor:" />
-                        <p:inputNumber id="valor" value="#{tramitePropiedadCtrl.tramiteSelected.valor}" style="width: 90%"/>
+                        <p:inputNumber id="valor" value="#{tramitePropiedadCtrl.tramiteSelected.valor}" style="width: 90%" symbol="$" emptyValue="sign"/>
 
                         <p:outputLabel for="acto" value="Acto:" />
                         <p:inputTextarea id="acto" rows="3" cols="40" maxlength="300" autoResize="false" value="#{tramitePropiedadCtrl.tramiteSelected.acto}"/>
