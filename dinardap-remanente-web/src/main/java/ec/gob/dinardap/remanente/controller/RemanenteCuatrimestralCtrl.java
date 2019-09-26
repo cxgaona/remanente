@@ -118,14 +118,13 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         //Proceso
         remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
 
-        totalIngRPropiedad = new BigDecimal(0);
-        totalIngRMercantil = new BigDecimal(0);
-        totalEgresos = new BigDecimal(0);
-        btnActivated = Boolean.TRUE;
-        displayUploadEdit = Boolean.FALSE;
-        displaySolicitud = Boolean.FALSE;
-        transaccionSelected = new Transaccion();
-
+//        totalIngRPropiedad = new BigDecimal(0);
+//        totalIngRMercantil = new BigDecimal(0);
+//        totalEgresos = new BigDecimal(0);
+//        btnActivated = Boolean.TRUE;
+//        displayUploadEdit = Boolean.FALSE;
+//        displaySolicitud = Boolean.FALSE;
+//        transaccionSelected = new Transaccion();
 //        remanenteCuatrimestralList = new ArrayList<RemanenteMensual>();
 //        remanenteCuatrimestralList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
 //        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
@@ -228,6 +227,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         return rms;
     }
 
+    //Ingresos
     public BigDecimal getValorTotalIngresos(int mes, String tipo) {
         BigDecimal valor = new BigDecimal(BigInteger.ZERO);
         if (tipo.equals("Ingreso-Propiedad")) {
@@ -342,10 +342,10 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     }
 
     public BigDecimal getValorFactorIncidencia(int mes) {
-        BigDecimal totalIngRMercantil = new BigDecimal(BigInteger.ZERO);
-        BigDecimal ingresosTotales = new BigDecimal(BigInteger.ZERO);
+        BigDecimal totalIngRMercantil = BigDecimal.ZERO;
+        BigDecimal ingresosTotales = BigDecimal.ZERO;
         ingresosTotales = getValorIngresoTotal(mes);
-        BigDecimal valor = new BigDecimal(BigInteger.ZERO);
+        BigDecimal valor = BigDecimal.ZERO;
         for (Row r : transaccionRegistrosList) {
             if (r.getTipo().equals("Ingreso-Mercantil")) {
                 switch (mes) {
@@ -377,17 +377,56 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
                 }
             }
         }
-        System.out.println("Ingresos Totales: " + ingresosTotales);
-        System.out.println("Ingresos Totales Mercantil: " + totalIngRMercantil);
         if (ingresosTotales.compareTo(BigDecimal.ZERO) == 0) {
-            System.out.println("En el if");
             valor = BigDecimal.ZERO;
         } else {
-            System.out.println("En el else");
             valor = totalIngRMercantil.divide(ingresosTotales, 2, RoundingMode.HALF_UP);
-            System.out.println("ValorFinalELSE: " + valor);
         }
-        System.out.println("ValorFinal: " + valor);
+        return valor;
+    }
+
+    //Egresos
+    public BigDecimal getValorTotalGastos(int mes) {
+        BigDecimal valor = new BigDecimal(BigInteger.ZERO);
+        for (Row r : transaccionEgresosList) {
+            switch (mes) {
+                case 1:
+                    valor = valor.add(r.getValorMes1());
+                    break;
+                case 2:
+                    valor = valor.add(r.getValorMes2());
+                    break;
+                case 3:
+                    valor = valor.add(r.getValorMes3());
+                    break;
+                case 4:
+                    valor = valor.add(r.getValorMes4());
+                    break;
+                case 5:
+                    valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
+                    break;
+            }
+        }
+        return valor;
+    }
+
+    public BigDecimal getValorGastosRMercantil(int mes) {
+        BigDecimal totalGastosRPropiedad = BigDecimal.ZERO;
+        BigDecimal factorIncidencia = BigDecimal.ZERO;
+        BigDecimal valor = BigDecimal.ZERO;
+        totalGastosRPropiedad = getValorTotalGastos(mes);
+        factorIncidencia = getValorFactorIncidencia(mes);
+        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        return valor;
+    }
+
+    public BigDecimal getValorRemanenteMercantil(int mes) {
+        BigDecimal totalIngRMercatil = BigDecimal.ZERO;
+        BigDecimal gastosRMercantilEst = BigDecimal.ZERO;
+        BigDecimal valor = BigDecimal.ZERO;
+        totalIngRMercatil = getValorTotalIngresos(mes, "Ingreso-Mercantil");
+        gastosRMercantilEst = getValorGastosRMercantil(mes);
+        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(2, BigDecimal.ROUND_HALF_EVEN);
         return valor;
     }
 

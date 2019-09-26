@@ -23,6 +23,14 @@ public class Row {
     private BigDecimal valorTotal;
 
     public Row() {
+        this.valorMes1=BigDecimal.ZERO;
+        this.valorMes2=BigDecimal.ZERO;
+        this.valorMes3=BigDecimal.ZERO;
+        this.valorMes4=BigDecimal.ZERO;
+        this.valorTotal=BigDecimal.ZERO;
+        this.nombre="";
+        this.tipo="";
+        this.tipoIE="";
     }
 
     public String getNombre() {
