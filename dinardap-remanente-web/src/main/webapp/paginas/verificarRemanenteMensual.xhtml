@@ -332,7 +332,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
@@ -392,7 +392,7 @@
                                 </f:facet>
                                 <center>
                                     <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
                                 </center>
                             </p:column>
