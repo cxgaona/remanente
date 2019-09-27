@@ -1,10 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportInformeRemanenteCuatrimestral" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e53cc3b1-2a18-4d1a-9d4d-53560e2dabc6">
+	<property name="ireport.zoom" value="1.2100000000000009"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="34"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch"/>
+		<band height="89" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="572" height="29" uuid="9c96dd7d-218f-4c67-b965-3c80547a7b1d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FORMULARIO DE REMANENTES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="28" width="572" height="21" uuid="56535388-4d46-4dbd-8df5-1b8fdf0e767f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Informe Ingresos y Egresos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="48" width="572" height="21" uuid="0437a9f8-f677-4791-bbcb-678f593c8730"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[<<Nombre de la institución>>]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="68" width="572" height="21" uuid="b0e8e129-7fc9-4bee-a852-ad58a5ea63cc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cuatrimestre <<III>> Año <<xxxx>>]]></text>
+			</staticText>
+		</band>
 	</title>
 	<pageHeader>
 		<band height="35" splitType="Stretch"/>
