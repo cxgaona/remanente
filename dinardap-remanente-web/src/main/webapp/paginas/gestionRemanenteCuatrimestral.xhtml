@@ -409,24 +409,26 @@
                 <b:panel>
                     <p:commandButton 
                         ajax="false"
-                        value="Generar Informe Remanente (Excel)"
+                        value="Generar Informe Remanente (PDF)"
                         id="btnGenerarPDF"
                         style="margin-right:20px;"                                      
-                        icon="fa fa-fw fa-file-excel-o">  
+                        icon="fa fa-fw fa-file-pdf-o">  
                         <p:dataExporter type="pdf" 
                                         target="formTransacciones:transaccionRegistrosTbl, formTransacciones:transaccionEgresosTbl"
-                                        fileName="Prueba" pageOnly="true" />
+                                        fileName="Prueba" pageOnly="true" preProcessor="#{remanenteCuatrimestralCtrl.preProcessPDF}"/>
                         
-                    </p:commandButton>                  
-
+                    </p:commandButton>
                     <p:commandButton 
                         ajax="false"
                         value="Generar Informe Remanente (Excel)"
                         id="btnGenerarExcel"
                         style="margin-right:20px;"                                      
                         icon="fa fa-fw fa-file-excel-o">                        
-                        <pe:exporter type="xlsx" target="formTransacciones:transaccionRegistrosTbl, formTransacciones:transaccionEgresosTbl" fileName="Informe" datasetPadding="4" />  
+                        <pe:exporter type="pdf" target="formTransacciones:transaccionRegistrosTbl, formTransacciones:transaccionEgresosTbl" fileName="Informe" datasetPadding="4"/>  
                     </p:commandButton>                    
+                    
+                    
+                    
                 </b:panel>                
             </h:form>
         </ui:define>

@@ -1,5 +1,10 @@
 package ec.gob.dinardap.remanente.controller;
 
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
@@ -13,6 +18,8 @@ import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,8 +33,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
 import org.primefaces.model.UploadedFile;
 
 @Named(value = "remanenteCuatrimestralCtrl")
@@ -46,11 +56,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
     private List<Row> transaccionRegistrosList;
     private List<Row> transaccionEgresosList;
-
-    private List<BigDecimal> totalIngRPropiedadList;
-    private List<BigDecimal> totalIngRMercantilList;
-    private List<BigDecimal> totalIngList;
-    private List<BigDecimal> factorIncidenciaList;
 
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
@@ -104,10 +109,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-
-        totalIngRPropiedadList = new ArrayList<BigDecimal>();
-        totalIngRMercantilList = new ArrayList<BigDecimal>();
-        totalIngList = new ArrayList<BigDecimal>();
 
         //FechaACtual
         Calendar calendar = Calendar.getInstance();
@@ -430,6 +431,9 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         return valor;
     }
 
+    public void preProcessPDF(Object document) throws IOException, BadElementException, DocumentException {
+        
+    }
 //
 //    
 //
@@ -589,6 +593,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
 //        }
 //    }
     //Getters & Setters
+
     public List<Row> getTransaccionRegistrosList() {
         return transaccionRegistrosList;
     }
