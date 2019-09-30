@@ -1,24 +1,26 @@
 package ec.gob.dinardap.remanente.controller;
 
 import com.lowagie.text.BadElementException;
-import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
+import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
-import java.io.File;
+import ec.gob.dinardap.remanente.utils.FacesUtils;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -30,13 +32,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import org.apache.poi.util.IOUtils;
+import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
 
@@ -57,10 +61,14 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private List<Row> transaccionRegistrosList;
     private List<Row> transaccionEgresosList;
 
+    private Boolean displayUploadInformeCuatrimestral;
+
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
     @EJB
     private CatalogoTransaccionServicio catalogoTransaccionServicio;
+    @EJB
+    private EstadoRemanenteCuatrimestralServicio estadoRemanenteCuatrimestralServicio;
 
     //Anteriores
     private UploadedFile file;
@@ -80,7 +88,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
 
     private Boolean btnActivated;
     private Boolean displayUploadEdit;
-    private Boolean displaySolicitud;
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
@@ -109,6 +116,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
+        displayUploadInformeCuatrimestral = Boolean.FALSE;
 
         //FechaACtual
         Calendar calendar = Calendar.getInstance();
@@ -139,6 +147,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
+        displayUploadInformeCuatrimestral = Boolean.FALSE;
 
         if (año == null) {
             Calendar calendar = Calendar.getInstance();
@@ -146,10 +155,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             año = calendar.get(calendar.YEAR);
         }
         remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
-//        btnActivated = Boolean.TRUE;
-//        displayUploadEdit = Boolean.FALSE;
-//        displaySolicitud = Boolean.FALSE;        
-//        mesSelected = "Sin Selección";
     }
 
     public void onRowSelectRemanenteCuatrimestral() {
@@ -159,8 +164,13 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-
+        if (remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")) {
+            displayUploadInformeCuatrimestral = Boolean.TRUE;
+        } else {
+            displayUploadInformeCuatrimestral = Boolean.FALSE;
+        }
         rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
+
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {
             Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
@@ -226,6 +236,34 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             }
         });
         return rms;
+    }
+
+    public void handleFileUploadInformeCuatrimestral(FileUploadEvent event) {
+        UploadedFile file = event.getFile();
+        try {
+            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+            String path = FacesUtils.getPath() + "/archivos/informeRemanenteCuatrimestral/";
+            String realPath = path + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf";
+            FileOutputStream fos = new FileOutputStream(realPath);
+            fos.write(fileByte);
+            fos.close();
+            remanenteCuatrimestralSelected.setInformeRemanenteUrl("/archivos/informeRemanenteCuatrimestral/" + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf");
+            remanenteCuatrimestralServicio.update(remanenteCuatrimestralSelected);
+            EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
+            Usuario u = new Usuario();
+            u.setUsuarioId(usuarioId);
+            erc.setRemanenteCuatrimestral(remanenteCuatrimestralSelected);
+            erc.setUsuarioId(u);
+            erc.setFechaRegistro(new Date());
+            erc.setDescripcion("InformeSubido");
+            estadoRemanenteCuatrimestralServicio.create(erc);
+            displayUploadInformeCuatrimestral = Boolean.FALSE;
+//            remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     //Ingresos
@@ -432,7 +470,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     }
 
     public void preProcessPDF(Object document) throws IOException, BadElementException, DocumentException {
-        
+
     }
 //
 //    
@@ -722,12 +760,12 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         this.displayUploadEdit = displayUploadEdit;
     }
 
-    public Boolean getDisplaySolicitud() {
-        return displaySolicitud;
+    public Boolean getDisplayUploadInformeCuatrimestral() {
+        return displayUploadInformeCuatrimestral;
     }
 
-    public void setDisplaySolicitud(Boolean displaySolicitud) {
-        this.displaySolicitud = displaySolicitud;
+    public void setDisplayUploadInformeCuatrimestral(Boolean displayUploadInformeCuatrimestral) {
+        this.displayUploadInformeCuatrimestral = displayUploadInformeCuatrimestral;
     }
 
     public String getTituloDetalleDlg() {

@@ -28,7 +28,7 @@
                                      selectionMode="single"
                                      selection="#{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected}"
                                      style="width: 50%">
-                            <p:ajax event="rowSelect" listener="#{remanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones"/>
+                            <p:ajax event="rowSelect" listener="#{remanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral"/>
                             <p:column headerText="Cuatrimestre" width="20%">
                                 <h:outputText value="#{remanenteCuatrimestral.cuatrimestre}" />
                             </p:column>
@@ -37,13 +37,45 @@
                                                        remanenteCuatrimestral.cuatrimestre eq 2 ? 'Mayo - Agosto':
                                                        remanenteCuatrimestral.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin definir'}"/>  
                             </p:column>
-                            <p:column headerText="Informe Cuatrimestral" width="20%">
-                                <h:outputText value="#{remanenteCuatrimestral.informeRemanenteUrl}"/>
+                            <p:column headerText="Informe Cuatrimestral" width="20%">                                
+                                <center>
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeRemanenteUrl}" 
+                                       style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}"
+                                       target="_blank">
+                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                </center>
                             </p:column>
                             <p:column headerText="Informe Técnico" width="20%">
                                 <h:outputText value="#{remanenteCuatrimestral.informeTecnicoUrl}"/>
+                                <center>
+                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeTecnicoUrl}" 
+                                       style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}"
+                                       target="_blank">
+                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                </center>
                             </p:column>                            
                         </p:dataTable>
+
+                        <b:panelGrid id="panelInforme" colSpans="4,8" 
+                                     style="width: 48%; 
+                                     margin: 4px 5px;"
+                                     rendered="#{remanenteCuatrimestralCtrl.displayUploadInformeCuatrimestral}">
+                            <p:outputLabel value="Informe cuatrimestrals: " />
+                            <p:fileUpload                                
+                                id="informeCuatrimestral"
+                                messageTemplate="Tipo de Archivo no Válido"
+                                style="width:100%"
+                                mode="advanced"
+                                dragDropSupport="true"
+                                sizeLimit="9000000"
+                                allowTypes="/(\.|\/)(pdf)$/"
+                                label=""
+                                uploadLabel=""
+                                cancelLabel=""                                
+                                oncomplete="onCellEdit();"
+                                fileUploadListener="#{remanenteCuatrimestralCtrl.handleFileUploadInformeCuatrimestral}"
+                                update="formRemanenteCuatrimestral"/>
+                        </b:panelGrid>
 
                     </h:panelGrid>                    
                 </b:panel>                
@@ -416,7 +448,7 @@
                         <p:dataExporter type="pdf" 
                                         target="formTransacciones:transaccionRegistrosTbl, formTransacciones:transaccionEgresosTbl"
                                         fileName="Prueba" pageOnly="true" preProcessor="#{remanenteCuatrimestralCtrl.preProcessPDF}"/>
-                        
+
                     </p:commandButton>
                     <p:commandButton 
                         ajax="false"
@@ -426,9 +458,9 @@
                         icon="fa fa-fw fa-file-excel-o">                        
                         <pe:exporter type="pdf" target="formTransacciones:transaccionRegistrosTbl, formTransacciones:transaccionEgresosTbl" fileName="Informe" datasetPadding="4"/>  
                     </p:commandButton>                    
-                    
-                    
-                    
+
+
+
                 </b:panel>                
             </h:form>
         </ui:define>

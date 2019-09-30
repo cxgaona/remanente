@@ -11,6 +11,7 @@ import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.persistence.util.DateBetween;
 import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
@@ -148,6 +149,9 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
         remanenteCuatrimestralList = findByCriterias(criteria);
         for (RemanenteCuatrimestral remanenteCuatrimestral : remanenteCuatrimestralList) {
             remanenteCuatrimestral.getRemanenteCuatrimestralPK();
+            for (EstadoRemanenteCuatrimestral estadoRemanenteCuatrimestral : remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList()) {
+                estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestral();
+            }
             for (RemanenteMensual remanenteMensual : remanenteCuatrimestral.getRemanenteMensualList()) {
                 remanenteMensual.getRemanenteMensualId();
                 for (EstadoRemanenteMensual estadoRemanenteMensual : remanenteMensual.getEstadoRemanenteMensualList()) {
