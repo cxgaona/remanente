@@ -6,6 +6,7 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 
 /**
@@ -48,6 +51,16 @@ public class Bandeja implements Serializable {
     @Size(max = 50)
     @Column(name = "estado")
     private String estado;
+    
+    @Column(name = "leido")
+    private Boolean leido;
+    @Column(name = "fecha_registro")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaRegistro;
+    @Column(name = "fecha_leido")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaLeido;
+    
     @JoinColumns({
         @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id")
         , @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id")
@@ -64,6 +77,7 @@ public class Bandeja implements Serializable {
     @ManyToOne
     private Usuario usuarioSolicitanteId;
 
+    
     public Bandeja() {
     }
 
@@ -125,6 +139,30 @@ public class Bandeja implements Serializable {
 
     public void setUsuarioSolicitanteId(Usuario usuarioSolicitanteId) {
         this.usuarioSolicitanteId = usuarioSolicitanteId;
+    }
+
+    public Boolean getLeido() {
+        return leido;
+    }
+
+    public void setLeido(Boolean leido) {
+        this.leido = leido;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Date getFechaLeido() {
+        return fechaLeido;
+    }
+
+    public void setFechaLeido(Date fechaLeido) {
+        this.fechaLeido = fechaLeido;
     }
 
     @Override

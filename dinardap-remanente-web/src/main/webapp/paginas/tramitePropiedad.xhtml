@@ -92,7 +92,7 @@
                         </p:inputText>                        
 
                         <p:outputLabel for="fecha" value="Fecha:" />
-                        <p:datePicker id="fecha" value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" locale="es" monthNavigator="true" pattern="yyyy-MM-dd" style="width: 90%"/>
+                        <p:datePicker id="fecha" value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" locale="es" monthNavigator="true" pattern="yyyy-MM-dd" style="width: 90%" mindate="#{tramitePropiedadCtrl.fechaMin}" maxdate="#{tramitePropiedadCtrl.fechaMax}"/>
 
                         <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
                         <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" >

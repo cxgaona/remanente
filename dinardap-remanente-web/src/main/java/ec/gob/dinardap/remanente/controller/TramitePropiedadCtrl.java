@@ -53,6 +53,8 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     private String btnGuardar;
     private Boolean disableNuevoT;
     private RemanenteMensual remanenteMensualSelected;
+    private String fechaMin;
+    private String fechaMax;
 
     @PostConstruct
     protected void init() {
@@ -65,9 +67,11 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         fecha = new Date();
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
+        fechaMin = fechasLimiteMin(anio, mes);
+        fechaMax = fechasLimiteMax(anio, mes);
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         obtenerRemanenteMensual();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad",remanenteMensualSelected.getRemanenteMensualId());
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());
         tramiteSelected = new Tramite();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
@@ -75,6 +79,32 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
         disableNuevoT = Boolean.FALSE;
+    }
+
+    private String fechasLimiteMin(Integer anio, Integer mes) {
+        String fechaLimite = "";
+        Integer mesMin, anioMin;
+        if (mes == 1) {
+            anioMin=anio-1;
+            fechaLimite = anioMin.toString() + "-12-15";
+        } else {
+            mesMin=mes-1;
+            fechaLimite = anio.toString() +"-"+mesMin.toString()+"-15";
+        }
+        return fechaLimite;
+    }
+    
+    private String fechasLimiteMax(Integer anio, Integer mes) {
+        String fechaLimite = "";
+        Integer mesMax, anioMax;
+        if (mes == 12) {
+             anioMax=anio+1;
+            fechaLimite = anioMax.toString() + "-01-15";
+        } else {
+            mesMax=mes+1;
+            fechaLimite = anio.toString() +"-"+mesMax.toString()+"-15";
+        }
+        return fechaLimite;
     }
 
     public Boolean getDisableDelete() {
@@ -116,13 +146,13 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
             }
         }
-        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size()-1);
+        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
         } else {
-            renderEdition  = Boolean.FALSE;
+            renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
         }
@@ -216,9 +246,11 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         calendar.setTime(fecha);
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
+        fechaMin = fechasLimiteMin(anio, mes);
+        fechaMax = fechasLimiteMax(anio, mes);
         tramiteList = new ArrayList<Tramite>();
         obtenerRemanenteMensual();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad",remanenteMensualSelected.getRemanenteMensualId());
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());
         disableDelete = Boolean.TRUE;
         renderEdition = Boolean.FALSE;
     }
@@ -366,6 +398,22 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
 
     public void setRemanenteMensualSelected(RemanenteMensual remanenteMensualSelected) {
         this.remanenteMensualSelected = remanenteMensualSelected;
+    }
+
+    public String getFechaMin() {
+        return fechaMin;
+    }
+
+    public void setFechaMin(String fechaMin) {
+        this.fechaMin = fechaMin;
+    }
+
+    public String getFechaMax() {
+        return fechaMax;
+    }
+
+    public void setFechaMax(String fechaMax) {
+        this.fechaMax = fechaMax;
     }
 
 }
