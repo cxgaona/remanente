@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c5491f6b-9a04-4666-bea5-c0999733d8e8">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="214"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="204" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="166" width="555" height="24" uuid="6fbe4447-f389-42f9-bfbc-3911be866f9d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cuatrimestreAnio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Title" x="10" y="120" width="555" height="24" forecolor="#333333" uuid="faf58446-c312-4b21-a5fd-c1ca79b5b74b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="16" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Informe Ingresos Egresos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Title" x="10" y="95" width="555" height="26" forecolor="#333333" uuid="2557e2a2-3fcc-42d5-b136-aa2244328b78"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="16" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Formulario de remanentes]]></text>
+			</staticText>
+			<image>
+				<reportElement x="73" y="10" width="508" height="74" uuid="842da680-b823-4ff6-9560-e33485037802"/>
+				<imageExpression><![CDATA["C:\\Users\\christian.gaona\\Desktop\\logoDinardap.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="10" y="143" width="555" height="24" uuid="39f0d027-5b4a-4483-985c-83c01de07743"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nombreInstitucion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="430" y="30" width="80" height="20" uuid="80d78552-85d9-437b-bb8c-375a84cfd578"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="510" y="30" width="40" height="20" uuid="c53f1841-b844-45b2-bdae-9679888d78dc"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

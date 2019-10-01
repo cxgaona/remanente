@@ -38,9 +38,9 @@ import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
 
-@Named(value = "remanenteCuatrimestralCtrl")
+@Named(value = "validarRemanenteCuatrimestralCtrl")
 @ViewScoped
-public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable {
+public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable {
 
     //Variables
     private Integer institucionId;
@@ -118,7 +118,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        if (remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")) {
+        if (remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeSubido")) {
             displayUploadInformeCuatrimestral = Boolean.TRUE;
         } else {
             displayUploadInformeCuatrimestral = Boolean.FALSE;
@@ -192,16 +192,16 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         return rms;
     }
 
-    public void handleFileUploadInformeCuatrimestral(FileUploadEvent event) {
+    public void handleFileUploadInformeTecnicoCuatrimestral(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         try {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/informeRemanenteCuatrimestral/";
-            String realPath = path + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf";
+            String path = FacesUtils.getPath() + "/archivos/informeTecnicoRemanenteCuatrimestral/";
+            String realPath = path + "itrc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf";
             FileOutputStream fos = new FileOutputStream(realPath);
             fos.write(fileByte);
             fos.close();
-            remanenteCuatrimestralSelected.setInformeRemanenteUrl("/archivos/informeRemanenteCuatrimestral/" + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf");
+            remanenteCuatrimestralSelected.setInformeTecnicoUrl("/archivos/informeTecnicoRemanenteCuatrimestral/" + "itrc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf");
             remanenteCuatrimestralServicio.update(remanenteCuatrimestralSelected);
             EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
             Usuario u = new Usuario();
@@ -209,10 +209,9 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             erc.setRemanenteCuatrimestral(remanenteCuatrimestralSelected);
             erc.setUsuarioId(u);
             erc.setFechaRegistro(new Date());
-            erc.setDescripcion("InformeSubido");
+            erc.setDescripcion("InformeTecnicoSubido");
             estadoRemanenteCuatrimestralServicio.create(erc);
             displayUploadInformeCuatrimestral = Boolean.FALSE;
-//            remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -421,11 +420,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         gastosRMercantilEst = getValorGastosRMercantil(mes);
         valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(2, BigDecimal.ROUND_HALF_EVEN);
         return valor;
-    }
-
-    public void preProcessPDF(Object document) throws IOException, BadElementException, DocumentException {
-
-    }
+    }    
 
     //Getters & Setters
     public List<Row> getTransaccionRegistrosList() {

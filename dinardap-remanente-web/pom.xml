@@ -99,6 +99,11 @@
             <artifactId>primefaces-extensions</artifactId>
             <version>7.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.1.0</version>
+        </dependency>
 
         <!-- EJB's -->
 
