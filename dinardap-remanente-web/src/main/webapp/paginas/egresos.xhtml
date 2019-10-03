@@ -224,10 +224,10 @@
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{facturaPagada.fecha}" >
-                                            <f:convertDateTime pattern="yyyy/MM/dd" />
+                                            <f:convertDateTime pattern="yyyy-MM-dd" />
                                         </h:outputText>
                                     </f:facet>
-                                    <f:facet name="input"><p:calendar id="fecha" value="#{facturaPagada.fecha}" locale="es" pattern="yyyy/MM/dd" />
+                                    <f:facet name="input"><p:calendar id="fecha" value="#{facturaPagada.fecha}" locale="es" pattern="yyyy-MM-dd" mindate="#{egresosCtrl.fechaMin}" maxdate="#{egresosCtrl.fechaMax}" />
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
