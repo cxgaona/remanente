@@ -28,7 +28,7 @@
                                      selectionMode="single"
                                      selection="#{remanenteCuatrimestralCtrl.remanenteCuatrimestralSelected}"
                                      style="width: 50%">
-                            <p:ajax event="rowSelect" listener="#{remanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral"/>
+                            <p:ajax event="rowSelect" listener="#{remanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral, formGenerarInforme"/>
                             <p:column headerText="Cuatrimestre" width="20%">
                                 <h:outputText value="#{remanenteCuatrimestral.cuatrimestre}" />
                             </p:column>
@@ -444,7 +444,8 @@
                         id="btnGenerarPDF"
                         style="margin-right:20px;"                                      
                         icon="fa fa-fw fa-file-pdf-o"
-                        action=""/>
+                        action="#{remanenteCuatrimestralCtrl.exportarPDF(actionEvent)}"
+                        disabled="#{remanenteCuatrimestralCtrl.btnInfDisabled}"/>
                 </b:panel>                
             </h:form>
         </ui:define>
