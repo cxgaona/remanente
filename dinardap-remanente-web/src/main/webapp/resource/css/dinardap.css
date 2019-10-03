@@ -430,3 +430,13 @@ ui-fileupload ui-widget ui-fileupload-responsive{
     margin: 8px 0;   
     font-weight: normal !important;
 }
+
+.noLeido {
+    font-weight: bold !important;        
+    color: #aed2d9 !important;
+}
+
+.leido {
+    font-weight: normal !important;        
+    color: #000000 !important;
+}

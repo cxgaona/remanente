@@ -10,24 +10,35 @@
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{bandejaCtrl.titulo}</h1>               
 
             <h:form id="formBandeja">
+                <style type="text/css">
+                    .noLeido {
+                        font-weight: bold !important;        
+                        color: #215c85 !important;
+                    }
+
+                    .leido {
+                        font-weight: normal !important;        
+                        color: #000000 !important;
+                    }
+                </style>
                 <b:panel title="Notificaciones">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <h:outputLabel value="Notificaciones Recibidas" styleClass="form-label-izquierda-15" style="width: 100%"/>
                         <p:dataTable id="remanenteMensualTbl"
                                      value="#{bandejaCtrl.bandejaList}" 
                                      var="bandeja"
-                                     
-                                     reflow="true" rows="4" paginator="true"
+                                     rowStyleClass="#{bandeja.leido eq true ? 'leido':'noLeido'}"
+                                     rowKey="#{bandeja.bandejaId}"
+                                     selectionMode="single"
+                                     selection="#{bandejaCtrl.bandejaSelected}"
+                                     reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="4,8,12">
-<!--                            rowKey="{remanenteMensual.remanenteMensualId}"
-                                     selectionMode="single"
-                                     selection="{bandejaCtrl.remanenteMensualSelected}"-->
-                            <!--<p:ajax event="rowSelect" listener="{bandejaCtrl.onRowSelectRemanenteMensual}" update="formTransacciones, formRemanenteMensual" />-->
+                            <!--<p:ajax event="rowSelect" listener="{bandejaCtrl.onRowSelectBandeja}" update="formBandeja" />-->
                             <p:column headerText="ID Bandeja" rendered="false">
                                 <h:outputText value="#{bandeja.bandejaId}"/>
                             </p:column>
-                            <p:column headerText="Solicitante" sortBy="#{bandeja.usuarioSolicitanteId.nombre}" filterBy="#{bandeja.usuarioSolicitanteId.nombre}" filterMatchMode="contains">
+                            <p:column style="width: 22%" headerText="Solicitante" sortBy="#{bandeja.usuarioSolicitanteId.nombre}" filterBy="#{bandeja.usuarioSolicitanteId.nombre}" filterMatchMode="contains">
                                 <h:outputText value="#{bandeja.usuarioSolicitanteId.nombre}" />
                             </p:column>
                             <p:column headerText="Fecha" sortBy="#{bandeja.fechaRegistro}" filterBy="#{bandeja.fechaRegistro}" filterMatchMode="contains">
@@ -35,8 +46,13 @@
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Descripción" sortBy="#{bandeja.descripcion}" filterBy="#{bandeja.descripcion}" filterMatchMode="contains">
+                            <p:column style="width: 55%" headerText="Descripción" sortBy="#{bandeja.descripcion}" filterBy="#{bandeja.descripcion}" filterMatchMode="contains">
                                 <h:outputText value="#{bandeja.descripcion}"/>
+                            </p:column>                            
+                            <p:column>
+                                <center>
+                                    <p:linkButton href="gestionRemanenteMensual.jsf" icon="fa fa-fw fa-share" />  
+                                </center>
                             </p:column>                            
                         </p:dataTable>
                     </h:panelGrid>                    

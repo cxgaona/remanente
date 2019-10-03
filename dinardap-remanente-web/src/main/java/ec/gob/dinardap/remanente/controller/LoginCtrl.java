@@ -20,6 +20,8 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
     private String usuario;
     private String contraseña;
     private Usuario u;
+    private Integer numero;
+    private String str, claveGenerada, encriptada;
 
     @EJB
     private UsuarioServicio usuarioServicio;
@@ -43,7 +45,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
                 variableSesionPerfil += "REM-Verificador, ";
             }
             if (u.getValidador()) {
-                    variableSesionPerfil += "REM-Validador, ";
+                variableSesionPerfil += "REM-Validador, ";
             }
             if (u.getAdministrador()) {
                 variableSesionPerfil += "REM-Administrador, ";
@@ -67,7 +69,16 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
     }
 
     public void recuperarContrasena() {
-        System.out.println("===Función Recuperar contraseña===");
+        str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        claveGenerada = "";
+        for (Integer i = 0; i < 8; i++) {
+            numero = (int) (Math.random() * 36);
+            claveGenerada = claveGenerada + str.substring(numero, numero + 1);
+        }
+        System.out.println("clave generada:" + claveGenerada);
+        encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + claveGenerada);
+        
+        System.out.println("clave generada:" + encriptada);
     }
 
     public String getUsuario() {

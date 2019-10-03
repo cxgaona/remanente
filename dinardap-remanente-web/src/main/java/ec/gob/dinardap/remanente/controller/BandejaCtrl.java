@@ -1,6 +1,10 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.Bandeja;
+import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
+import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
+import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -14,35 +18,68 @@ import javax.inject.Named;
 
 @Named(value = "bandejaCtrl")
 @ViewScoped
-public class BandejaCtrl extends BaseCtrl implements Serializable { 
+public class BandejaCtrl extends BaseCtrl implements Serializable {
 
     private String titulo;
     private Integer usuarioId, anio, mes;
-    private List<Bandeja> bandejaList;    
-    private List<Bandeja> bandejaListMesAnterior;    
+    private List<Bandeja> bandejaList;
+    private List<Bandeja> bandejaListMesAnterior;
+    private Bandeja bandejaSelected;
 
     @EJB
     private BandejaServicio bandejaServicio;
 
-        
     @PostConstruct
     protected void init() {
-        titulo="Bandeja";
+        titulo = "Bandeja";
+        bandejaSelected = new Bandeja();
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());        
+        calendar.setTime(new Date());
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
-        bandejaList=bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
+        bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
         Integer mesMin, anioMin;
         if (mes == 1) {
-            anioMin=anio-1;            
-            bandejaListMesAnterior=bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anioMin, 12);
+            anioMin = anio - 1;
+            bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anioMin, 12);
         } else {
-            mesMin=mes-1;
-            bandejaListMesAnterior=bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mesMin);
+            mesMin = mes - 1;
+            bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mesMin);
         }
         bandejaList.addAll(bandejaListMesAnterior);
+    }
+
+    public void onRowSelectBandeja() {
+        if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
+            bandejaSelected.setLeido(Boolean.TRUE);
+            bandejaSelected.setFechaLeido(new Date());
+            bandejaServicio.editBandeja(bandejaSelected);
+        }
+    }
+
+    public void generarNotificacion(Integer usuarioAsignadoId, Integer usuarioSolicitanteId,
+            Integer remanenteCuatrimestralId, Integer remanenteAnualId, Integer institucionId,
+            Integer remanenteMensualId, String descripcion, String estado) {
+        Bandeja bandeja = new Bandeja();
+        Usuario ua = new Usuario();
+        ua.setUsuarioId(usuarioAsignadoId);
+        Usuario us = new Usuario();
+        us.setUsuarioId(usuarioSolicitanteId);
+        RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
+        rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucionId));
+        RemanenteMensual rm = new RemanenteMensual();
+        rm.setRemanenteMensualId(remanenteMensualId);
+
+        bandeja.setUsuarioAsignadoId(ua);
+        bandeja.setUsuarioSolicitanteId(us);
+        bandeja.setRemanenteCuatrimestral(rc);
+        bandeja.setRemanenteMensualId(rm);
+        bandeja.setDescripcion(descripcion);
+        bandeja.setEstado(estado);
+        bandeja.setLeido(Boolean.FALSE);
+        bandeja.setFechaRegistro(new Date());
+        bandejaServicio.crearBandeja(bandeja);
     }
 
     public String getTitulo() {
@@ -84,13 +121,21 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     public void setBandejaList(List<Bandeja> bandejaList) {
         this.bandejaList = bandejaList;
     }
-    
-  
 
-    
-    
-    
-    
-    
+    public List<Bandeja> getBandejaListMesAnterior() {
+        return bandejaListMesAnterior;
+    }
+
+    public void setBandejaListMesAnterior(List<Bandeja> bandejaListMesAnterior) {
+        this.bandejaListMesAnterior = bandejaListMesAnterior;
+    }
+
+    public Bandeja getBandejaSelected() {
+        return bandejaSelected;
+    }
+
+    public void setBandejaSelected(Bandeja bandejaSelected) {
+        this.bandejaSelected = bandejaSelected;
+    }
 
 }

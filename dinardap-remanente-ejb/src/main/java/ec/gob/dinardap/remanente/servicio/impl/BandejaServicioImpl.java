@@ -31,11 +31,21 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         String[] criteriaNombres = {"usuarioAsignadoId.usuarioId", "remanenteCuatrimestral.remanenteAnual.anio", "remanenteMensualId.mes"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {usuarioId, anio, mes};
-        String[] orderBy = {"remanenteMensualId.mes"};
+        String[] orderBy = {"fechaRegistro"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         bandejaList = findByCriterias(criteria);
         return bandejaList;
+    }
+
+    @Override
+    public void crearBandeja(Bandeja bandeja) {
+        this.create(bandeja);
+    }
+
+    @Override
+    public void editBandeja(Bandeja bandeja) {
+        this.update(bandeja);
     }
 
 }
