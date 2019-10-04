@@ -16,5 +16,7 @@ public interface UsuarioServicio extends GenericService<Usuario, Integer> {
     public void editUsuario(Usuario usuario);
 
     public Usuario login(String usuario, String contraseña);
+    
+    public Usuario getUsuarioByUsername(String username);
 
 }

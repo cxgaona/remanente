@@ -12,7 +12,7 @@
                     <h:form id="loginForm">                      
                         <b:row>
                             <b:column col-md="3" col-xs="12" offset="5" >
-                                <b:inputText placeholder="Usuario" required="true" id="username" value="#{loginCtrl.usuario}">
+                                <b:inputText placeholder="Usuario" required="true" id="username" value="#{restaurarClaveCtrl.usuario}">
                                     <f:facet name="prepend">
                                         <b:icon name="user" />
                                     </f:facet>
@@ -22,8 +22,18 @@
                         </b:row>                   
                         <b:row style="text-align: center">
                             <b:column col-md="3" offset="5">
-                                <p:commandButton value="Restaurar Constraseña" id="recuperarBtn" icon="fa fa-fw fa-send"
-                                                 action="#{loginCtrl.recuperarContrasena}"/>
+                                <p:commandButton value="Restaurar Contraseña" disabled="#{restaurarClaveCtrl.desactivarBtnRestaurar}" id="recuperarBtn" icon="fa fa-fw fa-send"
+                                                 action="#{restaurarClaveCtrl.recuperarContrasena}" update="loginForm"/>
+                            </b:column>
+                        </b:row>
+                        <b:row style="text-align: center">
+                            <b:column col-md="7" offset="3">
+                                <p:outputLabel value="#{restaurarClaveCtrl.mensaje}"/> 
+                            </b:column>
+                        </b:row>
+                        <b:row style="text-align: center" rendered="#{restaurarClaveCtrl.displaybtnLogin}">
+                            <b:column col-md="3" offset="5">
+                                <p:linkButton href="login.jsf" value="Iniciar Sesión" icon="fa fa-fw fa-send" />
                             </b:column>
                         </b:row>
                     </h:form>

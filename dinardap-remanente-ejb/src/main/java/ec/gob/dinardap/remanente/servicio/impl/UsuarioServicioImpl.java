@@ -54,4 +54,19 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
         return u;
     }
 
+    @Override
+    public Usuario getUsuarioByUsername(String username) {
+        Usuario user = new Usuario();
+        String[] criteriaNombres = {"usuario","estado"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {username, "A"};
+        String[] orderBy = {"usuarioId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        System.out.println("tamaño: "+findByCriterias(criteria).size());
+        if(findByCriterias(criteria).size()!=0)
+            user = findByCriterias(criteria).get(0);
+        return user;
+    }
+
 }
