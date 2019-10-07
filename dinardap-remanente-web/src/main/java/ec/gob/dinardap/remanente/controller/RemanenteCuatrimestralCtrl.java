@@ -668,7 +668,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(), parametros, new JREmptyDataSource());
 
         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-        response.addHeader("Content-disposition", "attachment; filename=jsfReporte.pdf");
+        response.addHeader("Content-disposition", "attachment; filename=InformeCuatrimestral.pdf");
         ServletOutputStream stream = response.getOutputStream();
 
         JasperExportManager.exportReportToPdfStream(jasperPrint, stream);

@@ -1,7 +1,5 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
-import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
@@ -102,7 +100,12 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         displayComment = Boolean.FALSE;
         comentariosRechazo = "";
         transaccionSelected = new Transaccion();
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        if (this.getSessionVariable("gadId").equals(0)) {
+            System.out.println("SIn gad");
+            institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        }else{
+            institucionId = Integer.parseInt(this.getSessionVariable("gadId"));
+        }
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();

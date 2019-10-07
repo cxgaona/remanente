@@ -53,6 +53,12 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             this.setSessionVariable("perfil", variableSesionPerfil);
             this.setSessionVariable("usuarioId", u.getUsuarioId().toString());
             this.setSessionVariable("institucionId", u.getInstitucionId().getInstitucionId().toString());
+            if (u.getInstitucionId().getGad() != null) {
+                this.setSessionVariable("gadId", u.getInstitucionId().getGad().getInstitucionId().toString());
+            } else {
+                System.out.println("not null");
+                this.setSessionVariable("gadId", "0");
+            }
             System.out.println(this.getSessionVariable("perfil"));
             FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {
@@ -77,7 +83,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
         }
         System.out.println("clave generada:" + claveGenerada);
         encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + claveGenerada);
-        
+
         System.out.println("clave generada:" + encriptada);
     }
 

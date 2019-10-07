@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.dao.ejb;
 
 import ec.gob.dinardap.remanente.dao.UsuarioDao;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import java.util.ArrayList;
@@ -25,13 +26,18 @@ public class UsuarioDaoEjb extends RemanenteGenericDao<Usuario, Integer> impleme
         query.setParameter("usuario", usuario);
         query.setParameter("contrasena", contraseña);
         Usuario u = new Usuario();
-        System.out.println("size: " + query.getResultList().size());
         if (query.getResultList().size() != 0) {
             u = (Usuario) query.getResultList().get(0);
+            System.out.println("Usuario: " + u.getInstitucionId().getInstitucionId().toString());
+            if (u.getInstitucionId().getGad() == null) {
+                System.out.println("ntro en el if");
+                u.getInstitucionId().setGad(null);
+                System.out.println("Acabo el if");
+            }
             return u;
         } else {
             return null;
-        }                
+        }
     }
 
 }
