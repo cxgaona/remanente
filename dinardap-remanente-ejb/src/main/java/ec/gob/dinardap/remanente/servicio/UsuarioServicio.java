@@ -3,6 +3,7 @@ package ec.gob.dinardap.remanente.servicio;
 import javax.ejb.Local;
 
 import ec.gob.dinardap.persistence.servicio.GenericService;
+import ec.gob.dinardap.remanente.dto.UsuarioDTO;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface UsuarioServicio extends GenericService<Usuario, Integer> {
 
     public void editUsuario(Usuario usuario);
 
-    public Usuario login(String usuario, String contraseña);
+    public UsuarioDTO login(String usuario, String contraseña);
 
 }

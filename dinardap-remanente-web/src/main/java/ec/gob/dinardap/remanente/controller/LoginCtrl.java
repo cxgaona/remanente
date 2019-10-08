@@ -2,7 +2,7 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
-import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.dto.UsuarioDTO;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,7 +19,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
 
     private String usuario;
     private String contraseña;
-    private Usuario u;
+    private UsuarioDTO u;
     private Integer numero;
     private String str, claveGenerada, encriptada;
 
@@ -30,12 +30,14 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
     protected void init() {
         usuario = "";
         contraseña = "";
-        u = new Usuario();
+        u = new UsuarioDTO();
     }
 
     public void ingresar() throws IOException {
+        u = new UsuarioDTO();
         String cadena = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña;
         u = usuarioServicio.login(usuario, EncriptarCadenas.encriptarCadenaSha1(cadena));
+        System.out.println("Despues del Servicio");
         if (u != null) {
             String variableSesionPerfil = "";
             if (u.getRegistrador()) {
@@ -51,18 +53,23 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
                 variableSesionPerfil += "REM-Administrador, ";
             }
             this.setSessionVariable("perfil", variableSesionPerfil);
-            this.setSessionVariable("usuarioId", u.getUsuarioId().toString());
-            this.setSessionVariable("institucionId", u.getInstitucionId().getInstitucionId().toString());
-            if (u.getInstitucionId().getGad() != null) {
-                this.setSessionVariable("gadId", u.getInstitucionId().getGad().getInstitucionId().toString());
-            } else {
-                System.out.println("not null");
-                this.setSessionVariable("gadId", "0");
-            }
+            this.setSessionVariable("usuarioId", u.getUsuarioID().toString());
+            this.setSessionVariable("institucionId", u.getInstitucionID().toString());
+            this.setSessionVariable("gadId", u.getGadID().toString());
+            
+
+//            System.out.println("Institucion: "+u.getInstitucionId().getInstitucionId().toString());
+//            System.out.println("Institucion GAD: "+u.getInstitucionId().getGad().getInstitucionId().toString());
+//            if (u.getInstitucionId().getGad() != null) {
+//                this.setSessionVariable("gadId", u.getInstitucionId().getGad().getInstitucionId().toString());
+//            } else {
+//                System.out.println("not null");
+//                this.setSessionVariable("gadId", "0");
+//            }
             System.out.println(this.getSessionVariable("perfil"));
             FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {
-            u = new Usuario();
+            u = new UsuarioDTO();
             usuario = "";
             contraseña = "";
             this.addInfoMessage("Usuario o contraseña Incorrecto", "asd");
