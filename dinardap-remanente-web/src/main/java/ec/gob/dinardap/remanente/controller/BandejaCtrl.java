@@ -1,10 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.Bandeja;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
-import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
-import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -56,30 +52,6 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
             bandejaSelected.setFechaLeido(new Date());
             bandejaServicio.editBandeja(bandejaSelected);
         }
-    }
-
-    public void generarNotificacion(Integer usuarioAsignadoId, Integer usuarioSolicitanteId,
-            Integer remanenteCuatrimestralId, Integer remanenteAnualId, Integer institucionId,
-            Integer remanenteMensualId, String descripcion, String estado) {
-        Bandeja bandeja = new Bandeja();
-        Usuario ua = new Usuario();
-        ua.setUsuarioId(usuarioAsignadoId);
-        Usuario us = new Usuario();
-        us.setUsuarioId(usuarioSolicitanteId);
-        RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
-        rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucionId));
-        RemanenteMensual rm = new RemanenteMensual();
-        rm.setRemanenteMensualId(remanenteMensualId);
-
-        bandeja.setUsuarioAsignadoId(ua);
-        bandeja.setUsuarioSolicitanteId(us);
-        bandeja.setRemanenteCuatrimestral(rc);
-        bandeja.setRemanenteMensualId(rm);
-        bandeja.setDescripcion(descripcion);
-        bandeja.setEstado(estado);
-        bandeja.setLeido(Boolean.FALSE);
-        bandeja.setFechaRegistro(new Date());
-        bandejaServicio.crearBandeja(bandeja);
     }
 
     public String getTitulo() {

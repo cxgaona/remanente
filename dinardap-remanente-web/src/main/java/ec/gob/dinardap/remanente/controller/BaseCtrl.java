@@ -178,9 +178,8 @@ public class BaseCtrl implements Serializable {
         if (perfil.contains("REM-Registrador")) {
             institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
         } else if (perfil.contains("REM-Verificador")) {
-            if (getSessionVariable("gadId").equals("-1")) {
-                institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
-            } else {
+            institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
+            if (getSessionVariable("institucionTipo").equals("GAD")) {
                 institucionID = institucionRequeridaServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
             }
         } else if (perfil.contains("REM-Validador")) {
