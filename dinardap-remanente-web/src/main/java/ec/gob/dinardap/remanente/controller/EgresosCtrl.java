@@ -75,7 +75,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         mes = calendar.get(Calendar.MONTH) + 1;
         fechaMin = fechasLimiteMin(anio, mes);
         fechaMax = fechasLimiteMax(anio, mes);
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         nominaList = new ArrayList<Nomina>();
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
         nominaSelected = new Nomina();

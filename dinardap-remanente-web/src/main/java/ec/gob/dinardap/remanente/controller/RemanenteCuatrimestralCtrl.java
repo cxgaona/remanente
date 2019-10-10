@@ -91,7 +91,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     @PostConstruct
     protected void init() {
         //Session
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
 

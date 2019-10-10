@@ -100,18 +100,11 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         displayUploadEdit = Boolean.FALSE;
         displaySolicitud = Boolean.FALSE;
         transaccionSelected = new Transaccion();
-        /*Variables de session*/
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-        
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
-
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-
-//        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
-//        EncriptarCadenas.encriptarCadenaSha1(a);
-//        System.out.println("a = " + EncriptarCadenas.encriptarCadenaSha1(a));
     }
 
     public void loadRemanenteMensualByAño() {
@@ -351,7 +344,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             System.out.println("Estado: " + erm.getDescripcion());
         }
     }
-    
+
     public void detalleRPropiedad() {
         tituloDetalleDlg = "Registro de la Propiedad";
         tramiteRPropiedadMercantilList = new ArrayList<Tramite>();
@@ -383,7 +376,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             }
         }
     }
-    
+
     public void detalleEgresos() {
         egresoNominaList = new ArrayList<Nomina>();
         egresoFacturaList = new ArrayList<FacturaPagada>();
@@ -577,9 +570,5 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     public void setEgresoFacturaList(List<FacturaPagada> egresoFacturaList) {
         this.egresoFacturaList = egresoFacturaList;
     }
-    
-    
-    
-    
 
 }
