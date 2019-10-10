@@ -1,18 +1,19 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
-import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -52,6 +53,8 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     private Integer institucionId;
     private Integer usuarioId;
     private String tituloDetalleDlg;
+    private InstitucionRequerida institucionNotificacion;
+    private List<Usuario> usuarioListNotificacion;
 
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
@@ -81,6 +84,12 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
 
     @EJB
     private EstadoRemanenteMensualServicio estadoRemanenteMensualServicio;
+
+    @EJB
+    private BandejaServicio bandejaServicio;
+
+    @EJB
+    private UsuarioServicio usuarioServicio;
 
     @PostConstruct
     protected void init() {
@@ -280,6 +289,17 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         remanenteMensualSelected.setComentarios(comentariosRechazo);
         remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        //ENVIO DE NOTIFICACION//
+        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(institucionId);
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Validador", "REM-Verificador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        String mensajeNotificacion = "Se le asigno la Validación del Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                institucionNotificacion, remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        //FIN ENVIO//
     }
 
     public void detalleRPropiedad() {
@@ -371,6 +391,17 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         remanenteMensualSelected.setComentarios(comentariosRechazo);
         remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        //ENVIO DE NOTIFICACION//
+        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(institucionId);
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Registrador", "REM-Verificador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        String mensajeNotificacion = "Se le ha reasignado el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " con estado RECHAZADO.";
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                institucionNotificacion, remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        //FIN ENVIO//
     }
 
     public void handleFileUploadRPropiedad(FileUploadEvent event) {

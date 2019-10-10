@@ -58,25 +58,26 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
     public void generarNotificacion(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
             Integer remanenteCuatrimestralId, Integer remanenteAnualId, InstitucionRequerida institucion,
             Integer remanenteMensualId, String descripcion, String estado) {
-        Bandeja bandeja = new Bandeja();
-        Usuario us = new Usuario();
-        us.setUsuarioId(usuarioSolicitanteId);
-        RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
-        rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucion.getInstitucionId()));
-        RemanenteMensual rm = new RemanenteMensual();
-        rm.setRemanenteMensualId(remanenteMensualId);
-        bandeja.setUsuarioSolicitanteId(us);
-        bandeja.setRemanenteCuatrimestral(rc);
-        bandeja.setRemanenteMensualId(rm);
-        bandeja.setDescripcion(descripcion);
-        bandeja.setEstado(estado);
-        bandeja.setLeido(Boolean.FALSE);
-        bandeja.setFechaRegistro(new Date());
         for (Usuario userAsignado : usuarioAsignadoList) {
-            bandeja.setUsuarioAsignadoId(userAsignado);            
+            Bandeja bandeja = new Bandeja();
+            Usuario us = new Usuario();
+            us.setUsuarioId(usuarioSolicitanteId);
+            RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
+            rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucion.getInstitucionId()));
+            RemanenteMensual rm = new RemanenteMensual();
+            rm.setRemanenteMensualId(remanenteMensualId);
+            bandeja.setUsuarioSolicitanteId(us);
+            bandeja.setRemanenteCuatrimestral(rc);
+            bandeja.setRemanenteMensualId(rm);
+            bandeja.setDescripcion(descripcion);
+            bandeja.setEstado(estado);
+            bandeja.setLeido(Boolean.FALSE);
+            bandeja.setFechaRegistro(new Date());
+            bandeja.setUsuarioAsignadoId(userAsignado);
             crearBandeja(bandeja);
+            System.out.println("Mensaje enviado a : " + userAsignado.getNombre());
             //implementar envio de correo electrónico
-            
+
             /*mensajes
             1Se le asigno la Verificación del Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> del <<institucion>>							R-VE
 2Se le ha reasignado el Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> con estado "Rechazado"								VE-R		
@@ -91,7 +92,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
 10Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses <<meses>> del año <<2019>> del <<institucion>>			VA-VE
 ****
             
-            */
+             */
         }
 
     }

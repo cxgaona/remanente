@@ -82,9 +82,9 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] criteriaNombres = {"institucionId.institucionId", "verificador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
                     if (institucion.getTipo().equals("SIN GAD")) {
-                        idInstitucionBusqueda = institucion.getInstitucionId();
+                        idInstitucionBusqueda = institucion.getInstitucionId();                        
                     } else if (institucion.getTipo().equals("CON GAD")) {
-                        idInstitucionBusqueda = institucion.getGad().getInstitucionId();
+                        idInstitucionBusqueda = institucion.getGad().getInstitucionId();                        
                     }
                     Object[] criteriaValores = {idInstitucionBusqueda, Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
