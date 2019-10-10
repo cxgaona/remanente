@@ -56,17 +56,12 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             this.setSessionVariable("usuarioId", u.getUsuarioID().toString());
             this.setSessionVariable("institucionId", u.getInstitucionID().toString());
             this.setSessionVariable("gadId", u.getGadID().toString());
-            
 
-//            System.out.println("Institucion: "+u.getInstitucionId().getInstitucionId().toString());
-//            System.out.println("Institucion GAD: "+u.getInstitucionId().getGad().getInstitucionId().toString());
-//            if (u.getInstitucionId().getGad() != null) {
-//                this.setSessionVariable("gadId", u.getInstitucionId().getGad().getInstitucionId().toString());
-//            } else {
-//                System.out.println("not null");
-//                this.setSessionVariable("gadId", "0");
-//            }
             System.out.println(this.getSessionVariable("perfil"));
+            System.out.println(this.getSessionVariable("usuarioId"));
+            System.out.println(this.getSessionVariable("institucionId"));
+            System.out.println(this.getSessionVariable("gadId"));
+ 
             FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {
             u = new UsuarioDTO();

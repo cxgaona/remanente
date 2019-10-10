@@ -119,8 +119,22 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
     @Override
     public InstitucionRequerida getInstitucionById(Integer institucionId) {
         InstitucionRequerida institucionRequerida = new InstitucionRequerida();
-        institucionRequerida= findByPk(institucionId);
-        return institucionRequerida;        
+        institucionRequerida = findByPk(institucionId);
+        return institucionRequerida;
+    }
+
+    @Override
+    public InstitucionRequerida getRegistroMixtoByGad(Integer institucionId) {
+        List<InstitucionRequerida> gadList = new ArrayList<InstitucionRequerida>();
+        String[] criteriaNombres = {"gad.institucionId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {institucionId};
+        String[] orderBy = {"institucionId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        gadList = findByCriterias(criteria);
+        System.out.println("Size: " + gadList.size());
+        return gadList.get(gadList.size() - 1);
     }
 
 }

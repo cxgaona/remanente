@@ -69,7 +69,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         mes = calendar.get(Calendar.MONTH) + 1;
         fechaMin = fechasLimiteMin(anio, mes);
         fechaMax = fechasLimiteMax(anio, mes);
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));        
         obtenerRemanenteMensual();
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());
         tramiteSelected = new Tramite();
@@ -85,24 +85,24 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         String fechaLimite = "";
         Integer mesMin, anioMin;
         if (mes == 1) {
-            anioMin=anio-1;
+            anioMin = anio - 1;
             fechaLimite = anioMin.toString() + "-12-15";
         } else {
-            mesMin=mes-1;
-            fechaLimite = anio.toString() +"-"+mesMin.toString()+"-15";
+            mesMin = mes - 1;
+            fechaLimite = anio.toString() + "-" + mesMin.toString() + "-15";
         }
         return fechaLimite;
     }
-    
+
     private String fechasLimiteMax(Integer anio, Integer mes) {
         String fechaLimite = "";
         Integer mesMax, anioMax;
         if (mes == 12) {
-             anioMax=anio+1;
+            anioMax = anio + 1;
             fechaLimite = anioMax.toString() + "-01-15";
         } else {
-            mesMax=mes+1;
-            fechaLimite = anio.toString() +"-"+mesMax.toString()+"-15";
+            mesMax = mes + 1;
+            fechaLimite = anio.toString() + "-" + mesMax.toString() + "-15";
         }
         return fechaLimite;
     }

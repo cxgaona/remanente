@@ -19,6 +19,8 @@ public interface InstitucionRequeridaServicio extends GenericService<Institucion
     public List<InstitucionRequerida> getDireccionRegionalList();
 
     public InstitucionRequerida getInstitucionById(Integer institucionId);
+    
+    public InstitucionRequerida getRegistroMixtoByGad(Integer institucionId);
 
 //    public List<InstitucionRequerida> getDireccionRegionalList(InstitucionRequerida registroMixto);
 }

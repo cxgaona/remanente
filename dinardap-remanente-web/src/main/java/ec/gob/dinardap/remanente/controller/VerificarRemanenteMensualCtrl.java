@@ -100,12 +100,8 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         displayComment = Boolean.FALSE;
         comentariosRechazo = "";
         transaccionSelected = new Transaccion();
-        if (this.getSessionVariable("gadId").equals(0)) {
-            System.out.println("SIn gad");
-            institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
-        }else{
-            institucionId = Integer.parseInt(this.getSessionVariable("gadId"));
-        }
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
+        
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();

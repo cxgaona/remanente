@@ -69,7 +69,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         mes = calendar.get(Calendar.MONTH) + 1;
         fechaMin = fechasLimiteMin(anio, mes);
         fechaMax = fechasLimiteMax(anio, mes);
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         obtenerRemanenteMensual();
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil",remanenteMensualSelected.getRemanenteMensualId());
         tramiteSelected = new Tramite();

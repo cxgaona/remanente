@@ -67,11 +67,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
             usuarioList = findByCriterias(criteria);
             Usuario u = new Usuario();
             u = usuarioList.get(0);
-            System.out.println("===Usuario==");
-            System.out.println("Usuario: " + u.getNombre());
-            System.out.println("Usuario: " + u.getUsuarioId());
-            System.out.println("Usuario: " + u.getUsuario());
-            System.out.println("Usuario: " + u.getInstitucionId().getInstitucionId());
             udto.setUsuarioID(u.getUsuarioId());
             udto.setInstitucionID(u.getInstitucionId().getInstitucionId());
             udto.setRegistrador(u.getRegistrador());
@@ -79,15 +74,10 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
             udto.setValidador(u.getValidador());
             udto.setAdministrador(u.getAdministrador());
             if (u.getInstitucionId().getGad() != null) {
-                System.out.println("Dentro del if");
                 udto.setGadID(u.getInstitucionId().getGad().getInstitucionId());
             } else {
                 udto.setGadID(-1);
-            }          
-
-//        System.out.println("Usuario: " + uu.getInstitucionId().getGad().getInstitucionId());
-//        System.out.println("Fin del Servicio");
-            System.out.println("DTO: " + udto.getGadID());
+            }
             return udto;
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,6 +7,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javax.ejb.EJB;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -26,8 +28,9 @@ public class BaseCtrl implements Serializable {
      *
      */
     private static final long serialVersionUID = 1L;
-
     public static final Locale DEFAULT_LOCALE = new Locale("es", "EC");
+    @EJB
+    private InstitucionRequeridaServicio institucionRequeridaServicio;
 
     /**
      * Returns Jsf actual instance
@@ -178,5 +181,21 @@ public class BaseCtrl implements Serializable {
         Map<String, Object> sesion = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         return sesion.get(variableName).toString();
     }
-    
+
+    protected Integer getInstitucionID(String perfil) {
+        Integer institucionID = 0;
+        if (perfil.contains("REM-Registrador")) {
+            institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
+        } else if (perfil.contains("REM-Verificador")) {
+            if (getSessionVariable("gadId").equals("-1")) {
+                institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
+            } else {
+                institucionID = institucionRequeridaServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
+            }
+        } else if (perfil.contains("REM-Validador")) {
+        } else if (perfil.contains("REM-Administrador")) {
+        }
+        return institucionID;
+    }
+
 }
