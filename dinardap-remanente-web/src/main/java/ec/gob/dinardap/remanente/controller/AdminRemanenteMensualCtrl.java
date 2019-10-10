@@ -8,6 +8,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.FacturaPagadaServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
@@ -15,6 +16,7 @@ import ec.gob.dinardap.remanente.servicio.NominaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -56,6 +58,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private Integer institucionId;
     private Integer usuarioId;
     private String tituloDetalleDlg;
+    private InstitucionRequerida institucionNotificacion;
+    private List<Usuario> usuarioListNotificacion;
 
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
@@ -92,6 +96,11 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private NominaServicio nominaServicio;
     @EJB
     private FacturaPagadaServicio facturaPagadaServicio;
+    @EJB
+    private BandejaServicio bandejaServicio;
+
+    @EJB
+    private UsuarioServicio usuarioServicio;
 
     @PostConstruct
     protected void init() {
@@ -290,7 +299,38 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         System.out.println("remaneneteOriginal Seleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
         crearVersionRemanente(remanenteMensualSelected);
         remanenteMensualSelected = new RemanenteMensual();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);        
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        //ENVIO DE NOTIFICACION//
+        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Registrador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        String mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido APROBADA.";
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        /////
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Verificador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre()+" ha sido APROBADA.";
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        /////
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Validador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        //FIN ENVIO//
     }
 
     public void rechazarSolicitudCambio() {
@@ -306,6 +346,37 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         estadoRemanenteMensualServicio.create(erm);
         displaySolicitud = Boolean.FALSE;
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        //ENVIO DE NOTIFICACION//
+        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Registrador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        String mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido RECHAZADA.";
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        /////
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Verificador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre()+" ha sido RECHAZADA.";
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        /////
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Validador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualSelected.getRemanenteMensualId(),
+                mensajeNotificacion, "");
+        //FIN ENVIO//
     }
 
     public void crearVersionRemanente(RemanenteMensual remanenteMensual) {
@@ -350,7 +421,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
             for (Nomina nominaOrigen : transaccionOrigen.getNominaList()) {
                 for (Transaccion transaccionNueva : transaccionListNuevoRemanente) {
                     if (nominaOrigen.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId()
-                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {                        
+                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {
                         nominaOrigen.setNominaId(null);
                         nominaOrigen.setTransaccionId(transaccionNueva);
                         nominaOrigen.setFechaRegistro(new Date());
@@ -363,7 +434,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
             for (FacturaPagada facturaPagadaOrigen : transaccionOrigen.getFacturaPagadaList()) {
                 for (Transaccion transaccionNueva : transaccionListNuevoRemanente) {
                     if (facturaPagadaOrigen.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId()
-                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {                        
+                            .equals(transaccionNueva.getCatalogoTransaccionId().getCatalogoTransaccionId())) {
                         facturaPagadaOrigen.setFacturaPagadaId(null);
                         facturaPagadaOrigen.setTransaccionId(transaccionNueva);
                         facturaPagadaOrigen.setFechaRegistro(new Date());

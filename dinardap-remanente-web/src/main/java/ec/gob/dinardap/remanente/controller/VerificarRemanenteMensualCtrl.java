@@ -293,8 +293,6 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         //ENVIO DE NOTIFICACION//
         institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
-        System.out.println("institucionNotificacion id = " + institucionNotificacion.getInstitucionId());
-        System.out.println("remanenteMensualSelected = " + remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId());
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Validador", "REM-Verificador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
         String mensajeNotificacion = "Se le asigno la Validación del Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
