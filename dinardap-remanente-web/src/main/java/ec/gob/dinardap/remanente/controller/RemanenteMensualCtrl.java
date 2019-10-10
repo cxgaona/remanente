@@ -100,13 +100,10 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         displayUploadEdit = Boolean.FALSE;
         displaySolicitud = Boolean.FALSE;
         transaccionSelected = new Transaccion();
+        /*Variables de session*/
         institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
-        System.out.println("===Variable ===");
-        System.out.println(this.getSessionVariable("institucionId"));
-        System.out.println(this.getSessionVariable("perfil"));
-//        Integer.parseInt(this.getSessionVariable("institucionId"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-//                Integer.parseInt(this.getSessionVariable("usuarioId"));
+        
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
 

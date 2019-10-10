@@ -179,4 +179,10 @@ public class BaseCtrl implements Serializable {
         return sesion.get(variableName).toString();
     }
     
+    protected static Integer getInstitucionId(){
+        
+        Integer.parseInt(this.getSessionVariable("institucionId"));
+        return null;
+    }
+    
 }
