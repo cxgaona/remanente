@@ -209,7 +209,47 @@
                 </h:form>
             </p:dialog>                
 
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{validarRemanenteMensualCtrl.tituloPagina}</h1>   
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{validarRemanenteMensualCtrl.tituloPagina}</h1>
+
+            <h:form id="formInstitucion">
+                <b:panel title="Instituciones - #{validarRemanenteMensualCtrl.nombreInstitucion}">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="institucionTbl"
+                                     value="#{validarRemanenteMensualCtrl.institucionRequeridaList}" 
+                                     var="institucion"
+                                     rowKey="#{institucion.institucionId}"
+                                     selectionMode="single"
+                                     selection="#{validarRemanenteMensualCtrl.institucionSelected}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15,25">
+                            <p:ajax event="rowSelect" listener="#{validarRemanenteMensualCtrl.onRowSelectInstitucion}" 
+                                    update="
+                                    formBotones,
+                                    formTransacciones:transaccionRPropiedadTbl,
+                                    formTransacciones:transaccionRMercantilTbl,
+                                    formTransacciones:transaccionEgresosTbl,
+                                    formRemanenteMensual:remanenteMensualTbl,
+                                    estadoRemanenteMensualDlg"/>                            
+                            <p:column headerText="Institución" 
+                                      sortBy="#{institucion.nombre}" 
+                                      filterBy="#{institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" 
+                                      sortBy="#{institucion.provinciaCanton}" 
+                                      filterBy="#{institucion.provinciaCanton}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.provinciaCanton}" />
+                            </p:column>                            
+                            <p:column headerText="Tipo de Registro" 
+                                      sortBy="#{institucion.tipo}">
+                                <h:outputText value="#{institucion.tipo eq 'CON GAD'? 'Sin autonomía Financiera':'Con autonomía Financiera'}"/>
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
+
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{validarRemanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
@@ -283,9 +323,7 @@
             <h:form id="formTransacciones" enctype="multipart/form-data" >
                 <b:panel title="Transacción Remanente Mensual (Mes: #{validarRemanenteMensualCtrl.mesSelected})">
                     <p:remoteCommand name="onCellEdit" 
-                                     update="formTransacciones:transaccionRPropiedadTbl,
-                                     formTransacciones:transaccionRMercantilTbl,
-                                     formTransacciones:transaccionEgresosTbl"/>
+                                     update="formTransacciones"/>
                     <h:panelGrid columns="1" style="width: 60%;"> 
                         <p:dataTable id="transaccionRPropiedadTbl"
                                      styleClass="transaccionRPropiedadTbl"

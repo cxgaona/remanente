@@ -1,9 +1,8 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
-import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
@@ -42,6 +41,7 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
+    //Variables
     private UploadedFile file;
     private String tituloPagina;
     private String nombreInstitucion;
@@ -57,6 +57,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
     private Transaccion transaccionSelected;
+    private InstitucionRequerida institucionSelected;
 
     private List<Transaccion> transaccionRPropiedadList;
     private List<Transaccion> transaccionRMercantilList;
@@ -65,6 +66,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     private List<Tramite> tramiteRPropiedadMercantilList;
     private List<Nomina> egresoNominaList;
     private List<FacturaPagada> egresoFacturaList;
+    private List<InstitucionRequerida> institucionRequeridaList;
 
     private Boolean btnActivated;
     private Boolean displayComment;
@@ -84,9 +86,17 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 
     @PostConstruct
     protected void init() {
+        //Session
+        
+        
+        
+        institucionRequeridaList = new ArrayList<InstitucionRequerida>();
+        institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList(Integer.parseInt(this.getSessionVariable("institucionId")));
+        institucionId = 0;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         tituloPagina = "Gestión Remanente Mensual";
+        institucionSelected = new InstitucionRequerida();
         año = 0;
         año = calendar.get(Calendar.YEAR);
         tituloDetalleDlg = "";
@@ -107,10 +117,6 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-
-//        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
-//        EncriptarCadenas.encriptarCadenaSha1(a);
-//        System.out.println("a = " + EncriptarCadenas.encriptarCadenaSha1(a));
     }
 
     public void loadRemanenteMensualByAño() {
@@ -127,6 +133,20 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         transaccionRMercantilList = new ArrayList<Transaccion>();
         transaccionEgresosList = new ArrayList<Transaccion>();
         mesSelected = "Sin Selección";
+    }
+
+    public void onRowSelectInstitucion() {
+        institucionId = institucionSelected.getInstitucionId();
+        nombreInstitucion = institucionSelected.getNombre();
+        remanenteMensualList = new ArrayList<RemanenteMensual>();
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+
+        transaccionRPropiedadList = new ArrayList<Transaccion>();
+        transaccionRMercantilList = new ArrayList<Transaccion>();
+        transaccionEgresosList = new ArrayList<Transaccion>();
+
+        transaccionSelected = new Transaccion();
+//        displaySolicitud = Boolean.FALSE;
     }
 
     public void onRowSelectRemanenteMensual() {
@@ -574,6 +594,22 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 
     public void setEgresoFacturaList(List<FacturaPagada> egresoFacturaList) {
         this.egresoFacturaList = egresoFacturaList;
+    }
+
+    public List<InstitucionRequerida> getInstitucionRequeridaList() {
+        return institucionRequeridaList;
+    }
+
+    public void setInstitucionRequeridaList(List<InstitucionRequerida> institucionRequeridaList) {
+        this.institucionRequeridaList = institucionRequeridaList;
+    }
+
+    public InstitucionRequerida getInstitucionSelected() {
+        return institucionSelected;
+    }
+
+    public void setInstitucionSelected(InstitucionRequerida institucionSelected) {
+        this.institucionSelected = institucionSelected;
     }
 
 }
