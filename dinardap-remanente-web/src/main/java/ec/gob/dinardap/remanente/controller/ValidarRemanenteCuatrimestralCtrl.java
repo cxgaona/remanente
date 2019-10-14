@@ -4,14 +4,17 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.DocumentException;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -52,6 +55,8 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
+    private InstitucionRequerida institucionNotificacion;
+    private List<Usuario> usuarioListNotificacion;
 
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
     private List<Row> transaccionRegistrosList;
@@ -67,6 +72,10 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     private EstadoRemanenteCuatrimestralServicio estadoRemanenteCuatrimestralServicio;
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
+    @EJB
+    private BandejaServicio bandejaServicio;
+    @EJB
+    private UsuarioServicio usuarioServicio;
 
     @PostConstruct
     protected void init() {
@@ -212,6 +221,28 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
             erc.setDescripcion("InformeTecnicoSubido");
             estadoRemanenteCuatrimestralServicio.create(erc);
             displayUploadInformeCuatrimestral = Boolean.FALSE;
+            //ENVIO DE NOTIFICACION//
+            String meses="";
+            switch(remanenteCuatrimestralSelected.getCuatrimestre()){
+                case 1: meses="Enero - Abril";
+                    break;
+                case 2: meses="Mayo - Agosto";
+                    break;
+                case 3: meses="Septiembre - Diciembre";
+                    break;
+            }
+            Integer numMensuales=remanenteCuatrimestralSelected.getRemanenteMensualList().size();
+            institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+            usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                    "REM-Verificador", "REM-Validador", 391, remanenteCuatrimestralSelected);
+            String mensajeNotificacion = "Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
+            bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                    remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
+                    remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales -1).getRemanenteMensualId(),
+                    mensajeNotificacion, "");
+            //FIN ENVIO//
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

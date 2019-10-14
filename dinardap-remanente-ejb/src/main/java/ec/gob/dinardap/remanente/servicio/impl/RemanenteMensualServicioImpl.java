@@ -17,6 +17,7 @@ import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Stateless(name = "RemanenteMensualServicio")
 public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMensual, Integer> implements RemanenteMensualServicio {
@@ -87,7 +88,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public RemanenteMensual crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen) {
+    public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen) {
         RemanenteMensual rm = new RemanenteMensual();
         RemanenteMensual rmo = new RemanenteMensual(remanenteMensualOrigen.getRemanenteMensualId());
         RemanenteMensual rmn = new RemanenteMensual();
@@ -97,23 +98,22 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         rm.setComentarios(null);
         rm.setSolicitudCambioUrl(null);
         rm.setInformeAprobacionUrl(null);
-        this.create(rm);
+        rm.setFechaRegistro(new Date());
+        create(rm);        
+    }
 
+    @Override
+    public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         String[] criteriaNombres = {"remanenteMensualOrigenId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {rmo.getRemanenteMensualId()};
-        String[] orderBy = {"mes"};
+        Object[] criteriaValores = {remanenteMensualOrigen};
+        String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
-        System.out.println("Size: " + remanenteMensualList.size());
-        for (RemanenteMensual rmAux : remanenteMensualList) {
-            rmAux.getRemanenteMensualOrigenId();
-            rmn = rmAux;
-            break;
-        }
-        return rmn;
+        return remanenteMensualList.get(remanenteMensualList.size() - 1);
     }
+    
 
 }

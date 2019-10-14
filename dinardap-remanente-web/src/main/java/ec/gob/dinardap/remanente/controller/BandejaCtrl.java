@@ -16,7 +16,7 @@ import javax.inject.Named;
 @ViewScoped
 public class BandejaCtrl extends BaseCtrl implements Serializable {
 
-    private String titulo;
+    private String titulo, linkRedireccion;
     private Integer usuarioId, anio, mes;
     private List<Bandeja> bandejaList;
     private List<Bandeja> bandejaListMesAnterior;
@@ -28,6 +28,7 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         titulo = "Bandeja";
+        linkRedireccion="#";
         bandejaSelected = new Bandeja();
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         Calendar calendar = Calendar.getInstance();
@@ -44,6 +45,16 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
             bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mesMin);
         }
         bandejaList.addAll(bandejaListMesAnterior);
+        switch(this.getSessionVariable("perfil")){
+            case "REM-Registrador, ": linkRedireccion="gestionRemanenteMensual.jsf";
+                break;
+            case "REM-Verificador, ": linkRedireccion="verificarRemanenteMensual.jsf";
+                break;
+            case "REM-Validador, ": linkRedireccion="validarRemanenteMensual.jsf";
+                break;
+            case "REM-Administrador, ": linkRedireccion="administracion/adminRemanenteMensual.jsf";
+                break;
+        }
     }
 
     public void onRowSelectBandeja() {
@@ -108,6 +119,14 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
 
     public void setBandejaSelected(Bandeja bandejaSelected) {
         this.bandejaSelected = bandejaSelected;
+    }
+
+    public String getLinkRedireccion() {
+        return linkRedireccion;
+    }
+
+    public void setLinkRedireccion(String linkRedireccion) {
+        this.linkRedireccion = linkRedireccion;
     }
 
 }

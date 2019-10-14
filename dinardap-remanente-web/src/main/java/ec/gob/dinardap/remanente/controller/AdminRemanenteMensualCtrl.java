@@ -297,11 +297,11 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         estadoRemanenteMensualServicio.create(erm);
         displaySolicitud = Boolean.FALSE;
         System.out.println("remaneneteOriginal Seleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
-        crearVersionRemanente(remanenteMensualSelected);
-        remanenteMensualSelected = new RemanenteMensual();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        crearVersionRemanente(remanenteMensualSelected);        
+        
         //ENVIO DE NOTIFICACION//
-        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+//        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+        institucionNotificacion = remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Registrador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
         String mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido APROBADA.";
@@ -314,7 +314,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
-        mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre()+" ha sido APROBADA.";
+        mensajeNotificacion = "La solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() +" ha sido APROBADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
@@ -331,6 +331,9 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "");
         //FIN ENVIO//
+        
+        remanenteMensualSelected = new RemanenteMensual();
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
     }
 
     public void rechazarSolicitudCambio() {
@@ -347,7 +350,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         displaySolicitud = Boolean.FALSE;
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         //ENVIO DE NOTIFICACION//
-        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+//        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+        institucionNotificacion = remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Registrador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
         String mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido RECHAZADA.";
@@ -360,7 +364,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
-        mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre()+" ha sido RECHAZADA.";
+        mensajeNotificacion = "La solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
@@ -381,7 +385,9 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 
     public void crearVersionRemanente(RemanenteMensual remanenteMensual) {
         RemanenteMensual rmn = new RemanenteMensual();
-        rmn = remanenteMensualServicio.crearVersionRemanenteMensual(remanenteMensual);
+        Integer remanenteMensualOrigenID = remanenteMensual.getRemanenteMensualId();
+        remanenteMensualServicio.crearVersionRemanenteMensual(remanenteMensual);
+        rmn = remanenteMensualServicio.obtenerVersionRemanenteMensual(remanenteMensualOrigenID);
         //Creación de nuevo estado
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
         Usuario u = new Usuario();

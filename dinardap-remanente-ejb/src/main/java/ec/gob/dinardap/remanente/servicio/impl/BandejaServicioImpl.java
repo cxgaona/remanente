@@ -68,7 +68,12 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             rm.setRemanenteMensualId(remanenteMensualId);
             bandeja.setUsuarioSolicitanteId(us);
             bandeja.setRemanenteCuatrimestral(rc);
-            bandeja.setRemanenteMensualId(rm);
+            if(remanenteMensualId==0){
+                bandeja.setRemanenteMensualId(null);
+            }else{
+                bandeja.setRemanenteMensualId(rm);
+            }            
+            
             bandeja.setDescripcion(descripcion);
             bandeja.setEstado(estado);
             bandeja.setLeido(Boolean.FALSE);
@@ -76,23 +81,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             bandeja.setUsuarioAsignadoId(userAsignado);
             create(bandeja);
             System.out.println("Mensaje enviado a : " + userAsignado.getNombre());
-            //implementar envio de correo electrónico
-
-            /*mensajes
-            1Se le asigno la Verificación del Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> del <<institucion>>							R-VE
-2Se le ha reasignado el Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> con estado "Rechazado"								VE-R		
-3Se le asigno la Validación del Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> del <<institucion>>							VE-VA
-4El Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> ha sido "Aprobado/Rechazado"												VA-R
-5El Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> del <<institucion>> ha sido "Aprobado/Rechazado"							VA-VE
-6Se ha realizado una solicitud de cambio para el Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> del <<institucion>>			R-A,VE,VA
-7Su solicitud de cambio para el Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> ha sido "Aprobada/Rechazada"					A-R				
-8La solicitud de cambio para el Remanente Mensual correspondiente al mes de <<Mayo>> del año <<2019>> del <<institucion>> ha sido "Aprobada/Rechazada"A-VE,VA
-****Cuatrimestral
-9Se ha subido el informe del Remanente Cuatrimestral suscrito  correspondiente a los meses <<meses>> del año <<2019>> del <<institucion>>			VE-VA
-10Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses <<meses>> del año <<2019>> del <<institucion>>			VA-VE
-****
-            
-             */
+            //implementar envio de correo electrónico           
         }
 
     }
