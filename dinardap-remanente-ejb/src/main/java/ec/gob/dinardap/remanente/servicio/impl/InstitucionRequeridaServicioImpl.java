@@ -140,14 +140,13 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
     @Override
     public List<InstitucionRequerida> getRegistroMixtoList(Integer direccionRegionalID) {
         List<InstitucionRequerida> registrosMixtosList = new ArrayList<InstitucionRequerida>();
-        String[] criteriaNombres = {"direccionRegional.institucionId"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {direccionRegionalID};
+        String[] criteriaNombres = {"direccionRegional.institucionId","tipo"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS,CriteriaTypeEnum.STRING_NOT_EQUALS};
+        Object[] criteriaValores = {direccionRegionalID,"GAD"};
         String[] orderBy = {"institucionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         registrosMixtosList = findByCriterias(criteria);
-        System.out.println("Size: " + registrosMixtosList.size());
         return registrosMixtosList;
     }
 

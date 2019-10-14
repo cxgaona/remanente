@@ -1,9 +1,8 @@
 package ec.gob.dinardap.remanente.controller;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.DocumentException;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -43,12 +42,16 @@ import org.primefaces.model.UploadedFile;
 public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable {
 
     //Variables
-    private Integer institucionId;
     private Integer usuarioId;
-    private String tituloPagina;
+    private Integer direccionRegionalId;
+    private String nombreDireccionRegional;
+    private Integer institucionId;
     private String nombreInstitucion;
+    private String tituloPagina;
     private Integer año;
     private RemanenteCuatrimestral remanenteCuatrimestralSelected;
+    private InstitucionRequerida institucionSelected;
+
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
@@ -56,8 +59,10 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
     private List<Row> transaccionRegistrosList;
     private List<Row> transaccionEgresosList;
+    private List<InstitucionRequerida> institucionList;
 
     private Boolean displayUploadInformeCuatrimestral;
+    private Boolean disabledBtnReload;
 
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
@@ -71,19 +76,23 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     @PostConstruct
     protected void init() {
         //Session
-        institucionId = Integer.parseInt(this.getSessionVariable("institucionId"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-        nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
+        direccionRegionalId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        nombreDireccionRegional = institucionRequeridaServicio.getInstitucionById(direccionRegionalId).getNombre();
 
         //Inicializacion de variables
         remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
         transaccionRegistrosList = new ArrayList<Row>();
         transaccionEgresosList = new ArrayList<Row>();
+        institucionList = new ArrayList<InstitucionRequerida>();
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
         displayUploadInformeCuatrimestral = Boolean.FALSE;
+        disabledBtnReload = Boolean.TRUE;
+        institucionId = null;
+        nombreInstitucion = "Sin selección";
 
         //FechaACtual
         Calendar calendar = Calendar.getInstance();
@@ -92,6 +101,23 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         tituloPagina = "Gestión Remanente Cuatrimestral";
 
         //Proceso
+        institucionList = institucionRequeridaServicio.getRegistroMixtoList(direccionRegionalId);
+//        remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
+    }
+
+    public void onRowSelectInstitucion() {
+        remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
+        transaccionRegistrosList = new ArrayList<Row>();
+        transaccionEgresosList = new ArrayList<Row>();
+        remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
+        totalIngRPropiedad = new BigDecimal(0);
+        totalIngRMercantil = new BigDecimal(0);
+        totalEgresos = new BigDecimal(0);
+        displayUploadInformeCuatrimestral = Boolean.FALSE;
+        disabledBtnReload = Boolean.FALSE;
+
+        institucionId = institucionSelected.getInstitucionId();
+        nombreInstitucion = institucionSelected.getNombre();
         remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
     }
 
@@ -420,9 +446,33 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         gastosRMercantilEst = getValorGastosRMercantil(mes);
         valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(2, BigDecimal.ROUND_HALF_EVEN);
         return valor;
-    }    
+    }
+
+    public Boolean getDisabledBtnReload() {
+        return disabledBtnReload;
+    }
 
     //Getters & Setters
+    public void setDisabledBtnReload(Boolean disabledBtnReload) {
+        this.disabledBtnReload = disabledBtnReload;
+    }
+
+    public String getNombreDireccionRegional() {
+        return nombreDireccionRegional;
+    }
+
+    public void setNombreDireccionRegional(String nombreDireccionRegional) {
+        this.nombreDireccionRegional = nombreDireccionRegional;
+    }
+
+    public List<InstitucionRequerida> getInstitucionList() {
+        return institucionList;
+    }
+
+    public void setInstitucionList(List<InstitucionRequerida> institucionList) {
+        this.institucionList = institucionList;
+    }
+
     public List<Row> getTransaccionRegistrosList() {
         return transaccionRegistrosList;
     }
@@ -510,4 +560,13 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     public void setDisplayUploadInformeCuatrimestral(Boolean displayUploadInformeCuatrimestral) {
         this.displayUploadInformeCuatrimestral = displayUploadInformeCuatrimestral;
     }
+
+    public InstitucionRequerida getInstitucionSelected() {
+        return institucionSelected;
+    }
+
+    public void setInstitucionSelected(InstitucionRequerida institucionSelected) {
+        this.institucionSelected = institucionSelected;
+    }
+
 }

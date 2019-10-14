@@ -182,7 +182,6 @@ public class BaseCtrl implements Serializable {
             if (getSessionVariable("institucionTipo").equals("GAD")) {
                 institucionID = institucionRequeridaServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
             }
-        } else if (perfil.contains("REM-Validador")) {
         } else if (perfil.contains("REM-Administrador")) {
         }
         return institucionID;

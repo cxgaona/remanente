@@ -6,24 +6,7 @@
       xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
-        <ui:define name="content">
-            <p:dialog header = "Selección de Archivo... "
-                      id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
-                <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
-                    <p:fileUpload
-                        value="#{validarRemanenteMensualCtrl.file}"
-                        style="width:100%"
-                        mode="advanced"
-                        dragDropSupport="true"
-                        sizeLimit="9000000"
-                        allowTypes="/(\.|\/)(pdf)$/"
-                        label=""
-                        uploadLabel=""
-                        cancelLabel=""
-                        fileUploadListener="#{validarRemanenteMensualCtrl.handleFileUploadRPropiedad}"                        
-                        oncomplete="onCellEdit();"/>
-                </h:form>
-            </p:dialog>
+        <ui:define name="content">            
 
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Listado de estados del Remanentes" 
@@ -210,12 +193,11 @@
             </p:dialog>                
 
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{validarRemanenteMensualCtrl.tituloPagina}</h1>
-
             <h:form id="formInstitucion">
-                <b:panel title="Instituciones - #{validarRemanenteMensualCtrl.nombreInstitucion}">
+                <b:panel title="Instituciones - #{validarRemanenteMensualCtrl.nombreDireccionRegional}">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="institucionTbl"
-                                     value="#{validarRemanenteMensualCtrl.institucionRequeridaList}" 
+                                     value="#{validarRemanenteMensualCtrl.institucionList}" 
                                      var="institucion"
                                      rowKey="#{institucion.institucionId}"
                                      selectionMode="single"
@@ -225,11 +207,9 @@
                                      rowsPerPageTemplate="5,10,15,25">
                             <p:ajax event="rowSelect" listener="#{validarRemanenteMensualCtrl.onRowSelectInstitucion}" 
                                     update="
+                                    formRemanenteMensual,                                    
+                                    formTransacciones,
                                     formBotones,
-                                    formTransacciones:transaccionRPropiedadTbl,
-                                    formTransacciones:transaccionRMercantilTbl,
-                                    formTransacciones:transaccionEgresosTbl,
-                                    formRemanenteMensual:remanenteMensualTbl,
                                     estadoRemanenteMensualDlg"/>                            
                             <p:column headerText="Institución" 
                                       sortBy="#{institucion.nombre}" 
@@ -257,6 +237,7 @@
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
                             <p:inputMask id="anioSelected" value="#{validarRemanenteMensualCtrl.año}" mask="9999" style="width: 100%"/>
                             <p:commandButton action="#{validarRemanenteMensualCtrl.loadRemanenteMensualByAño}" 
+                                             disabled="#{validarRemanenteMensualCtrl.disabledBtnReload}"
                                              update=":formRemanenteMensual,
                                              :formTransacciones,
                                              @(.formBotones),

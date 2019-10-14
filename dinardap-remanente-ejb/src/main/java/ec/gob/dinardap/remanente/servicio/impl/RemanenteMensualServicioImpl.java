@@ -33,7 +33,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
+    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {        
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio"};
@@ -48,7 +48,6 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
                 erm.getEstadoRemanenteMensualId();
             }
         }
-        /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
         for (RemanenteMensual remanenteMensual : remanenteMensualList) {
             for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
                 transaccion.getTransaccionId();
@@ -57,8 +56,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
                 }
             }
         }
-        /*Por lo que mas quieras no Borres este bloque de código sino luego Diosito se molestará contigo T_T*/
-
+        System.out.println("size: " + remanenteMensualList.size());
         return remanenteMensualList;
     }
 
@@ -97,7 +95,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         rm.setComentarios(null);
         rm.setSolicitudCambioUrl(null);
         rm.setInformeAprobacionUrl(null);
-        this.create(rm);
+        create(rm);
 
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         String[] criteriaNombres = {"remanenteMensualOrigenId"};
@@ -107,13 +105,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
-        System.out.println("Size: " + remanenteMensualList.size());
-        for (RemanenteMensual rmAux : remanenteMensualList) {
-            rmAux.getRemanenteMensualOrigenId();
-            rmn = rmAux;
-            break;
-        }
-        return rmn;
+        return remanenteMensualList.get(remanenteMensualList.size() - 1);
     }
 
 }
