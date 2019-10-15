@@ -78,7 +78,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-        disableNuevoT = Boolean.FALSE;
+//        disableNuevoT = Boolean.FALSE;
     }
     
     private String fechasLimiteMin(Integer anio, Integer mes) {
