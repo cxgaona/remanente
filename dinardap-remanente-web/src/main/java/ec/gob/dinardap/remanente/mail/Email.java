@@ -6,6 +6,17 @@
 package ec.gob.dinardap.remanente.mail;
 
 import java.util.Properties;
+
+import javax.mail.AuthenticationFailedException;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 /**
@@ -14,28 +25,56 @@ import javax.mail.internet.MimeMultipart;
  */
 public class Email {
 
-//    private static final String SMTP_SERVER = "smtp server ";
-//    private static final String USERNAME = "";
-//    private static final String PASSWORD = "";
-//
-//    private static final String EMAIL_FROM = "from@gmail.com";
-//
-//    private String emailTo; //= "email_1@yahoo.com, email_2@gmail.com";
-//    private String emailToCC; //= "";
-//    private String emailSubject; //= "Test Send Email via SMTP";
-//    private String emailText; //= "<h1>Hello Java Mail \\n ABC123</h1>";
-    private Properties props;
-    private String from, to, subject;
-    private MimeMultipart multipart;
+    private final Properties prop;
+    private static final String FROM = "notificaciones.remanentes@dinardap.gob.ec";
+    private static final String URL = "http://10.0.0.168:8080/remanente";
+//    private String to;
+//    private String subject;
 
     public Email() {
-        props = new Properties();
-        props.setProperty("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
+        prop = new Properties();
+        prop.put("mail.smtp.host", "smtpsrv.dinardap.gob.ec");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "false");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.transport.protocol", "smtp");
     }
 
+    public void sendMail(String para,
+            String asunto,
+            String cuerpo) throws AuthenticationFailedException,
+            MessagingException {
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("notificaciones.remanentes@dinardap.gob.ec", "Password.1");
+            }
+        });
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(para));
+            message.setSubject(asunto);
+            Multipart multipartes = new MimeMultipart();
+            MimeBodyPart htmlPart = new MimeBodyPart();
+
+            String cabecera = "<html><body><center><h1>Plataforma de Remanentes</h1></center><br/>";
+            String contenido = "<center><p>" + cuerpo + "</p></center><br/>";
+            String boton = "<center><a href='" + URL + "'>Plataforma Remanentes</a></center>";
+//            String pie = "<br/><h2>DINARDAP</h2></body></html>";
+            String formulario = String.format("%s%s%s", cabecera, contenido, boton);
+
+            htmlPart.setContent(formulario, "text/html; charset=utf-8");
+            multipartes.addBodyPart(htmlPart);
+            message.setContent(multipartes);
+            Transport.send(message);
+        } catch (AuthenticationFailedException e) {
+            throw e;
+        } catch (MessagingException ex) {
+            throw ex;
+        }
+    }
 }

@@ -2,9 +2,12 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -53,7 +56,16 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
             encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + generarContraseña());
             u.setContrasena(encriptada);
             usuarioServicio.editUsuario(u);
-            mensaje = "Su nueva contraseña ha sido enviada al correo: "+u.getEmail();
+            mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
+
+            Email email = new Email();
+            try {
+                String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
+                email.sendMail(u.getEmail(), "Restaurar clave REMANENTES", mensajeMail);
+            } catch (Exception ex) {
+                Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             desactivarBtnRestaurar = Boolean.TRUE;
             displaybtnLogin = Boolean.TRUE;
         } else {
@@ -117,7 +129,7 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
-    }    
+    }
 
     public Boolean getDesactivarBtnRestaurar() {
         return desactivarBtnRestaurar;

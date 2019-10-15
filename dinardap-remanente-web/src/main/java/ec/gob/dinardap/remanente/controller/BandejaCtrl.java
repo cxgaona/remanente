@@ -2,6 +2,7 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.Bandeja;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -16,7 +18,7 @@ import javax.inject.Named;
 @ViewScoped
 public class BandejaCtrl extends BaseCtrl implements Serializable {
 
-    private String titulo;
+    private String titulo, linkRedireccion;
     private Integer usuarioId, anio, mes;
     private List<Bandeja> bandejaList;
     private List<Bandeja> bandejaListMesAnterior;
@@ -28,6 +30,7 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         titulo = "Bandeja";
+        linkRedireccion = "#";
         bandejaSelected = new Bandeja();
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         Calendar calendar = Calendar.getInstance();
@@ -44,14 +47,30 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
             bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mesMin);
         }
         bandejaList.addAll(bandejaListMesAnterior);
+        switch (this.getSessionVariable("perfil")) {
+            case "REM-Registrador, ":
+                linkRedireccion = "gestionRemanenteMensual.jsf";
+                break;
+            case "REM-Verificador, ":
+                linkRedireccion = "verificarRemanenteMensual.jsf";
+                break;
+            case "REM-Validador, ":
+                linkRedireccion = "validarRemanenteMensual.jsf";
+                break;
+            case "REM-Administrador, ":
+                linkRedireccion = "administracion/adminRemanenteMensual.jsf";
+                break;
+        }
     }
 
-    public void onRowSelectBandeja() {
+    public void onRowSelectBandeja() throws IOException {
+        System.out.println("En el btn");
         if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
             bandejaSelected.setLeido(Boolean.TRUE);
             bandejaSelected.setFechaLeido(new Date());
             bandejaServicio.editBandeja(bandejaSelected);
         }
+        FacesContext.getCurrentInstance().getExternalContext().redirect(linkRedireccion);
     }
 
     public String getTitulo() {
@@ -108,6 +127,14 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
 
     public void setBandejaSelected(Bandeja bandejaSelected) {
         this.bandejaSelected = bandejaSelected;
+    }
+
+    public String getLinkRedireccion() {
+        return linkRedireccion;
+    }
+
+    public void setLinkRedireccion(String linkRedireccion) {
+        this.linkRedireccion = linkRedireccion;
     }
 
 }

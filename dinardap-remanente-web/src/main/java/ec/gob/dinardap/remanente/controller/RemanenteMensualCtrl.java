@@ -352,6 +352,36 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             estadoRemanenteMensualServicio.create(erm);
             displaySolicitud = Boolean.FALSE;
             remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+            //ENVIO DE NOTIFICACION//
+            institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+            usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                    "REM-Verificador", "REM-Registrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+            String mensajeNotificacion = "Se ha realizado una solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
+            bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                    remanenteMensualSelected.getRemanenteMensualId(),
+                    mensajeNotificacion, "");
+            /////
+            usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                    "REM-Validador", "REM-Registrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+            bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                    remanenteMensualSelected.getRemanenteMensualId(),
+                    mensajeNotificacion, "");
+            /////
+            usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                    "REM-Administrador", "REM-Registrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+            bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                    remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                    remanenteMensualSelected.getRemanenteMensualId(),
+                    mensajeNotificacion, "");
+            //FIN ENVIO//
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

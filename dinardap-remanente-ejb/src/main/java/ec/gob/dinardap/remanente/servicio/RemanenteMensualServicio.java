@@ -14,7 +14,9 @@ public interface RemanenteMensualServicio extends GenericService<RemanenteMensua
 
     public void editRemanenteMensual(RemanenteMensual remanenteMensual);
 
-    public RemanenteMensual crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen);
+    public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen);
+    
+    public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen);
 
     public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes);
 

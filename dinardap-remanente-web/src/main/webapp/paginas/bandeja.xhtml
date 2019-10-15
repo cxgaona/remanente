@@ -51,7 +51,10 @@
                             </p:column>                            
                             <p:column>
                                 <center>
-                                    <p:linkButton href="gestionRemanenteMensual.jsf" icon="fa fa-fw fa-share" />  
+                                    <p:commandButton action="#{bandejaCtrl.onRowSelectBandeja}" icon="fa fa-fw fa-share" update="formBandeja" >
+                                        <f:setPropertyActionListener value="#{bandeja}" target="#{bandejaCtrl.bandejaSelected}" />
+                                    </p:commandButton> 
+                                                     
                                 </center>
                             </p:column>                            
                         </p:dataTable>

@@ -217,7 +217,7 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                 } else if (rolAsignado.equals("REM-Validador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "validador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getDireccionRegional().getInstitucionId(), Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
