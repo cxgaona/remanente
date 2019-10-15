@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -46,13 +47,13 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         }
         bandejaList.addAll(bandejaListMesAnterior);
         switch(this.getSessionVariable("perfil")){
-            case "REM-Registrador, ": linkRedireccion="gestionRemanenteMensual.jsf";
+            case "REM-Registrador, ": linkRedireccion="paginas/gestionRemanenteMensual.jsf";
                 break;
-            case "REM-Verificador, ": linkRedireccion="verificarRemanenteMensual.jsf";
+            case "REM-Verificador, ": linkRedireccion="paginas/verificarRemanenteMensual.jsf";
                 break;
-            case "REM-Validador, ": linkRedireccion="validarRemanenteMensual.jsf";
+            case "REM-Validador, ": linkRedireccion="paginas/validarRemanenteMensual.jsf";
                 break;
-            case "REM-Administrador, ": linkRedireccion="administracion/adminRemanenteMensual.jsf";
+            case "REM-Administrador, ": linkRedireccion="paginas/administracion/adminRemanenteMensual.jsf";
                 break;
         }
     }
@@ -62,7 +63,8 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
             bandejaSelected.setLeido(Boolean.TRUE);
             bandejaSelected.setFechaLeido(new Date());
             bandejaServicio.editBandeja(bandejaSelected);
-        }
+        }  
+        FacesContext.getCurrentInstance().getExternalContext().redirect(linkRedireccion);
     }
 
     public String getTitulo() {
