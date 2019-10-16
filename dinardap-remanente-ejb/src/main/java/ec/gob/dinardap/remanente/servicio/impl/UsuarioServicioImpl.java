@@ -178,16 +178,20 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                 if (rolAsignado.equals("REM-Registrador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "registrador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {institucion.getInstitucionId(), Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
                     System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Verificador")) {
+                    Integer idInstitucionNotificacion = institucion.getInstitucionId();
+                    if(institucion.getTipo().equals("CON GAD")){
+                        idInstitucionNotificacion=institucion.getGad().getInstitucionId();
+                    }
                     String[] criteriaNombres = {"institucionId.institucionId", "verificador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {idInstitucionNotificacion, Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
@@ -206,9 +210,13 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Verificador")) {
+                    Integer idInstitucionNotificacion = institucion.getInstitucionId();
+                    if(institucion.getTipo().equals("CON GAD")){
+                        idInstitucionNotificacion=institucion.getGad().getInstitucionId();
+                    }
                     String[] criteriaNombres = {"institucionId.institucionId", "verificador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {idInstitucionNotificacion, Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
