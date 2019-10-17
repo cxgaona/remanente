@@ -1,5 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -26,6 +27,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -150,10 +153,10 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         transaccionRMercantilList = new ArrayList<Transaccion>();
         transaccionEgresosList = new ArrayList<Transaccion>();
         transaccionSelected = new Transaccion();
-        
+
         institucionId = institucionSelected.getInstitucionId();
         nombreInstitucion = institucionSelected.getNombre();
-        
+
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         disabledBtnReload = Boolean.FALSE;
@@ -406,6 +409,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "");
+        
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Validador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
@@ -416,6 +420,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "");
+        
         //FIN ENVIO//
     }
 

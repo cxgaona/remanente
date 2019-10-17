@@ -310,11 +310,12 @@
                                 label=""
                                 uploadLabel=""
                                 cancelLabel=""                                
-                                fileUploadListener="#{adminRemanenteMensualCtrl.handleFileUploadSolicitud}"/>
+                                fileUploadListener="#{adminRemanenteMensualCtrl.handleFileUploadSolicitud}"
+                                update="formRemanenteMensual:btnAprobar,formRemanenteMensual:btnRechazar"/>
                             <p:outputLabel value="Solicitud de cambio: " rendered="false"/>
                             <b:panelGrid colSpans="6,6" style="width: 70%; margin: 4px 5px;">
-                                <p:commandButton value="Aprobar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{adminRemanenteMensualCtrl.aprobarSolicitudCambio}" update="formRemanenteMensual"/>
-                                <p:commandButton value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual"/>
+                                <p:commandButton id="btnAprobar" value="Aprobar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{adminRemanenteMensualCtrl.aprobarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRech}"/>
+                                <p:commandButton id="btnRechazar" value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRech}"/>
                             </b:panelGrid>                            
                         </b:panelGrid>                        
                     </h:panelGrid>                    

@@ -1,5 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -302,6 +303,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "");
+        
         //FIN ENVIO//
     }
 
@@ -405,6 +407,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "");
+        
         //FIN ENVIO//
     }
 

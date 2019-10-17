@@ -34,6 +34,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.poi.util.IOUtils;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.event.RowEditEvent;
@@ -302,7 +303,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Registrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
-        String mensajeNotificacion = "Se le asigno la Verificación del Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
+        String mensajeNotificacion = "Se le asignó la Verificación del Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
@@ -323,6 +324,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             fos.close();
             transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
             transaccionServicio.editTransaccion(transaccionSelected);
+            PrimeFaces.current().executeScript("PF('transaccionRPropiedadDlg').hide()");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

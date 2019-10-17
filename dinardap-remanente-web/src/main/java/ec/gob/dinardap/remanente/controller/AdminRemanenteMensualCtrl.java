@@ -48,6 +48,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private List<InstitucionRequerida> institucionRequeridaList;
     private InstitucionRequerida institucionSelected;
     private Boolean displaySolicitud;
+    private Boolean disabledBtnAproRech;
 
     private String tituloPagina;
     private String nombreInstitucion;
@@ -125,6 +126,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         displaySolicitud = Boolean.FALSE;
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         transaccionSelected = new Transaccion();
+        disabledBtnAproRech = Boolean.TRUE;
     }
 
     public void onRowSelectInstitucion() {
@@ -159,8 +161,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     }
 
     public void onRowSelectRemanenteMensual() {
-        System.out.println("===Seleccion de remanente===");
-        System.out.println("RemanenteSeleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
+        disabledBtnAproRech = Boolean.TRUE;
+
         switch (remanenteMensualSelected.getMes()) {
             case 1:
                 mesSelected = "Enero";
@@ -277,6 +279,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
             FileOutputStream fos = new FileOutputStream(realPath);
             fos.write(fileByte);
             fos.close();
+            disabledBtnAproRech = Boolean.FALSE;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -297,8 +300,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         estadoRemanenteMensualServicio.create(erm);
         displaySolicitud = Boolean.FALSE;
         System.out.println("remaneneteOriginal Seleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
-        crearVersionRemanente(remanenteMensualSelected);        
-        
+        crearVersionRemanente(remanenteMensualSelected);
+
         //ENVIO DE NOTIFICACION//
 //        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
         institucionNotificacion = remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
@@ -314,7 +317,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
-        mensajeNotificacion = "La solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() +" ha sido APROBADA.";
+        mensajeNotificacion = "La solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() + " ha sido APROBADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
@@ -331,7 +334,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "");
         //FIN ENVIO//
-        
+
         remanenteMensualSelected = new RemanenteMensual();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
     }
@@ -694,6 +697,14 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 
     public void setDisplaySolicitud(Boolean displaySolicitud) {
         this.displaySolicitud = displaySolicitud;
+    }
+
+    public Boolean getDisabledBtnAproRech() {
+        return disabledBtnAproRech;
+    }
+
+    public void setDisabledBtnAproRech(Boolean disabledBtnAproRech) {
+        this.disabledBtnAproRech = disabledBtnAproRech;
     }
 
 }

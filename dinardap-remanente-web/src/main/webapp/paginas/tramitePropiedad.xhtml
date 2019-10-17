@@ -4,7 +4,35 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:b="http://bootsfaces.net/ui"
-      xmlns:p="http://primefaces.org/ui">    
+      xmlns:p="http://primefaces.org/ui">
+    <script type="text/javascript">
+        PrimeFaces.locales['es'] = {
+            closeText: 'Cerrar',
+            prevText: 'Anterior',
+            nextText: 'Siguiente',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            weekHeader: 'Semana',
+            firstDayOfWeek: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: '',
+            timeOnlyTitle: 'Sólo hora',
+            timeText: 'Tiempo',
+            hourText: 'Hora',
+            minuteText: 'Minuto',
+            secondText: 'Segundo',
+            currentText: 'Fecha actual',
+            ampm: false,
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            allDayText: 'Todo el día'
+        };
+    </script>
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tramitePropiedadCtrl.tituloPropiedad}</h1>
@@ -14,10 +42,22 @@
                 <b:panel title="Trámites Propiedad">
                     <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                         <p:outputLabel for="mesTramite" value="Mes:&nbsp;" />
-                        <p:datePicker id="mesTramite" view="month" value="#{tramitePropiedadCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
+                        <p:datePicker id="mesTramite" view="month" value="#{tramitePropiedadCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
                         <p:commandButton action="#{tramitePropiedadCtrl.reloadTramite}" update="formTramite, formTramiteSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                     </b:panelGrid>
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <h:outputLabel value="Mes Seleccionado: #{tramitePropiedadCtrl.mes eq 1? 'Enero':
+                                                                  tramitePropiedadCtrl.mes eq 2? 'Febrero':
+                                                                  tramitePropiedadCtrl.mes eq 3? 'Marzo':
+                                                                  tramitePropiedadCtrl.mes eq 4? 'Abril':
+                                                                  tramitePropiedadCtrl.mes eq 5? 'Mayo':
+                                                                  tramitePropiedadCtrl.mes eq 6? 'Junio':
+                                                                  tramitePropiedadCtrl.mes eq 7? 'Julio':
+                                                                  tramitePropiedadCtrl.mes eq 8? 'Agosto':
+                                                                  tramitePropiedadCtrl.mes eq 9? 'Septiembre':
+                                                                  tramitePropiedadCtrl.mes eq 10? 'Octubre':
+                                                                  tramitePropiedadCtrl.mes eq 11? 'Noviembre':
+                                                                  tramitePropiedadCtrl.mes eq 12? 'Diciembre':'Sin mes'}" styleClass="form-label-izquierda-15" style="width: 100%"/>
                         <p:dataTable id="tramiteTbl"
                                      value="#{tramitePropiedadCtrl.tramiteList}" 
                                      var="tramite"                                     
@@ -92,7 +132,15 @@
                         </p:inputText>                        
 
                         <p:outputLabel for="fecha" value="Fecha:" />
-                        <p:datePicker id="fecha" value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" locale="es" monthNavigator="true" pattern="yyyy-MM-dd" style="width: 90%" mindate="#{tramitePropiedadCtrl.fechaMin}" maxdate="#{tramitePropiedadCtrl.fechaMax}"/>
+                        <p:datePicker id="fecha" 
+                                      value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%" 
+                                      mindate="#{tramitePropiedadCtrl.fechaMin}" 
+                                      maxdate="#{tramitePropiedadCtrl.fechaMax}"
+                                      readonlyInput="true"/>
 
                         <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
                         <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" >

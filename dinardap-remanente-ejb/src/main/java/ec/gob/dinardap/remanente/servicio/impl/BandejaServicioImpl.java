@@ -10,6 +10,7 @@ import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.dao.BandejaDao;
+import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.Bandeja;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
@@ -19,6 +20,8 @@ import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Stateless(name = "BandejaServicio")
 public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> implements BandejaServicio {
@@ -58,22 +61,23 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
     public void generarNotificacion(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
             Integer remanenteCuatrimestralId, Integer remanenteAnualId, InstitucionRequerida institucion,
             Integer remanenteMensualId, String descripcion, String estado) {
+        Email email = new Email();
         for (Usuario userAsignado : usuarioAsignadoList) {
             Bandeja bandeja = new Bandeja();
             Usuario us = new Usuario();
             us.setUsuarioId(usuarioSolicitanteId);
             RemanenteCuatrimestral rc = new RemanenteCuatrimestral();
-            rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucion.getInstitucionId()));            
+            rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucion.getInstitucionId()));
             RemanenteMensual rm = new RemanenteMensual();
             rm.setRemanenteMensualId(remanenteMensualId);
             bandeja.setUsuarioSolicitanteId(us);
             bandeja.setRemanenteCuatrimestral(rc);
-            if(remanenteMensualId==0){
+            if (remanenteMensualId == 0) {
                 bandeja.setRemanenteMensualId(null);
-            }else{
+            } else {
                 bandeja.setRemanenteMensualId(rm);
-            }            
-            
+            }
+
             bandeja.setDescripcion(descripcion);
             bandeja.setEstado(estado);
             bandeja.setLeido(Boolean.FALSE);
@@ -81,7 +85,12 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             bandeja.setUsuarioAsignadoId(userAsignado);
             create(bandeja);
             System.out.println("Mensaje enviado a : " + userAsignado.getNombre());
-            //implementar envio de correo electrónico           
+            try {
+                String mensajeMail = descripcion;
+                email.sendMail(userAsignado.getEmail(), "Mensaje de Remanentes", mensajeMail);
+            } catch (Exception ex) {
+                Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }

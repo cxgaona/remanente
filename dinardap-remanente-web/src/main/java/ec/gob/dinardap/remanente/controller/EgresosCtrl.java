@@ -13,11 +13,14 @@ import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -86,29 +89,29 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.TRUE;
         obtenerRemanenteMensual();
     }
-    
+
     private String fechasLimiteMin(Integer anio, Integer mes) {
         String fechaLimite = "";
         Integer mesMin, anioMin;
         if (mes == 1) {
-            anioMin=anio-1;
+            anioMin = anio - 1;
             fechaLimite = anioMin.toString() + "-12-15";
         } else {
-            mesMin=mes-1;
-            fechaLimite = anio.toString() +"-"+mesMin.toString()+"-15";
+            mesMin = mes - 1;
+            fechaLimite = anio.toString() + "-" + mesMin.toString() + "-15";
         }
         return fechaLimite;
     }
-    
+
     private String fechasLimiteMax(Integer anio, Integer mes) {
         String fechaLimite = "";
         Integer mesMax, anioMax;
         if (mes == 12) {
-             anioMax=anio+1;
+            anioMax = anio + 1;
             fechaLimite = anioMax.toString() + "-01-15";
         } else {
-            mesMax=mes+1;
-            fechaLimite = anio.toString() +"-"+mesMax.toString()+"-15";
+            mesMax = mes + 1;
+            fechaLimite = anio.toString() + "-" + mesMax.toString() + "-15";
         }
         return fechaLimite;
     }
@@ -148,7 +151,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fecha);
         anio = calendar.get(Calendar.YEAR);
-        mes = calendar.get(Calendar.MONTH) + 1;             
+        mes = calendar.get(Calendar.MONTH) + 1;
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
         reloadFacturaPagada();
         obtenerRemanenteMensual();
@@ -164,7 +167,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
-        
+
         for (RemanenteMensual rm : remanenteMensualList) {
             System.out.println("rm" + rm.getRemanenteMensualId());
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
@@ -172,7 +175,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                 System.out.println("erm:" + erm.getDescripcion());
             }
         }
-        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size()-1);
+        remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
@@ -186,7 +189,15 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
 
     public void addRowFacturaPagada() {
         FacturaPagada newFacturaPagada = new FacturaPagada();
-        newFacturaPagada.setFecha(new Date());
+        String fechaStr = anio + "-" + mes + "-01";
+        Date date;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaStr);
+            newFacturaPagada.setFecha(date);
+        } catch (ParseException ex) {
+            Logger.getLogger(EgresosCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         newFacturaPagada.setNumero(null);
         newFacturaPagada.setTipo("Otros");
         newFacturaPagada.setDetalle(null);
@@ -202,6 +213,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void onRowEditFacturaPagada(RowEditEvent event) {
+        System.out.println("En guardar fila");
         FacturaPagada facturaPagada = new FacturaPagada();
         facturaPagada = (FacturaPagada) event.getObject();
         catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionList();
