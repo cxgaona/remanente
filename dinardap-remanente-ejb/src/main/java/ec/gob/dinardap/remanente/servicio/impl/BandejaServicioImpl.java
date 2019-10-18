@@ -9,7 +9,9 @@ import javax.ejb.Stateless;
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
+import ec.gob.dinardap.persistence.util.DateBetween;
 import ec.gob.dinardap.remanente.dao.BandejaDao;
+import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.Bandeja;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -18,7 +20,10 @@ import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,16 +40,25 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
     }
 
     @Override
-    public List<Bandeja> getBandejaByUsuarioAñoMes(Integer usuarioId, Integer anio, Integer mes) {
-        List<Bandeja> bandejaList = new ArrayList<Bandeja>();
-        String[] criteriaNombres = {"usuarioAsignadoId.usuarioId", "remanenteCuatrimestral.remanenteAnual.anio", "remanenteMensualId.mes"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {usuarioId, anio, mes};
-        String[] orderBy = {"fechaRegistro"};
-        boolean[] asc = {false};
-        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        bandejaList = findByCriterias(criteria);
-        return bandejaList;
+    public List<BandejaDTO> getBandejaByUsuarioAñoMes(Integer usuarioId, Integer anio, Integer mes) {
+        List<BandejaDTO> listBandejaDTO = new ArrayList<BandejaDTO>();
+        List<Bandeja> listBandeja = new ArrayList<Bandeja>();
+        listBandeja = bandejaDao.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
+        for (Bandeja b : listBandeja) {
+            BandejaDTO bandejaDTO = new BandejaDTO();
+            bandejaDTO.setUsuario(b.getUsuarioSolicitanteId());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(b.getFechaRegistro());
+            bandejaDTO.setAño(calendar.get(Calendar.YEAR));
+            bandejaDTO.setMesRegistro(calendar.get(Calendar.MONTH));
+            bandejaDTO.setDiaRegistro(calendar.get(Calendar.DAY_OF_MONTH));
+            bandejaDTO.setDescripcion(b.getDescripcion());
+            bandejaDTO.setEstado(b.getEstado());
+            bandejaDTO.setLeido(b.getLeido());
+            bandejaDTO.setBandejaID(b.getBandejaId());
+            listBandejaDTO.add(bandejaDTO);
+        }
+        return listBandejaDTO;
     }
 
     @Override

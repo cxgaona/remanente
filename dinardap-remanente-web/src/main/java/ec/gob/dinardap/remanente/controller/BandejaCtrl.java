@@ -1,5 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.modelo.Bandeja;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.io.IOException;
@@ -20,9 +21,9 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
 
     private String titulo, linkRedireccion;
     private Integer usuarioId, anio, mes;
-    private List<Bandeja> bandejaList;
+    private List<BandejaDTO> bandejaList;
     private List<Bandeja> bandejaListMesAnterior;
-    private Bandeja bandejaSelected;
+    private BandejaDTO bandejaSelected;
 
     @EJB
     private BandejaServicio bandejaServicio;
@@ -38,15 +39,7 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
-        Integer mesMin, anioMin;
-        if (mes == 1) {
-            anioMin = anio - 1;
-            bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anioMin, 12);
-        } else {
-            mesMin = mes - 1;
-            bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mesMin);
-        }
-        bandejaList.addAll(bandejaListMesAnterior);
+
         switch (this.getSessionVariable("perfil")) {
             case "REM-Registrador, ":
                 linkRedireccion = "gestionRemanenteMensual.jsf";
@@ -105,11 +98,11 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         this.usuarioId = usuarioId;
     }
 
-    public List<Bandeja> getBandejaList() {
+    public List<BandejaDTO> getBandejaList() {
         return bandejaList;
     }
 
-    public void setBandejaList(List<Bandeja> bandejaList) {
+    public void setBandejaList(List<BandejaDTO> bandejaList) {
         this.bandejaList = bandejaList;
     }
 

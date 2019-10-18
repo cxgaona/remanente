@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -27,23 +28,28 @@
                         <p:dataTable id="remanenteMensualTbl"
                                      value="#{bandejaCtrl.bandejaList}" 
                                      var="bandeja"
-                                     rowStyleClass="#{bandeja.leido eq true ? 'leido':'noLeido'}"
-                                     rowKey="#{bandeja.bandejaId}"
+                                     rowStyleClass="#{bandeja.leido ? 'leido':'noLeido'}"                                     
                                      selectionMode="single"
                                      selection="#{bandejaCtrl.bandejaSelected}"
+                                     sortBy="${bandeja.mes}"
                                      reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="4,8,12">
-                            <!--<p:ajax event="rowSelect" listener="{bandejaCtrl.onRowSelectBandeja}" update="formBandeja" />-->
+                            <p:ajax event="rowSelect" listener="#{bandejaCtrl.onRowSelectBandeja}" update="formBandeja" />
+                            <p:headerRow>
+                                <p:column colspan="4">
+                                    <h:outputText value="${bandeja.mes}" /> 
+                                </p:column>                                
+                            </p:headerRow>
                             <p:column headerText="ID Bandeja" rendered="false">
                                 <h:outputText value="#{bandeja.bandejaId}"/>
                             </p:column>
-                            <p:column style="width: 22%" headerText="Solicitante" sortBy="#{bandeja.usuarioSolicitanteId.nombre}" filterBy="#{bandeja.usuarioSolicitanteId.nombre}" filterMatchMode="contains">
-                                <h:outputText value="#{bandeja.usuarioSolicitanteId.nombre}" />
+                            <p:column style="width: 22%" headerText="Solicitante" sortBy="#{bandeja.usuario.nombre}" filterBy="#{bandeja.usuario.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{bandeja.usuario.nombre}" />
                             </p:column>
                             <p:column headerText="Fecha" sortBy="#{bandeja.fechaRegistro}" filterBy="#{bandeja.fechaRegistro}" filterMatchMode="contains">
                                 <h:outputText value="#{bandeja.fechaRegistro}">
-                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                    <f:convertDateTime pattern="yyyy/MM/dd h:mm:ss a" />
                                 </h:outputText>
                             </p:column>
                             <p:column style="width: 55%" headerText="Descripción" sortBy="#{bandeja.descripcion}" filterBy="#{bandeja.descripcion}" filterMatchMode="contains">
@@ -54,7 +60,7 @@
                                     <p:commandButton action="#{bandejaCtrl.onRowSelectBandeja}" icon="fa fa-fw fa-share" update="formBandeja" >
                                         <f:setPropertyActionListener value="#{bandeja}" target="#{bandejaCtrl.bandejaSelected}" />
                                     </p:commandButton> 
-                                                     
+
                                 </center>
                             </p:column>                            
                         </p:dataTable>

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.Local;
 
 import ec.gob.dinardap.persistence.servicio.GenericService;
+import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.modelo.Bandeja;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Usuario;
@@ -12,7 +13,7 @@ import ec.gob.dinardap.remanente.modelo.Usuario;
 @Local
 public interface BandejaServicio extends GenericService<Bandeja, Integer> {   
 
-    public List<Bandeja> getBandejaByUsuarioAñoMes(Integer usuarioId, Integer año, Integer mes);
+    public List<BandejaDTO> getBandejaByUsuarioAñoMes(Integer usuarioId, Integer año, Integer mes);
     
     public void crearBandeja(Bandeja bandeja);
     
