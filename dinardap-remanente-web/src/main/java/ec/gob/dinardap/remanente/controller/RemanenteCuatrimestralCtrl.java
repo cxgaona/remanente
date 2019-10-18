@@ -436,7 +436,8 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         if (ingresosTotales.compareTo(BigDecimal.ZERO) == 0) {
             valor = BigDecimal.ZERO;
         } else {
-            valor = totalIngRMercantil.divide(ingresosTotales, 2, RoundingMode.HALF_UP);
+            valor = totalIngRMercantil.divide(ingresosTotales, 8, RoundingMode.HALF_UP);
+            System.out.println("Valor: ");
         }
         return valor;
     }
@@ -474,7 +475,8 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         factorIncidencia = getValorFactorIncidencia(mes);
         System.out.println("getValorTotalGastos(mes)" + totalGastosRPropiedad);
         System.out.println("getValorFactorIncidencia(mes)" + factorIncidencia);
-        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(8, BigDecimal.ROUND_HALF_EVEN);
+        
         return valor;
     }
 
@@ -484,7 +486,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         BigDecimal valor = BigDecimal.ZERO;
         totalIngRMercatil = getValorTotalIngresos(mes, "Ingreso-Mercantil");
         gastosRMercantilEst = getValorGastosRMercantil(mes);
-        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(8, BigDecimal.ROUND_HALF_EVEN);
         return valor;
     }
 
