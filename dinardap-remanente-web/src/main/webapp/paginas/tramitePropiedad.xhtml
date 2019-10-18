@@ -121,13 +121,14 @@
                         <p:outputLabel for="tipo" value="Tipo:" />
                         <p:selectOneButton id="tipo" 
                                            value="#{tramitePropiedadCtrl.tramiteSelected.tipo}"
-                                           style="width: 70%;">
+                                           style="width: 70%;"
+                                           required="true">
                             <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
 
                         <p:outputLabel for="numero" value="Número:" />
-                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" >
+                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
 
@@ -140,18 +141,19 @@
                                       style="width: 90%" 
                                       mindate="#{tramitePropiedadCtrl.fechaMin}" 
                                       maxdate="#{tramitePropiedadCtrl.fechaMax}"
-                                      readonlyInput="true"/>
+                                      readonlyInput="true"
+                                      required="true"/>
 
                         <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
-                        <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" >
+                        <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" required="true">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                                  
 
                         <p:outputLabel for="valor" value="Valor:" />
-                        <p:inputNumber id="valor" value="#{tramitePropiedadCtrl.tramiteSelected.valor}" style="width: 90%" symbol="$" emptyValue="sign"/>
+                        <p:inputNumber id="valor" value="#{tramitePropiedadCtrl.tramiteSelected.valor}" style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
 
                         <p:outputLabel for="acto" value="Acto:" />
-                        <p:inputTextarea id="acto" rows="3" cols="40" maxlength="300" autoResize="false" value="#{tramitePropiedadCtrl.tramiteSelected.acto}"/>
+                        <p:inputTextarea id="acto" rows="3" cols="40" maxlength="300" autoResize="false" value="#{tramitePropiedadCtrl.tramiteSelected.acto}" required="true"/>
 
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
