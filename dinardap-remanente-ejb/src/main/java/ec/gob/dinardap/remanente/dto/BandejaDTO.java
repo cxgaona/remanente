@@ -5,6 +5,8 @@
  */
 package ec.gob.dinardap.remanente.dto;
 
+import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
+import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import java.util.Date;
 
@@ -14,7 +16,8 @@ import java.util.Date;
  */
 public class BandejaDTO {
 
-    private Usuario usuario;
+    private Usuario usuarioAsignado;
+    private Usuario usuarioSolicitante;
     private Integer añoRegistro, mesRegistro, diaRegistro;
     private Integer año, mes, dia;
     private String descripcion;
@@ -22,16 +25,43 @@ public class BandejaDTO {
     private Integer bandejaID;
     private Boolean leido;
     private Date fechaLeido;
+    private Date fechaRegistro;
+    private RemanenteCuatrimestral remanenteCuatrimestral;
+    private RemanenteMensual remanenteMensual;
 
     public BandejaDTO() {
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Usuario getUsuarioAsignado() {
+        return usuarioAsignado;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setUsuarioAsignado(Usuario usuarioAsignado) {
+        this.usuarioAsignado = usuarioAsignado;
+    }
+
+    public Usuario getUsuarioSolicitante() {
+        return usuarioSolicitante;
+    }
+
+    public void setUsuarioSolicitante(Usuario usuarioSolicitante) {
+        this.usuarioSolicitante = usuarioSolicitante;
+    }
+
+    public RemanenteCuatrimestral getRemanenteCuatrimestral() {
+        return remanenteCuatrimestral;
+    }
+
+    public void setRemanenteCuatrimestral(RemanenteCuatrimestral remanenteCuatrimestral) {
+        this.remanenteCuatrimestral = remanenteCuatrimestral;
+    }
+
+    public RemanenteMensual getRemanenteMensual() {
+        return remanenteMensual;
+    }
+
+    public void setRemanenteMensual(RemanenteMensual remanenteMensual) {
+        this.remanenteMensual = remanenteMensual;
     }
 
     public Integer getAñoRegistro() {
@@ -120,6 +150,14 @@ public class BandejaDTO {
 
     public void setFechaLeido(Date fechaLeido) {
         this.fechaLeido = fechaLeido;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 
 }

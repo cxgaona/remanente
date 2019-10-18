@@ -28,31 +28,30 @@
                         <p:dataTable id="remanenteMensualTbl"
                                      value="#{bandejaCtrl.bandejaList}" 
                                      var="bandeja"
-                                     rowStyleClass="#{bandeja.leido ? 'leido':'noLeido'}"                                     
+                                     rowKey="#{bandeja.bandejaID}"
+                                     rowStyleClass="#{bandeja.leido eq true ? 'leido':'noLeido'}"                                     
                                      selectionMode="single"
                                      selection="#{bandejaCtrl.bandejaSelected}"
-                                     sortBy="${bandeja.mes}"
+                                     sortBy="${bandeja.mesRegistro} "
+                                     expandableRowGroups="true"                                       
+                                     sortOrder="ascending"
                                      reflow="true" rows="10" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="4,8,12">
-                            <p:ajax event="rowSelect" listener="#{bandejaCtrl.onRowSelectBandeja}" update="formBandeja" />
-                            <p:headerRow>
-                                <p:column colspan="4">
-                                    <h:outputText value="${bandeja.mes}" /> 
-                                </p:column>                                
-                            </p:headerRow>
+                            <p:ajax event="rowSelect" listener="#{bandejaCtrl.onRowSelectBandeja}" update="formBandeja" />                            
+
                             <p:column headerText="ID Bandeja" rendered="false">
-                                <h:outputText value="#{bandeja.bandejaId}"/>
+                                <h:outputText value="#{bandeja.bandejaID}"/>
                             </p:column>
-                            <p:column style="width: 22%" headerText="Solicitante" sortBy="#{bandeja.usuario.nombre}" filterBy="#{bandeja.usuario.nombre}" filterMatchMode="contains">
-                                <h:outputText value="#{bandeja.usuario.nombre}" />
+                            <p:column style="width: 22%" headerText="Solicitante"  filterBy="#{bandeja.usuarioSolicitante.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{bandeja.usuarioSolicitante.nombre}" />
                             </p:column>
-                            <p:column headerText="Fecha" sortBy="#{bandeja.fechaRegistro}" filterBy="#{bandeja.fechaRegistro}" filterMatchMode="contains">
+                            <p:column headerText="Fecha"  filterBy="#{bandeja.fechaRegistro}" filterMatchMode="contains">
                                 <h:outputText value="#{bandeja.fechaRegistro}">
                                     <f:convertDateTime pattern="yyyy/MM/dd h:mm:ss a" />
                                 </h:outputText>
                             </p:column>
-                            <p:column style="width: 55%" headerText="Descripción" sortBy="#{bandeja.descripcion}" filterBy="#{bandeja.descripcion}" filterMatchMode="contains">
+                            <p:column style="width: 55%" headerText="Descripción" filterBy="#{bandeja.descripcion}" filterMatchMode="contains">
                                 <h:outputText value="#{bandeja.descripcion}"/>
                             </p:column>                            
                             <p:column>
@@ -60,9 +59,24 @@
                                     <p:commandButton action="#{bandejaCtrl.onRowSelectBandeja}" icon="fa fa-fw fa-share" update="formBandeja" >
                                         <f:setPropertyActionListener value="#{bandeja}" target="#{bandejaCtrl.bandejaSelected}" />
                                     </p:commandButton> 
-
                                 </center>
-                            </p:column>                            
+                            </p:column>
+                            <p:headerRow>
+                                <p:column colspan="4" headerText="Mes: ">
+                                    <h:outputText value="#{bandeja.mesRegistro eq 1? 'Enero':
+                                                           bandeja.mesRegistro eq 2? 'Febrero':
+                                                           bandeja.mesRegistro eq 3? 'Marzo':
+                                                           bandeja.mesRegistro eq 4? 'Abril':
+                                                           bandeja.mesRegistro eq 5? 'Mayo':
+                                                           bandeja.mesRegistro eq 6? 'Junio':
+                                                           bandeja.mesRegistro eq 7? 'Julio':
+                                                           bandeja.mesRegistro eq 8? 'Agosto':
+                                                           bandeja.mesRegistro eq 9? 'Septiembre':
+                                                           bandeja.mesRegistro eq 10? 'Octubre':
+                                                           bandeja.mesRegistro eq 11? 'Noviembre':
+                                                           bandeja.mesRegistro eq 12? 'Diciembre':'Sin mes'}"/> 
+                                </p:column>                                
+                            </p:headerRow>                            
                         </p:dataTable>
                     </h:panelGrid>                    
                 </b:panel>                

@@ -23,4 +23,6 @@ public interface BandejaServicio extends GenericService<Bandeja, Integer> {
             Integer remanenteCuatrimestralId, Integer remanenteAnualId, InstitucionRequerida institucion,
             Integer remanenteMensualId, String descripcion, String estado);
 
+    public void editBandeja(BandejaDTO bandejaDTO);
+
 }

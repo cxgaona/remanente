@@ -53,8 +53,7 @@ public class BandejaDaoEjb extends RemanenteGenericDao<Bandeja, Integer> impleme
                 + "AND b.fechaRegistro BETWEEN '" + strfechaDesde + "' AND '" + sdf.format(fechaHasta) + "' ORDER BY b.fechaRegistro desc");
         query.setParameter("usuarioId", usuarioId);
         List<Bandeja> b = new ArrayList<Bandeja>();
-        b = query.getResultList();
-        System.out.println("size: " + b.size());
+        b = query.getResultList();        
         return b.size() > 0 ? b : null;
     }
 }

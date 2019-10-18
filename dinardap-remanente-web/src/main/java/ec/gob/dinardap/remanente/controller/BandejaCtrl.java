@@ -22,7 +22,6 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     private String titulo, linkRedireccion;
     private Integer usuarioId, anio, mes;
     private List<BandejaDTO> bandejaList;
-    private List<Bandeja> bandejaListMesAnterior;
     private BandejaDTO bandejaSelected;
 
     @EJB
@@ -32,13 +31,17 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     protected void init() {
         titulo = "Bandeja";
         linkRedireccion = "#";
-        bandejaSelected = new Bandeja();
+        bandejaSelected = new BandejaDTO();
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
+        System.out.println("SIZE front: " + bandejaList.size());
+        for (BandejaDTO b : bandejaList) {
+            System.out.println("Bandeja: " + b.getBandejaID());            
+        }
 
         switch (this.getSessionVariable("perfil")) {
             case "REM-Registrador, ":
@@ -106,28 +109,20 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         this.bandejaList = bandejaList;
     }
 
-    public List<Bandeja> getBandejaListMesAnterior() {
-        return bandejaListMesAnterior;
-    }
-
-    public void setBandejaListMesAnterior(List<Bandeja> bandejaListMesAnterior) {
-        this.bandejaListMesAnterior = bandejaListMesAnterior;
-    }
-
-    public Bandeja getBandejaSelected() {
-        return bandejaSelected;
-    }
-
-    public void setBandejaSelected(Bandeja bandejaSelected) {
-        this.bandejaSelected = bandejaSelected;
-    }
-
     public String getLinkRedireccion() {
         return linkRedireccion;
     }
 
     public void setLinkRedireccion(String linkRedireccion) {
         this.linkRedireccion = linkRedireccion;
+    }
+
+    public BandejaDTO getBandejaSelected() {
+        return bandejaSelected;
+    }
+
+    public void setBandejaSelected(BandejaDTO bandejaSelected) {
+        this.bandejaSelected = bandejaSelected;
     }
 
 }
