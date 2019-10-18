@@ -302,7 +302,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         
         //FIN ENVIO//
     }
@@ -406,7 +406,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         
         //FIN ENVIO//
     }

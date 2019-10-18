@@ -309,7 +309,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         //FIN ENVIO//
     }
 
@@ -364,7 +364,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                     remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                     remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                     remanenteMensualSelected.getRemanenteMensualId(),
-                    mensajeNotificacion, "");
+                    mensajeNotificacion, "RM");
             /////
             usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                     "REM-Validador", "REM-Registrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());

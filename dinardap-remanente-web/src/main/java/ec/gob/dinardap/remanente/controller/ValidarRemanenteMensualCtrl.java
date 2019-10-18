@@ -294,7 +294,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         /////        
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Validador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
@@ -408,7 +408,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,

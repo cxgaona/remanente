@@ -40,32 +40,37 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
         System.out.println("SIZE front: " + bandejaList.size());
         for (BandejaDTO b : bandejaList) {
-            System.out.println("Bandeja: " + b.getBandejaID());            
+            System.out.println("Bandeja: " + b.getBandejaID());
         }
+    }
 
+    public void onRowSelectBandeja() throws IOException {
+        if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
+            bandejaSelected.setLeido(Boolean.TRUE);
+            bandejaSelected.setFechaLeido(new Date());
+            bandejaServicio.editBandeja(bandejaSelected);
+        }
         switch (this.getSessionVariable("perfil")) {
             case "REM-Registrador, ":
                 linkRedireccion = "gestionRemanenteMensual.jsf";
                 break;
             case "REM-Verificador, ":
                 linkRedireccion = "verificarRemanenteMensual.jsf";
+                if (bandejaSelected.getEstado().equals("RC")) {
+                    linkRedireccion = "gestionRemanenteCuatrimestral.jsf";
+                }
                 break;
             case "REM-Validador, ":
                 linkRedireccion = "validarRemanenteMensual.jsf";
+                if (bandejaSelected.getEstado().equals("RC")) {
+                    linkRedireccion = "gestionValidacionRemanenteCuatrimestral.jsf";
+                }
                 break;
             case "REM-Administrador, ":
                 linkRedireccion = "administracion/adminRemanenteMensual.jsf";
                 break;
         }
-    }
 
-    public void onRowSelectBandeja() throws IOException {
-        System.out.println("En el btn");
-        if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
-            bandejaSelected.setLeido(Boolean.TRUE);
-            bandejaSelected.setFechaLeido(new Date());
-            bandejaServicio.editBandeja(bandejaSelected);
-        }
         FacesContext.getCurrentInstance().getExternalContext().redirect(linkRedireccion);
     }
 

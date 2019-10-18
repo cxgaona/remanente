@@ -273,7 +273,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
                     remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                     remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
                     remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales - 1).getRemanenteMensualId(),
-                    mensajeNotificacion, "");
+                    mensajeNotificacion, "RC");
             //FIN ENVIO//
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
