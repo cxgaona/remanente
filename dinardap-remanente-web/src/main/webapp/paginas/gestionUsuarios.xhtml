@@ -71,7 +71,8 @@
                         <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
                         <p:selectOneMenu id="tipoInstitucion" 
                                          value="#{gestionUsuariosCtrl.tipoInstitucion}"
-                                         style="width: 70%;">
+                                         style="width: 70%;"
+                                         required="true">
                             <p:ajax listener="#{gestionUsuariosCtrl.seleccionarTipoInstitucion}" update="formUsuarioSelected"/>
                             <f:selectItem itemLabel="Dirección Regional" itemValue="Dirección Regional" />
                             <f:selectItem itemLabel="GAD" itemValue="GAD" />
@@ -87,21 +88,22 @@
                                         itemValue="#{institucion}"
                                         style="width: 100%" 
                                         inputStyle="width: 90%"
-                                        maxResults="5"/>
+                                        maxResults="5"
+                                        required="true"/>
                         <p:outputLabel for="nombre" value="Nombre:" />
-                        <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" />
+                        <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" required="true"/>
 
                         <h:outputLabel for="email" value="Email: " />
-                        <p:inputText id="email" value="#{gestionUsuariosCtrl.usuarioSelected.email}" style="width: 90%" />
+                        <p:inputText id="email" value="#{gestionUsuariosCtrl.usuarioSelected.email}" style="width: 90%" required="true"/>
 
                         <p:outputLabel for="usuario" value="Usuario:" />
-                        <p:inputText id="usuario" value="#{gestionUsuariosCtrl.usuarioSelected.usuario}" style="width: 90%" />
+                        <p:inputText id="usuario" value="#{gestionUsuariosCtrl.usuarioSelected.usuario}" style="width: 90%" required="true"/>
 
                         <p:outputLabel for="contrasena" value="Contraseña:" />
                         <p:password id="contrasena" value="#{gestionUsuariosCtrl.usuarioSelected.contrasena}" 
                                     feedback="true"
                                     promptLabel="Ingrese la contraseña" weakLabel="Baja"
-                                    goodLabel="Media" strongLabel="Alta" />
+                                    goodLabel="Media" strongLabel="Alta" required="true"/>
 
                         <p:outputLabel value="Perfil:" />
                         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
