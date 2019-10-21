@@ -38,6 +38,7 @@
                                  rowKey="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
                                  reflow="true" rows="10" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+
                                  rowsPerPageTemplate="5,10,15">                        
                         <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.usuarioId.nombre}" />
@@ -393,7 +394,7 @@
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{transaccion}">
-                                                <f:converter converterId="valorConverter"/>
+                                            <f:converter converterId="valorConverter"/>
                                         </h:outputText>
                                     </f:facet>
                                     <f:facet name="input"><p:inputNumber value="#{transaccion.valorTotal}" label="Valor" inputStyle="width: 100%"  onkeypress="if (event.keyCode == 13) {

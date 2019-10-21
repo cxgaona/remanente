@@ -29,7 +29,6 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-        System.out.println("idUsuario = " + usuarioId);
         usuario = new Usuario();
         usuario = usuarioServicio.findByPk(usuarioId);
         tituloPagina = "Usuario: " + usuario.getNombre();

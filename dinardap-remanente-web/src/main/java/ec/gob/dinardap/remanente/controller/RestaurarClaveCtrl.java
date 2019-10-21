@@ -53,19 +53,22 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
     public void recuperarContrasena() {
         u = usuarioServicio.getUsuarioByUsername(usuario);
         if (u.getUsuarioId() != null) {
-            encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + generarContraseña());
-            u.setContrasena(encriptada);
-            usuarioServicio.editUsuario(u);
-            mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
-
-            Email email = new Email();
-            try {
-                String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
-                email.sendMail(u.getEmail(), "Restaurar clave REMANENTES", mensajeMail);
-            } catch (Exception ex) {
-                Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            if (u.getEmail() != null && !u.getEmail().isEmpty()) {
+                encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + generarContraseña());
+                u.setContrasena(encriptada);
+                usuarioServicio.editUsuario(u);
+                mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
+                Email email = new Email();
+                try {
+                    String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
+                    email.sendMail(u.getEmail(), "Restaurar clave REMANENTES", mensajeMail);
+                } catch (Exception ex) {
+                    Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                mensaje = "Su usuario no tiene registrado un correo electrónico. <br/>"
+                        + "Por favor contáctese con el administrador de la plataforma";
             }
-
             desactivarBtnRestaurar = Boolean.TRUE;
             displaybtnLogin = Boolean.TRUE;
         } else {

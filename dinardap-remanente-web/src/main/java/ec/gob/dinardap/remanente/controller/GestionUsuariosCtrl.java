@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
+import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
@@ -93,7 +95,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     public void guardar() {
         if (onCreate) {
+            String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + usuarioSelected.getContrasena());
             usuarioSelected.setEstado("A");
+            usuarioSelected.setContrasena(contraseñaActualEncriptada);
             usuarioServicio.createUsuario(usuarioSelected);
             usuarioActivoList = new ArrayList<Usuario>();
             usuarioSelected = new Usuario();
@@ -102,6 +106,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             onCreate = Boolean.FALSE;
             renderEdition = Boolean.FALSE;
         } else if (onEdit) {
+            String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + usuarioSelected.getContrasena());
+            usuarioSelected.setContrasena(contraseñaActualEncriptada);
             usuarioServicio.editUsuario(usuarioSelected);
             usuarioActivoList = new ArrayList<Usuario>();
             usuarioSelected = new Usuario();

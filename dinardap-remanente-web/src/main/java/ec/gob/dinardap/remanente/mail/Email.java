@@ -44,7 +44,6 @@ public class Email {
             String asunto,
             String cuerpo) throws AuthenticationFailedException,
             MessagingException {
-
         Session session = Session.getInstance(prop,
                 new javax.mail.Authenticator() {
             @Override
@@ -52,25 +51,27 @@ public class Email {
                 return new PasswordAuthentication("notificaciones.remanentes@dinardap.gob.ec", "Password.1");
             }
         });
+        System.out.println("para: " + para);
         try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(FROM));
-            message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(para));
-            message.setSubject(asunto);
-            Multipart multipartes = new MimeMultipart();
-            MimeBodyPart htmlPart = new MimeBodyPart();
-
-            String cabecera = "<html><body><center><h1>Plataforma de Remanentes</h1></center><br/>";
-            String contenido = "<center><p>" + cuerpo + "</p></center><br/>";
-            String boton = "<center><a href='" + URL + "'>Plataforma Remanentes</a></center>";
-//            String pie = "<br/><h2>DINARDAP</h2></body></html>";
-            String formulario = String.format("%s%s%s", cabecera, contenido, boton);
-
-            htmlPart.setContent(formulario, "text/html; charset=utf-8");
-            multipartes.addBodyPart(htmlPart);
-            message.setContent(multipartes);
-            Transport.send(message);
+            if (para != null && !para.isEmpty()) {
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(FROM));
+                message.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(para));
+                message.setSubject(asunto);
+                Multipart multipartes = new MimeMultipart();
+                MimeBodyPart htmlPart = new MimeBodyPart();
+                String cabecera = "<html><body><center><h1>Plataforma de Remanentes</h1></center><br/>";
+                String contenido = "<center><p>" + cuerpo + "</p></center><br/>";
+                String boton = "<center><a href='" + URL + "'>Plataforma Remanentes</a></center>";
+                String formulario = String.format("%s%s%s", cabecera, contenido, boton);
+                htmlPart.setContent(formulario, "text/html; charset=utf-8");
+                multipartes.addBodyPart(htmlPart);
+                message.setContent(multipartes);
+                Transport.send(message);
+            } else {
+                System.out.println("Mail Vacío o Nulo");
+            }
         } catch (AuthenticationFailedException e) {
             throw e;
         } catch (MessagingException ex) {

@@ -115,7 +115,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             System.out.println("Mensaje enviado a : " + userAsignado.getNombre());
             try {
                 String mensajeMail = descripcion;
-                email.sendMail(userAsignado.getEmail(), "Mensaje de Remanentes", mensajeMail);
+                email.sendMail(userAsignado.getEmail(), "Notificación Remanentes", mensajeMail);
             } catch (Exception ex) {
                 Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
             }

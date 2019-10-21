@@ -62,29 +62,30 @@ public class Email {
         message.setRecipients(Message.RecipientType.TO,
                 InternetAddress.parse(para));
         try {
-            message.setSubject(asunto);
-//                message.setSubject(MimeUtility.encodeText(asunto, "UTF-8", "B"));
-//            } catch (UnsupportedEncodingException ex) {
-//                Logger.getLogger(Email.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//            msg.setSubject(MimeUtility.encodeText(messageSubject,"UTF-8","B"));
-            Multipart multipartes = new MimeMultipart();
-            MimeBodyPart htmlPart = new MimeBodyPart();
+            if (para != null && !para.isEmpty()) {
+                message.setSubject(MimeUtility.encodeText(asunto, "UTF-8", "Q"));                
+                Multipart multipartes = new MimeMultipart();
+                MimeBodyPart htmlPart = new MimeBodyPart();
 
-            String cabecera = "<html><body><center><h1>Plataforma de Remanentes</h1></center><br/>";
-            String contenido = "<center><p>" + cuerpo + "</p></center><br/>";
-            String boton = "<center><a href='" + URL + "'>Plataforma Remanentes</a></center>";
-//            String pie = "<br/><h2>DINARDAP</h2></body></html>";
-            String formulario = String.format("%s%s%s", cabecera, contenido, boton);
+                String cabecera = "<html><body><center><h1>Plataforma de Remanentes</h1></center><br/>";
+                String contenido = "<center><p>" + cuerpo + "</p></center><br/>";
+                String boton = "<center><a href='" + URL + "'>Plataforma Remanentes</a></center>";
+                String formulario = String.format("%s%s%s", cabecera, contenido, boton);
 
-            htmlPart.setContent(formulario, "text/html; charset=utf-8");
-            multipartes.addBodyPart(htmlPart);
-            message.setContent(multipartes);
-            Transport.send(message);
+                htmlPart.setContent(formulario, "text/html; charset=utf-8");
+                multipartes.addBodyPart(htmlPart);
+                message.setContent(multipartes);
+                Transport.send(message);
+            } else {
+                System.out.println("Mail Vacío o Nulo");
+            }
+
         } catch (AuthenticationFailedException e) {
             throw e;
         } catch (MessagingException ex) {
             throw ex;
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Email.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
