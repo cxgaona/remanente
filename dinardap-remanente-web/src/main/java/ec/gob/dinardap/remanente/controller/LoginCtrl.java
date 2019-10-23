@@ -69,7 +69,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             u = new UsuarioDTO();
             usuario = "";
             contraseña = "";
-            this.addInfoMessage("Usuario o contraseña Incorrecto", "asd");
+            this.addInfoMessage("Usuario o contraseña Incorrecta", "asd");
         }
     }
 

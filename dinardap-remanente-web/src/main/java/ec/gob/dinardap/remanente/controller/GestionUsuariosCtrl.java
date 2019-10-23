@@ -23,6 +23,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Boolean onCreate;
     private Boolean renderEdition;
 
+    private Boolean disabledRegistrador;
+    private Boolean disabledVerificador;
+    private Boolean disabledValidador;
+    private Boolean disabledAdministrador;
+
     private List<Usuario> usuarioActivoList;
     private List<InstitucionRequerida> institucionRequeridaList;
     private String tituloPagina;
@@ -46,6 +51,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
+
+        disabledRegistrador = Boolean.TRUE;
+        disabledVerificador = Boolean.TRUE;
+        disabledValidador = Boolean.TRUE;
+        disabledAdministrador = Boolean.TRUE;
+
         //===
         tituloPagina = "Gestión de Usuarios";
         nombre = "";
@@ -61,10 +72,32 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.TRUE;
         onCreate = Boolean.TRUE;
         onEdit = Boolean.FALSE;
+        disabledRegistrador = Boolean.TRUE;
+        disabledVerificador = Boolean.TRUE;
+        disabledValidador = Boolean.TRUE;
+        disabledAdministrador = Boolean.TRUE;
         usuarioSelected = new Usuario();
+        usuarioSelected.setValidador(true);
         btnGuardar = "Guardar";
         tipoInstitucion = "Dirección Regional";
         institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+    }
+
+    public void cambioRolReg() {
+        if (usuarioSelected.getRegistrador()) {
+            usuarioSelected.setVerificador(Boolean.FALSE);
+        } else {
+            usuarioSelected.setVerificador(Boolean.TRUE);
+        }
+
+    }
+
+    public void cambioRolVer() {
+        if (usuarioSelected.getVerificador()) {
+            usuarioSelected.setRegistrador(Boolean.FALSE);
+        } else {
+            usuarioSelected.setRegistrador(Boolean.TRUE);
+        }
     }
 
     public void onRowSelectUsuario() {
@@ -72,15 +105,32 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         onCreate = Boolean.FALSE;
         onEdit = Boolean.TRUE;
         btnGuardar = "Actualizar";
+        disabledRegistrador = Boolean.TRUE;
+        disabledVerificador = Boolean.TRUE;
+        disabledValidador = Boolean.TRUE;
+        disabledAdministrador = Boolean.TRUE;
         if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
             institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
+            disabledRegistrador = Boolean.FALSE;
+            disabledVerificador = Boolean.FALSE;
+            disabledValidador = Boolean.TRUE;
+            disabledAdministrador = Boolean.TRUE;
+
         } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
             tipoInstitucion = "GAD";
             institucionRequeridaList = institucionRequeridaServicio.getGADList();
+            disabledRegistrador = Boolean.TRUE;
+            disabledVerificador = Boolean.TRUE;
+            disabledValidador = Boolean.TRUE;
+            disabledAdministrador = Boolean.TRUE;
         } else if (usuarioSelected.getInstitucionId().getTipo().equals("REGIONAL")) {
             tipoInstitucion = "Dirección Regional";
             institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+            disabledRegistrador = Boolean.TRUE;
+            disabledVerificador = Boolean.TRUE;
+            disabledValidador = Boolean.TRUE;
+            disabledAdministrador = Boolean.TRUE;
         }
     }
 
@@ -124,12 +174,39 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         if (tipoInstitucion.equals("Registro Propiedad / Mercantil")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
             institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
+            usuarioSelected.setValidador(false);
+            usuarioSelected.setAdministrador(false);
+            usuarioSelected.setVerificador(false);
+            usuarioSelected.setRegistrador(true);
+
+            disabledRegistrador = Boolean.FALSE;
+            disabledValidador = Boolean.TRUE;
+            disabledVerificador = Boolean.FALSE;
+            disabledAdministrador = Boolean.TRUE;
         } else if (tipoInstitucion.equals("GAD")) {
             tipoInstitucion = "GAD";
             institucionRequeridaList = institucionRequeridaServicio.getGADList();
+            usuarioSelected.setValidador(false);
+            usuarioSelected.setAdministrador(false);
+            usuarioSelected.setVerificador(true);
+            usuarioSelected.setRegistrador(false);
+
+            disabledRegistrador = Boolean.TRUE;
+            disabledValidador = Boolean.TRUE;
+            disabledVerificador = Boolean.TRUE;
+            disabledAdministrador = Boolean.TRUE;
         } else if (tipoInstitucion.equals("Dirección Regional")) {
             tipoInstitucion = "Dirección Regional";
             institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+            usuarioSelected.setValidador(true);
+            usuarioSelected.setAdministrador(false);
+            usuarioSelected.setVerificador(false);
+            usuarioSelected.setRegistrador(false);
+
+            disabledRegistrador = Boolean.TRUE;
+            disabledValidador = Boolean.TRUE;
+            disabledVerificador = Boolean.TRUE;
+            disabledAdministrador = Boolean.TRUE;
         }
     }
 
@@ -206,6 +283,38 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     public Boolean getOnCreate() {
         return onCreate;
+    }
+
+    public Boolean getDisabledRegistrador() {
+        return disabledRegistrador;
+    }
+
+    public void setDisabledRegistrador(Boolean disabledRegistrador) {
+        this.disabledRegistrador = disabledRegistrador;
+    }
+
+    public Boolean getDisabledVerificador() {
+        return disabledVerificador;
+    }
+
+    public void setDisabledVerificador(Boolean disabledVerificador) {
+        this.disabledVerificador = disabledVerificador;
+    }
+
+    public Boolean getDisabledValidador() {
+        return disabledValidador;
+    }
+
+    public void setDisabledValidador(Boolean disabledValidador) {
+        this.disabledValidador = disabledValidador;
+    }
+
+    public Boolean getDisabledAdministrador() {
+        return disabledAdministrador;
+    }
+
+    public void setDisabledAdministrador(Boolean disabledAdministrador) {
+        this.disabledAdministrador = disabledAdministrador;
     }
 
 }
