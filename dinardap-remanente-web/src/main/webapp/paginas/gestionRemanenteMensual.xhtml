@@ -27,7 +27,7 @@
                 </h:form>
             </p:dialog>
             <p:dialog id="estadoRemanenteMensualDlg"
-                      header="Listado de estados del Remanentes" 
+                      header="Estados de Remanente" 
                       modal="true"
                       widgetVar="estadoRemanenteMensualDlg" width="1000" height="auto" 
                       resizable="false">
@@ -38,8 +38,23 @@
                                  rowKey="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
                                  reflow="true" rows="10" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-
-                                 rowsPerPageTemplate="5,10,15">                        
+                                 rowsPerPageTemplate="5,10,15"
+                                 sortBy="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
+                                 sortOrder="descending">
+                        <f:facet name="header">
+                            Mes: #{remanenteMensualCtrl.remanenteMensualSelected.mes eq 1? 'Enero':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 2? 'Febrero':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 3? 'Marzo':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 4? 'Abril':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 5? 'Mayo':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 6? 'Junio':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 7? 'Julio':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 8? 'Agosto':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 9? 'Septiembre':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 10? 'Octubre':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 11? 'Noviembre':
+                                   remanenteMensualCtrl.remanenteMensualSelected.mes eq 12? 'Diciembre':'Sin mes'}
+                        </f:facet>
                         <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.usuarioId.nombre}" />
                         </p:column>
