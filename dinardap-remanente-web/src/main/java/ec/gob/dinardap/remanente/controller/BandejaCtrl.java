@@ -37,6 +37,7 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         calendar.setTime(new Date());
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
+        System.out.println("antes del servicio");
         bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
         System.out.println("SIZE front: " + bandejaList.size());
         for (BandejaDTO b : bandejaList) {

@@ -39,6 +39,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         List<BandejaDTO> listBandejaDTO = new ArrayList<BandejaDTO>();
         List<Bandeja> listBandeja = new ArrayList<Bandeja>();
         listBandeja = bandejaDao.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
+        listBandeja = listBandeja == null ? new ArrayList<Bandeja>() : listBandeja;
         for (Bandeja b : listBandeja) {
             BandejaDTO bandejaDTO = new BandejaDTO();
             bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignadoId());
@@ -48,7 +49,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(b.getFechaRegistro());
             bandejaDTO.setAño(calendar.get(Calendar.YEAR));
-            bandejaDTO.setMesRegistro(calendar.get(Calendar.MONTH)+1);
+            bandejaDTO.setMesRegistro(calendar.get(Calendar.MONTH) + 1);
             bandejaDTO.setDiaRegistro(calendar.get(Calendar.DAY_OF_MONTH));
             bandejaDTO.setDescripcion(b.getDescripcion());
             bandejaDTO.setEstado(b.getEstado());
