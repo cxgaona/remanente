@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.dto.BandejaDTO;
-import ec.gob.dinardap.remanente.modelo.Bandeja;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.io.IOException;
 import java.io.Serializable;
@@ -37,20 +36,10 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         calendar.setTime(new Date());
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
-        System.out.println("antes del servicio");
         bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
-        System.out.println("SIZE front: " + bandejaList.size());
-        for (BandejaDTO b : bandejaList) {
-            System.out.println("Bandeja: " + b.getBandejaID());
-        }
     }
 
     public void onRowSelectBandeja() throws IOException {
-        if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
-            bandejaSelected.setLeido(Boolean.TRUE);
-            bandejaSelected.setFechaLeido(new Date());
-            bandejaServicio.editBandeja(bandejaSelected);
-        }
         switch (this.getSessionVariable("perfil")) {
             case "REM-Registrador, ":
                 linkRedireccion = "gestionRemanenteMensual.jsf";
@@ -71,8 +60,13 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
                 linkRedireccion = "administracion/adminRemanenteMensual.jsf";
                 break;
         }
-
         FacesContext.getCurrentInstance().getExternalContext().redirect(linkRedireccion);
+
+        if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
+            bandejaSelected.setLeido(Boolean.TRUE);
+            bandejaSelected.setFechaLeido(new Date());
+            bandejaServicio.editBandeja(bandejaSelected);
+        }
     }
 
     public String getTitulo() {

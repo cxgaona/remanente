@@ -61,7 +61,7 @@
                                      selectionMode="single"
                                      selection="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected}"
                                      style="width: 50%">
-                            <p:ajax event="rowSelect" listener="#{validarRemanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral"/>
+                            <p:ajax event="rowSelect" listener="#{validarRemanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral, formRemanenteCuatrimestral:panelInforme"/>
                             <p:column headerText="Cuatrimestre" width="20%">
                                 <h:outputText value="#{remanenteCuatrimestral.cuatrimestre}" />
                             </p:column>

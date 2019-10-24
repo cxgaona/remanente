@@ -51,7 +51,6 @@ public class Email {
                 return new PasswordAuthentication("notificaciones.remanentes@dinardap.gob.ec", "Password.1");
             }
         });
-        System.out.println("para: " + para);
         try {
             if (para != null && !para.isEmpty()) {
                 Message message = new MimeMessage(session);
@@ -69,8 +68,6 @@ public class Email {
                 multipartes.addBodyPart(htmlPart);
                 message.setContent(multipartes);
                 Transport.send(message);
-            } else {
-                System.out.println("Mail Vacío o Nulo");
             }
         } catch (AuthenticationFailedException e) {
             throw e;

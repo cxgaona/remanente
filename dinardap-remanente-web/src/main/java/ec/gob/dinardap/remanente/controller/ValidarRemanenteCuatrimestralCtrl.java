@@ -245,18 +245,22 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
             erc.setFechaRegistro(new Date());
             erc.setDescripcion("InformeTecnicoSubido");
             estadoRemanenteCuatrimestralServicio.create(erc);
+            remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
             displayUploadInformeCuatrimestral = Boolean.FALSE;
             //ENVIO DE NOTIFICACION//
-            String meses="";
-            switch(remanenteCuatrimestralSelected.getCuatrimestre()){
-                case 1: meses="Enero - Abril";
+            String meses = "";
+            switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
+                case 1:
+                    meses = "Enero - Abril";
                     break;
-                case 2: meses="Mayo - Agosto";
+                case 2:
+                    meses = "Mayo - Agosto";
                     break;
-                case 3: meses="Septiembre - Diciembre";
+                case 3:
+                    meses = "Septiembre - Diciembre";
                     break;
             }
-            Integer numMensuales=remanenteCuatrimestralSelected.getRemanenteMensualList().size();
+            Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
             institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
             usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                     "REM-Verificador", "REM-Validador", 391, remanenteCuatrimestralSelected);
@@ -265,7 +269,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
                     remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                     remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                     remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
-                    remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales -1).getRemanenteMensualId(),
+                    remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales - 1).getRemanenteMensualId(),
                     mensajeNotificacion, "RC");
             //FIN ENVIO//
         } catch (FileNotFoundException ex) {

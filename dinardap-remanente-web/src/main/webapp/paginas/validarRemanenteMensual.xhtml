@@ -18,7 +18,7 @@
                                  value="#{validarRemanenteMensualCtrl.remanenteMensualSelected.estadoRemanenteMensualList}" 
                                  var="estadoRemanenteMensual"
                                  rowKey="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,15"
                                  sortBy="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
@@ -63,7 +63,7 @@
                                  value="#{validarRemanenteMensualCtrl.tramiteRPropiedadMercantilList}" 
                                  var="tramite"
                                  rowKey="#{tramite.tramiteId}"                                 
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25">                        
                         <p:column headerText="ID Tramite" rendered="false">
@@ -107,7 +107,7 @@
                                  var="nomina" 
                                  value="#{validarRemanenteMensualCtrl.egresoNominaList}" 
                                  editable="true"                                  
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25"
                                  style="margin-bottom: 10px">
@@ -127,9 +127,9 @@
                             <h:outputText value="#{nomina.cargo}" />
                         </p:column>
                         <p:column headerText="Remuneración">
-                            <h:outputText value="#{nomina.remuneracion}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                              
+                            <b><h:outputText value="#{nomina.remuneracion}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>                             
                         </p:column>
                         <p:column headerText="Aporte Patronal">
                             <h:outputText value="#{nomina.aportePatronal}" >
@@ -147,14 +147,14 @@
                             </h:outputText>
                         </p:column>
                         <p:column headerText="Décimo Tercero">
-                            <h:outputText value="#{nomina.decimoTercero}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                            
+                            <b><h:outputText value="#{nomina.decimoTercero}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>                            
                         </p:column>
                         <p:column headerText="Décimo Cuarto">
-                            <h:outputText value="#{nomina.decimoCuarto}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>
+                            <b><h:outputText value="#{nomina.decimoCuarto}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Total Descuento">
                             <h:outputText value="#{nomina.totalDesc}" >
@@ -171,7 +171,7 @@
                     <p:dataTable id="facturaPagadaTbl"                                     
                                  var="facturaPagada" 
                                  value="#{validarRemanenteMensualCtrl.egresoFacturaList}"                                      
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25">
                         <f:facet name="header">

@@ -81,11 +81,9 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);        
-        System.out.println("SIZE: "+transaccionList.size());
-        for (Transaccion tAux : transaccionList) {            
-            System.out.println("TransaccionAUX: "+tAux.getTransaccionId());
-            System.out.println("TransaccionAUX: "+tAux.getCatalogoTransaccionId().getNombre());
-            System.out.println("TransaccionAUX: "+tAux.getValorTotal());         
+        for (Transaccion tAux : transaccionList) {  
+            tAux.getTransaccionId();
+            tAux.getCatalogoTransaccionId();
         }
         for (Transaccion tAux : transaccionList) {            
             t = tAux;

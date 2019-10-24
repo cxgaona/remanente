@@ -159,5 +159,5 @@ public class BandejaDTO {
     public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-
+    
 }

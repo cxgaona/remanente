@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
@@ -167,14 +166,6 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
-
-        for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("rm" + rm.getRemanenteMensualId());
-            for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
-                System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
-                System.out.println("erm:" + erm.getDescripcion());
-            }
-        }
         remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
@@ -213,7 +204,6 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void onRowEditFacturaPagada(RowEditEvent event) {
-        System.out.println("En guardar fila");
         FacturaPagada facturaPagada = new FacturaPagada();
         facturaPagada = (FacturaPagada) event.getObject();
         catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionList();

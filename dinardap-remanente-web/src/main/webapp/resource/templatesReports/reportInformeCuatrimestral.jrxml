@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportInformeCuatrimestral" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99bd548e-5c57-445c-aef9-124383bc7a2a">
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="733"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
 	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
 	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
@@ -185,6 +185,7 @@
 	<parameter name="remrm3" class="java.lang.String"/>
 	<parameter name="remrm4" class="java.lang.String"/>
 	<parameter name="remrmtotal" class="java.lang.String"/>
+	<parameter name="realPath" class="java.lang.String"/>
 	<variable name="variable1" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
@@ -221,7 +222,7 @@
 			</textField>
 			<image>
 				<reportElement x="353" y="0" width="200" height="35" uuid="14e74b59-dfc7-45a9-abf5-d9c22ee0c69d"/>
-				<imageExpression><![CDATA["C:\\Users\\christian.gaona\\Documents\\DINARDAP 2019\\Remanentes V1.0\\ProyectoRemanentes Aplicativo\\Version GIT 1.3\\remanente\\dinardap-remanente-web\\src\\main\\java\\ec\\gob\\dinardap\\remanente\\reportes\\logoDinardap.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{realPath}+"/logoDinardap.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>
@@ -466,7 +467,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Calibri" size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{rpcrt1}  ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{rpcrt1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="table 1" x="251" y="30" width="76" height="15" uuid="bba2868d-c4d5-4813-8b92-9ae9724b416a"/>
@@ -970,7 +971,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Calibri" size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{remrm1}  ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{remrm1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Row" x="251" y="460" width="76" height="35" uuid="0ad1aed8-686a-4f8b-ac49-76880feb7f11"/>
@@ -991,7 +992,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Calibri" size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{grmest1}  ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{grmest1}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Row" x="0" y="425" width="175" height="35" uuid="7bfe10a3-f233-4565-ad78-ad07f3e8ebe8"/>
@@ -1138,7 +1139,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Calibri" size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{grem1} ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{grem1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="table 1" x="175" y="320" width="76" height="25" uuid="166c337f-b529-4adb-8d99-8d4323b0d24e"/>

@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -149,12 +148,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
-        }
-        System.out.println("RemanenteSeleccionado " + remanenteMensualSelected.getRemanenteMensualId());
-        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
-            System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
-            System.out.println("erm:" + erm.getDescripcion());
-        }
+        }      
     }
 
     public void cancelar() {

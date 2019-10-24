@@ -202,8 +202,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado")) {
-            System.out.println("Entro en el if");
-            System.out.println(remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion());
             displaySolicitud = Boolean.TRUE;
         } else {
             displaySolicitud = Boolean.FALSE;
@@ -279,13 +277,9 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     }
 
     public void rowTransaccionEditCancel() {
-        System.out.println("Cancelado");
     }
 
     public void completarRemanenteMensual() {
-        System.out.println("===Guardar Remanente Mensual===");
-        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
-        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
         List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
         estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
@@ -373,7 +367,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                     remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                     remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                     remanenteMensualSelected.getRemanenteMensualId(),
-                    mensajeNotificacion, "");
+                    mensajeNotificacion, "RM");
             /////
             usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                     "REM-Administrador", "REM-Registrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
@@ -382,21 +376,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                     remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                     remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                     remanenteMensualSelected.getRemanenteMensualId(),
-                    mensajeNotificacion, "");
+                    mensajeNotificacion, "RM");
             //FIN ENVIO//
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void verEstadoRemanenteMensualSeleccionado() {
-        System.out.println("Remanente: " + remanenteMensualSelected.getMes());
-        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
-            System.out.println("Estado: " + erm.getUsuarioId().getNombre());
-            System.out.println("Estado: " + erm.getFechaRegistro());
-            System.out.println("Estado: " + erm.getDescripcion());
         }
     }
 

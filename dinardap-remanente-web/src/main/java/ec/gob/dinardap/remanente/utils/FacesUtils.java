@@ -7,7 +7,6 @@ package ec.gob.dinardap.remanente.utils;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import org.apache.xmlbeans.impl.schema.StscState;
 
 /**
  *
@@ -21,7 +20,6 @@ public class FacesUtils {
                     .getExternalContext().getContext();
             return ctx.getRealPath("/");
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
             return null;
         }
     }

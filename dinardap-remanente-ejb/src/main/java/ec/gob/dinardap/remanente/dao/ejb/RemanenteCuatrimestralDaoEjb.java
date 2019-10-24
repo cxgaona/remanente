@@ -38,8 +38,6 @@ public class RemanenteCuatrimestralDaoEjb extends RemanenteGenericDao<RemanenteC
             fechaHasta.set(Calendar.MONTH, 3);
             fechaHasta.set(Calendar.DAY_OF_MONTH, 30);
             dateHasta = fechaHasta.getTime();
-            System.out.println("Fecha desde: " + sdf.format(dateDesde));
-            System.out.println("Fecha Hasta: " + sdf.format(dateHasta));
         } else if (calendar.get(Calendar.MONTH) + 1 > 4 && calendar.get(Calendar.MONTH) + 1 <= 8) {
             fechaDesde.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
             fechaDesde.set(Calendar.MONTH, 4);
@@ -49,8 +47,6 @@ public class RemanenteCuatrimestralDaoEjb extends RemanenteGenericDao<RemanenteC
             fechaHasta.set(Calendar.MONTH, 7);
             fechaHasta.set(Calendar.DAY_OF_MONTH, 31);
             dateHasta = fechaHasta.getTime();
-            System.out.println("Fecha desde: " + sdf.format(dateDesde));
-            System.out.println("Fecha Hasta: " + sdf.format(dateHasta));
         } else if (calendar.get(Calendar.MONTH) + 1 > 8 && calendar.get(Calendar.MONTH) + 1 <= 12) {
             fechaDesde.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
             fechaDesde.set(Calendar.MONTH, 7);
@@ -60,15 +56,12 @@ public class RemanenteCuatrimestralDaoEjb extends RemanenteGenericDao<RemanenteC
             fechaHasta.set(Calendar.MONTH, 11);
             fechaHasta.set(Calendar.DAY_OF_MONTH, 31);
             dateHasta = fechaHasta.getTime();
-            System.out.println("Fecha desde: " + sdf.format(dateDesde));
-            System.out.println("Fecha Hasta: " + sdf.format(dateHasta));
         }
         Query query = em.createQuery("SELECT rc FROM RemanenteCuatrimestral rc "
                 + "WHERE rc.fecha BETWEEN '" + sdf.format(dateDesde) + "' AND '" + sdf.format(dateDesde) + "'");
             Query query1 = em.createQuery("SELECT u FROM InstitucionRequerida u WHERE u.direccionRegional.institucionId");
         List<RemanenteCuatrimestral> rc = new ArrayList<RemanenteCuatrimestral>();
         rc = query.getResultList();
-        System.out.println("size: " + rc.size());
         return rc.size() > 0 ? true : false;
     }
 

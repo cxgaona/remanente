@@ -209,7 +209,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        System.out.println("RemanenteSeleccionado1: " + remanenteMensualSelected.getRemanenteMensualId());
         Collections.sort(remanenteMensualSelected.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
             @Override
             public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
@@ -227,7 +226,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         } else {
             displaySolicitud = Boolean.FALSE;
         }
-        System.out.println("Antes del servicio de transacciones");
 
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
@@ -299,7 +297,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         erm.setDescripcion("CambioAprobado");
         estadoRemanenteMensualServicio.create(erm);
         displaySolicitud = Boolean.FALSE;
-        System.out.println("remaneneteOriginal Seleccionado: " + remanenteMensualSelected.getRemanenteMensualId());
         crearVersionRemanente(remanenteMensualSelected);
 
         //ENVIO DE NOTIFICACION//
@@ -323,7 +320,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Validador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
@@ -332,7 +329,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         //FIN ENVIO//
 
         remanenteMensualSelected = new RemanenteMensual();
@@ -373,7 +370,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Validador", "REM-Administrador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
@@ -382,7 +379,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         //FIN ENVIO//
     }
 

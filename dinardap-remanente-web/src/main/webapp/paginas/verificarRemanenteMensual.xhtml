@@ -35,7 +35,7 @@
                                  value="#{verificarRemanenteMensualCtrl.remanenteMensualSelected.estadoRemanenteMensualList}" 
                                  var="estadoRemanenteMensual"
                                  rowKey="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,15"
                                  sortBy="#{estadoRemanenteMensual.estadoRemanenteMensualId}"
@@ -81,7 +81,7 @@
                                  value="#{verificarRemanenteMensualCtrl.tramiteRPropiedadMercantilList}" 
                                  var="tramite"
                                  rowKey="#{tramite.tramiteId}"                                 
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25">                        
                         <p:column headerText="ID Tramite" rendered="false">
@@ -125,7 +125,7 @@
                                  var="nomina" 
                                  value="#{verificarRemanenteMensualCtrl.egresoNominaList}" 
                                  editable="true"                                  
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25"
                                  style="margin-bottom: 10px">
@@ -145,9 +145,9 @@
                             <h:outputText value="#{nomina.cargo}" />
                         </p:column>
                         <p:column headerText="Remuneración">
-                            <h:outputText value="#{nomina.remuneracion}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                              
+                            <b><h:outputText value="#{nomina.remuneracion}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>                              
                         </p:column>
                         <p:column headerText="Aporte Patronal">
                             <h:outputText value="#{nomina.aportePatronal}" >
@@ -165,14 +165,14 @@
                             </h:outputText>
                         </p:column>
                         <p:column headerText="Décimo Tercero">
-                            <h:outputText value="#{nomina.decimoTercero}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                            
+                            <b><h:outputText value="#{nomina.decimoTercero}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>                          
                         </p:column>
                         <p:column headerText="Décimo Cuarto">
-                            <h:outputText value="#{nomina.decimoCuarto}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>
+                            <b><h:outputText value="#{nomina.decimoCuarto}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Total Descuento">
                             <h:outputText value="#{nomina.totalDesc}" >
@@ -189,7 +189,7 @@
                     <p:dataTable id="facturaPagadaTbl"                                     
                                  var="facturaPagada" 
                                  value="#{verificarRemanenteMensualCtrl.egresoFacturaList}"                                      
-                                 reflow="true" rows="10" paginator="true"
+                                 reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25">
                         <f:facet name="header">
@@ -313,8 +313,6 @@
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
                                      editable="#{!verificarRemanenteMensualCtrl.btnActivated}">  
-                            <p:ajax event="rowEdit" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Ingresos Registro de la Propiedad" />                                    

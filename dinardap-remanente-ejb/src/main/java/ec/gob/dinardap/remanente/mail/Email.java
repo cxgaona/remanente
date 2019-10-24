@@ -76,10 +76,7 @@ public class Email {
                 multipartes.addBodyPart(htmlPart);
                 message.setContent(multipartes);
                 Transport.send(message);
-            } else {
-                System.out.println("Mail Vacío o Nulo");
-            }
-
+            } 
         } catch (AuthenticationFailedException e) {
             throw e;
         } catch (MessagingException ex) {
