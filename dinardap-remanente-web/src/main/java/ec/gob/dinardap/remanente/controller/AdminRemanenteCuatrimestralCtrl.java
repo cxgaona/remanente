@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
@@ -13,10 +12,6 @@ import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
-import ec.gob.dinardap.remanente.utils.FacesUtils;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,17 +22,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.apache.poi.util.IOUtils;
-import org.primefaces.event.FileUploadEvent;
-
-import org.primefaces.model.UploadedFile;
 
 @Named(value = "adminRemanenteCuatrimestralCtrl")
 @ViewScoped

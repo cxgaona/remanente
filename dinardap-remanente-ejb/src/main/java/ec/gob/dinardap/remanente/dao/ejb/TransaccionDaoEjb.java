@@ -35,7 +35,7 @@ public class TransaccionDaoEjb extends RemanenteGenericDao<Transaccion, Integer>
             }
         }
         for (Transaccion transaccion : transaccionListActiva) {
-            System.out.println("transaccionActiva: " + transaccion.getTransaccionId());
+            transaccion.getTransaccionId();
         }
         return transaccionListActiva.get(transaccionListActiva.size() - 1);
     }

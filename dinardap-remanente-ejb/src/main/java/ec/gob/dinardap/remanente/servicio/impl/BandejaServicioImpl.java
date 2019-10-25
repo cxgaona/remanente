@@ -39,16 +39,17 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         List<BandejaDTO> listBandejaDTO = new ArrayList<BandejaDTO>();
         List<Bandeja> listBandeja = new ArrayList<Bandeja>();
         listBandeja = bandejaDao.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
+        listBandeja = listBandeja == null ? new ArrayList<Bandeja>() : listBandeja;
         for (Bandeja b : listBandeja) {
             BandejaDTO bandejaDTO = new BandejaDTO();
             bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignadoId());
             bandejaDTO.setAño(anio);
             bandejaDTO.setUsuarioSolicitante(b.getUsuarioSolicitanteId());
-            bandejaDTO.setUsuarioAsignado(b.getUsuarioSolicitanteId());
+            bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignadoId());
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(b.getFechaRegistro());
             bandejaDTO.setAño(calendar.get(Calendar.YEAR));
-            bandejaDTO.setMesRegistro(calendar.get(Calendar.MONTH)+1);
+            bandejaDTO.setMesRegistro(calendar.get(Calendar.MONTH) + 1);
             bandejaDTO.setDiaRegistro(calendar.get(Calendar.DAY_OF_MONTH));
             bandejaDTO.setDescripcion(b.getDescripcion());
             bandejaDTO.setEstado(b.getEstado());
@@ -81,7 +82,6 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         bandeja.setRemanenteMensualId(bandejaDTO.getRemanenteMensual());
         bandeja.setUsuarioSolicitanteId(bandejaDTO.getUsuarioSolicitante());
         bandeja.setUsuarioAsignadoId(bandejaDTO.getUsuarioAsignado());
-
         this.update(bandeja);
     }
 
@@ -112,7 +112,6 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             bandeja.setFechaRegistro(new Date());
             bandeja.setUsuarioAsignadoId(userAsignado);
             create(bandeja);
-            System.out.println("Mensaje enviado a : " + userAsignado.getNombre());
             try {
                 String mensajeMail = descripcion;
                 email.sendMail(userAsignado.getEmail(), "Notificación Remanentes", mensajeMail);

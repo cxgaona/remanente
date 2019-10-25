@@ -1,6 +1,5 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -15,10 +14,6 @@ import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
-import ec.gob.dinardap.remanente.utils.FacesUtils;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,8 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -264,9 +257,6 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     }
 
     public void aprobarRemanenteMensual() {
-        System.out.println("===Guardar Remanente Mensual===");
-        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
-        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
         List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
         estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
@@ -304,7 +294,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
+                mensajeNotificacion, "RM");
         //FIN ENVIO//
     }
 
@@ -356,16 +346,6 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 }
             }
         }
-
-        for (Nomina n : egresoNominaList) {
-            System.out.println("Nomina: " + n.getNominaId());
-            System.out.println("Nomina: " + n.getNomNombres());
-        }
-
-        for (FacturaPagada fp : egresoFacturaList) {
-            System.out.println("Factura: " + fp.getFacturaPagadaId());
-            System.out.println("Factura: " + fp.getDetalle());
-        }
     }
 
     public void habilitarComentarioRechazo() {
@@ -379,9 +359,6 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     }
 
     public void rechazarRemanenteMensual() {
-        System.out.println("===Guardar Remanente Mensual===");
-        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
-        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
         List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
         estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
@@ -409,7 +386,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
-        
+
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Verificador", "REM-Validador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
@@ -419,18 +396,9 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
                 remanenteMensualSelected.getRemanenteMensualId(),
-                mensajeNotificacion, "");
-        
-        //FIN ENVIO//
-    }
+                mensajeNotificacion, "RM");
 
-    public void verEstadoRemanenteMensualSeleccionado() {
-        System.out.println("Remanente: " + remanenteMensualSelected.getMes());
-        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
-            System.out.println("Estado: " + erm.getUsuarioId().getNombre());
-            System.out.println("Estado: " + erm.getFechaRegistro());
-            System.out.println("Estado: " + erm.getDescripcion());
-        }
+        //FIN ENVIO//
     }
 
     //Getters & Setters

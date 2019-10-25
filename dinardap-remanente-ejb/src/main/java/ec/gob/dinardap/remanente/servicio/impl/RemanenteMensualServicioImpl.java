@@ -57,7 +57,6 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
                 }
             }
         }
-        System.out.println("size: " + remanenteMensualList.size());
         return remanenteMensualList;
     }
 

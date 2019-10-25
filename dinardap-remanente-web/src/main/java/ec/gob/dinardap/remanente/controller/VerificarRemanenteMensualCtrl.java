@@ -1,6 +1,5 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -113,16 +112,11 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         comentariosRechazo = "";
         transaccionSelected = new Transaccion();
         institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
-        System.out.println("INstitucionID: " + institucionId);
 
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-
-//        String a = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "D1N4Rd4p.2019";
-//        EncriptarCadenas.encriptarCadenaSha1(a);
-//        System.out.println("a = " + EncriptarCadenas.encriptarCadenaSha1(a));
     }
 
     public void loadRemanenteMensualByAño() {
@@ -268,14 +262,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         }
     }
 
-    public void rowTransaccionEditCancel() {
-        System.out.println("Cancelado");
-    }
-
     public void aprobarRemanenteMensual() {
-        System.out.println("===Guardar Remanente Mensual===");
-        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
-        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
         List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
         estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
@@ -355,16 +342,6 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
                 }
             }
         }
-
-        for (Nomina n : egresoNominaList) {
-            System.out.println("Nomina: " + n.getNominaId());
-            System.out.println("Nomina: " + n.getNomNombres());
-        }
-
-        for (FacturaPagada fp : egresoFacturaList) {
-            System.out.println("Factura: " + fp.getFacturaPagadaId());
-            System.out.println("Factura: " + fp.getDetalle());
-        }
     }
 
     public void habilitarComentarioRechazo() {
@@ -378,9 +355,6 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     }
 
     public void rechazarRemanenteMensual() {
-        System.out.println("===Guardar Remanente Mensual===");
-        System.out.println("Remanente mensual ID: " + remanenteMensualSelected.getRemanenteMensualId());
-        System.out.println("Remanente mensual Mes: " + remanenteMensualSelected.getMes());
         List<EstadoRemanenteMensual> estadoRemanenteMensualList = new ArrayList<EstadoRemanenteMensual>();
         estadoRemanenteMensualList = remanenteMensualSelected.getEstadoRemanenteMensualList();
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
@@ -426,15 +400,6 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
             Logger.getLogger(VerificarRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(VerificarRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void verEstadoRemanenteMensualSeleccionado() {
-        System.out.println("Remanente: " + remanenteMensualSelected.getMes());
-        for (EstadoRemanenteMensual erm : remanenteMensualSelected.getEstadoRemanenteMensualList()) {
-            System.out.println("Estado: " + erm.getUsuarioId().getNombre());
-            System.out.println("Estado: " + erm.getFechaRegistro());
-            System.out.println("Estado: " + erm.getDescripcion());
         }
     }
 

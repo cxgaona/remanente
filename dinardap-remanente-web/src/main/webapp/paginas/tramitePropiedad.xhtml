@@ -64,7 +64,7 @@
                                      rowKey="#{tramite.tramiteId}"
                                      selectionMode="single"
                                      selection="#{tramitePropiedadCtrl.tramiteSelected}"
-                                     reflow="true" rows="10" paginator="true"
+                                     reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25">
                             <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>

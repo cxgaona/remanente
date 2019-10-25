@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -140,12 +139,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
-        for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("rm" + rm.getMes());
-            for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
-                System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
-            }
-        }
         remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")

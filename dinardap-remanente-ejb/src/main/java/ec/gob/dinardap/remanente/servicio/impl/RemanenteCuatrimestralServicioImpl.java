@@ -93,8 +93,6 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
             fechaHasta.set(Calendar.MONTH, 3);
             fechaHasta.set(Calendar.DAY_OF_MONTH, 30);
             dateHasta = fechaHasta.getTime();
-            System.out.println("Fecha desde: " + sdf.format(dateDesde));
-            System.out.println("Fecha Hasta: " + sdf.format(dateHasta));
         } else if (calendar.get(Calendar.MONTH) + 1 > 4 && calendar.get(Calendar.MONTH) + 1 <= 8) {
             fechaDesde.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
             fechaDesde.set(Calendar.MONTH, 4);
@@ -104,8 +102,6 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
             fechaHasta.set(Calendar.MONTH, 7);
             fechaHasta.set(Calendar.DAY_OF_MONTH, 31);
             dateHasta = fechaHasta.getTime();
-            System.out.println("Fecha desde: " + sdf.format(dateDesde));
-            System.out.println("Fecha Hasta: " + sdf.format(dateHasta));
         } else if (calendar.get(Calendar.MONTH) + 1 > 8 && calendar.get(Calendar.MONTH) + 1 <= 12) {
             fechaDesde.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
             fechaDesde.set(Calendar.MONTH, 7);
@@ -115,8 +111,6 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
             fechaHasta.set(Calendar.MONTH, 11);
             fechaHasta.set(Calendar.DAY_OF_MONTH, 31);
             dateHasta = fechaHasta.getTime();
-            System.out.println("Fecha desde: " + sdf.format(dateDesde));
-            System.out.println("Fecha Hasta: " + sdf.format(dateHasta));
         }
 
         List<RemanenteCuatrimestral> remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
@@ -127,7 +121,6 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteCuatrimestralList = findByCriterias(criteria);
-        System.out.println("size: " + remanenteCuatrimestralList.size());
         return true;
     }
 

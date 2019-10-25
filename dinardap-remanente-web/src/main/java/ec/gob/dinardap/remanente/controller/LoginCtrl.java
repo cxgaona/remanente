@@ -37,7 +37,6 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
         u = new UsuarioDTO();
         String cadena = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña;
         u = usuarioServicio.login(usuario, EncriptarCadenas.encriptarCadenaSha1(cadena));
-        System.out.println("Despues del Servicio");
         if (u != null) {
             String variableSesionPerfil = "";
             if (u.getRegistrador()) {
@@ -57,12 +56,6 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             this.setSessionVariable("institucionId", u.getInstitucionID().toString());
             this.setSessionVariable("institucionTipo", u.getTipo());
             this.setSessionVariable("gadId", u.getGadID().toString());            
-
-            System.out.println(this.getSessionVariable("perfil"));
-            System.out.println(this.getSessionVariable("usuarioId"));
-            System.out.println(this.getSessionVariable("institucionId"));
-            System.out.println(this.getSessionVariable("institucionTipo"));
-            System.out.println(this.getSessionVariable("gadId"));
 
             FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {
@@ -85,10 +78,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             numero = (int) (Math.random() * 36);
             claveGenerada = claveGenerada + str.substring(numero, numero + 1);
         }
-        System.out.println("clave generada:" + claveGenerada);
         encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + claveGenerada);
-
-        System.out.println("clave generada:" + encriptada);
     }
 
     public String getUsuario() {

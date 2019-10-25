@@ -133,7 +133,6 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         gadList = findByCriterias(criteria);
-        System.out.println("Size: " + gadList.size());
         return gadList.get(gadList.size() - 1);
     }
 

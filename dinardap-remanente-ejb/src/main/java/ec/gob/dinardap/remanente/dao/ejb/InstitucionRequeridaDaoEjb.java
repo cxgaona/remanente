@@ -23,13 +23,9 @@ public class InstitucionRequeridaDaoEjb extends RemanenteGenericDao<InstitucionR
         List<InstitucionRequerida> list = query.getResultList();
         if (list != null && !list.isEmpty()) {
             for(InstitucionRequerida ir: list){
-                System.out.println("Lista Institución: "+ir.toString());
+                ir.toString();
             }
-//            return lista.get(0);
-        } else {
-            System.out.println("Sin información");
-//            return null;
-        }
+        } 
         return list;
     }
 }

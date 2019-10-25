@@ -45,8 +45,6 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
             numero = (int) (Math.random() * 36);
             claveGenerada = claveGenerada + str.substring(numero, numero + 1);
         }
-        System.out.println("clave generada:" + claveGenerada);
-
         return claveGenerada;
     }
 
