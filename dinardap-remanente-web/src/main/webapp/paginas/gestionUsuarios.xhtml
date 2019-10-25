@@ -114,11 +114,11 @@
 
                         <p:outputLabel value="Perfil:" />
                         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
-                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.registrador}" itemLabel="Registrador" disabled="#{gestionUsuariosCtrl.disabledRegistrador}">
-                                <p:ajax update="formUsuarioSelected:" listener="#{gestionUsuariosCtrl.cambioRolReg}" />
+                            <p:selectBooleanCheckbox id="checkRegistrador" value="#{gestionUsuariosCtrl.usuarioSelected.registrador}" itemLabel="Registrador" disabled="#{gestionUsuariosCtrl.disabledRegistrador}">
+                                <p:ajax update="formUsuarioSelected:checkRegistrador, formUsuarioSelected:checkVerificador" listener="#{gestionUsuariosCtrl.cambioRolReg}" />
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.verificador}" itemLabel="Verificador" disabled="#{gestionUsuariosCtrl.disabledVerificador}" >
-                                <p:ajax update="formUsuarioSelected:" listener="#{gestionUsuariosCtrl.cambioRolVer}" />
+                            <p:selectBooleanCheckbox id="checkVerificador" value="#{gestionUsuariosCtrl.usuarioSelected.verificador}" itemLabel="Verificador" disabled="#{gestionUsuariosCtrl.disabledVerificador}" >
+                                <p:ajax update="formUsuarioSelected:checkVerificador, formUsuarioSelected:checkRegistrador" listener="#{gestionUsuariosCtrl.cambioRolVer}" />
                             </p:selectBooleanCheckbox>
 
                             <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.validador}" itemLabel="Validador" disabled="#{gestionUsuariosCtrl.disabledValidador}"/>                            
