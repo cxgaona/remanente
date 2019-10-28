@@ -33,7 +33,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Bandeja.findAll", query = "SELECT b FROM Bandeja b")
     , @NamedQuery(name = "Bandeja.findByBandejaId", query = "SELECT b FROM Bandeja b WHERE b.bandejaId = :bandejaId")
     , @NamedQuery(name = "Bandeja.findByDescripcion", query = "SELECT b FROM Bandeja b WHERE b.descripcion = :descripcion")
-    , @NamedQuery(name = "Bandeja.findByEstado", query = "SELECT b FROM Bandeja b WHERE b.estado = :estado")})
+    , @NamedQuery(name = "Bandeja.findByTipo", query = "SELECT b FROM Bandeja b WHERE b.tipo = :tipo")})
 public class Bandeja implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,14 +43,14 @@ public class Bandeja implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BANDEJA_GENERATOR")
     @Column(name = "bandeja_id")
     private Integer bandejaId;
-    
+
     @Size(max = 300)
     @Column(name = "descripcion")
     private String descripcion;
     @Size(max = 50)
-    @Column(name = "estado")
-    private String estado;
-    
+    @Column(name = "tipo")
+    private String tipo;
+
     @Column(name = "leido")
     private Boolean leido;
     @Column(name = "fecha_registro")
@@ -59,7 +59,7 @@ public class Bandeja implements Serializable {
     @Column(name = "fecha_leido")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaLeido;
-    
+
     @JoinColumns({
         @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id")
         , @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id")
@@ -76,7 +76,6 @@ public class Bandeja implements Serializable {
     @ManyToOne
     private Usuario usuarioSolicitanteId;
 
-    
     public Bandeja() {
     }
 
@@ -100,12 +99,12 @@ public class Bandeja implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public RemanenteCuatrimestral getRemanenteCuatrimestral() {

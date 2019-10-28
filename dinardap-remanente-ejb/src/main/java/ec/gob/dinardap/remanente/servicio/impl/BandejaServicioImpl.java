@@ -52,7 +52,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             bandejaDTO.setMesRegistro(calendar.get(Calendar.MONTH) + 1);
             bandejaDTO.setDiaRegistro(calendar.get(Calendar.DAY_OF_MONTH));
             bandejaDTO.setDescripcion(b.getDescripcion());
-            bandejaDTO.setEstado(b.getEstado());
+            bandejaDTO.setTipo(b.getTipo());
             bandejaDTO.setLeido(b.getLeido());
             bandejaDTO.setBandejaID(b.getBandejaId());
             bandejaDTO.setFechaLeido(b.getFechaLeido());
@@ -74,7 +74,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         Bandeja bandeja = new Bandeja();
         bandeja.setBandejaId(bandejaDTO.getBandejaID());
         bandeja.setDescripcion(bandejaDTO.getDescripcion());
-        bandeja.setEstado(bandejaDTO.getEstado());
+        bandeja.setTipo(bandejaDTO.getTipo());
         bandeja.setFechaLeido(bandejaDTO.getFechaLeido());
         bandeja.setFechaRegistro(bandejaDTO.getFechaRegistro());
         bandeja.setLeido(bandejaDTO.getLeido());
@@ -88,7 +88,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
     @Override
     public void generarNotificacion(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
             Integer remanenteCuatrimestralId, Integer remanenteAnualId, InstitucionRequerida institucion,
-            Integer remanenteMensualId, String descripcion, String estado) {
+            Integer remanenteMensualId, String descripcion, String tipo) {
         Email email = new Email();
         for (Usuario userAsignado : usuarioAsignadoList) {
             Bandeja bandeja = new Bandeja();
@@ -107,7 +107,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             }
 
             bandeja.setDescripcion(descripcion);
-            bandeja.setEstado(estado);
+            bandeja.setTipo(tipo);
             bandeja.setLeido(Boolean.FALSE);
             bandeja.setFechaRegistro(new Date());
             bandeja.setUsuarioAsignadoId(userAsignado);

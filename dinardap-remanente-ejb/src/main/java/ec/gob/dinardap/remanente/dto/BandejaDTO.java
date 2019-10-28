@@ -21,7 +21,7 @@ public class BandejaDTO {
     private Integer añoRegistro, mesRegistro, diaRegistro;
     private Integer año, mes, dia;
     private String descripcion;
-    private String estado;
+    private String tipo;
     private Integer bandejaID;
     private Boolean leido;
     private Date fechaLeido;
@@ -120,12 +120,12 @@ public class BandejaDTO {
         this.descripcion = descripcion;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public Integer getBandejaID() {
@@ -159,5 +159,5 @@ public class BandejaDTO {
     public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-    
+
 }

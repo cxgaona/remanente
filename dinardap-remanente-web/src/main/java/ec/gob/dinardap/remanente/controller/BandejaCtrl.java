@@ -46,13 +46,13 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
                 break;
             case "REM-Verificador, ":
                 linkRedireccion = "verificarRemanenteMensual.jsf";
-                if (bandejaSelected.getEstado().equals("RC")) {
+                if (bandejaSelected.getTipo().equals("RC")) {
                     linkRedireccion = "gestionRemanenteCuatrimestral.jsf";
                 }
                 break;
             case "REM-Validador, ":
                 linkRedireccion = "validarRemanenteMensual.jsf";
-                if (bandejaSelected.getEstado().equals("RC")) {
+                if (bandejaSelected.getTipo().equals("RC")) {
                     linkRedireccion = "gestionValidacionRemanenteCuatrimestral.jsf";
                 }
                 break;
