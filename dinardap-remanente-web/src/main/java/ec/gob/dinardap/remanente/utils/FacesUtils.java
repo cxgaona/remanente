@@ -23,4 +23,15 @@ public class FacesUtils {
             return null;
         }
     }
+    
+     public static String generarContraseña() {
+        String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        String claveGenerada = "";
+        int numero;
+        for (Integer i = 0; i < 8; i++) {
+            numero = (int) (Math.random() * 36);
+            claveGenerada = claveGenerada + str.substring(numero, numero + 1);
+        }
+        return claveGenerada;
+    }
 }

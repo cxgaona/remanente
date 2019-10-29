@@ -7,6 +7,7 @@ import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
+import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -164,7 +165,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         String contraseña = "";
         if (usuarioSelected.getEmail() != null && !usuarioSelected.getEmail().isEmpty()) {
             if (restablecer) {
-                contraseña = generarContraseña();
+                contraseña = FacesUtils.generarContraseña();
                 usuarioSelected.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
             }
             if (onCreate) {
@@ -199,17 +200,6 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioSelected = new Usuario();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
-    }
-
-    public String generarContraseña() {
-        String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        String claveGenerada = "";
-        int numero = 0;
-        for (Integer i = 0; i < 8; i++) {
-            numero = (int) (Math.random() * 36);
-            claveGenerada = claveGenerada + str.substring(numero, numero + 1);
-        }
-        return claveGenerada;
     }
 
     public void seleccionarTipoInstitucion() {
