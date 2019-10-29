@@ -22,6 +22,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -41,6 +42,9 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Usuario.findByAdministrador", query = "SELECT u FROM Usuario u WHERE u.administrador = :administrador")
     , @NamedQuery(name = "Usuario.findByEstado", query = "SELECT u FROM Usuario u WHERE u.estado = :estado")})
 public class Usuario implements Serializable {
+
+    @OneToMany(mappedBy = "usuarioId")
+    private List<Respuesta> respuestaList;
 
     private static final long serialVersionUID = 1L;   
     
@@ -241,6 +245,15 @@ public class Usuario implements Serializable {
     @Override
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.Usuario[ usuarioId=" + usuarioId + " ]";
+    }
+
+    @XmlTransient
+    public List<Respuesta> getRespuestaList() {
+        return respuestaList;
+    }
+
+    public void setRespuestaList(List<Respuesta> respuestaList) {
+        this.respuestaList = respuestaList;
     }
 
 }

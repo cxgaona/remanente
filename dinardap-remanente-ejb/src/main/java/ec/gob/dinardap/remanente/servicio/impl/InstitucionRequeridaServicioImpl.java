@@ -139,14 +139,27 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
     @Override
     public List<InstitucionRequerida> getRegistroMixtoList(Integer direccionRegionalID) {
         List<InstitucionRequerida> registrosMixtosList = new ArrayList<InstitucionRequerida>();
-        String[] criteriaNombres = {"direccionRegional.institucionId","tipo"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS,CriteriaTypeEnum.STRING_NOT_EQUALS};
-        Object[] criteriaValores = {direccionRegionalID,"GAD"};
+        String[] criteriaNombres = {"direccionRegional.institucionId", "tipo"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.STRING_NOT_EQUALS};
+        Object[] criteriaValores = {direccionRegionalID, "GAD"};
         String[] orderBy = {"institucionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         registrosMixtosList = findByCriterias(criteria);
         return registrosMixtosList;
+    }
+
+    @Override
+    public List<InstitucionRequerida> getDireccionNacionalList() {
+        List<InstitucionRequerida> dinardapList = new ArrayList<InstitucionRequerida>();
+        String[] criteriaNombres = {"tipo"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {"DINARDAP"};
+        String[] orderBy = {"ruc"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        dinardapList = findByCriterias(criteria);
+        return dinardapList;
     }
 
 }

@@ -41,10 +41,7 @@
                             </p:column>
                             <p:column headerText="Login" sortBy="#{usuario.usuario}" filterBy="#{usuario.usuario}" filterMatchMode="contains">
                                 <h:outputText value="#{usuario.usuario}" />
-                            </p:column>
-                            <p:column headerText="Contraseña" sortBy="#{usuario.contrasena}" filterBy="#{usuario.contrasena}" filterMatchMode="contains" rendered="false">
-                                <h:outputText value="#{usuario.contrasena}" />
-                            </p:column>
+                            </p:column>                            
                             <p:column headerText="Registrador" sortBy="#{usuario.registrador}" width="10%">
                                 <p:selectBooleanCheckbox value="#{usuario.registrador}" disabled="true" />
                             </p:column>                            
@@ -75,9 +72,11 @@
                                          style="width: 70%;"
                                          required="true">
                             <p:ajax listener="#{gestionUsuariosCtrl.seleccionarTipoInstitucion}" update="formUsuarioSelected"/>
+                            <f:selectItem itemLabel="Dirección Nacional" itemValue="Dirección Nacional" />
                             <f:selectItem itemLabel="Dirección Regional" itemValue="Dirección Regional" />
                             <f:selectItem itemLabel="GAD" itemValue="GAD" />
                             <f:selectItem itemLabel="Registro Propiedad / Mercantil" itemValue="Registro Propiedad / Mercantil" />
+
                         </p:selectOneMenu>
 
                         <p:outputLabel for="institucion" value="Institución:" />
@@ -104,13 +103,7 @@
                         <p:outputLabel for="mail" value="Mail:" />
                         <p:inputText id="mail" value="#{gestionUsuariosCtrl.usuarioSelected.email}" style="width: 90%" required="true"> 
                             <p:keyFilter regEx="/[a-z0-9_\.\-@]/i"/>
-                        </p:inputText>
-
-                        <p:outputLabel for="contrasena" value="Contraseña:" />
-                        <p:password id="contrasena" value="#{gestionUsuariosCtrl.usuarioSelected.contrasena}" 
-                                    feedback="true"
-                                    promptLabel="Ingrese la contraseña" weakLabel="Baja"
-                                    goodLabel="Media" strongLabel="Alta" required="true"/>
+                        </p:inputText>                       
 
                         <p:outputLabel value="Perfil:" />
                         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
@@ -123,6 +116,14 @@
 
                             <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.validador}" itemLabel="Validador" disabled="#{gestionUsuariosCtrl.disabledValidador}"/>                            
                             <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.administrador}" itemLabel="Administrador" disabled="#{gestionUsuariosCtrl.disabledAdministrador}"/>
+                        </h:panelGrid>
+
+                        <p:outputLabel value="Restablecer contraseña" />
+                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                            <p:selectBooleanCheckbox id="checkRestablecerClave" 
+                                                     value="#{gestionUsuariosCtrl.restablecer}"
+                                                     disabled="#{gestionUsuariosCtrl.disabledRestablecer}">                                
+                            </p:selectBooleanCheckbox>                            
                         </h:panelGrid>
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        

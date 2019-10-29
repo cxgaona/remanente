@@ -2,6 +2,7 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
@@ -9,6 +10,8 @@ import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -27,9 +30,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Boolean disabledVerificador;
     private Boolean disabledValidador;
     private Boolean disabledAdministrador;
+    private Boolean disabledRestablecer;
 
     private List<Usuario> usuarioActivoList;
     private List<InstitucionRequerida> institucionRequeridaList;
+    private Boolean restablecer;
     private String tituloPagina;
     private Usuario usuarioSelected;
 
@@ -56,6 +61,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledVerificador = Boolean.TRUE;
         disabledValidador = Boolean.TRUE;
         disabledAdministrador = Boolean.TRUE;
+        disabledRestablecer = Boolean.TRUE;
+
+        restablecer = Boolean.FALSE;
 
         //===
         tituloPagina = "Gestión de Usuarios";
@@ -76,11 +84,17 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledVerificador = Boolean.TRUE;
         disabledValidador = Boolean.TRUE;
         disabledAdministrador = Boolean.TRUE;
+        disabledRestablecer = Boolean.TRUE;
+        restablecer = Boolean.TRUE;
         usuarioSelected = new Usuario();
-        usuarioSelected.setValidador(true);
+        usuarioSelected.setAdministrador(Boolean.TRUE);
+        usuarioSelected.setValidador(Boolean.FALSE);
+        usuarioSelected.setRegistrador(Boolean.FALSE);
+        usuarioSelected.setVerificador(Boolean.FALSE);
+
         btnGuardar = "Guardar";
-        tipoInstitucion = "Dirección Regional";
-        institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+        tipoInstitucion = "Dirección Nacional";
+        institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
     }
 
     public void cambioRolReg() {
@@ -109,6 +123,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledVerificador = Boolean.TRUE;
         disabledValidador = Boolean.TRUE;
         disabledAdministrador = Boolean.TRUE;
+        disabledRestablecer = Boolean.FALSE;
+        restablecer = Boolean.FALSE;
         if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
             institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
@@ -144,28 +160,56 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void guardar() {
-        if (onCreate) {
-            String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + usuarioSelected.getContrasena());
-            usuarioSelected.setEstado("A");
-            usuarioSelected.setContrasena(contraseñaActualEncriptada);
-            usuarioServicio.createUsuario(usuarioSelected);
-            usuarioActivoList = new ArrayList<Usuario>();
-            usuarioSelected = new Usuario();
-            usuarioActivoList = usuarioServicio.getUsuariosActivos();
-            onEdit = Boolean.FALSE;
-            onCreate = Boolean.FALSE;
-            renderEdition = Boolean.FALSE;
-        } else if (onEdit) {
-            String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + usuarioSelected.getContrasena());
-            usuarioSelected.setContrasena(contraseñaActualEncriptada);
-            usuarioServicio.editUsuario(usuarioSelected);
-            usuarioActivoList = new ArrayList<Usuario>();
-            usuarioSelected = new Usuario();
-            usuarioActivoList = usuarioServicio.getUsuariosActivos();
-            onEdit = Boolean.FALSE;
-            onCreate = Boolean.FALSE;
-            renderEdition = Boolean.FALSE;
+        String infoMessage = "";
+        String contraseña = "";
+        if (usuarioSelected.getEmail() != null && !usuarioSelected.getEmail().isEmpty()) {
+            if (restablecer) {
+                contraseña = generarContraseña();
+                usuarioSelected.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
+            }
+            if (onCreate) {
+                usuarioSelected.setEstado("A");
+                usuarioServicio.createUsuario(usuarioSelected);
+                infoMessage = "El usuario se creo satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getEmail();
+                onEdit = Boolean.FALSE;
+                onCreate = Boolean.FALSE;
+                renderEdition = Boolean.FALSE;
+            } else if (onEdit) {
+                usuarioServicio.editUsuario(usuarioSelected);
+                infoMessage = "El usuario se actualizó satisfactoriamente.";
+                onEdit = Boolean.FALSE;
+                onCreate = Boolean.FALSE;
+                renderEdition = Boolean.FALSE;
+            }
+            if (restablecer) {
+                Email email = new Email();
+                try {
+                    String mensajeMail = "Su Usuario es: <b>" + usuarioSelected.getUsuario() + "</b><br/>"
+                            + "Su Contraseña es: <b>" + contraseña + "</b>";
+                    email.sendMail(usuarioSelected.getEmail(), "Plataforma REMANENTES", mensajeMail);
+                } catch (Exception ex) {
+                    Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            this.addInfoMessage(infoMessage, "");
+        } else {
+            this.addInfoMessage("Debe ingresar un correo válido", "asd");
         }
+
+        usuarioActivoList = new ArrayList<Usuario>();
+        usuarioSelected = new Usuario();
+        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+    }
+
+    public String generarContraseña() {
+        String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        String claveGenerada = "";
+        int numero = 0;
+        for (Integer i = 0; i < 8; i++) {
+            numero = (int) (Math.random() * 36);
+            claveGenerada = claveGenerada + str.substring(numero, numero + 1);
+        }
+        return claveGenerada;
     }
 
     public void seleccionarTipoInstitucion() {
@@ -202,6 +246,18 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(false);
             usuarioSelected.setRegistrador(false);
+
+            disabledRegistrador = Boolean.TRUE;
+            disabledValidador = Boolean.TRUE;
+            disabledVerificador = Boolean.TRUE;
+            disabledAdministrador = Boolean.TRUE;
+        } else if (tipoInstitucion.equals("Dirección Nacional")) {
+            tipoInstitucion = "Dirección Nacional";
+            institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
+            usuarioSelected.setValidador(Boolean.FALSE);
+            usuarioSelected.setAdministrador(Boolean.TRUE);
+            usuarioSelected.setVerificador(Boolean.FALSE);
+            usuarioSelected.setRegistrador(Boolean.FALSE);
 
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
@@ -315,6 +371,22 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     public void setDisabledAdministrador(Boolean disabledAdministrador) {
         this.disabledAdministrador = disabledAdministrador;
+    }
+
+    public Boolean getDisabledRestablecer() {
+        return disabledRestablecer;
+    }
+
+    public void setDisabledRestablecer(Boolean disabledRestablecer) {
+        this.disabledRestablecer = disabledRestablecer;
+    }
+
+    public Boolean getRestablecer() {
+        return restablecer;
+    }
+
+    public void setRestablecer(Boolean restablecer) {
+        this.restablecer = restablecer;
     }
 
 }
