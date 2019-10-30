@@ -23,15 +23,22 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
     private String contraseñaNueva1;
     private String contraseñaNueva2;
 
+    private Boolean updateContraseña;
+
     @EJB
     private UsuarioServicio usuarioServicio;
 
     @PostConstruct
     protected void init() {
+        updateContraseña = Boolean.FALSE;
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         usuario = new Usuario();
         usuario = usuarioServicio.findByPk(usuarioId);
         tituloPagina = "Usuario: " + usuario.getNombre();
+    }
+
+    public void activarUpdateContraseña() {
+        System.out.println("updateContraseña: " + updateContraseña);
     }
 
     public void actualizarContraseña() {
@@ -48,11 +55,11 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
             addErrorMessage("2", "Contraseña actual incorrecta", "");
         }
     }
-    
-    public void cancelar(){
-        contraseñaActual="";
-        contraseñaNueva1="";
-        contraseñaNueva2="";
+
+    public void cancelar() {
+        contraseñaActual = "";
+        contraseñaNueva1 = "";
+        contraseñaNueva2 = "";
     }
 
     public Usuario getUsuario() {
@@ -93,6 +100,14 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
 
     public void setContraseñaNueva2(String contraseñaNueva2) {
         this.contraseñaNueva2 = contraseñaNueva2;
+    }
+
+    public Boolean getUpdateContraseña() {
+        return updateContraseña;
+    }
+
+    public void setUpdateContraseña(Boolean updateContraseña) {
+        this.updateContraseña = updateContraseña;
     }
 
 }

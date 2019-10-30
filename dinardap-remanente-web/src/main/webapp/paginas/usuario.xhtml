@@ -9,7 +9,7 @@
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - Usuario: #{usuarioCtrl.usuario.usuario}</h1>            
             <h:form id="formUsuario" >
-                <b:panel style="width: 50%" rendered="true">
+                <b:panel style="width: 90%" rendered="true">
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
                         <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
                         <p:inputText id="tipoInstitucion" value="#{usuarioCtrl.usuario.institucionId.tipo eq 'REGIONAL' ? 'Dirección Regional':usuarioCtrl.usuario.institucionId.tipo eq 'GAD' ? 'GAD': 'Registro Mercantil / Propiedad' }" style="width: 90%" 
@@ -22,26 +22,43 @@
                         <p:inputText id="nombre" value="#{usuarioCtrl.usuario.nombre}" style="width: 90%" disabled="true"/>
 
                         <p:outputLabel for="correo" value="Correo:" />
-                        <p:inputText id="correo" value="#{usuarioCtrl.usuario.email}" style="width: 90%" disabled="true"/>
+                        <p:inputText id="correo" value="#{usuarioCtrl.usuario.email}" style="width: 90%" disabled="true"/>                        
 
                         <p:outputLabel for="contrasenaActual" value="Contraseña actual:" />
                         <p:password id="contrasenaActual" 
-                                    value="#{usuarioCtrl.contraseñaActual}" 
+                                    value="#{usuarioCtrl.contraseñaActual}"
+                                    required="true"
                                     feedback="false"/>
+                        <p:outputLabel value="Preguntas de Seguridad" />
+                        <p:outputLabel value="tabla" />
 
-                        <p:outputLabel for="contrasenaNueva1" value="Contraseña nueva:" />
+                        <p:outputLabel value="Actualizar contraseña" />
+                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                            <p:selectBooleanCheckbox id="checkRestablecerClave" 
+                                                     value="#{usuarioCtrl.updateContraseña}">
+                                <p:ajax update="formUsuario" 
+                                        listener="#{usuarioCtrl.activarUpdateContraseña}" />
+                            </p:selectBooleanCheckbox>                            
+                        </h:panelGrid>
+
+                        
+                          
+
+                        <p:outputLabel for="contrasenaNueva1" value="Contraseña nueva:"  rendered="#{usuarioCtrl.updateContraseña}"/>
                         <p:password id="contrasenaNueva1" value="#{usuarioCtrl.contraseñaNueva1}" 
                                     feedback="true"
                                     promptLabel="Ingrese la contraseña" weakLabel="Baja"
                                     goodLabel="Media" strongLabel="Alta" 
                                     match="contrasenaNueva2"
-                                    required="true"/>
-                        <p:outputLabel for="contrasenaNueva2" value="Repita la contraseña:" />
+                                    required="false"
+                                    rendered="#{usuarioCtrl.updateContraseña}"/>
+                        <p:outputLabel for="contrasenaNueva2" value="Repita la contraseña:" rendered="#{usuarioCtrl.updateContraseña}"/>
                         <p:password id="contrasenaNueva2" value="#{usuarioCtrl.contraseñaNueva2}" 
                                     feedback="true"
                                     promptLabel="Ingrese la contraseña" weakLabel="Baja"
                                     goodLabel="Media" strongLabel="Alta" 
-                                    required="true"/>
+                                    required="false"
+                                    rendered="#{usuarioCtrl.updateContraseña}"/>
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
                         <p:commandButton value="Actualizar" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" update="msgMensajes" action="#{usuarioCtrl.actualizarContraseña}"  />
@@ -49,6 +66,8 @@
                     </b:panelGrid>
                 </b:panel>
             </h:form>
+
+
         </ui:define>
     </ui:composition>
 </html>
