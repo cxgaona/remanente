@@ -41,4 +41,19 @@ public class RespuestaServicioImpl extends GenericServiceImpl<Respuesta, Integer
         return respuestaList;
     }
 
+    @Override
+    public Respuesta getRespuestaByUsuario(Integer idUsuario, Integer idPregunta) {
+        Respuesta respuesta = new Respuesta();
+        String[] criteriaNombres = {"usuarioId", "preguntaId", "estado"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {idUsuario, idPregunta, "A"};
+        String[] orderBy = {"respuestaId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        if (findByCriterias(criteria).size() != 0) {
+            respuesta = findByCriterias(criteria).get(0);
+        }
+        return respuesta;
+    }
+
 }

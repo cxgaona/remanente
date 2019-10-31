@@ -10,4 +10,6 @@ import java.util.List;
 public interface RespuestaServicio extends GenericService<Respuesta, Integer> {
 
     public List<Respuesta> getRespuestasActivas(Integer usuarioId);
+
+    public Respuesta getRespuestaByUsuario(Integer idUsuario, Integer idPregunta);
 }
