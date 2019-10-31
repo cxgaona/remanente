@@ -4,8 +4,12 @@ import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
+import ec.gob.dinardap.remanente.modelo.Pregunta;
+import ec.gob.dinardap.remanente.modelo.Respuesta;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
+import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.Serializable;
@@ -35,6 +39,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     private List<Usuario> usuarioActivoList;
     private List<InstitucionRequerida> institucionRequeridaList;
+    private List<Pregunta> preguntaList;
     private Boolean restablecer;
     private String tituloPagina;
     private Usuario usuarioSelected;
@@ -51,6 +56,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
+
+    @EJB
+    private PreguntaServicio preguntaServicio;
+
+    @EJB
+    private RespuestaServicio respuestaServicio;
 
     @PostConstruct
     protected void init() {
@@ -87,7 +98,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledAdministrador = Boolean.TRUE;
         disabledRestablecer = Boolean.TRUE;
         restablecer = Boolean.TRUE;
+
+        institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
         usuarioSelected = new Usuario();
+        usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
         usuarioSelected.setAdministrador(Boolean.TRUE);
         usuarioSelected.setValidador(Boolean.FALSE);
         usuarioSelected.setRegistrador(Boolean.FALSE);
@@ -95,7 +109,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
         btnGuardar = "Guardar";
         tipoInstitucion = "Dirección Nacional";
-        institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
+
     }
 
     public void cambioRolReg() {
@@ -171,6 +185,16 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             if (onCreate) {
                 usuarioSelected.setEstado("A");
                 usuarioServicio.createUsuario(usuarioSelected);
+                preguntaList = new ArrayList<Pregunta>();
+                preguntaList = preguntaServicio.getPreguntasActivas();
+                for (Pregunta p : preguntaList) {
+                    Respuesta respuesta = new Respuesta();
+                    respuesta.setUsuarioId(usuarioSelected);
+                    respuesta.setPreguntaId(p);
+                    respuesta.setRespuesta("");
+                    respuesta.setEstado("A");
+                    respuestaServicio.create(respuesta);
+                }
                 infoMessage = "El usuario se creo satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getEmail();
                 onEdit = Boolean.FALSE;
                 onCreate = Boolean.FALSE;
@@ -244,6 +268,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         } else if (tipoInstitucion.equals("Dirección Nacional")) {
             tipoInstitucion = "Dirección Nacional";
             institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
+            usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
             usuarioSelected.setValidador(Boolean.FALSE);
             usuarioSelected.setAdministrador(Boolean.TRUE);
             usuarioSelected.setVerificador(Boolean.FALSE);

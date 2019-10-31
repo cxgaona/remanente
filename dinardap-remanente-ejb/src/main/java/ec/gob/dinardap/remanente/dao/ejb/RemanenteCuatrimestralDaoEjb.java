@@ -69,6 +69,7 @@ public class RemanenteCuatrimestralDaoEjb extends RemanenteGenericDao<RemanenteC
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fecha);
         Query query = em.createQuery("SELECT ra FROM RemanenteAnual ra WHERE ra.anio = " + calendar.get(Calendar.YEAR));
+        Query query1 = em.createQuery("SELECT ra FROM Respuesta ra WHERE ra.usuarioId.usuarioId");
         List<RemanenteAnual> ras = new ArrayList<RemanenteAnual>();
         ras = query.getResultList();
         RemanenteAnual ra = new RemanenteAnual();

@@ -9,6 +9,5 @@ import java.util.List;
 @Local
 public interface RespuestaServicio extends GenericService<Respuesta, Integer> {
 
-    public Respuesta getRespuestaByUsuario(Integer idUsuario, Integer idPregunta);    
-
+    public List<Respuesta> getRespuestasActivas(Integer usuarioId);
 }
