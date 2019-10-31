@@ -4,8 +4,10 @@ import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.Pregunta;
+import ec.gob.dinardap.remanente.modelo.Respuesta;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
+import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import java.io.Serializable;
@@ -30,11 +32,14 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
     private Boolean desactivarBtnRestaurar, displaybtnLogin;
     private Pregunta preguntaSeguridad;
     private List<Pregunta> preguntasActivas;
+    private Respuesta respuestaUser;
 
     @EJB
     private UsuarioServicio usuarioServicio;
     @EJB
     private PreguntaServicio preguntaServicio;
+    @EJB
+    private RespuestaServicio respuestaServicio;
 
     @PostConstruct
     protected void init() {
@@ -53,26 +58,36 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
     public void recuperarContrasena() {
         u = usuarioServicio.getUsuarioByUsername(usuario);
         if (u.getUsuarioId() != null) {
-            if (u.getEmail() != null && !u.getEmail().isEmpty()) {
-                encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + FacesUtils.generarContraseña());
-                u.setContrasena(encriptada);
-                usuarioServicio.editUsuario(u);
-                mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
-                Email email = new Email();
-                try {
-                    String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
-                    email.sendMail(u.getEmail(), "Restaurar clave REMANENTES", mensajeMail);
-                } catch (Exception ex) {
-                    Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            respuestaUser = respuestaServicio.getRespuestaByUsuario(u.getUsuarioId(), preguntaSeguridad.getPreguntaId());
+            if (respuesta.equals(respuestaUser.getRespuesta())) {
+                if (u.getEmail() != null && !u.getEmail().isEmpty()) {
+                    claveGenerada = FacesUtils.generarContraseña();
+                    encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + claveGenerada);
+                    u.setContrasena(encriptada);
+                    usuarioServicio.editUsuario(u);
+                    mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
+                    Email email = new Email();
+                    try {
+                        String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
+                        email.sendMail(u.getEmail(), "Restaurar clave REMANENTES", mensajeMail);
+                    } catch (Exception ex) {
+                        Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    mensaje = "Su usuario no tiene registrado un correo electrónico. <br/>"
+                            + "Por favor contáctese con el administrador de la plataforma";
                 }
+                desactivarBtnRestaurar = Boolean.TRUE;
+                displaybtnLogin = Boolean.TRUE;
             } else {
-                mensaje = "Su usuario no tiene registrado un correo electrónico. <br/>"
-                        + "Por favor contáctese con el administrador de la plataforma";
+                mensaje = "Datos incorrectos! Por favor verificar.";
+                desactivarBtnRestaurar = Boolean.FALSE;
+                displaybtnLogin = Boolean.FALSE;
             }
-            desactivarBtnRestaurar = Boolean.TRUE;
-            displaybtnLogin = Boolean.TRUE;
+
         } else {
-            mensaje = "El usuario ingresado no existe! Por favor verificar.";
+            System.out.println("respuestas diferentes");
+            mensaje = "Datos incorrectos! Por favor verificar.";
             desactivarBtnRestaurar = Boolean.FALSE;
             displaybtnLogin = Boolean.FALSE;
         }
@@ -172,5 +187,21 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
 
     public void setRespuesta(String respuesta) {
         this.respuesta = respuesta;
+    }
+
+    public Pregunta getPreguntaSeguridad() {
+        return preguntaSeguridad;
+    }
+
+    public void setPreguntaSeguridad(Pregunta preguntaSeguridad) {
+        this.preguntaSeguridad = preguntaSeguridad;
+    }
+
+    public Respuesta getRespuestaUser() {
+        return respuestaUser;
+    }
+
+    public void setRespuestaUser(Respuesta respuestaUser) {
+        this.respuestaUser = respuestaUser;
     }
 }

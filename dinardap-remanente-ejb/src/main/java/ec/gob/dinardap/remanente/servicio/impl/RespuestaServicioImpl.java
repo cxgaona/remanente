@@ -1,0 +1,45 @@
+package ec.gob.dinardap.remanente.servicio.impl;
+
+import ec.gob.dinardap.persistence.constante.CriteriaTypeEnum;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import ec.gob.dinardap.persistence.dao.GenericDao;
+import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
+import ec.gob.dinardap.persistence.util.Criteria;
+import ec.gob.dinardap.remanente.dao.RespuestaDao;
+import ec.gob.dinardap.remanente.modelo.Pregunta;
+import ec.gob.dinardap.remanente.modelo.Respuesta;
+import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
+import java.util.ArrayList;
+import java.util.List;
+
+@Stateless(name = "RespuestaServicio")
+public class RespuestaServicioImpl extends GenericServiceImpl<Respuesta, Integer> implements RespuestaServicio {
+
+    @EJB
+    private RespuestaDao respuestaDao;
+
+    @Override
+    public GenericDao<Respuesta, Integer> getDao() {
+        return respuestaDao;
+    }
+
+    @Override
+    public Respuesta getRespuestaByUsuario(Integer idUsuario, Integer idPregunta) {
+        Respuesta respuesta = new Respuesta();
+        String[] criteriaNombres = {"usuarioId","preguntaId","estado"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {idUsuario, idPregunta, "A"};
+        String[] orderBy = {"respuestaId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        if (findByCriterias(criteria).size() != 0) {
+            respuesta = findByCriterias(criteria).get(0);
+        }
+        return respuesta;
+    }
+
+    
+
+}
