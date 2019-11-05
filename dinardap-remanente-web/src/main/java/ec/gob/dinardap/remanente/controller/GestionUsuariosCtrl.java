@@ -45,10 +45,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Usuario usuarioSelected;
 
     private String nombre;
-
-//    private Boolean formUsuarioSelectedActivated;
     private String btnGuardar;
-
     private String tipoInstitucion;
 
     @EJB
@@ -77,12 +74,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
         restablecer = Boolean.FALSE;
 
-        //===
         tituloPagina = "Gestión de Usuarios";
         nombre = "";
         btnGuardar = "";
         tipoInstitucion = "";
-        //===
+
         institucionRequeridaList = new ArrayList<InstitucionRequerida>();
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
@@ -175,19 +171,16 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void guardar() {
-        String infoMessage = "";
         String contraseña = "";
+        Usuario userExistente = new Usuario();
+        userExistente = usuarioServicio.getUsuarioByUsername(usuarioSelected.getUsuario());
         if (usuarioSelected.getEmail() != null && !usuarioSelected.getEmail().isEmpty()) {
             if (restablecer) {
                 contraseña = FacesUtils.generarContraseña();
                 usuarioSelected.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
             }
-            Usuario userExistente = new Usuario();
-            userExistente = usuarioServicio.getUsuarioByUsername(usuarioSelected.getUsuario());
-            System.out.println("userExistente " + userExistente.getUsuarioId());
-            if (userExistente == null) {
-                System.out.println("entro al null");
-                if (onCreate) {
+            if (onCreate) {
+                if (userExistente.getUsuarioId() == null) {
                     usuarioSelected.setEstado("A");
                     usuarioServicio.createUsuario(usuarioSelected);
                     preguntaList = new ArrayList<Pregunta>();
@@ -200,40 +193,55 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                         respuesta.setEstado("A");
                         respuestaServicio.create(respuesta);
                     }
-                    infoMessage = "El usuario se creo satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getEmail();
-                    onEdit = Boolean.FALSE;
-                    onCreate = Boolean.FALSE;
-                    renderEdition = Boolean.FALSE;
-                } else if (onEdit) {
-                    usuarioServicio.editUsuario(usuarioSelected);
-                    infoMessage = "El usuario se actualizó satisfactoriamente.";
-                    onEdit = Boolean.FALSE;
-                    onCreate = Boolean.FALSE;
-                    renderEdition = Boolean.FALSE;
-                }
-                if (restablecer) {
-                    Email email = new Email();
-                    try {
-                        String mensajeMail = "Su Usuario es: <b>" + usuarioSelected.getUsuario() + "</b><br/>"
-                                + "Su Contraseña es: <b>" + contraseña + "</b>";
-                        email.sendMail(usuarioSelected.getEmail(), "Plataforma REMANENTES", mensajeMail);
-                    } catch (Exception ex) {
-                        Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    if (restablecer) {
+                        correoRestablecerContraseña(contraseña);
+                        this.addInfoMessage("El usuario se creó satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getEmail(), "");
                     }
+                    usuarioActivoList = new ArrayList<Usuario>();
+                    usuarioSelected = new Usuario();
+                    usuarioActivoList = usuarioServicio.getUsuariosActivos();
+
+                    onEdit = Boolean.FALSE;
+                    onCreate = Boolean.FALSE;
+                    renderEdition = Boolean.FALSE;
+                } else {
+                    this.addErrorMessage("1", "El usuario ingresado ya existe", "");
                 }
-                this.addInfoMessage(infoMessage, "");
-            } else {
-                System.out.println("en el mensaje de error");
-                this.addErrorMessage("1","El usuario ingresado ya existe", "");
+            } else if (onEdit) {
+                if (userExistente.getUsuarioId() == null || userExistente.getUsuarioId().equals(usuarioSelected.getUsuarioId())) {
+                    usuarioServicio.editUsuario(usuarioSelected);
+                    this.addInfoMessage("El usuario se actualizó satisfactoriamente.", "");
+                    if (restablecer) {                        
+                        correoRestablecerContraseña(contraseña);
+                        this.addInfoMessage("La contraseña actualizada se ha enviado a " + usuarioSelected.getEmail(), "");
+                    }
+
+                    usuarioActivoList = new ArrayList<Usuario>();
+                    usuarioSelected = new Usuario();
+                    usuarioActivoList = usuarioServicio.getUsuariosActivos();
+
+                    onEdit = Boolean.FALSE;
+                    onCreate = Boolean.FALSE;
+                    renderEdition = Boolean.FALSE;
+                } else {
+                    this.addErrorMessage("1", "El usuario ingresado ya existe", "");
+                }
             }
-
         } else {
-            this.addInfoMessage("Debe ingresar un correo válido", "");
+            this.addErrorMessage("1", "Debe ingresar un correo válido", "");
         }
+    }
 
-        usuarioActivoList = new ArrayList<Usuario>();
-        usuarioSelected = new Usuario();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+    private void correoRestablecerContraseña(String contraseña) {
+        Email email = new Email();
+        try {
+            String mensajeMail = "Su Usuario es: <b>" + usuarioSelected.getUsuario() + "</b><br/>"
+                    + "Su Contraseña es: <b>" + contraseña + "</b>";
+            email.sendMail(usuarioSelected.getEmail(), "Plataforma REMANENTES", mensajeMail);
+            System.out.println("Correo Enviado");
+        } catch (Exception ex) {
+            Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void seleccionarTipoInstitucion() {

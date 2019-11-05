@@ -43,9 +43,16 @@
                             <p:column headerText="Respuesta">
                                 <p:cellEditor>
                                     <f:facet name="output"><h:outputText value="#{respuesta.respuesta}" /></f:facet>
-                                    <f:facet name="input"><p:inputText id="respuesta" value="#{respuesta.respuesta}" maxlength="100" style="width:100%" onkeypress="if (event.keyCode == 13) {
-                                                return false;
-                                            }"/></f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText id="respuesta" 
+                                                     value="#{respuesta.respuesta}" 
+                                                     maxlength="100" 
+                                                     style="width:100%" 
+                                                     required="true"
+                                                     onkeypress="if (event.keyCode == 13) {
+                                                                 return false;
+                                                             }"/>
+                                    </f:facet>
                                 </p:cellEditor>
                             </p:column>
                             <p:column style="width:32px">

@@ -57,41 +57,35 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
     }
 
     public void guardarCambios() {
+        Boolean respuestasVacias = Boolean.FALSE;
         String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaActual);
         if (usuario.getContrasena().equals(contraseñaActualEncriptada)) {
             for (Respuesta r : respuestaList) {
                 respuestaServicio.update(r);
-            }
-            if (updateContraseña) {
-                if (contraseñaNueva1.equals(contraseñaNueva2)) {
-                    usuario.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaNueva1));
-                    usuarioServicio.editUsuario(usuario);
-                    addInfoMessage("Contraseña Actualizada satisfactoriamente", "");
-                } else {
-                    addErrorMessage("1", "La nueva contraseña no coincide", "");
+                if (r.getRespuesta().isEmpty()) {
+                    respuestasVacias = Boolean.TRUE;
                 }
-            } else {
-                addInfoMessage("Información actualizada satisfactoriamente", "");
             }
-            usuario = new Usuario();
-            respuestaList = new ArrayList<Respuesta>();
-            usuario = usuarioServicio.findByPk(usuarioId);
-            respuestaList = respuestaServicio.getRespuestasActivas(usuarioId);
-            contraseñaActual = "";
-        } else {
-            addErrorMessage("2", "Contraseña actual incorrecta", "");
-        }
-    }
-
-    public void actualizarContraseña() {
-        String contraseñaActualEncriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaActual);
-        if (usuario.getContrasena().equals(contraseñaActualEncriptada)) {
-            if (contraseñaNueva1.equals(contraseñaNueva2)) {
-                usuario.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaNueva1));
-                usuarioServicio.editUsuario(usuario);
-                addInfoMessage("Contraseña Actualizada satisfactoriamente", "");
+            if (!respuestasVacias) {
+                if (updateContraseña) {
+                    if (contraseñaNueva1.equals(contraseñaNueva2)) {
+                        usuario.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaNueva1));
+                        usuarioServicio.editUsuario(usuario);
+                        addInfoMessage("Información actualizada satisfactoriamente", "");
+                        addInfoMessage("Contraseña Actualizada satisfactoriamente", "");
+                    } else {
+                        addErrorMessage("1", "La nueva contraseña no coincide", "");
+                    }
+                } else {
+                    addInfoMessage("Información actualizada satisfactoriamente", "");
+                }
+                usuario = new Usuario();
+                respuestaList = new ArrayList<Respuesta>();
+                usuario = usuarioServicio.findByPk(usuarioId);
+                respuestaList = respuestaServicio.getRespuestasActivas(usuarioId);
+                contraseñaActual = "";
             } else {
-                addErrorMessage("1", "La nueva contraseña no coincide", "");
+                addErrorMessage("1", "Es necesario responder todas las preguntas de seguridad", "");
             }
         } else {
             addErrorMessage("2", "Contraseña actual incorrecta", "");
