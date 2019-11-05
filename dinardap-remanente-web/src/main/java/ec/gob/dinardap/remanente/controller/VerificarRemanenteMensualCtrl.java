@@ -282,7 +282,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         //ENVIO DE NOTIFICACION//
         institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Validador", "REM-Verificador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Validador", "REM-Verificador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
         String mensajeNotificacion = "Se le asigno la Validación del Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
@@ -373,7 +373,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         //ENVIO DE NOTIFICACION//
         institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Registrador", "REM-Verificador", 391, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Registrador", "REM-Verificador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
         String mensajeNotificacion = "Se le ha reasignado el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " con estado RECHAZADO.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),

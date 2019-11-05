@@ -263,7 +263,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
             institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
             usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                    "REM-Validador", "REM-Verificador", 391, remanenteCuatrimestralSelected);
+                    "REM-Validador", "REM-Verificador", 1, remanenteCuatrimestralSelected);
             String mensajeNotificacion = "Se ha subido el informe del Remanente Cuatrimestral suscrito correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
             bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                     remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),

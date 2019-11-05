@@ -263,7 +263,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
             Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
             institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
             usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                    "REM-Verificador", "REM-Validador", 391, remanenteCuatrimestralSelected);
+                    "REM-Verificador", "REM-Validador", 1, remanenteCuatrimestralSelected);
             String mensajeNotificacion = "Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
             bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                     remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
