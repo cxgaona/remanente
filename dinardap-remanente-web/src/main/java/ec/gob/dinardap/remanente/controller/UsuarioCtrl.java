@@ -46,14 +46,6 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
         usuario = usuarioServicio.findByPk(usuarioId);
         respuestaList = respuestaServicio.getRespuestasActivas(usuarioId);
         tituloPagina = "Usuario: " + usuario.getNombre();
-        for (Respuesta p : respuestaList) {
-            System.out.println("Pregunta: " + p.getPreguntaId().getPregunta());
-            System.out.println("Pregunta: " + p.getRespuesta());
-        }
-    }
-
-    public void activarUpdateContraseña() {
-        System.out.println("updateContraseña: " + updateContraseña);
     }
 
     public void guardarCambios() {

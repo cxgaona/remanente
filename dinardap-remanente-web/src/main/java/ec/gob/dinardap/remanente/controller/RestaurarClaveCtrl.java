@@ -86,7 +86,6 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
             }
 
         } else {
-            System.out.println("respuestas diferentes");
             mensaje = "Datos incorrectos! Por favor verificar.";
             desactivarBtnRestaurar = Boolean.FALSE;
             displaybtnLogin = Boolean.FALSE;

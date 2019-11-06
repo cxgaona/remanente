@@ -506,7 +506,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
                 : remanenteCuatrimestralSelected.getCuatrimestre().equals(2) ? "Agosto"
                 : remanenteCuatrimestralSelected.getCuatrimestre().equals(3) ? "Diciembre" : "Sin mes";
         String path = FacesUtils.getPath() + "/resource/images/";
-        System.out.println("path = " + path);
         parametros.put("realPath", path);
         parametros.put("cuatrimestreAnio", "CUATRIMESTRE " + cuatrimestre + " AÑO: " + remanenteCuatrimestralSelected.getRemanenteAnual().getAnio());
         parametros.put("mes1", mes1);
