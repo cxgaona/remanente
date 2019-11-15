@@ -7,24 +7,6 @@
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
-            <p:dialog header = "Selección de Archivo... "
-                      id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
-                <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
-                    <p:fileUpload
-                        value="#{validarRemanenteMensualCtrl.file}"
-                        style="width:100%"
-                        mode="advanced"
-                        dragDropSupport="true"
-                        sizeLimit="9000000"
-                        allowTypes="/(\.|\/)(pdf)$/"
-                        label=""
-                        uploadLabel=""
-                        cancelLabel=""
-                        fileUploadListener="#{validarRemanenteMensualCtrl.handleFileUploadRPropiedad}"                        
-                        oncomplete="onCellEdit();"/>
-                </h:form>
-            </p:dialog>
-
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Listado de estados del Remanentes" 
                       modal="true"
@@ -116,10 +98,10 @@
                             Gastos por Nómina
                         </f:facet>                        
                         <p:column headerText="Nombre" 
-                                  sortBy="#{nomina.nomNombres}" 
-                                  filterBy="#{nomina.nomNombres}" 
+                                  sortBy="#{nomina.nombre}" 
+                                  filterBy="#{nomina.nombre}" 
                                   filterMatchMode="contains">
-                            <h:outputText value="#{nomina.nomNombres}"/>                            
+                            <h:outputText value="#{nomina.nombre}"/>                            
                         </p:column>
                         <p:column headerText="Cargo"
                                   sortBy="#{nomina.cargo}" 

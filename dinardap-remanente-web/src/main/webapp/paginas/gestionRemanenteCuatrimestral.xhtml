@@ -39,18 +39,28 @@
                             </p:column>
                             <p:column headerText="Informe Cuatrimestral" width="20%">                                
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeRemanenteUrl}" 
-                                       style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInfRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteCuatrimestralCtrl.visualizarArchivoInfRemanenteCuatrimestral()}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeRemanenteUrl}" /> 
+                                    </h:commandLink>
                                 </center>
                             </p:column>
                             <p:column headerText="Informe Técnico" width="20%">
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeTecnicoUrl}" 
-                                       style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInfTecRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteCuatrimestralCtrl.visualizarArchivoInfTecRemanenteCuatrimestral()}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeTecnicoUrl}" /> 
+                                    </h:commandLink>
                                 </center>
                             </p:column>                            
                         </p:dataTable>
@@ -72,11 +82,11 @@
                                 uploadLabel=""
                                 cancelLabel=""                                
                                 oncomplete="onCellEdit();"
-                                fileUploadListener="#{remanenteCuatrimestralCtrl.handleFileUploadInformeCuatrimestral}"
+                                fileUploadListener="#{remanenteCuatrimestralCtrl.uploadInformeCuatrimestral}"
                                 update="formRemanenteCuatrimestral"/>
                         </b:panelGrid>
 
-                    </h:panelGrid>                    
+                    </h:panelGrid>      
                 </b:panel>                
             </h:form> 
 

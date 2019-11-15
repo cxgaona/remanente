@@ -71,18 +71,28 @@
                             </p:column>
                             <p:column headerText="Informe Cuatrimestral" width="20%">                                
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeRemanenteUrl}" 
-                                       style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInfRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{adminRemanenteCuatrimestralCtrl.visualizarArchivoInfRemanenteCuatrimestral()}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{adminRemanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeRemanenteUrl}" /> 
+                                    </h:commandLink>                                   
                                 </center>
                             </p:column>
                             <p:column headerText="Informe Técnico" width="20%">                                
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeTecnicoUrl}" 
-                                       style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInfTecRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{adminRemanenteCuatrimestralCtrl.visualizarArchivoInfTecRemanenteCuatrimestral}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{adminRemanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeTecnicoUrl}" /> 
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>                            
                         </p:dataTable>
@@ -236,35 +246,35 @@
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(1)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(2)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(3)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(4)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(5)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>

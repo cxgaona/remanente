@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -14,9 +16,9 @@ import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
-import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -44,8 +46,6 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
-    private UploadedFile file;
-    private UploadedFile fileSolicitud;
     private String tituloPagina;
     private String nombreInstitucion;
     private Integer año;
@@ -55,6 +55,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private Integer institucionId;
     private Integer usuarioId;
     private String tituloDetalleDlg;
+    private String rutaArchivo;
     private InstitucionRequerida institucionNotificacion;
     private List<Usuario> usuarioListNotificacion;
 
@@ -75,6 +76,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     private Boolean displayUploadEdit;
     private Boolean displaySolicitud;
 
+    private SftpDto sftpDto;
+
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
@@ -93,8 +96,13 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
     @EJB
     private UsuarioServicio usuarioServicio;
 
+    @EJB
+    private ParametroServicio parametroServicio;
+
     @PostConstruct
     protected void init() {
+
+        sftpDto = new SftpDto();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         tituloPagina = "Gestión Remanente Mensual";
@@ -276,7 +284,43 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         }
     }
 
-    public void rowTransaccionEditCancel() {
+    public void visualizarArchivoTransaccion() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = transaccionServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    public void visualizarArchivoSolicitudCambio() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteMensualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    public void visualizarArchivoInformeSolicitudCambio() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteMensualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
     }
 
     public void completarRemanenteMensual() {
@@ -307,36 +351,32 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         //FIN ENVIO//
     }
 
-    public void handleFileUploadRPropiedad(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
+    public void uploadTransaccion(FileUploadEvent event) {
         try {
+            UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/transacciones/";
-            String realPath = path + transaccionSelected.getTransaccionId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            transaccionSelected.setRespaldoUrl("/archivos/transacciones/" + transaccionSelected.getTransaccionId() + ".pdf");
-            transaccionServicio.editTransaccion(transaccionSelected);
-            PrimeFaces.current().executeScript("PF('transaccionRPropiedadDlg').hide()");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat(transaccionSelected.getTransaccionId().toString()).concat(".pdf");
+            sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(realPath));
+            sftpDto.setArchivo(fileByte);
+            transaccionSelected.setRespaldoUrl(realPath);
+            transaccionServicio.editTransaccion(transaccionSelected, sftpDto);
+            fileByte = null;
+            PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void handleFileUploadSolicitud(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
+    public void uploadSolicitud(FileUploadEvent event) {
         try {
+            UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/solicitudCambio/";
-            String realPath = path + "sc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            remanenteMensualSelected.setSolicitudCambioUrl("/archivos/solicitudCambio/" + "sc_" + remanenteMensualSelected.getRemanenteMensualId() + ".pdf");
-            remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("sc_" + remanenteMensualSelected.getRemanenteMensualId().toString()).concat(".pdf");
+            sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_SOLICITUD_CAMBIO.name()).getValor().concat(realPath));
+            sftpDto.setArchivo(fileByte);
+            remanenteMensualSelected.setSolicitudCambioUrl(realPath);
+            remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected, sftpDto);
+            fileByte = null;
 
             EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
             Usuario u = new Usuario();
@@ -539,14 +579,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         this.año = año;
     }
 
-    public UploadedFile getFile() {
-        return file;
-    }
-
-    public void setFile(UploadedFile file) {
-        this.file = file;
-    }
-
     public List<Transaccion> getTransaccionList() {
         return transaccionList;
     }
@@ -609,6 +641,14 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setEgresoFacturaList(List<FacturaPagada> egresoFacturaList) {
         this.egresoFacturaList = egresoFacturaList;
+    }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
 }

@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -14,9 +16,10 @@ import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -61,6 +64,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private Integer usuarioId;
     private String tituloPagina;
     private String nombreInstitucion;
+    private String rutaArchivo;
     private Integer año;
     private RemanenteCuatrimestral remanenteCuatrimestralSelected;
     private BigDecimal totalIngRPropiedad;
@@ -76,6 +80,8 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
 
     private Boolean displayUploadInformeCuatrimestral;
 
+    private SftpDto sftpDto;
+
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
     @EJB
@@ -88,6 +94,8 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private BandejaServicio bandejaServicio;
     @EJB
     private UsuarioServicio usuarioServicio;
+    @EJB
+    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
@@ -101,6 +109,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
         transaccionRegistrosList = new ArrayList<Row>();
         transaccionEgresosList = new ArrayList<Row>();
+        sftpDto = new SftpDto();
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
@@ -226,17 +235,17 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         return rms;
     }
 
-    public void handleFileUploadInformeCuatrimestral(FileUploadEvent event) {
+    public void uploadInformeCuatrimestral(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         try {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/informeRemanenteCuatrimestral/";
-            String realPath = path + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            remanenteCuatrimestralSelected.setInformeRemanenteUrl("/archivos/informeRemanenteCuatrimestral/" + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf");
-            remanenteCuatrimestralServicio.update(remanenteCuatrimestralSelected);
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId()).concat(".pdf");
+            sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(realPath));
+            sftpDto.setArchivo(fileByte);
+            remanenteCuatrimestralSelected.setInformeRemanenteUrl(realPath);
+            remanenteCuatrimestralServicio.editRemanenteCuatrimestral(remanenteCuatrimestralSelected, sftpDto);
+            fileByte = null;
+
             EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
             Usuario u = new Usuario();
             u.setUsuarioId(usuarioId);
@@ -246,7 +255,6 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             erc.setDescripcion("InformeSubido");
             estadoRemanenteCuatrimestralServicio.create(erc);
             displayUploadInformeCuatrimestral = Boolean.FALSE;
-//            remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
             //ENVIO DE NOTIFICACION//
             String meses = "";
             switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
@@ -715,6 +723,32 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         FacesContext.getCurrentInstance().responseComplete();
     }
 
+    public void visualizarArchivoInfRemanenteCuatrimestral() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    public void visualizarArchivoInfTecRemanenteCuatrimestral() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
     //Getters & Setters
     public Boolean getBtnInfDisabled() {
         return btnInfDisabled;
@@ -811,4 +845,13 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     public void setDisplayUploadInformeCuatrimestral(Boolean displayUploadInformeCuatrimestral) {
         this.displayUploadInformeCuatrimestral = displayUploadInformeCuatrimestral;
     }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
+    }
+
 }

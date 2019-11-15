@@ -6,24 +6,7 @@
       xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
-        <ui:define name="content">
-            <p:dialog header = "Selección de Archivo... "
-                      id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
-                <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
-                    <p:fileUpload
-                        value="#{verificarRemanenteMensualCtrl.file}"
-                        style="width:100%"
-                        mode="advanced"
-                        dragDropSupport="true"
-                        sizeLimit="9000000"
-                        allowTypes="/(\.|\/)(pdf)$/"
-                        label=""
-                        uploadLabel=""
-                        cancelLabel=""
-                        fileUploadListener="#{verificarRemanenteMensualCtrl.handleFileUploadRPropiedad}"                        
-                        oncomplete="onCellEdit();"/>
-                </h:form>
-            </p:dialog>
+        <ui:define name="content">            
 
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Estados de Remanente" 
@@ -133,10 +116,10 @@
                             Gastos por Nómina
                         </f:facet>                        
                         <p:column headerText="Nombre" 
-                                  sortBy="#{nomina.nomNombres}" 
-                                  filterBy="#{nomina.nomNombres}" 
+                                  sortBy="#{nomina.nombre}" 
+                                  filterBy="#{nomina.nombre}" 
                                   filterMatchMode="contains">
-                            <h:outputText value="#{nomina.nomNombres}"/>                            
+                            <h:outputText value="#{nomina.nombre}"/>                            
                         </p:column>
                         <p:column headerText="Cargo"
                                   sortBy="#{nomina.cargo}" 
@@ -271,18 +254,28 @@
                             </p:column>
                             <p:column headerText="Solicitud de cambio">                                
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.solicitudCambioUrl}" 
-                                       style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaSolicitudCambio" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{verificarRemanenteMensualCtrl.visualizarArchivoSolicitudCambio}"
+                                                   style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
+                                            value="#{remanenteMensual.solicitudCambioUrl}" />                                        
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:column headerText="Informe de aprobación">
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.informeAprobacionUrl}" 
-                                       style="visibility:#{empty remanenteMensual.informeAprobacionUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInformeSolicitudCambio" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{verificarRemanenteMensualCtrl.visualizarArchivoInformeSolicitudCambio()}"
+                                                   style="visibility:#{empty remanenteMensual.informeAprobacionUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
+                                            value="#{remanenteMensual.informeAprobacionUrl}" />                                        
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:column headerText="Estado"  style="width:80px; text-align: center">
@@ -345,9 +338,15 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
-                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaTransaccion1" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{verificarRemanenteMensualCtrl.visualizarArchivoTransaccion}"
+                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                        <f:setPropertyActionListener
+                                            target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
+                                            value="#{transaccion.respaldoUrl}" />  
+                                    </h:commandLink>
                                 </center>
                             </p:column>
                             <p:summaryRow id="summaryRowIngRPropiedad">
@@ -405,9 +404,15 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
-                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaTransaccion2" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{verificarRemanenteMensualCtrl.visualizarArchivoTransaccion}"
+                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                        <f:setPropertyActionListener
+                                            target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
+                                            value="#{transaccion.respaldoUrl}" />                                        
+                                    </h:commandLink>
                                 </center>
                             </p:column>
                             <p:summaryRow id="summaryRowIngRPropiedad">
@@ -467,9 +472,15 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
-                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaTransaccion3" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{verificarRemanenteMensualCtrl.visualizarArchivoTransaccion}"
+                                                   style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
+                                        <f:setPropertyActionListener
+                                            target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
+                                            value="#{transaccion.respaldoUrl}" />                                        
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:summaryRow id="summaryRowIngRPropiedad">

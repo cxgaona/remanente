@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -13,9 +15,9 @@ import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
-import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -49,6 +51,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     private String nombreDireccionRegional;
     private Integer institucionId;
     private String nombreInstitucion;
+    private String rutaArchivo;
     private String tituloPagina;
     private Integer año;
     private RemanenteCuatrimestral remanenteCuatrimestralSelected;
@@ -68,6 +71,8 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     private Boolean displayUploadInformeCuatrimestral;
     private Boolean disabledBtnReload;
 
+    private SftpDto sftpDto;
+
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
     @EJB
@@ -80,6 +85,8 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     private BandejaServicio bandejaServicio;
     @EJB
     private UsuarioServicio usuarioServicio;
+    @EJB
+    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
@@ -89,6 +96,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         nombreDireccionRegional = institucionRequeridaServicio.getInstitucionById(direccionRegionalId).getNombre();
 
         //Inicializacion de variables
+        sftpDto = new SftpDto();
         remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
         transaccionRegistrosList = new ArrayList<Row>();
@@ -226,17 +234,17 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         return rms;
     }
 
-    public void handleFileUploadInformeTecnicoCuatrimestral(FileUploadEvent event) {
+    public void uploadInformeTecnicoCuatrimestral(FileUploadEvent event) {  
         UploadedFile file = event.getFile();
         try {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/informeTecnicoRemanenteCuatrimestral/";
-            String realPath = path + "itrc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            remanenteCuatrimestralSelected.setInformeTecnicoUrl("/archivos/informeTecnicoRemanenteCuatrimestral/" + "itrc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf");
-            remanenteCuatrimestralServicio.update(remanenteCuatrimestralSelected);
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("itrc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId()).concat(".pdf");
+            sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(realPath));
+            sftpDto.setArchivo(fileByte);
+            remanenteCuatrimestralSelected.setInformeTecnicoUrl(realPath);
+            remanenteCuatrimestralServicio.editRemanenteCuatrimestral(remanenteCuatrimestralSelected, sftpDto);
+            fileByte = null;
+
             EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
             Usuario u = new Usuario();
             u.setUsuarioId(usuarioId);
@@ -357,32 +365,32 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         for (Row r : transaccionRegistrosList) {
             switch (mes) {
                 case 1:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes1());
                     }
                     break;
                 case 2:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes2());
                     }
                     break;
                 case 3:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes3());
                     }
                     break;
                 case 4:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes4());
                     }
                     break;
                 case 5:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
                     }
                     break;
@@ -432,7 +440,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         if (ingresosTotales.compareTo(BigDecimal.ZERO) == 0) {
             valor = BigDecimal.ZERO;
         } else {
-            valor = totalIngRMercantil.divide(ingresosTotales, 2, RoundingMode.HALF_UP);
+            valor = totalIngRMercantil.divide(ingresosTotales, 8, RoundingMode.HALF_UP);
         }
         return valor;
     }
@@ -468,7 +476,8 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         BigDecimal valor = BigDecimal.ZERO;
         totalGastosRPropiedad = getValorTotalGastos(mes);
         factorIncidencia = getValorFactorIncidencia(mes);
-        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(8, BigDecimal.ROUND_HALF_EVEN);
+
         return valor;
     }
 
@@ -478,12 +487,38 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         BigDecimal valor = BigDecimal.ZERO;
         totalIngRMercatil = getValorTotalIngresos(mes, "Ingreso-Mercantil");
         gastosRMercantilEst = getValorGastosRMercantil(mes);
-        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(8, BigDecimal.ROUND_HALF_EVEN);
         return valor;
     }
 
     public Boolean getDisabledBtnReload() {
         return disabledBtnReload;
+    }
+
+    public void visualizarArchivoInfRemanenteCuatrimestral() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    public void visualizarArchivoInfTecRemanenteCuatrimestral() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
     }
 
     //Getters & Setters
@@ -601,6 +636,14 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
 
     public void setInstitucionSelected(InstitucionRequerida institucionSelected) {
         this.institucionSelected = institucionSelected;
+    }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
 }

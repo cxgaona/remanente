@@ -10,10 +10,14 @@ import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -70,7 +74,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         fechaMax = fechasLimiteMax(anio, mes);
         institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         obtenerRemanenteMensual();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil",remanenteMensualSelected.getRemanenteMensualId());
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil", remanenteMensualSelected.getRemanenteMensualId());
         tramiteSelected = new Tramite();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
@@ -79,31 +83,23 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         btnGuardar = "";
 //        disableNuevoT = Boolean.FALSE;
     }
-    
+
     private String fechasLimiteMin(Integer anio, Integer mes) {
-        String fechaLimite = "";
-        Integer mesMin, anioMin;
-        if (mes == 1) {
-            anioMin=anio-1;
-            fechaLimite = anioMin.toString() + "-12-15";
-        } else {
-            mesMin=mes-1;
-            fechaLimite = anio.toString() +"-"+mesMin.toString()+"-15";
-        }
-        return fechaLimite;
+        return anio + "-" + mes + "-01";
     }
-    
+
     private String fechasLimiteMax(Integer anio, Integer mes) {
-        String fechaLimite = "";
-        Integer mesMax, anioMax;
-        if (mes == 12) {
-             anioMax=anio+1;
-            fechaLimite = anioMax.toString() + "-01-15";
-        } else {
-            mesMax=mes+1;
-            fechaLimite = anio.toString() +"-"+mesMax.toString()+"-15";
+        try {
+            String stringDate = anio + "-" + mes + "-01";
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = formatter.parse(stringDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            return anio + "-" + mes + "-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        } catch (ParseException ex) {
+            Logger.getLogger(TramiteMercantilCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            return "0000-00-00";
         }
-        return fechaLimite;
     }
 
     public Boolean getDisableDelete() {
@@ -148,7 +144,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
-        }      
+        }
     }
 
     public void cancelar() {
@@ -243,9 +239,9 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         fechaMax = fechasLimiteMax(anio, mes);
         tramiteList = new ArrayList<Tramite>();
         obtenerRemanenteMensual();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil",remanenteMensualSelected.getRemanenteMensualId());
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil", remanenteMensualSelected.getRemanenteMensualId());
         disableDelete = Boolean.TRUE;
-        renderEdition = Boolean.FALSE;        
+        renderEdition = Boolean.FALSE;
     }
 
     public void borrarTramite() {

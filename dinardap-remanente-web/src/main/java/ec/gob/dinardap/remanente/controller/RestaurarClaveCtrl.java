@@ -2,6 +2,7 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.Pregunta;
 import ec.gob.dinardap.remanente.modelo.Respuesta;
@@ -10,6 +11,7 @@ import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
 import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,6 +43,9 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
     @EJB
     private RespuestaServicio respuestaServicio;
 
+    @EJB
+    private ParametroServicio parametroServicio;
+
     @PostConstruct
     protected void init() {
         usuario = "";
@@ -53,6 +58,7 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
         Integer nume = (int) (Math.random() * preguntasActivas.size());
         preguntaSeguridad = preguntasActivas.get(nume);
         strPregunta = preguntaSeguridad.getPregunta();
+
     }
 
     public void recuperarContrasena() {
@@ -66,6 +72,17 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
                     u.setContrasena(encriptada);
                     usuarioServicio.editUsuario(u);
                     mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
+//                    try {
+//                        ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+//                        URI uri;
+//                        uri = new URI(ext.getRequestScheme(),
+//                                null, ext.getRequestServerName(), ext.getRequestServerPort(),
+//                                ext.getRequestContextPath(), null, null);
+//                        uri.toASCIIString();
+//                    } catch (URISyntaxException ex) {
+//                        Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+
                     Email email = new Email();
                     try {
                         String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";

@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
@@ -14,6 +16,8 @@ import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     private String tituloDetalleDlg;
     private InstitucionRequerida institucionNotificacion;
     private List<Usuario> usuarioListNotificacion;
+    private String rutaArchivo;
 
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
@@ -69,6 +74,8 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     private Boolean disabledBtnReload;
     private String comentariosRechazo;
 
+    private SftpDto sftpDto;
+
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
@@ -86,6 +93,9 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 
     @EJB
     private UsuarioServicio usuarioServicio;
+
+    @EJB
+    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
@@ -111,6 +121,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         institucionSelected = new InstitucionRequerida();
         remanenteMensualSelected = new RemanenteMensual();
         transaccionSelected = new Transaccion();
+        sftpDto = new SftpDto();
 
         institucionList = new ArrayList<InstitucionRequerida>();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
@@ -401,6 +412,45 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         //FIN ENVIO//
     }
 
+    public void visualizarArchivoSolicitudCambio() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteMensualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    public void visualizarArchivoInformeSolicitudCambio() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteMensualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    public void visualizarArchivoTransaccion() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = transaccionServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
     //Getters & Setters
     public Boolean getDisabledBtnReload() {
         return disabledBtnReload;
@@ -600,6 +650,14 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 
     public void setInstitucionSelected(InstitucionRequerida institucionSelected) {
         this.institucionSelected = institucionSelected;
+    }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
 }

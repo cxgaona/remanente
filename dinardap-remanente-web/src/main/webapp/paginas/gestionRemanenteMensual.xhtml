@@ -8,11 +8,13 @@
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
+            <!--Dialog para upload de archivos (PDF)--> 
             <p:dialog header = "Selección de Archivo... "
-                      id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
-                <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
+                      id="transaccionUploadDlg" widgetVar="transaccionUploadDlg" modal="true" resizable="false" width="25%" >
+                <h:form id="formTransaccionUploadDlg" enctype="multipart/forma-data">
                     <p:fileUpload
                         messageTemplate="Tipo de Archivo no Válido"
+                        fileLimitMessage="Tamaño de Archivo Excedido"                        
                         value="#{remanenteMensualCtrl.file}"
                         style="width:100%"
                         mode="advanced"
@@ -22,10 +24,11 @@
                         label=""
                         uploadLabel=""
                         cancelLabel=""
-                        fileUploadListener="#{remanenteMensualCtrl.handleFileUploadRPropiedad}"
+                        fileUploadListener="#{remanenteMensualCtrl.uploadTransaccion}"
                         oncomplete="onCellEdit();"/>
                 </h:form>
             </p:dialog>
+            <!--Detalle de estados de remanentes mensuales--> 
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Estados de Remanente" 
                       modal="true"
@@ -70,7 +73,7 @@
                     </p:dataTable>
                 </h:form>
             </p:dialog>  
-
+            <!--Detalle de Trámites R. Propiedad o R. Mercantil--> 
             <p:dialog id="tramiteRegistroDlg"
                       header="Trámites Registro de la Propiedad / Mercantil" 
                       modal="true"
@@ -107,7 +110,7 @@
                     </p:dataTable>   
                 </h:form>
             </p:dialog>
-            <!--Egresos-->
+            <!--Detalle de Egresos R. Propiedad o R. Mercantil--> 
             <p:dialog id="egresosDlg"
                       header="Egresos Registro de la Propiedad / Mercantil" 
                       modal="true"
@@ -127,10 +130,10 @@
                             Gastos por Nómina
                         </f:facet>
                         <p:column headerText="Nombre" 
-                                  sortBy="#{nomina.nomNombres}" 
-                                  filterBy="#{nomina.nomNombres}" 
+                                  sortBy="#{nomina.nombre}" 
+                                  filterBy="#{nomina.nombre}" 
                                   filterMatchMode="contains">
-                            <h:outputText value="#{nomina.nomNombres}"/>                            
+                            <h:outputText value="#{nomina.nombre}"/>                            
                         </p:column>
                         <p:column headerText="Cargo"
                                   sortBy="#{nomina.cargo}" 
@@ -257,19 +260,29 @@
                                 <h:outputText value="#{remanenteMensual.comentarios}"/>
                             </p:column>
                             <p:column headerText="Solicitud de cambio">                                
-                                <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.solicitudCambioUrl}" 
-                                       style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                <center> 
+                                    <h:commandLink id="btDescargaSolicitudCambio" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteMensualCtrl.visualizarArchivoSolicitudCambio}"
+                                                   style="visibility:#{empty remanenteMensual.solicitudCambioUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteMensualCtrl.rutaArchivo}"
+                                            value="#{remanenteMensual.solicitudCambioUrl}" />                                        
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:column headerText="Informe de aprobación">
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteMensual.informeAprobacionUrl}" 
-                                       style="visibility:#{empty remanenteMensual.informeAprobacionUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInformeSolicitudCambio" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteMensualCtrl.visualizarArchivoInformeSolicitudCambio()}"
+                                                   style="visibility:#{empty remanenteMensual.informeAprobacionUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteMensualCtrl.rutaArchivo}"
+                                            value="#{remanenteMensual.informeAprobacionUrl}" />                                        
+                                    </h:commandLink>
                                 </center>
                             </p:column>
                             <p:column headerText="Estado"  style="width:80px; text-align: center">
@@ -295,7 +308,7 @@
                                 uploadLabel=""
                                 cancelLabel=""                                
                                 oncomplete="onCellEdit();"
-                                fileUploadListener="#{remanenteMensualCtrl.handleFileUploadSolicitud}"
+                                fileUploadListener="#{remanenteMensualCtrl.uploadSolicitud}"
                                 update="formRemanenteMensual, estadoRemanenteMensualDlg"/>
                         </b:panelGrid>
                     </h:panelGrid>                    
@@ -318,7 +331,7 @@
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
                                      editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
+                            <p:ajax event="rowEditCancel" oncomplete="onCellEdit()"/>
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Ingresos Registro de la Propiedad" />                                    
@@ -351,9 +364,15 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
-                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaTransaccion1" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
+                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteMensualCtrl.rutaArchivo}"
+                                            value="#{transaccion.respaldoUrl}" />                                        
+                                    </h:commandLink>
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
@@ -363,7 +382,7 @@
                                                  title="Subir" 
                                                  rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" 
                                                  style="background: none;border: none;width: auto;"
-                                                 onclick="PF('transaccionRPropiedadDlg').show();">
+                                                 onclick="PF('transaccionUploadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>
@@ -389,7 +408,7 @@
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
                                      editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
+                            <p:ajax event="rowEditCancel" oncomplete="onCellEdit()"/>
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Ingresos Registro Mercantil" />
@@ -423,9 +442,15 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
-                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaTransaccion2" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
+                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteMensualCtrl.rutaArchivo}"
+                                            value="#{transaccion.respaldoUrl}" />                                        
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
@@ -434,7 +459,7 @@
                                                  title="Subir" 
                                                  rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}"
                                                  style="background: none;border: none;width: auto;"                                                 
-                                                 onclick="PF('transaccionRPropiedadDlg').show();">
+                                                 onclick="PF('transaccionUploadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>
@@ -460,7 +485,7 @@
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
                                      editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
+                            <p:ajax event="rowEditCancel" oncomplete="onCellEdit()"/>
                             <p:headerRow>
                                 <p:column colspan="2">
                                     <h:outputText value="Gastos Actividad Registral (Propiedad y Mercantil)" /> 
@@ -495,15 +520,21 @@
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{transaccion.respaldoUrl}" target="_blank"
-                                       style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
-                                        <img width="40" height="30" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaTransaccion3" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
+                                                   style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
+                                        <f:setPropertyActionListener
+                                            target="#{remanenteMensualCtrl.rutaArchivo}"
+                                            value="#{transaccion.respaldoUrl}" />                                        
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
                                 <p:commandButton icon="fa fa-fw fa-file-pdf-o" title="Subir" 
                                                  style="background: none;border: none;width: auto;"                                                 
-                                                 onclick="PF('transaccionRPropiedadDlg').show();">
+                                                 onclick="PF('transaccionUploadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
                                 </p:commandButton>
                             </p:column>

@@ -6,9 +6,13 @@
 package ec.gob.dinardap.remanente.mail;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
@@ -31,11 +35,17 @@ public class Email {
 
     private final Properties prop;
     private static final String FROM = "notificaciones.remanentes@dinardap.gob.ec";
-    private static final String URL = "http://10.0.0.168:8080/remanente";
-//    private String to;
-//    private String subject;
+    private URI uri;
 
     public Email() {
+        ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            uri = new URI(ext.getRequestScheme(),
+                    null, ext.getRequestServerName(), ext.getRequestServerPort(),
+                    ext.getRequestContextPath(), null, null);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Email.class.getName()).log(Level.SEVERE, null, ex);
+        }
         prop = new Properties();
         prop.put("mail.smtp.host", "smtpsrv.dinardap.gob.ec");
         prop.put("mail.smtp.auth", "true");
@@ -63,20 +73,20 @@ public class Email {
                 InternetAddress.parse(para));
         try {
             if (para != null && !para.isEmpty()) {
-                message.setSubject(MimeUtility.encodeText(asunto, "UTF-8", "Q"));                
+                message.setSubject(MimeUtility.encodeText(asunto, "UTF-8", "Q"));
                 Multipart multipartes = new MimeMultipart();
                 MimeBodyPart htmlPart = new MimeBodyPart();
 
                 String cabecera = "<html><body><center><h1>Plataforma de Remanentes</h1></center><br/>";
                 String contenido = "<center><p>" + cuerpo + "</p></center><br/>";
-                String boton = "<center><a href='" + URL + "'>Plataforma Remanentes</a></center>";
+                String boton = "<center><a href='" + uri.toASCIIString() + "'>Plataforma Remanentes</a></center>";
                 String formulario = String.format("%s%s%s", cabecera, contenido, boton);
 
                 htmlPart.setContent(formulario, "text/html; charset=utf-8");
                 multipartes.addBodyPart(htmlPart);
                 message.setContent(multipartes);
                 Transport.send(message);
-            } 
+            }
         } catch (AuthenticationFailedException e) {
             throw e;
         } catch (MessagingException ex) {

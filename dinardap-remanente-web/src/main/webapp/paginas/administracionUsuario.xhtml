@@ -6,25 +6,7 @@
       xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
-        <ui:define name="content">
-            <p:dialog header = "Selección de Archivo... "
-                      id="transaccionRPropiedadDlg" widgetVar="transaccionRPropiedadDlg" modal="true" resizable="false" width="25%" >
-                <h:form id="formTransaccionRPropiedad" enctype="multipart/forma-data">
-                    <p:fileUpload
-                        value="#{remanenteMensualCtrl.file}"
-                        style="width:100%"
-                        mode="advanced"
-                        dragDropSupport="true"
-                        sizeLimit="9000000"
-                        allowTypes="/(\.|\/)(pdf)$/"
-                        label=""
-                        uploadLabel=""
-                        cancelLabel=""
-                        fileUploadListener="#{remanenteMensualCtrl.handleFileUploadRPropiedad}"                        
-                        oncomplete="onCellEdit();"/>
-                </h:form>
-            </p:dialog>
-
+        <ui:define name="content">           
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Listado de estados del Remanentes" 
                       modal="true"
@@ -52,8 +34,7 @@
 
                     </p:dataTable>
                 </h:form>
-            </p:dialog>                      
-
+            </p:dialog>
 
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{remanenteMensualCtrl.tituloPagina}</h1>   
 
@@ -131,9 +112,7 @@
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
                                      sortBy="#{transaccion.catalogoTransaccionId.tipo}"
-                                     editable="true">  
-                            <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
-                            <p:ajax event="rowEditCancel" listener="#{remanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
+                                     editable="true">                              
                             <p:headerRow>
                                 <p:column colspan="3">
                                     <h:outputText value="Ingresos Registro de la Propiedad" />
