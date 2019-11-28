@@ -6,8 +6,8 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,11 +17,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,55 +29,77 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "nomina")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Nomina.findAll", query = "SELECT n FROM Nomina n")
-    , @NamedQuery(name = "Nomina.findByNominaId", query = "SELECT n FROM Nomina n WHERE n.nominaId = :nominaId")
-    , @NamedQuery(name = "Nomina.findByNomNombres", query = "SELECT n FROM Nomina n WHERE n.nomNombres = :nomNombres")
-    , @NamedQuery(name = "Nomina.findByCargo", query = "SELECT n FROM Nomina n WHERE n.cargo = :cargo")
-    , @NamedQuery(name = "Nomina.findByRemuneracion", query = "SELECT n FROM Nomina n WHERE n.remuneracion = :remuneracion")
-    , @NamedQuery(name = "Nomina.findByAportePatronal", query = "SELECT n FROM Nomina n WHERE n.aportePatronal = :aportePatronal")
-    , @NamedQuery(name = "Nomina.findByImpuestoRenta", query = "SELECT n FROM Nomina n WHERE n.impuestoRenta = :impuestoRenta")
-    , @NamedQuery(name = "Nomina.findByFondosReserva", query = "SELECT n FROM Nomina n WHERE n.fondosReserva = :fondosReserva")
-    , @NamedQuery(name = "Nomina.findByDecimoTercero", query = "SELECT n FROM Nomina n WHERE n.decimoTercero = :decimoTercero")
-    , @NamedQuery(name = "Nomina.findByDecimoCuarto", query = "SELECT n FROM Nomina n WHERE n.decimoCuarto = :decimoCuarto")
-    , @NamedQuery(name = "Nomina.findByTotalDesc", query = "SELECT n FROM Nomina n WHERE n.totalDesc = :totalDesc")
-    , @NamedQuery(name = "Nomina.findByLiquidoRecibir", query = "SELECT n FROM Nomina n WHERE n.liquidoRecibir = :liquidoRecibir")
-    , @NamedQuery(name = "Nomina.findByFechaRegistro", query = "SELECT n FROM Nomina n WHERE n.fechaRegistro = :fechaRegistro")})
+    ,
+    @NamedQuery(name = "Nomina.findByNominaId", query = "SELECT n FROM Nomina n WHERE n.nominaId = :nominaId")
+    ,
+    @NamedQuery(name = "Nomina.findByNombre", query = "SELECT n FROM Nomina n WHERE n.nombre = :nombre")
+    ,
+    @NamedQuery(name = "Nomina.findByCargo", query = "SELECT n FROM Nomina n WHERE n.cargo = :cargo")
+    ,
+    @NamedQuery(name = "Nomina.findByRemuneracion", query = "SELECT n FROM Nomina n WHERE n.remuneracion = :remuneracion")
+    ,
+    @NamedQuery(name = "Nomina.findByAportePatronal", query = "SELECT n FROM Nomina n WHERE n.aportePatronal = :aportePatronal")
+    ,
+    @NamedQuery(name = "Nomina.findByImpuestoRenta", query = "SELECT n FROM Nomina n WHERE n.impuestoRenta = :impuestoRenta")
+    ,
+    @NamedQuery(name = "Nomina.findByFondosReserva", query = "SELECT n FROM Nomina n WHERE n.fondosReserva = :fondosReserva")
+    ,
+    @NamedQuery(name = "Nomina.findByDecimoTercero", query = "SELECT n FROM Nomina n WHERE n.decimoTercero = :decimoTercero")
+    ,
+    @NamedQuery(name = "Nomina.findByDecimoCuarto", query = "SELECT n FROM Nomina n WHERE n.decimoCuarto = :decimoCuarto")
+    ,
+    @NamedQuery(name = "Nomina.findByTotalDesc", query = "SELECT n FROM Nomina n WHERE n.totalDesc = :totalDesc")
+    ,
+    @NamedQuery(name = "Nomina.findByLiquidoRecibir", query = "SELECT n FROM Nomina n WHERE n.liquidoRecibir = :liquidoRecibir")
+    ,
+    @NamedQuery(name = "Nomina.findByFechaRegistro", query = "SELECT n FROM Nomina n WHERE n.fechaRegistro = :fechaRegistro")})
 public class Nomina implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "NOMINA_GENERATOR", sequenceName = "nomina_nomina_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NOMINA_GENERATOR")
     @Column(name = "nomina_id")
     private Integer nominaId;
+
     @Size(max = 300)
-    @Column(name = "nom_nombres")
-    private String nomNombres;
+    @Column(name = "nombre")
+    private String nombre;
+
     @Size(max = 300)
     @Column(name = "cargo")
     private String cargo;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+
     @Column(name = "remuneracion")
-    private Double remuneracion;
+    private BigDecimal remuneracion;
+
     @Column(name = "aporte_patronal")
-    private Double aportePatronal;
+    private BigDecimal aportePatronal;
+
     @Column(name = "impuesto_renta")
-    private Double impuestoRenta;
+    private BigDecimal impuestoRenta;
+
     @Column(name = "fondos_reserva")
-    private Double fondosReserva;
+    private BigDecimal fondosReserva;
+
     @Column(name = "decimo_tercero")
-    private Double decimoTercero;
+    private BigDecimal decimoTercero;
+
     @Column(name = "decimo_cuarto")
-    private Double decimoCuarto;
+    private BigDecimal decimoCuarto;
+
     @Column(name = "total_desc")
-    private Double totalDesc;
+    private BigDecimal totalDesc;
+
     @Column(name = "liquido_recibir")
-    private Double liquidoRecibir;
+    private BigDecimal liquidoRecibir;
+
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
+
     @JoinColumn(name = "transaccion_id", referencedColumnName = "transaccion_id")
     @ManyToOne
     private Transaccion transaccionId;
@@ -97,12 +119,12 @@ public class Nomina implements Serializable {
         this.nominaId = nominaId;
     }
 
-    public String getNomNombres() {
-        return nomNombres;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNomNombres(String nomNombres) {
-        this.nomNombres = nomNombres;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getCargo() {
@@ -113,67 +135,67 @@ public class Nomina implements Serializable {
         this.cargo = cargo;
     }
 
-    public Double getRemuneracion() {
+    public BigDecimal getRemuneracion() {
         return remuneracion;
     }
 
-    public void setRemuneracion(Double remuneracion) {
+    public void setRemuneracion(BigDecimal remuneracion) {
         this.remuneracion = remuneracion;
     }
 
-    public Double getAportePatronal() {
+    public BigDecimal getAportePatronal() {
         return aportePatronal;
     }
 
-    public void setAportePatronal(Double aportePatronal) {
+    public void setAportePatronal(BigDecimal aportePatronal) {
         this.aportePatronal = aportePatronal;
     }
 
-    public Double getImpuestoRenta() {
+    public BigDecimal getImpuestoRenta() {
         return impuestoRenta;
     }
 
-    public void setImpuestoRenta(Double impuestoRenta) {
+    public void setImpuestoRenta(BigDecimal impuestoRenta) {
         this.impuestoRenta = impuestoRenta;
     }
 
-    public Double getFondosReserva() {
+    public BigDecimal getFondosReserva() {
         return fondosReserva;
     }
 
-    public void setFondosReserva(Double fondosReserva) {
+    public void setFondosReserva(BigDecimal fondosReserva) {
         this.fondosReserva = fondosReserva;
     }
 
-    public Double getDecimoTercero() {
+    public BigDecimal getDecimoTercero() {
         return decimoTercero;
     }
 
-    public void setDecimoTercero(Double decimoTercero) {
+    public void setDecimoTercero(BigDecimal decimoTercero) {
         this.decimoTercero = decimoTercero;
     }
 
-    public Double getDecimoCuarto() {
+    public BigDecimal getDecimoCuarto() {
         return decimoCuarto;
     }
 
-    public void setDecimoCuarto(Double decimoCuarto) {
+    public void setDecimoCuarto(BigDecimal decimoCuarto) {
         this.decimoCuarto = decimoCuarto;
     }
 
-    public Double getTotalDesc() {
+    public BigDecimal getTotalDesc() {
         return totalDesc;
     }
 
-    public void setTotalDesc(Double totalDesc) {
+    public void setTotalDesc(BigDecimal totalDesc) {
         this.totalDesc = totalDesc;
     }
 
-    public Double getLiquidoRecibir() {
+    public BigDecimal getLiquidoRecibir() {
         return liquidoRecibir;
     }
 
-    public void setLiquidoRecibir(Double liquidoRecibir) {
+    public void setLiquidoRecibir(BigDecimal liquidoRecibir) {
         this.liquidoRecibir = liquidoRecibir;
     }
 
@@ -215,7 +237,7 @@ public class Nomina implements Serializable {
 
     @Override
     public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.Nomina[ nominaId=" + nominaId + " ]";
+        return "Nomina{" + "nominaId=" + nominaId + ", nombre=" + nombre + ", cargo=" + cargo + ", remuneracion=" + remuneracion + ", aportePatronal=" + aportePatronal + ", impuestoRenta=" + impuestoRenta + ", fondosReserva=" + fondosReserva + ", decimoTercero=" + decimoTercero + ", decimoCuarto=" + decimoCuarto + ", totalDesc=" + totalDesc + ", liquidoRecibir=" + liquidoRecibir + ", fechaRegistro=" + fechaRegistro + ", transaccionId=" + transaccionId + '}';
     }
-    
+
 }

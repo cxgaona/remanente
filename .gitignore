@@ -1,4 +1,10 @@
 #Ignorar carpeta target
 target/
+dinardap-remanente-ear/target
+dinardap-remanente-ejb/target
+dinardap-remanente-web/target
 .project
 .settings/
+#pom.xml
+.nbactions.xml
+nbactions.xml

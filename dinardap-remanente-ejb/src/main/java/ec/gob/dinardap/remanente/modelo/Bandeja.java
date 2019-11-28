@@ -6,7 +6,7 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,9 +17,11 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -27,26 +29,37 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "bandeja")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Bandeja.findAll", query = "SELECT b FROM Bandeja b")
     , @NamedQuery(name = "Bandeja.findByBandejaId", query = "SELECT b FROM Bandeja b WHERE b.bandejaId = :bandejaId")
     , @NamedQuery(name = "Bandeja.findByDescripcion", query = "SELECT b FROM Bandeja b WHERE b.descripcion = :descripcion")
-    , @NamedQuery(name = "Bandeja.findByEstado", query = "SELECT b FROM Bandeja b WHERE b.estado = :estado")})
+    , @NamedQuery(name = "Bandeja.findByTipo", query = "SELECT b FROM Bandeja b WHERE b.tipo = :tipo")})
 public class Bandeja implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "BANDEJA_GENERATOR", sequenceName = "bandeja_bandeja_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BANDEJA_GENERATOR")
     @Column(name = "bandeja_id")
     private Integer bandejaId;
+
     @Size(max = 300)
     @Column(name = "descripcion")
     private String descripcion;
     @Size(max = 50)
-    @Column(name = "estado")
-    private String estado;
+    @Column(name = "tipo")
+    private String tipo;
+
+    @Column(name = "leido")
+    private Boolean leido;
+    @Column(name = "fecha_registro")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaRegistro;
+    @Column(name = "fecha_leido")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaLeido;
+
     @JoinColumns({
         @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id")
         , @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id")
@@ -86,12 +99,12 @@ public class Bandeja implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public RemanenteCuatrimestral getRemanenteCuatrimestral() {
@@ -126,6 +139,30 @@ public class Bandeja implements Serializable {
         this.usuarioSolicitanteId = usuarioSolicitanteId;
     }
 
+    public Boolean getLeido() {
+        return leido;
+    }
+
+    public void setLeido(Boolean leido) {
+        this.leido = leido;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Date getFechaLeido() {
+        return fechaLeido;
+    }
+
+    public void setFechaLeido(Date fechaLeido) {
+        this.fechaLeido = fechaLeido;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -150,5 +187,5 @@ public class Bandeja implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.Bandeja[ bandejaId=" + bandejaId + " ]";
     }
-    
+
 }

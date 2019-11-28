@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">    
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminRemanenteCuatrimestralCtrl.tituloPagina}</h1>
+            <h:form id="formInstitucion">
+                <b:panel title="Instituciones - #{adminRemanenteCuatrimestralCtrl.nombreDireccionRegional}">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="institucionTbl"
+                                     value="#{adminRemanenteCuatrimestralCtrl.institucionList}" 
+                                     var="institucion"
+                                     rowKey="#{institucion.institucionId}"
+                                     selectionMode="single"
+                                     selection="#{adminRemanenteCuatrimestralCtrl.institucionSelected}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15,25">
+                            <p:ajax event="rowSelect" listener="#{adminRemanenteCuatrimestralCtrl.onRowSelectInstitucion}"
+                                    update=":formRemanenteCuatrimestral, :formTransacciones"/>
+                            <p:column headerText="Institución" 
+                                      sortBy="#{institucion.nombre}" 
+                                      filterBy="#{institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" 
+                                      sortBy="#{institucion.provinciaCanton}" 
+                                      filterBy="#{institucion.provinciaCanton}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.provinciaCanton}" />
+                            </p:column>                            
+                            <p:column headerText="Tipo de Registro" 
+                                      sortBy="#{institucion.tipo}">
+                                <h:outputText value="#{institucion.tipo eq 'CON GAD'? 'Sin autonomía Financiera':'Con autonomía Financiera'}"/>
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
+
+            <h:form id="formRemanenteCuatrimestral">
+                <b:panel title="Remanentes Cuatrimestrales - #{adminRemanenteCuatrimestralCtrl.nombreInstitucion}">
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                            <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
+                            <p:inputMask id="anioSelected" value="#{adminRemanenteCuatrimestralCtrl.año}" mask="9999" style="width: 100%"/>
+                            <p:commandButton action="#{adminRemanenteCuatrimestralCtrl.loadRemanenteCuatrimestralByAño}" 
+                                             disabled="#{adminRemanenteCuatrimestralCtrl.disabledBtnReload}"
+                                             update=":formRemanenteCuatrimestral"
+                                             style="margin-right:20px;" 
+                                             icon="fa fa-fw fa-refresh"/>
+                        </b:panelGrid>
+                        <p:dataTable id="remanenteCuatrimestralTbl"
+                                     value="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralList}" 
+                                     rowKey="#{remanenteCuatrimestral.remanenteCuatrimestralPK.remanenteCuatrimestralId}"
+                                     var="remanenteCuatrimestral"                                     
+                                     selectionMode="single"
+                                     selection="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected}"
+                                     style="width: 50%">
+                            <p:ajax event="rowSelect" listener="#{adminRemanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral"/>
+                            <p:column headerText="Cuatrimestre" width="20%">
+                                <h:outputText value="#{remanenteCuatrimestral.cuatrimestre}" />
+                            </p:column>
+                            <p:column headerText="Período" width="40%">
+                                <h:outputText value="#{remanenteCuatrimestral.cuatrimestre eq 1 ? 'Enero - Abril':
+                                                       remanenteCuatrimestral.cuatrimestre eq 2 ? 'Mayo - Agosto':
+                                                       remanenteCuatrimestral.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin definir'}"/>  
+                            </p:column>
+                            <p:column headerText="Informe Cuatrimestral" width="20%">                                
+                                <center>
+                                    <h:commandLink id="btDescargaInfRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{adminRemanenteCuatrimestralCtrl.visualizarArchivoInfRemanenteCuatrimestral()}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{adminRemanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeRemanenteUrl}" /> 
+                                    </h:commandLink>                                   
+                                </center>
+                            </p:column>
+                            <p:column headerText="Informe Técnico" width="20%">                                
+                                <center>
+                                    <h:commandLink id="btDescargaInfTecRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{adminRemanenteCuatrimestralCtrl.visualizarArchivoInfTecRemanenteCuatrimestral}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{adminRemanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeTecnicoUrl}" /> 
+                                    </h:commandLink>                                    
+                                </center>
+                            </p:column>                            
+                        </p:dataTable>
+
+
+
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form> 
+
+            <h:form id="formTransacciones">
+                <b:panel title="Transacciones Período ( #{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ? 'Enero - Abril':
+                                                          adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ? 'Mayo - Agosto':
+                                                          adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin Selección'})">
+
+                    <h:panelGrid columns="1" style="width: 75%;">
+
+                        <p:dataTable id="transaccionRegistrosTbl"                                     
+                                     value="#{adminRemanenteCuatrimestralCtrl.transaccionRegistrosList}"
+                                     var="row"                             
+                                     expandableRowGroups="true"  
+                                     sortBy="#{row.tipo}"
+                                     sortOrder="descending"> 
+                            <f:facet name="header">
+                                Informe de Ingresos
+                            </f:facet>
+                            <p:headerRow>
+                                <p:column colspan="6">
+                                    <h:outputText value="Ingresos Registro #{row.tipo eq 'Ingreso-Propiedad'?' de la Propiedad': 
+                                                                             row.tipo eq 'Ingreso-Mercantil'?' Mercantil':''} " /> 
+                                </p:column>                                
+                            </p:headerRow>                            
+                            <p:column headerText="Detalle" width="40%">
+                                <h:outputText value="#{row.nombre}" />
+                            </p:column>
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Enero'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Mayo'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes1" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                        
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Febrero'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Junio'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes2" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                        
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Marzo'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Julio'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes3" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                        
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Abril'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Agosto'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes4" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                                                    
+                            <p:column headerText="Total" width="12%" style="text-align: right">
+                                <h:outputText id="total" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:summaryRow id="summaryRowIngresos">
+                                <p:column style="text-align:right">
+                                    <h:outputText value="TOTAL INGRESOS #{row.tipo eq 'Ingreso-Propiedad'? 'REGISTRO DE LA PROPIEDAD':'REGISTRO MERCANTIL'}" />
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalIngresos(1,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column >
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalIngresos(2,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalIngresos(3,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalIngresos(4,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalIngresos(5,row.tipo)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+                            <p:columnGroup type="footer">
+                                <p:row>                                  
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText id="ingresoTotal" value="Ingreso Total" />
+                                            <p:tooltip id="toolTipngresoTotal" for="ingresoTotal" value="Total Ingresos Registro de la Propiedad + Total Ingreso Registro Mercantil" position="top"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorIngresoTotal(1)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorIngresoTotal(2)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorIngresoTotal(3)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorIngresoTotal(4)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorIngresoTotal(5)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>                                  
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText id="factorIncidencia" value="Factor de Incidencia" />
+                                            <p:tooltip id="toolTipFactorIncidencia" for="factorIncidencia" value="Total Ingresos Registro Mercantil / Ingresos Totales" position="top"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(1)}">
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(2)}">
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(3)}">
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(4)}">
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorFactorIncidencia(5)}">
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:dataTable>
+
+                        <p:separator />
+
+                        <p:dataTable id="transaccionEgresosTbl"                                     
+                                     value="#{adminRemanenteCuatrimestralCtrl.transaccionEgresosList}"
+                                     var="row"                             
+                                     expandableRowGroups="true"  
+                                     sortBy="#{row.tipo}"
+                                     sortOrder="descending"> 
+                            <f:facet name="header">
+                                Informe de Gastos
+                            </f:facet>
+                            <p:headerRow>
+                                <p:column colspan="6">
+                                    <h:outputText value="Gastos Actividad Registral (Propiedad y Mercantil)" /> 
+                                </p:column>                                
+                            </p:headerRow>                            
+                            <p:column headerText="Detalle" width="40%">
+                                <h:outputText value="#{row.nombre}" />
+                            </p:column>
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Enero'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Mayo'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes1" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                        
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Febrero'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Junio'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes2" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                        
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Marzo'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Julio'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes3" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                        
+                            <p:column headerText="#{adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Abril'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Agosto'
+                                                    :adminRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
+                                <h:outputText id="mes4" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>                                                                                    
+                            <p:column headerText="Total" width="12%" style="text-align: right">
+                                <h:outputText id="total" value="#{row}">
+                                    <f:converter converterId="rowConverter"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:summaryRow id="summaryRowEgresos">
+                                <p:column style="text-align:right">
+                                    <h:outputText value="TOTAL GASTOS REGISTRO DE LA PROPIEDAD" />
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalGastos(1)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column >
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalGastos(2)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalGastos(3)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalGastos(4)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align:right">
+                                    <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorTotalGastos(5)}">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:summaryRow>
+                            <p:columnGroup type="footer">
+                                <p:row>                                  
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText id="gastosRMercantil" value="Gastos Registro Mercantil (Definido por factor)" />
+                                            <p:tooltip id="toolTipGastosRMercantil" for="gastosRMercantil" value="Gastos Registro Mercantil estimado = (Total Gastos Registro de la Propiedad X Factor de Incidencia)" position="top"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorGastosRMercantil(1)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorGastosRMercantil(2)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorGastosRMercantil(3)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorGastosRMercantil(4)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorGastosRMercantil(5)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>                                  
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText id="remanenteMercantil" value="Remanente Actividad Registral Mercantil" />
+                                            <p:tooltip id="toolTipRemanenteMercantil" for="remanenteMercantil" value="Total Ingresos Registro Mercantil - Gastos Registro Mercantil Estimado" position="top"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorRemanenteMercantil(1)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorRemanenteMercantil(2)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorRemanenteMercantil(3)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorRemanenteMercantil(4)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column style="text-align: right">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{adminRemanenteCuatrimestralCtrl.getValorRemanenteMercantil(5)}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:dataTable>
+
+                    </h:panelGrid>
+                </b:panel>                                
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</html>

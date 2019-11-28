@@ -6,6 +6,7 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,11 +18,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,10 +30,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "factura_pagada")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "FacturaPagada.findAll", query = "SELECT f FROM FacturaPagada f")
     , @NamedQuery(name = "FacturaPagada.findByFacturaPagadaId", query = "SELECT f FROM FacturaPagada f WHERE f.facturaPagadaId = :facturaPagadaId")
+    , @NamedQuery(name = "FacturaPagada.findByFecha", query = "SELECT f FROM FacturaPagada f WHERE f.fecha = :fecha")
     , @NamedQuery(name = "FacturaPagada.findByNumero", query = "SELECT f FROM FacturaPagada f WHERE f.numero = :numero")
     , @NamedQuery(name = "FacturaPagada.findByTipo", query = "SELECT f FROM FacturaPagada f WHERE f.tipo = :tipo")
     , @NamedQuery(name = "FacturaPagada.findByDetalle", query = "SELECT f FROM FacturaPagada f WHERE f.detalle = :detalle")
@@ -41,25 +42,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class FacturaPagada implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Basic(optional = false)
+
+    @Id
+    @SequenceGenerator(name = "FACTURA_PAGADA_GENERATOR", sequenceName = "factura_pagada_factura_pagada_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FACTURA_PAGADA_GENERATOR")
     @Column(name = "factura_pagada_id")
     private Integer facturaPagadaId;
+
+    @Column(name = "fecha")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
     @Size(max = 10)
     @Column(name = "numero")
     private String numero;
-    @Size(max = 50)
-    @Column(name = "tipo")
+    @Column(name = "tipo", length = 60)
     private String tipo;
     @Size(max = 300)
     @Column(name = "detalle")
     private String detalle;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "valor")
-    private Double valor;
+    private BigDecimal valor;
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @JoinColumn(name = "transaccion_id", referencedColumnName = "transaccion_id")
     @ManyToOne
@@ -78,6 +85,14 @@ public class FacturaPagada implements Serializable {
 
     public void setFacturaPagadaId(Integer facturaPagadaId) {
         this.facturaPagadaId = facturaPagadaId;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
 
     public String getNumero() {
@@ -104,11 +119,11 @@ public class FacturaPagada implements Serializable {
         this.detalle = detalle;
     }
 
-    public Double getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 
@@ -152,5 +167,5 @@ public class FacturaPagada implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.FacturaPagada[ facturaPagadaId=" + facturaPagadaId + " ]";
     }
-    
+
 }

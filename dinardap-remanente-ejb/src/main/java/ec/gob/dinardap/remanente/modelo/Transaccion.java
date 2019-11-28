@@ -6,6 +6,7 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -19,12 +20,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -32,7 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "transaccion")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Transaccion.findAll", query = "SELECT t FROM Transaccion t")
     , @NamedQuery(name = "Transaccion.findByTransaccionId", query = "SELECT t FROM Transaccion t WHERE t.transaccionId = :transaccionId")
@@ -42,19 +41,23 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Transaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    
     @Basic(optional = false)
+    
+    @Id
+    @SequenceGenerator(name = "TRANSACCION_GENERATOR", sequenceName = "transaccion_transaccion_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRANSACCION_GENERATOR")
     @Column(name = "transaccion_id")
     private Integer transaccionId;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "valor_total")
-    private Double valorTotal;
+    private BigDecimal valorTotal;
     @Size(max = 2147483647)
     @Column(name = "respaldo_url")
     private String respaldoUrl;
     @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @OneToMany(mappedBy = "transaccionId")
     private List<FacturaPagada> facturaPagadaList;
@@ -84,11 +87,11 @@ public class Transaccion implements Serializable {
         this.transaccionId = transaccionId;
     }
 
-    public Double getValorTotal() {
+    public BigDecimal getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(Double valorTotal) {
+    public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
 
@@ -108,7 +111,6 @@ public class Transaccion implements Serializable {
         this.fechaRegistro = fechaRegistro;
     }
 
-    @XmlTransient
     public List<FacturaPagada> getFacturaPagadaList() {
         return facturaPagadaList;
     }
@@ -117,7 +119,6 @@ public class Transaccion implements Serializable {
         this.facturaPagadaList = facturaPagadaList;
     }
 
-    @XmlTransient
     public List<Nomina> getNominaList() {
         return nominaList;
     }
@@ -126,7 +127,6 @@ public class Transaccion implements Serializable {
         this.nominaList = nominaList;
     }
 
-    @XmlTransient
     public List<Tramite> getTramiteList() {
         return tramiteList;
     }

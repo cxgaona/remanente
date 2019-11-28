@@ -13,7 +13,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <nemonico-sistema>dinardap-remanentes</nemonico-sistema>
-        <path.sistema>C:/Users/christian.gaona/Documents/DINARDAP 2019/Remanentes V1.0/ProyectoRemanentes Aplicativo/Version 1.1/dinardap-remanente</path.sistema>
+        <path.sistema>C:/remanente</path.sistema>
         <path.server.deployments>C:/wildfly-14.0.1.Final</path.server.deployments>
         <wildfly.user>admin</wildfly.user>
         <wildfly.password>dINARDAP.2019</wildfly.password>

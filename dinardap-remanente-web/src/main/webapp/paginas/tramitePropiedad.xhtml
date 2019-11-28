@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">
+    <script type="text/javascript">
+        PrimeFaces.locales['es'] = {
+            closeText: 'Cerrar',
+            prevText: 'Anterior',
+            nextText: 'Siguiente',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            weekHeader: 'Semana',
+            firstDayOfWeek: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: '',
+            timeOnlyTitle: 'Sólo hora',
+            timeText: 'Tiempo',
+            hourText: 'Hora',
+            minuteText: 'Minuto',
+            secondText: 'Segundo',
+            currentText: 'Fecha actual',
+            ampm: false,
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            allDayText: 'Todo el día'
+        };
+    </script>
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">        
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tramitePropiedadCtrl.tituloPropiedad}</h1>
+            <h:form id="formTramite">
+                <p:remoteCommand name="onSelectRowTramite" 
+                                 update="formTramiteSelected"/>
+                <b:panel title="Trámites Propiedad">
+                    <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                        <p:outputLabel for="mesTramite" value="Mes:&nbsp;" />
+                        <p:datePicker id="mesTramite" view="month" value="#{tramitePropiedadCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
+                        <p:commandButton action="#{tramitePropiedadCtrl.reloadTramite}" update="formTramite, formTramiteSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                    </b:panelGrid>
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <h:outputLabel value="Mes Seleccionado: #{tramitePropiedadCtrl.mes eq 1? 'Enero':
+                                                                  tramitePropiedadCtrl.mes eq 2? 'Febrero':
+                                                                  tramitePropiedadCtrl.mes eq 3? 'Marzo':
+                                                                  tramitePropiedadCtrl.mes eq 4? 'Abril':
+                                                                  tramitePropiedadCtrl.mes eq 5? 'Mayo':
+                                                                  tramitePropiedadCtrl.mes eq 6? 'Junio':
+                                                                  tramitePropiedadCtrl.mes eq 7? 'Julio':
+                                                                  tramitePropiedadCtrl.mes eq 8? 'Agosto':
+                                                                  tramitePropiedadCtrl.mes eq 9? 'Septiembre':
+                                                                  tramitePropiedadCtrl.mes eq 10? 'Octubre':
+                                                                  tramitePropiedadCtrl.mes eq 11? 'Noviembre':
+                                                                  tramitePropiedadCtrl.mes eq 12? 'Diciembre':'Sin mes'}" styleClass="form-label-izquierda-15" style="width: 100%"/>
+                        <p:dataTable id="tramiteTbl"
+                                     value="#{tramitePropiedadCtrl.tramiteList}" 
+                                     var="tramite"                                     
+                                     rowKey="#{tramite.tramiteId}"
+                                     selectionMode="single"
+                                     selection="#{tramitePropiedadCtrl.tramiteSelected}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25">
+                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
+                            <p:column headerText="ID Tramite" rendered="false">
+                                <h:outputText value="#{tramite.tramiteId}"/>
+                            </p:column>
+                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
+                                <h:outputText value="#{tramite.tipo}" />
+                            </p:column>
+                            <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
+                                <h:outputText value="#{tramite.numero}" />
+                            </p:column>
+                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
+                                <h:outputText value="#{tramite.fecha}" />
+                            </p:column>
+                            <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
+                                <h:outputText value="#{tramite.numeroComprobantePago}" />
+                            </p:column>                            
+                            <p:column headerText="Valor" sortBy="#{tramite.valor}">
+                                <h:outputText value="#{tramite.valor}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains">
+                                <h:outputText value="#{tramite.acto}" />
+                            </p:column>                            
+                        </p:dataTable>                          
+                    </h:panelGrid>
+
+                    <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 35%; margin: 4px 5px;">
+                        <p:commandButton value="Nuevo Trámite"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{tramitePropiedadCtrl.nuevoTramite}"
+                                         icon="fa fa-fw fa-plus-square"
+                                         id="btnNuevoTramite"
+                                         disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                                         update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
+                        <p:commandButton value="Borrar Trámite"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{tramitePropiedadCtrl.borrarTramite}"
+                                         icon="fa fa-fw fa-trash"
+                                         id="btnBorrarTramite"
+                                         disabled="#{tramitePropiedadCtrl.disableDelete}"
+                                         update="formTramiteSelected, formTramite">
+                            <p:confirm header="Confirmación" message="¿Está seguro de eliminar el trámite?" icon="fa fa-fw fa-warning" />
+                        </p:commandButton>
+                    </b:panelGrid>
+                    <b:panelGrid id="cargaTramitesPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
+                        <p:outputLabel value="Carga de trámites en bloque: " />
+                        <p:fileUpload                                    
+                            id="cargaTramites"
+                            messageTemplate="Tipo de Archivo no Válido"
+                            style="width:100%"
+                            mode="advanced"
+                            dragDropSupport="true"
+                            sizeLimit="90000000"
+                            allowTypes="/(\.|\/)(xlsx)$/"
+                            label=""
+                            uploadLabel=""                            
+                            disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                            cancelLabel=""                                
+                            fileUploadListener="#{tramitePropiedadCtrl.crearTramitesBloque}"
+                            update="formTramite, msgMensajes"/>
+                    </b:panelGrid>
+                </b:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                </p:confirmDialog>
+            </h:form>
+            <h:form id="formTramiteSelected" >
+                <b:panel style="width: 50%" rendered="#{tramitePropiedadCtrl.renderEdition}">                    
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="tipo" value="Tipo:" />
+                        <p:selectOneButton id="tipo" 
+                                           value="#{tramitePropiedadCtrl.tramiteSelected.tipo}"
+                                           style="width: 70%;"
+                                           required="true">
+                            <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
+                            <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
+                        </p:selectOneButton>                        
+
+                        <p:outputLabel for="numero" value="Número:" />
+                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+
+                        <p:outputLabel for="fecha" value="Fecha:" />
+                        <p:datePicker id="fecha" 
+                                      value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%" 
+                                      mindate="#{tramitePropiedadCtrl.fechaMin}" 
+                                      maxdate="#{tramitePropiedadCtrl.fechaMax}"
+                                      readonlyInput="true"
+                                      required="true"/>
+
+                        <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
+                        <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="10" style="width: 90%" required="true">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                                  
+
+                        <p:outputLabel for="valor" value="Valor:" />
+                        <p:inputNumber id="valor" value="#{tramitePropiedadCtrl.tramiteSelected.valor}" style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="acto" value="Acto:" />
+                        <p:inputTextarea id="acto" rows="3" cols="40" maxlength="300" autoResize="false" value="#{tramitePropiedadCtrl.tramiteSelected.acto}" required="true"/>
+
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton value="#{tramitePropiedadCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tramitePropiedadCtrl.guardar}" update=":formTramiteSelected, :formTramite"/>
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{tramitePropiedadCtrl.cancelar}" update=":formTramiteSelected, :formTramite"/>
+                    </b:panelGrid>
+                </b:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

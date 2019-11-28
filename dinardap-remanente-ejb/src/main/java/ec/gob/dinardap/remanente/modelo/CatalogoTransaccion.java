@@ -17,7 +17,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -33,19 +33,20 @@ import javax.xml.bind.annotation.XmlTransient;
 public class CatalogoTransaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
+    
     @Id
-    @SequenceGenerator(name = "CATALOGO_TRANSACCION_GENERATOR", sequenceName = "CATALOGO_TRANSACCION_CATALOGO_TRANSACCION_ID_SEQ")
+    @SequenceGenerator(name = "CATALOGO_TRANSACCION_GENERATOR", sequenceName = "catalogo_transaccion_catalogo_transaccion_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATALOGO_TRANSACCION_GENERATOR")
     @Column(name = "catalogo_transaccion_id")
     private Integer catalogoTransaccionId;
-
-    @Column(name = "tipo", length = 20)
+    
+    @Size(max = 20)
+    @Column(name = "tipo")
     private String tipo;
-
-    @Column(name = "nombre", length = 100)
+    @Size(max = 100)
+    @Column(name = "nombre")
     private String nombre;
-
     @OneToMany(mappedBy = "catalogoTransaccionId")
     private List<Transaccion> transaccionList;
 
@@ -80,7 +81,6 @@ public class CatalogoTransaccion implements Serializable {
         this.nombre = nombre;
     }
 
-    @XmlTransient
     public List<Transaccion> getTransaccionList() {
         return transaccionList;
     }
@@ -111,7 +111,7 @@ public class CatalogoTransaccion implements Serializable {
 
     @Override
     public String toString() {
-        return "CatalogoTransaccion{" + "catalogoTransaccionId=" + catalogoTransaccionId + ", tipo=" + tipo + ", nombre=" + nombre + ", transaccionList=" + transaccionList + '}';
+        return "ec.gob.dinardap.remanente.modelo.CatalogoTransaccion[ catalogoTransaccionId=" + catalogoTransaccionId + " ]";
     }
-
+    
 }

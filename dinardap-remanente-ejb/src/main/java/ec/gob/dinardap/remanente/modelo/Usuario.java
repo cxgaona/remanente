@@ -18,10 +18,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "usuario")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u")
     , @NamedQuery(name = "Usuario.findByUsuarioId", query = "SELECT u FROM Usuario u WHERE u.usuarioId = :usuarioId")
@@ -44,18 +43,25 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Usuario.findByEstado", query = "SELECT u FROM Usuario u WHERE u.estado = :estado")})
 public class Usuario implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    @OneToMany(mappedBy = "usuarioId")
+    private List<Respuesta> respuestaList;
+
+    private static final long serialVersionUID = 1L;   
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name = "USUARIO_GENERATOR", sequenceName = "usuario_usuario_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USUARIO_GENERATOR")
     @Column(name = "usuario_id")
     private Integer usuarioId;
-    @Size(max = 150)
+    
+    @Size(max = 300)
     @Column(name = "nombre")
     private String nombre;
     @Size(max = 50)
     @Column(name = "usuario")
     private String usuario;
+    @Column(name = "email", length = 300)
+    private String email;
     @Size(max = 500)
     @Column(name = "contrasena")
     private String contrasena;
@@ -76,9 +82,13 @@ public class Usuario implements Serializable {
     private List<Bandeja> bandejaList;
     @OneToMany(mappedBy = "usuarioSolicitanteId")
     private List<Bandeja> bandejaList1;
+    @OneToMany(mappedBy = "usuarioId")
+    private List<EstadoRemanenteMensual> estadoRemanenteMensualList;
     @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")
     @ManyToOne
     private InstitucionRequerida institucionId;
+    @OneToMany(mappedBy = "usuarioId")
+    private List<EstadoRemanenteCuatrimestral> estadoRemanenteCuatrimestralList;
 
     public Usuario() {
     }
@@ -164,7 +174,6 @@ public class Usuario implements Serializable {
         this.estado = estado;
     }
 
-    @XmlTransient
     public List<Bandeja> getBandejaList() {
         return bandejaList;
     }
@@ -173,7 +182,6 @@ public class Usuario implements Serializable {
         this.bandejaList = bandejaList;
     }
 
-    @XmlTransient
     public List<Bandeja> getBandejaList1() {
         return bandejaList1;
     }
@@ -182,12 +190,28 @@ public class Usuario implements Serializable {
         this.bandejaList1 = bandejaList1;
     }
 
+    public List<EstadoRemanenteMensual> getEstadoRemanenteMensualList() {
+        return estadoRemanenteMensualList;
+    }
+
+    public void setEstadoRemanenteMensualList(List<EstadoRemanenteMensual> estadoRemanenteMensualList) {
+        this.estadoRemanenteMensualList = estadoRemanenteMensualList;
+    }
+
     public InstitucionRequerida getInstitucionId() {
         return institucionId;
     }
 
     public void setInstitucionId(InstitucionRequerida institucionId) {
         this.institucionId = institucionId;
+    }
+
+    public List<EstadoRemanenteCuatrimestral> getEstadoRemanenteCuatrimestralList() {
+        return estadoRemanenteCuatrimestralList;
+    }
+
+    public void setEstadoRemanenteCuatrimestralList(List<EstadoRemanenteCuatrimestral> estadoRemanenteCuatrimestralList) {
+        this.estadoRemanenteCuatrimestralList = estadoRemanenteCuatrimestralList;
     }
 
     @Override
@@ -210,9 +234,26 @@ public class Usuario implements Serializable {
         return true;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.Usuario[ usuarioId=" + usuarioId + " ]";
     }
-    
+
+    @XmlTransient
+    public List<Respuesta> getRespuestaList() {
+        return respuestaList;
+    }
+
+    public void setRespuestaList(List<Respuesta> respuestaList) {
+        this.respuestaList = respuestaList;
+    }
+
 }
