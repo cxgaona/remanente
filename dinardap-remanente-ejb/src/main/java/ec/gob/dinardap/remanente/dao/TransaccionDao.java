@@ -4,7 +4,6 @@ import javax.ejb.Local;
 
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
-import java.util.List;
 
 @Local
 public interface TransaccionDao extends GenericDao<Transaccion, Integer> {

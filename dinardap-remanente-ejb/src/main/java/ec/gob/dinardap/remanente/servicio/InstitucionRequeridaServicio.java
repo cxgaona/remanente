@@ -14,12 +14,16 @@ public interface InstitucionRequeridaServicio extends GenericService<Institucion
 
     public List<InstitucionRequerida> getRegistroMixtoList();
 
+    public List<InstitucionRequerida> getRegistroMixtoList(Integer direccionRegionalID);
+
     public List<InstitucionRequerida> getGADList();
 
     public List<InstitucionRequerida> getDireccionRegionalList();
+    
+    public List<InstitucionRequerida> getDireccionNacionalList();
 
     public InstitucionRequerida getInstitucionById(Integer institucionId);
-    
+
     public InstitucionRequerida getRegistroMixtoByGad(Integer institucionId);
 
 //    public List<InstitucionRequerida> getDireccionRegionalList(InstitucionRequerida registroMixto);

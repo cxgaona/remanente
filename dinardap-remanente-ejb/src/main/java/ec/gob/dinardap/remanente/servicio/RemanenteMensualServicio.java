@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.Local;
 
 import ec.gob.dinardap.persistence.servicio.GenericService;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 
 @Local
@@ -14,8 +15,14 @@ public interface RemanenteMensualServicio extends GenericService<RemanenteMensua
 
     public void editRemanenteMensual(RemanenteMensual remanenteMensual);
 
-    public RemanenteMensual crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen);
+    public void editRemanenteMensual(RemanenteMensual remanenteMensual, SftpDto sftpDto);
+
+    public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen);
+
+    public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen);
 
     public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes);
+
+    public byte[] descargarArchivo(SftpDto sftpDto);
 
 }

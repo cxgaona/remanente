@@ -1,7 +1,8 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.modelo.Bandeja;
+import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -16,11 +18,10 @@ import javax.inject.Named;
 @ViewScoped
 public class BandejaCtrl extends BaseCtrl implements Serializable {
 
-    private String titulo;
+    private String titulo, linkRedireccion;
     private Integer usuarioId, anio, mes;
-    private List<Bandeja> bandejaList;
-    private List<Bandeja> bandejaListMesAnterior;
-    private Bandeja bandejaSelected;
+    private List<BandejaDTO> bandejaList;
+    private BandejaDTO bandejaSelected;
 
     @EJB
     private BandejaServicio bandejaServicio;
@@ -28,25 +29,39 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         titulo = "Bandeja";
-        bandejaSelected = new Bandeja();
+        linkRedireccion = "#";
+        bandejaSelected = new BandejaDTO();
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         anio = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         bandejaList = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mes);
-        Integer mesMin, anioMin;
-        if (mes == 1) {
-            anioMin = anio - 1;
-            bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anioMin, 12);
-        } else {
-            mesMin = mes - 1;
-            bandejaListMesAnterior = bandejaServicio.getBandejaByUsuarioAñoMes(usuarioId, anio, mesMin);
-        }
-        bandejaList.addAll(bandejaListMesAnterior);
     }
 
-    public void onRowSelectBandeja() {
+    public void onRowSelectBandeja() throws IOException {
+        switch (this.getSessionVariable("perfil")) {
+            case "REM-Registrador, ":
+                linkRedireccion = "gestionRemanenteMensual.jsf";
+                break;
+            case "REM-Verificador, ":
+                linkRedireccion = "verificarRemanenteMensual.jsf";
+                if (bandejaSelected.getTipo().equals("RC")) {
+                    linkRedireccion = "gestionRemanenteCuatrimestral.jsf";
+                }
+                break;
+            case "REM-Validador, ":
+                linkRedireccion = "validarRemanenteMensual.jsf";
+                if (bandejaSelected.getTipo().equals("RC")) {
+                    linkRedireccion = "gestionValidacionRemanenteCuatrimestral.jsf";
+                }
+                break;
+            case "REM-Administrador, ":
+                linkRedireccion = "administracion/adminRemanenteMensual.jsf";
+                break;
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect(linkRedireccion);
+
         if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {
             bandejaSelected.setLeido(Boolean.TRUE);
             bandejaSelected.setFechaLeido(new Date());
@@ -86,27 +101,27 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         this.usuarioId = usuarioId;
     }
 
-    public List<Bandeja> getBandejaList() {
+    public List<BandejaDTO> getBandejaList() {
         return bandejaList;
     }
 
-    public void setBandejaList(List<Bandeja> bandejaList) {
+    public void setBandejaList(List<BandejaDTO> bandejaList) {
         this.bandejaList = bandejaList;
     }
 
-    public List<Bandeja> getBandejaListMesAnterior() {
-        return bandejaListMesAnterior;
+    public String getLinkRedireccion() {
+        return linkRedireccion;
     }
 
-    public void setBandejaListMesAnterior(List<Bandeja> bandejaListMesAnterior) {
-        this.bandejaListMesAnterior = bandejaListMesAnterior;
+    public void setLinkRedireccion(String linkRedireccion) {
+        this.linkRedireccion = linkRedireccion;
     }
 
-    public Bandeja getBandejaSelected() {
+    public BandejaDTO getBandejaSelected() {
         return bandejaSelected;
     }
 
-    public void setBandejaSelected(Bandeja bandejaSelected) {
+    public void setBandejaSelected(BandejaDTO bandejaSelected) {
         this.bandejaSelected = bandejaSelected;
     }
 

@@ -21,7 +21,6 @@ public class ValorConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        System.out.println("Valor en getAsObject: " + value);
         return null;
     }
 

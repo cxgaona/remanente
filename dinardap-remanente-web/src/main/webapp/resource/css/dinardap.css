@@ -440,3 +440,10 @@ ui-fileupload ui-widget ui-fileupload-responsive{
     font-weight: normal !important;        
     color: #000000 !important;
 }
+
+
+.versionAnterior {
+    background-color: #fca752 !important;
+    background-image: none !important;
+    color: #000000 !important;
+}

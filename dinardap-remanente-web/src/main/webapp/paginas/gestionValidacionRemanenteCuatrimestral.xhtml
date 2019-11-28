@@ -8,7 +8,39 @@
       xmlns:pe="http://primefaces.org/ui/extensions">    
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{validarRemanenteCuatrimestralCtrl.tituloPagina}</h1>              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{validarRemanenteCuatrimestralCtrl.tituloPagina}</h1>
+            <h:form id="formInstitucion">
+                <b:panel title="Instituciones - #{validarRemanenteCuatrimestralCtrl.nombreDireccionRegional}">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="institucionTbl"
+                                     value="#{validarRemanenteCuatrimestralCtrl.institucionList}" 
+                                     var="institucion"
+                                     rowKey="#{institucion.institucionId}"
+                                     selectionMode="single"
+                                     selection="#{validarRemanenteCuatrimestralCtrl.institucionSelected}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15,25">
+                            <p:ajax event="rowSelect" listener="#{validarRemanenteCuatrimestralCtrl.onRowSelectInstitucion}"
+                                    update=":formRemanenteCuatrimestral, :formTransacciones"/>
+                            <p:column headerText="Institución" 
+                                      sortBy="#{institucion.nombre}" 
+                                      filterBy="#{institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" 
+                                      sortBy="#{institucion.provinciaCanton}" 
+                                      filterBy="#{institucion.provinciaCanton}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.provinciaCanton}" />
+                            </p:column>                            
+                            <p:column headerText="Tipo de Registro" 
+                                      sortBy="#{institucion.tipo}">
+                                <h:outputText value="#{institucion.tipo eq 'CON GAD'? 'Sin autonomía Financiera':'Con autonomía Financiera'}"/>
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
 
             <h:form id="formRemanenteCuatrimestral">
                 <b:panel title="Remanentes Cuatrimestrales - #{validarRemanenteCuatrimestralCtrl.nombreInstitucion}">
@@ -17,6 +49,7 @@
                             <h:outputLabel for="anioSelected" value="Año:&nbsp;" style="vertical-align: sub;"/>
                             <p:inputMask id="anioSelected" value="#{validarRemanenteCuatrimestralCtrl.año}" mask="9999" style="width: 100%"/>
                             <p:commandButton action="#{validarRemanenteCuatrimestralCtrl.loadRemanenteCuatrimestralByAño}" 
+                                             disabled="#{validarRemanenteCuatrimestralCtrl.disabledBtnReload}"
                                              update=":formRemanenteCuatrimestral"
                                              style="margin-right:20px;" 
                                              icon="fa fa-fw fa-refresh"/>
@@ -28,7 +61,7 @@
                                      selectionMode="single"
                                      selection="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected}"
                                      style="width: 50%">
-                            <p:ajax event="rowSelect" listener="#{validarRemanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral"/>
+                            <p:ajax event="rowSelect" listener="#{validarRemanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral, formRemanenteCuatrimestral:panelInforme"/>
                             <p:column headerText="Cuatrimestre" width="20%">
                                 <h:outputText value="#{remanenteCuatrimestral.cuatrimestre}" />
                             </p:column>
@@ -39,18 +72,28 @@
                             </p:column>
                             <p:column headerText="Informe Cuatrimestral" width="20%">                                
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeRemanenteUrl}" 
-                                       style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInfRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{validarRemanenteCuatrimestralCtrl.visualizarArchivoInfRemanenteCuatrimestral()}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{validarRemanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeRemanenteUrl}" /> 
+                                    </h:commandLink>                                    
                                 </center>
                             </p:column>
                             <p:column headerText="Informe Técnico" width="20%">                                
                                 <center>
-                                    <a href="#{facesContext.externalContext.requestContextPath}#{remanenteCuatrimestral.informeTecnicoUrl}" 
-                                       style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}"
-                                       target="_blank">
-                                        <img width="30" height="20" src="../resource/images/verPDF.png"/></a>
+                                    <h:commandLink id="btDescargaInfTecRemanenteCuatrimestral" target="_blank"
+                                                   immediate="true"
+                                                   styleClass="fa fa-fw fa-download" 
+                                                   action="#{validarRemanenteCuatrimestralCtrl.visualizarArchivoInfTecRemanenteCuatrimestral()}"
+                                                   style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}">
+                                        <f:setPropertyActionListener
+                                            target="#{validarRemanenteCuatrimestralCtrl.rutaArchivo}"
+                                            value="#{remanenteCuatrimestral.informeTecnicoUrl}" /> 
+                                    </h:commandLink>
                                 </center>
                             </p:column>                            
                         </p:dataTable>
@@ -72,7 +115,7 @@
                                 uploadLabel=""
                                 cancelLabel=""                                
                                 oncomplete="onCellEdit();"
-                                fileUploadListener="#{validarRemanenteCuatrimestralCtrl.handleFileUploadInformeTecnicoCuatrimestral}"
+                                fileUploadListener="#{validarRemanenteCuatrimestralCtrl.uploadInformeTecnicoCuatrimestral}"
                                 update="formRemanenteCuatrimestral"/>
                         </b:panelGrid>
 
@@ -223,35 +266,35 @@
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{validarRemanenteCuatrimestralCtrl.getValorFactorIncidencia(1)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{validarRemanenteCuatrimestralCtrl.getValorFactorIncidencia(2)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{validarRemanenteCuatrimestralCtrl.getValorFactorIncidencia(3)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{validarRemanenteCuatrimestralCtrl.getValorFactorIncidencia(4)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column style="text-align: right">
                                         <f:facet name="footer">
                                             <h:outputText value="#{validarRemanenteCuatrimestralCtrl.getValorFactorIncidencia(5)}">
-                                                <f:convertNumber/>
+                                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
@@ -435,7 +478,7 @@
                     </h:panelGrid>
                 </b:panel>                                
             </h:form>
-            
+
         </ui:define>
     </ui:composition>
 </html>

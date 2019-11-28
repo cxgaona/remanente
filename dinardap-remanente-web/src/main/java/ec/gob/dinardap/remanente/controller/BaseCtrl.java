@@ -1,6 +1,9 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.util.TipoArchivo;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -11,6 +14,8 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class BaseCtrl implements Serializable {
@@ -182,10 +187,50 @@ public class BaseCtrl implements Serializable {
             if (getSessionVariable("institucionTipo").equals("GAD")) {
                 institucionID = institucionRequeridaServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
             }
-        } else if (perfil.contains("REM-Validador")) {
         } else if (perfil.contains("REM-Administrador")) {
         }
         return institucionID;
     }
 
+    /**
+     *
+     * @param archivo
+     * @param contentType
+     * @param name
+     */
+    public void downloadFile(byte[] archivo, String contentType, String name) {
+        FacesContext ctx = getFacesContext();
+
+        if (!ctx.getResponseComplete()) {
+            HttpServletResponse response = getHttpServletResponse();
+            response.setContentType(contentType);
+            response.setHeader("Content-Disposition", "attachment;filename=\""
+                    + name + "\"");
+
+            try {
+                ServletOutputStream out = response.getOutputStream();
+
+                response.setContentLength(archivo.length);
+
+                out = response.getOutputStream();
+                out.write(archivo, 0, archivo.length);
+                out.flush();
+                out.close();
+
+                ctx.responseComplete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected HttpServletResponse getHttpServletResponse() {
+
+        return (HttpServletResponse) getExternalContext().getResponse();
+
+    }
 }

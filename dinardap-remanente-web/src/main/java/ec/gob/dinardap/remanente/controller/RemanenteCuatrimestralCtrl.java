@@ -1,21 +1,25 @@
 package ec.gob.dinardap.remanente.controller;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.DocumentException;
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -34,15 +38,9 @@ import java.util.logging.Logger;
 import javax.faces.event.ActionEvent;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperRunManager;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -66,18 +64,23 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private Integer usuarioId;
     private String tituloPagina;
     private String nombreInstitucion;
+    private String rutaArchivo;
     private Integer año;
     private RemanenteCuatrimestral remanenteCuatrimestralSelected;
     private BigDecimal totalIngRPropiedad;
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
     private Boolean btnInfDisabled;
+    private InstitucionRequerida institucionNotificacion;
+    private List<Usuario> usuarioListNotificacion;
 
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
     private List<Row> transaccionRegistrosList;
     private List<Row> transaccionEgresosList;
 
     private Boolean displayUploadInformeCuatrimestral;
+
+    private SftpDto sftpDto;
 
     @EJB
     private RemanenteCuatrimestralServicio remanenteCuatrimestralServicio;
@@ -87,6 +90,12 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private EstadoRemanenteCuatrimestralServicio estadoRemanenteCuatrimestralServicio;
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
+    @EJB
+    private BandejaServicio bandejaServicio;
+    @EJB
+    private UsuarioServicio usuarioServicio;
+    @EJB
+    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
@@ -100,11 +109,12 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         remanenteCuatrimestralSelected = new RemanenteCuatrimestral();
         transaccionRegistrosList = new ArrayList<Row>();
         transaccionEgresosList = new ArrayList<Row>();
+        sftpDto = new SftpDto();
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
         displayUploadInformeCuatrimestral = Boolean.FALSE;
-        btnInfDisabled=Boolean.TRUE;
+        btnInfDisabled = Boolean.TRUE;
 
         //FechaACtual
         Calendar calendar = Calendar.getInstance();
@@ -139,13 +149,24 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        btnInfDisabled=Boolean.FALSE;
-        if (remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")) {
+        btnInfDisabled = Boolean.FALSE;
+        Boolean flagDisplay = Boolean.TRUE;
+        rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
+
+        for (RemanenteMensual remanenteMensual : rms) {
+            if (!(remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
+                    || remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado")
+                    || remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioRechazado"))) {
+                flagDisplay = Boolean.FALSE;
+            }
+        }
+
+        if (flagDisplay
+                && remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")) {
             displayUploadInformeCuatrimestral = Boolean.TRUE;
         } else {
             displayUploadInformeCuatrimestral = Boolean.FALSE;
         }
-        rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
 
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {
@@ -214,17 +235,17 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         return rms;
     }
 
-    public void handleFileUploadInformeCuatrimestral(FileUploadEvent event) {
+    public void uploadInformeCuatrimestral(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         try {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String path = FacesUtils.getPath() + "/archivos/informeRemanenteCuatrimestral/";
-            String realPath = path + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf";
-            FileOutputStream fos = new FileOutputStream(realPath);
-            fos.write(fileByte);
-            fos.close();
-            remanenteCuatrimestralSelected.setInformeRemanenteUrl("/archivos/informeRemanenteCuatrimestral/" + "irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId() + ".pdf");
-            remanenteCuatrimestralServicio.update(remanenteCuatrimestralSelected);
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("irc_" + remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId()).concat(".pdf");
+            sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(realPath));
+            sftpDto.setArchivo(fileByte);
+            remanenteCuatrimestralSelected.setInformeRemanenteUrl(realPath);
+            remanenteCuatrimestralServicio.editRemanenteCuatrimestral(remanenteCuatrimestralSelected, sftpDto);
+            fileByte = null;
+
             EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
             Usuario u = new Usuario();
             u.setUsuarioId(usuarioId);
@@ -234,7 +255,31 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             erc.setDescripcion("InformeSubido");
             estadoRemanenteCuatrimestralServicio.create(erc);
             displayUploadInformeCuatrimestral = Boolean.FALSE;
-//            remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+            //ENVIO DE NOTIFICACION//
+            String meses = "";
+            switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
+                case 1:
+                    meses = "Enero - Abril";
+                    break;
+                case 2:
+                    meses = "Mayo - Agosto";
+                    break;
+                case 3:
+                    meses = "Septiembre - Diciembre";
+                    break;
+            }
+            Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
+            institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+            usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                    "REM-Validador", "REM-Verificador", 1, remanenteCuatrimestralSelected);
+            String mensajeNotificacion = "Se ha subido el informe del Remanente Cuatrimestral suscrito correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
+            bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                    remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
+                    remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales - 1).getRemanenteMensualId(),
+                    mensajeNotificacion, "RC");
+            //FIN ENVIO//
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -320,32 +365,32 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         for (Row r : transaccionRegistrosList) {
             switch (mes) {
                 case 1:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes1());
                     }
                     break;
                 case 2:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes2());
                     }
                     break;
                 case 3:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes3());
                     }
                     break;
                 case 4:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes4());
                     }
                     break;
                 case 5:
-                    if (!r.getNombre().equals("Número de trámites Registro de la Propiedad")
-                            || !r.getNombre().equals("Número de trámites Registro Mercantil")) {
+                    if (!(r.getNombre().equals("Número de trámites Registro de la Propiedad")
+                            || r.getNombre().equals("Número de trámites Registro Mercantil"))) {
                         valor = valor.add(r.getValorMes1()).add(r.getValorMes2()).add(r.getValorMes3()).add(r.getValorMes4());
                     }
                     break;
@@ -395,7 +440,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         if (ingresosTotales.compareTo(BigDecimal.ZERO) == 0) {
             valor = BigDecimal.ZERO;
         } else {
-            valor = totalIngRMercantil.divide(ingresosTotales, 2, RoundingMode.HALF_UP);
+            valor = totalIngRMercantil.divide(ingresosTotales, 8, RoundingMode.HALF_UP);
         }
         return valor;
     }
@@ -431,7 +476,8 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         BigDecimal valor = BigDecimal.ZERO;
         totalGastosRPropiedad = getValorTotalGastos(mes);
         factorIncidencia = getValorFactorIncidencia(mes);
-        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        valor = totalGastosRPropiedad.multiply(factorIncidencia).setScale(8, BigDecimal.ROUND_HALF_EVEN);
+
         return valor;
     }
 
@@ -441,7 +487,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         BigDecimal valor = BigDecimal.ZERO;
         totalIngRMercatil = getValorTotalIngresos(mes, "Ingreso-Mercantil");
         gastosRMercantilEst = getValorGastosRMercantil(mes);
-        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        valor = totalIngRMercatil.subtract(gastosRMercantilEst).setScale(8, BigDecimal.ROUND_HALF_EVEN);
         return valor;
     }
 
@@ -467,7 +513,8 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         String mes4 = remanenteCuatrimestralSelected.getCuatrimestre().equals(1) ? "Abril"
                 : remanenteCuatrimestralSelected.getCuatrimestre().equals(2) ? "Agosto"
                 : remanenteCuatrimestralSelected.getCuatrimestre().equals(3) ? "Diciembre" : "Sin mes";
-
+        String path = FacesUtils.getPath() + "/resource/images/";
+        parametros.put("realPath", path);
         parametros.put("cuatrimestreAnio", "CUATRIMESTRE " + cuatrimestre + " AÑO: " + remanenteCuatrimestralSelected.getRemanenteAnual().getAnio());
         parametros.put("mes1", mes1);
         parametros.put("mes2", mes2);
@@ -478,190 +525,188 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             if (r.getTipo().equals("Ingreso-Propiedad")) {
                 switch (r.getNombre()) {
                     case "Certificaciones":
-                        parametros.put("rpcrt1", r.getValorMes1().toString());
-                        parametros.put("rpcrt2", r.getValorMes2().toString());
-                        parametros.put("rpcrt3", r.getValorMes3().toString());
-                        parametros.put("rpcrt4", r.getValorMes4().toString());
+                        parametros.put("rpcrt1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpcrt2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpcrt3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpcrt4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rpcrttotal", r.getValorTotal().toString());
+                        parametros.put("rpcrttotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         break;
                     case "Inscripciones":
-                        parametros.put("rpins1", r.getValorMes1().toString());
-                        parametros.put("rpins2", r.getValorMes2().toString());
-                        parametros.put("rpins3", r.getValorMes3().toString());
-                        parametros.put("rpins4", r.getValorMes4().toString());
+                        parametros.put("rpins1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpins2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpins3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpins4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rpinstotal", r.getValorTotal().toString());
+                        parametros.put("rpinstotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         break;
                     case "Otros":
-                        parametros.put("rpotr1", r.getValorMes1().toString());
-                        parametros.put("rpotr2", r.getValorMes2().toString());
-                        parametros.put("rpotr3", r.getValorMes3().toString());
-                        parametros.put("rpotr4", r.getValorMes4().toString());
+                        parametros.put("rpotr1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpotr2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpotr3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rpotr4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rpotrtotal", r.getValorTotal().toString());
+                        parametros.put("rpotrtotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         break;
                     case "Número de trámites Registro de la Propiedad":
-                        parametros.put("rpntra1", r.getValorMes1().toString());
-                        parametros.put("rpntra2", r.getValorMes2().toString());
-                        parametros.put("rpntra3", r.getValorMes3().toString());
-                        parametros.put("rpntra4", r.getValorMes4().toString());
+                        parametros.put("rpntra1", r.getValorMes1().intValue() + " ");
+                        parametros.put("rpntra2", r.getValorMes2().intValue() + " ");
+                        parametros.put("rpntra3", r.getValorMes3().intValue() + " ");
+                        parametros.put("rpntra4", r.getValorMes4().intValue() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rpntratotal", r.getValorTotal().toString());
+                        parametros.put("rpntratotal", r.getValorTotal().intValue() + " ");
                         break;
                 }
-            }            
-            else if (r.getTipo().equals("Ingreso-Mercantil")) {
+            } else if (r.getTipo().equals("Ingreso-Mercantil")) {
                 switch (r.getNombre()) {
                     case "Certificaciones":
-                        parametros.put("rmcrt1", r.getValorMes1().toString());
-                        parametros.put("rmcrt2", r.getValorMes2().toString());
-                        parametros.put("rmcrt3", r.getValorMes3().toString());
-                        parametros.put("rmcrt4", r.getValorMes4().toString());
+                        parametros.put("rmcrt1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmcrt2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmcrt3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmcrt4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rmcrttotal", r.getValorTotal().toString());
+                        parametros.put("rmcrttotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         break;
                     case "Inscripciones":
-                        parametros.put("rmins1", r.getValorMes1().toString());
-                        parametros.put("rmins2", r.getValorMes2().toString());
-                        parametros.put("rmins3", r.getValorMes3().toString());
-                        parametros.put("rmins4", r.getValorMes4().toString());
+                        parametros.put("rmins1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmins2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmins3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmins4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rminstotal", r.getValorTotal().toString());
+                        parametros.put("rminstotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         break;
                     case "Otros":
-                        parametros.put("rmotr1", r.getValorMes1().toString());
-                        parametros.put("rmotr2", r.getValorMes2().toString());
-                        parametros.put("rmotr3", r.getValorMes3().toString());
-                        parametros.put("rmotr4", r.getValorMes4().toString());
+                        parametros.put("rmotr1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmotr2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmotr3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                        parametros.put("rmotr4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rmotrtotal", r.getValorTotal().toString());
+                        parametros.put("rmotrtotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
                         break;
                     case "Número de trámites Registro Mercantil":
-                        parametros.put("rmntra1", r.getValorMes1().toString());
-                        parametros.put("rmntra2", r.getValorMes2().toString());
-                        parametros.put("rmntra3", r.getValorMes3().toString());
-                        parametros.put("rmntra4", r.getValorMes4().toString());
+                        parametros.put("rmntra1", r.getValorMes1().intValue() + " ");
+                        parametros.put("rmntra2", r.getValorMes2().intValue() + " ");
+                        parametros.put("rmntra3", r.getValorMes3().intValue() + " ");
+                        parametros.put("rmntra4", r.getValorMes4().intValue() + " ");
                         r.setValorTotal(r.getValorMes1().
                                 add(r.getValorMes2()).
                                 add(r.getValorMes3()).
                                 add(r.getValorMes4()));
-                        parametros.put("rmntratotal", r.getValorTotal().toString());
+                        parametros.put("rmntratotal", r.getValorTotal().intValue() + " ");
                         break;
                 }
             }
         }
-        
-        for (Row r : transaccionEgresosList) {            
-                switch (r.getNombre()) {
-                    case "Personal (Remuneraciones)":
-                        parametros.put("grem1", r.getValorMes1().toString());
-                        parametros.put("grem2", r.getValorMes2().toString());
-                        parametros.put("grem3", r.getValorMes3().toString());
-                        parametros.put("grem4", r.getValorMes4().toString());
-                        r.setValorTotal(r.getValorMes1().
-                                add(r.getValorMes2()).
-                                add(r.getValorMes3()).
-                                add(r.getValorMes4()));
-                        parametros.put("gremtotal", r.getValorTotal().toString());
-                        break;
-                    case "Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)":
-                        parametros.put("gbienes1", r.getValorMes1().toString());
-                        parametros.put("gbienes2", r.getValorMes2().toString());
-                        parametros.put("gbienes3", r.getValorMes3().toString());
-                        parametros.put("gbienes4", r.getValorMes4().toString());
-                        r.setValorTotal(r.getValorMes1().
-                                add(r.getValorMes2()).
-                                add(r.getValorMes3()).
-                                add(r.getValorMes4()));
-                        parametros.put("gbienestotal", r.getValorTotal().toString());
-                        break;
-                    case "Otros":
-                        parametros.put("gotr1", r.getValorMes1().toString());
-                        parametros.put("gotr2", r.getValorMes2().toString());
-                        parametros.put("gotr3", r.getValorMes3().toString());
-                        parametros.put("gotr4", r.getValorMes4().toString());
-                        r.setValorTotal(r.getValorMes1().
-                                add(r.getValorMes2()).
-                                add(r.getValorMes3()).
-                                add(r.getValorMes4()));
-                        parametros.put("gotrtotal", r.getValorTotal().toString());
-                        break;
-                    case "Bienes de Larga Duración":
-                        parametros.put("gblarga1", r.getValorMes1().toString());
-                        parametros.put("gblarga2", r.getValorMes2().toString());
-                        parametros.put("gblarga3", r.getValorMes3().toString());
-                        parametros.put("gblarga4", r.getValorMes4().toString());
-                        r.setValorTotal(r.getValorMes1().
-                                add(r.getValorMes2()).
-                                add(r.getValorMes3()).
-                                add(r.getValorMes4()));
-                        parametros.put("gblargatotal", r.getValorTotal().toString());
-                        break;
-                }
+
+        for (Row r : transaccionEgresosList) {
+            switch (r.getNombre()) {
+                case "Personal (Remuneraciones)":
+                    parametros.put("grem1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("grem2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("grem3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("grem4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    r.setValorTotal(r.getValorMes1().
+                            add(r.getValorMes2()).
+                            add(r.getValorMes3()).
+                            add(r.getValorMes4()));
+                    parametros.put("gremtotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    break;
+                case "Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)":
+                    parametros.put("gbienes1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gbienes2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gbienes3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gbienes4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    r.setValorTotal(r.getValorMes1().
+                            add(r.getValorMes2()).
+                            add(r.getValorMes3()).
+                            add(r.getValorMes4()));
+                    parametros.put("gbienestotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    break;
+                case "Otros":
+                    parametros.put("gotr1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gotr2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gotr3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gotr4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    r.setValorTotal(r.getValorMes1().
+                            add(r.getValorMes2()).
+                            add(r.getValorMes3()).
+                            add(r.getValorMes4()));
+                    parametros.put("gotrtotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    break;
+                case "Bienes de Larga Duración":
+                    parametros.put("gblarga1", r.getValorMes1().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gblarga2", r.getValorMes2().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gblarga3", r.getValorMes3().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    parametros.put("gblarga4", r.getValorMes4().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    r.setValorTotal(r.getValorMes1().
+                            add(r.getValorMes2()).
+                            add(r.getValorMes3()).
+                            add(r.getValorMes4()));
+                    parametros.put("gblargatotal", r.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString() + " ");
+                    break;
+            }
         }
-        
-        parametros.put("rptin1", getValorTotalIngresos(1, "Ingreso-Propiedad").toString());
-        parametros.put("rptin2", getValorTotalIngresos(2, "Ingreso-Propiedad").toString());
-        parametros.put("rptin3", getValorTotalIngresos(3, "Ingreso-Propiedad").toString());
-        parametros.put("rptin4", getValorTotalIngresos(4, "Ingreso-Propiedad").toString());
-        parametros.put("rptintotal", getValorTotalIngresos(5, "Ingreso-Propiedad").toString());
-        parametros.put("rmtin1", getValorTotalIngresos(1, "Ingreso-Mercantil").toString());
-        parametros.put("rmtin2", getValorTotalIngresos(2, "Ingreso-Mercantil").toString());
-        parametros.put("rmtin3", getValorTotalIngresos(3, "Ingreso-Mercantil").toString());
-        parametros.put("rmtin4", getValorTotalIngresos(4, "Ingreso-Mercantil").toString());
-        parametros.put("rmtintotal", getValorTotalIngresos(5, "Ingreso-Mercantil").toString());
-        
-        parametros.put("gtotrp1", getValorTotalGastos(1).toString());
-        parametros.put("gtotrp2", getValorTotalGastos(2).toString());
-        parametros.put("gtotrp3", getValorTotalGastos(3).toString());
-        parametros.put("gtotrp4", getValorTotalGastos(4).toString());
-        parametros.put("gtotrptotal", getValorTotalGastos(5).toString());
-        
-        parametros.put("ingTotal1", getValorIngresoTotal(1).toString());
-        parametros.put("ingTotal2", getValorIngresoTotal(2).toString());
-        parametros.put("ingTotal3", getValorIngresoTotal(3).toString());
-        parametros.put("ingTotal4", getValorIngresoTotal(4).toString());
-        parametros.put("ingTotaltotal",getValorIngresoTotal(5).toString());
-        
-        parametros.put("finc1", getValorFactorIncidencia(1).toString());
-        parametros.put("finc2", getValorFactorIncidencia(2).toString());
-        parametros.put("finc3", getValorFactorIncidencia(3).toString());
-        parametros.put("finc4", getValorFactorIncidencia(4).toString());
-        parametros.put("finctotal", getValorFactorIncidencia(5).toString());
-        
-        parametros.put("grmest1", getValorGastosRMercantil(1).toString());
-        parametros.put("grmest2", getValorGastosRMercantil(2).toString());
-        parametros.put("grmest3", getValorGastosRMercantil(3).toString());
-        parametros.put("grmest4", getValorGastosRMercantil(4).toString());
-        parametros.put("grmesttotal", getValorGastosRMercantil(5).toString());
-        parametros.put("remrm1", getValorRemanenteMercantil(1).toString());
-        parametros.put("remrm2", getValorRemanenteMercantil(2).toString());
-        parametros.put("remrm3", getValorRemanenteMercantil(3).toString());
-        parametros.put("remrm4", getValorRemanenteMercantil(4).toString());
-        parametros.put("remrmtotal", getValorRemanenteMercantil(5).toString());
-        
+
+        parametros.put("rptin1", getValorTotalIngresos(1, "Ingreso-Propiedad").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rptin2", getValorTotalIngresos(2, "Ingreso-Propiedad").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rptin3", getValorTotalIngresos(3, "Ingreso-Propiedad").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rptin4", getValorTotalIngresos(4, "Ingreso-Propiedad").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rptintotal", getValorTotalIngresos(5, "Ingreso-Propiedad").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rmtin1", getValorTotalIngresos(1, "Ingreso-Mercantil").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rmtin2", getValorTotalIngresos(2, "Ingreso-Mercantil").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rmtin3", getValorTotalIngresos(3, "Ingreso-Mercantil").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rmtin4", getValorTotalIngresos(4, "Ingreso-Mercantil").setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("rmtintotal", getValorTotalIngresos(5, "Ingreso-Mercantil").setScale(2, RoundingMode.HALF_UP).toString());
+
+        parametros.put("gtotrp1", getValorTotalGastos(1).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("gtotrp2", getValorTotalGastos(2).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("gtotrp3", getValorTotalGastos(3).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("gtotrp4", getValorTotalGastos(4).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("gtotrptotal", getValorTotalGastos(5).setScale(2, RoundingMode.HALF_UP).toString());
+
+        parametros.put("ingTotal1", getValorIngresoTotal(1).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("ingTotal2", getValorIngresoTotal(2).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("ingTotal3", getValorIngresoTotal(3).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("ingTotal4", getValorIngresoTotal(4).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("ingTotaltotal", getValorIngresoTotal(5).setScale(2, RoundingMode.HALF_UP).toString());
+
+        parametros.put("finc1", getValorFactorIncidencia(1).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("finc2", getValorFactorIncidencia(2).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("finc3", getValorFactorIncidencia(3).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("finc4", getValorFactorIncidencia(4).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("finctotal", getValorFactorIncidencia(5).setScale(2, RoundingMode.HALF_UP).toString());
+
+        parametros.put("grmest1", getValorGastosRMercantil(1).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("grmest2", getValorGastosRMercantil(2).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("grmest3", getValorGastosRMercantil(3).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("grmest4", getValorGastosRMercantil(4).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("grmesttotal", getValorGastosRMercantil(5).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("remrm1", getValorRemanenteMercantil(1).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("remrm2", getValorRemanenteMercantil(2).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("remrm3", getValorRemanenteMercantil(3).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("remrm4", getValorRemanenteMercantil(4).setScale(2, RoundingMode.HALF_UP).toString());
+        parametros.put("remrmtotal", getValorRemanenteMercantil(5).setScale(2, RoundingMode.HALF_UP).toString());
 
         File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportInformeCuatrimestral.jasper"));
 
@@ -678,8 +723,33 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         FacesContext.getCurrentInstance().responseComplete();
     }
 
-    //Getters & Setters
+    public void visualizarArchivoInfRemanenteCuatrimestral() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
 
+    public void visualizarArchivoInfTecRemanenteCuatrimestral() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
+
+    //Getters & Setters
     public Boolean getBtnInfDisabled() {
         return btnInfDisabled;
     }
@@ -687,7 +757,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     public void setBtnInfDisabled(Boolean btnInfDisabled) {
         this.btnInfDisabled = btnInfDisabled;
     }
-        
+
     public List<Row> getTransaccionRegistrosList() {
         return transaccionRegistrosList;
     }
@@ -775,4 +845,13 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     public void setDisplayUploadInformeCuatrimestral(Boolean displayUploadInformeCuatrimestral) {
         this.displayUploadInformeCuatrimestral = displayUploadInformeCuatrimestral;
     }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
+    }
+
 }

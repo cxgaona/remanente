@@ -100,7 +100,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
         String[] orderBy = {"usuarioId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        System.out.println("tamaño: " + findByCriterias(criteria).size());
         if (findByCriterias(criteria).size() != 0) {
             user = findByCriterias(criteria).get(0);
         }
@@ -125,7 +124,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamañoVerificador: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Administrador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "administrador", "estado"};
@@ -134,7 +132,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamañoAdministrador: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Validador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "validador", "estado"};
@@ -143,7 +140,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamañoValidador: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 }
                 break;
@@ -161,7 +157,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamañoRegistrador: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Validador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "validador", "estado"};
@@ -170,7 +165,6 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamañoValidador: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 }
                 break;
@@ -178,20 +172,22 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                 if (rolAsignado.equals("REM-Registrador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "registrador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {institucion.getInstitucionId(), Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Verificador")) {
+                    Integer idInstitucionNotificacion = institucion.getInstitucionId();
+                    if(institucion.getTipo().equals("CON GAD")){
+                        idInstitucionNotificacion=institucion.getGad().getInstitucionId();
+                    }
                     String[] criteriaNombres = {"institucionId.institucionId", "verificador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {idInstitucionNotificacion, Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 }
                 break;
@@ -203,25 +199,26 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Verificador")) {
+                    Integer idInstitucionNotificacion = institucion.getInstitucionId();
+                    if(institucion.getTipo().equals("CON GAD")){
+                        idInstitucionNotificacion=institucion.getGad().getInstitucionId();
+                    }
                     String[] criteriaNombres = {"institucionId.institucionId", "verificador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {idInstitucionNotificacion, Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 } else if (rolAsignado.equals("REM-Validador")) {
                     String[] criteriaNombres = {"institucionId.institucionId", "validador", "estado"};
                     CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.BOOLEAN_POSTGRESQL, CriteriaTypeEnum.STRING_EQUALS};
-                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(), Boolean.TRUE, "A"};
+                    Object[] criteriaValores = {remanenteCuatrimestral.getRemanenteAnual().getInstitucionRequerida().getDireccionRegional().getInstitucionId(), Boolean.TRUE, "A"};
                     String[] orderBy = {"usuarioId"};
                     boolean[] asc = {true};
                     Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-                    System.out.println("tamaño: " + findByCriterias(criteria).size());
                     userList = findByCriterias(criteria);
                 }
                 break;

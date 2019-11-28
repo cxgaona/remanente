@@ -6,7 +6,6 @@
 package ec.gob.dinardap.remanente.controller.converters;
 
 import ec.gob.dinardap.remanente.controller.Row;
-import ec.gob.dinardap.remanente.modelo.Transaccion;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -24,7 +23,6 @@ public class RowConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        System.out.println("Valor en getAsObject: " + value);
         return null;
     }
 

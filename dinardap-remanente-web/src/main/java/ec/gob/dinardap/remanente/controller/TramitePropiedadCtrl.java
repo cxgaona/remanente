@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -9,17 +8,31 @@ import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 @Named(value = "tramitePropiedadCtrl")
 @ViewScoped
@@ -69,7 +82,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         mes = calendar.get(Calendar.MONTH) + 1;
         fechaMin = fechasLimiteMin(anio, mes);
         fechaMax = fechasLimiteMax(anio, mes);
-        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));        
+        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         obtenerRemanenteMensual();
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());
         tramiteSelected = new Tramite();
@@ -78,33 +91,25 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-        disableNuevoT = Boolean.FALSE;
+        //disableNuevoT = Boolean.FALSE;
     }
 
     private String fechasLimiteMin(Integer anio, Integer mes) {
-        String fechaLimite = "";
-        Integer mesMin, anioMin;
-        if (mes == 1) {
-            anioMin = anio - 1;
-            fechaLimite = anioMin.toString() + "-12-15";
-        } else {
-            mesMin = mes - 1;
-            fechaLimite = anio.toString() + "-" + mesMin.toString() + "-15";
-        }
-        return fechaLimite;
+        return anio + "-" + mes + "-01";
     }
 
     private String fechasLimiteMax(Integer anio, Integer mes) {
-        String fechaLimite = "";
-        Integer mesMax, anioMax;
-        if (mes == 12) {
-            anioMax = anio + 1;
-            fechaLimite = anioMax.toString() + "-01-15";
-        } else {
-            mesMax = mes + 1;
-            fechaLimite = anio.toString() + "-" + mesMax.toString() + "-15";
+        try {
+            String stringDate = anio + "-" + mes + "-01";
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = formatter.parse(stringDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            return anio + "-" + mes + "-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        } catch (ParseException ex) {
+            Logger.getLogger(TramiteMercantilCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            return "0000-00-00";
         }
-        return fechaLimite;
     }
 
     public Boolean getDisableDelete() {
@@ -140,12 +145,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
-        for (RemanenteMensual rm : remanenteMensualList) {
-            System.out.println("rm" + rm.getMes());
-            for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
-                System.out.println("erm:" + erm.getEstadoRemanenteMensualId());
-            }
-        }
         remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
@@ -264,6 +263,115 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         disableDelete = Boolean.TRUE;
     }
 
+    public void crearTramitesBloque(FileUploadEvent event) {
+        InputStream in = null;
+        try {
+            System.out.println("==Tramites en bloque==");
+            UploadedFile uploadedFile = event.getFile();
+            in = uploadedFile.getInputstream();
+            XSSFWorkbook worbook = new XSSFWorkbook(in);
+            XSSFSheet sheet = worbook.getSheetAt(0);
+            XSSFRow row;
+            XSSFCell cell;
+            List<Tramite> tramiteNuevoList = new ArrayList<Tramite>();
+
+            catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
+
+            for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
+                row = sheet.getRow(r);
+                Tramite tramiteNuevo = new Tramite();
+                tramiteNuevo.setActividadRegistral(actividadRegistral);
+                tramiteNuevo.setFechaRegistro(new Date());
+
+                if (row.getRowNum() != 0) {
+                    for (int c = 0; c < (int) row.getLastCellNum(); c++) {
+                        String dato = "";
+                        cell = row.getCell(c);
+                        if (cell == null) {
+                            dato = null;
+                        } else {
+                            switch (cell.getCellType()) {
+                                case NUMERIC:
+                                    dato = cell.getNumericCellValue() + "";
+                                    break;
+                                case FORMULA:
+                                    FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    switch (cellValue.getCellType()) {
+                                        case STRING:
+                                            System.out.print(cellValue.getStringValue());
+                                            dato = cellValue.getStringValue();
+                                            break;
+                                        case NUMERIC:
+                                            System.out.print(cellValue.getNumberValue());
+                                            dato = (int) cellValue.getNumberValue() + "";
+                                            break;
+                                    }
+                                    break;
+                                case STRING:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                                case BLANK:
+                                    dato = "";
+                                    break;
+                                default:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                            }
+                        }
+                        switch (cell.getColumnIndex()) {
+                            case 0:
+                                tramiteNuevo.setTipo(dato);
+                                break;
+                            case 1:
+                                tramiteNuevo.setNumero(dato);
+                                break;
+                            case 2:
+                                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
+                                tramiteNuevo.setFecha(date);
+                                break;
+                            case 3:
+                                tramiteNuevo.setNumeroComprobantePago(dato);
+                                break;
+                            case 4:
+                                tramiteNuevo.setValor(new BigDecimal(dato));
+                                break;
+                            case 5:
+                                tramiteNuevo.setActo(dato);
+                                break;
+                        }
+                    }
+                    for (CatalogoTransaccion ct : catalogoList) {
+                        if (ct.getNombre().equals(tramiteNuevo.getTipo())) {
+                            idCatalogoTransaccion = ct.getCatalogoTransaccionId();
+                        }
+                    }
+                    Transaccion t = new Transaccion();
+                    t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
+                    tramiteNuevo.setTransaccionId(t);
+                    tramiteNuevoList.add(tramiteNuevo);
+//                    tramiteServicio.crearTramite(tramiteSelected);
+                }
+            }
+            for (Tramite tramite : tramiteNuevoList) {
+                tramiteSelected = tramite;
+                tramiteServicio.crearTramite(tramite);
+                actualizarTransaccionValores();                            
+                tramiteSelected = new Tramite();
+            }
+            reloadTramite();
+            actualizarTransaccionConteo();    
+            this.addInfoMessage("Se ha creado el bloque de trámites satisfactoriamente", "Info");
+        } catch (IOException ex) {
+            Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
+        }
+    }
+
+    //Getters & Setters
     public String getTituloMercantil() {
         return tituloMercantil;
     }
