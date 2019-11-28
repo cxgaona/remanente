@@ -44,7 +44,24 @@
                                 update=":formNomina"
                                 action="#{egresosCtrl.addRowNomina()}"
                                 disabled="#{egresosCtrl.disableNuevoRegistro}"/>
-                        </b:panelGrid>                       
+                        </b:panelGrid>
+                        <b:panelGrid id="cargaNominaPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
+                            <p:outputLabel value="Carga de Nómina: " />
+                            <p:fileUpload                                    
+                                id="cargaNomina"
+                                messageTemplate="Tipo de Archivo no Válido"
+                                style="width:100%"
+                                mode="advanced"
+                                dragDropSupport="true"
+                                sizeLimit="90000000"
+                                allowTypes="/(\.|\/)(xlsx)$/"
+                                label=""
+                                uploadLabel=""                            
+                                disabled="#{egresosCtrl.disableNuevoRegistro}"
+                                cancelLabel=""                                
+                                fileUploadListener="#{egresosCtrl.crearNominaBloque}"
+                                update="formNomina, msgMensajes"/>
+                        </b:panelGrid>
                         <p:remoteCommand name="onCellDelete" update="formNomina:nominaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
@@ -198,7 +215,24 @@
                                 update=":formFacturaPagada"
                                 action="#{egresosCtrl.addRowFacturaPagada()}"
                                 disabled="#{egresosCtrl.disableNuevoRegistro}"/>
-                        </b:panelGrid>                        
+                        </b:panelGrid>
+                        <b:panelGrid id="cargaFacturaPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
+                            <p:outputLabel value="Carga de Bloque de Facturas: " />
+                            <p:fileUpload                                    
+                                id="cargaNomina"
+                                messageTemplate="Tipo de Archivo no Válido"
+                                style="width:100%"
+                                mode="advanced"
+                                dragDropSupport="true"
+                                sizeLimit="90000000"
+                                allowTypes="/(\.|\/)(xlsx)$/"
+                                label=""
+                                uploadLabel=""                            
+                                disabled="#{egresosCtrl.disableNuevoRegistro}"
+                                cancelLabel=""                                
+                                fileUploadListener="#{egresosCtrl.crearFacturaBloque}"
+                                update="formFacturaPagada, msgMensajes"/>
+                        </b:panelGrid>
                         <p:remoteCommand name="onCellDeleteFP" update="formFacturaPagada:facturaPagadaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />

@@ -4,12 +4,15 @@ import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.FacturaPagadaServicio;
 import ec.gob.dinardap.remanente.servicio.NominaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -25,7 +28,15 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.model.UploadedFile;
 
 @Named(value = "egresosCtrl")
 @ViewScoped
@@ -251,6 +262,229 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         reloadFacturaPagada();
     }
 
+    public void crearNominaBloque(FileUploadEvent event) {
+        InputStream in = null;
+        try {
+            UploadedFile uploadedFile = event.getFile();
+            in = uploadedFile.getInputstream();
+            XSSFWorkbook worbook = new XSSFWorkbook(in);
+            XSSFSheet sheet = worbook.getSheetAt(0);
+            XSSFRow row;
+            XSSFCell cell;
+            List<Nomina> nominaNuevoList = new ArrayList<Nomina>();
+
+            for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
+                row = sheet.getRow(r);
+                Nomina nominaNuevo = new Nomina();
+                nominaNuevo.setFechaRegistro(new Date());
+
+                if (row.getRowNum() != 0) {
+                    for (int c = 0; c < (int) row.getLastCellNum(); c++) {
+                        String dato = "";
+                        cell = row.getCell(c);
+                        if (cell == null) {
+                            dato = null;
+                        } else {
+                            switch (cell.getCellType()) {
+                                case NUMERIC:
+                                    dato = cell.getNumericCellValue() + "";
+                                    break;
+                                case FORMULA:
+                                    FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    switch (cellValue.getCellType()) {
+                                        case STRING:
+                                            System.out.print(cellValue.getStringValue());
+                                            dato = cellValue.getStringValue();
+                                            break;
+                                        case NUMERIC:
+                                            System.out.print(cellValue.getNumberValue());
+                                            dato = (int) cellValue.getNumberValue() + "";
+                                            break;
+                                    }
+                                    break;
+                                case STRING:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                                case BLANK:
+                                    dato = "";
+                                    break;
+                                default:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                            }
+                        }
+                        switch (cell.getColumnIndex()) {
+                            case 0:
+                                nominaNuevo.setNombre(dato);
+                                break;
+                            case 1:
+                                nominaNuevo.setCargo(dato);
+                                break;
+                            case 2:
+                                nominaNuevo.setRemuneracion(new BigDecimal(dato));
+                                break;
+                            case 3:
+                                nominaNuevo.setAportePatronal(new BigDecimal(dato));
+                                break;
+                            case 4:
+                                nominaNuevo.setImpuestoRenta(new BigDecimal(dato));
+                                break;
+                            case 5:
+                                nominaNuevo.setFondosReserva(new BigDecimal(dato));
+                                break;
+                            case 6:
+                                nominaNuevo.setDecimoTercero(new BigDecimal(dato));
+                                break;
+                            case 7:
+                                nominaNuevo.setDecimoCuarto(new BigDecimal(dato));
+                                break;
+                            case 8:
+                                nominaNuevo.setTotalDesc(new BigDecimal(dato));
+                                break;
+                            case 9:
+                                nominaNuevo.setLiquidoRecibir(new BigDecimal(dato));
+                                break;
+                        }
+                    }
+                    Transaccion t = new Transaccion();
+                    //9 CORRESPONDE A REMUNERACIONES(NOMINA) DEL CATALOGO DE TRANSACCIONES
+                    t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 9);
+                    nominaNuevo.setTransaccionId(t);
+                    nominaNuevoList.add(nominaNuevo);
+                }
+            }
+            for (Nomina nomina : nominaNuevoList) {
+                nominaServicio.crearNomina(nomina);
+            }
+            reloadNomina();
+            nominaServicio.actualizarTransaccionValor(institucionId, anio, mes);
+            this.addInfoMessage("Se ha creado la nómina satisfactoriamente", "Info");
+        } catch (IOException ex) {
+            Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
+        }
+    }
+
+    public void crearFacturaBloque(FileUploadEvent event) {
+        InputStream in = null;
+        try {
+            UploadedFile uploadedFile = event.getFile();
+            in = uploadedFile.getInputstream();
+            XSSFWorkbook worbook = new XSSFWorkbook(in);
+            XSSFSheet sheet = worbook.getSheetAt(0);
+            XSSFRow row;
+            XSSFCell cell;
+            List<FacturaPagada> facturaPagadaNuevaList = new ArrayList<FacturaPagada>();
+
+            for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
+                row = sheet.getRow(r);
+                FacturaPagada facturaPagadaNueva = new FacturaPagada();
+                facturaPagadaNueva.setFechaRegistro(new Date());
+
+                if (row.getRowNum() != 0) {
+                    for (int c = 0; c < (int) row.getLastCellNum(); c++) {
+                        String dato = "";
+                        cell = row.getCell(c);
+                        if (cell == null) {
+                            dato = null;
+                        } else {
+                            switch (cell.getCellType()) {
+                                case NUMERIC:
+                                    dato = cell.getNumericCellValue() + "";
+                                    break;
+                                case FORMULA:
+                                    FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    switch (cellValue.getCellType()) {
+                                        case STRING:
+                                            System.out.print(cellValue.getStringValue());
+                                            dato = cellValue.getStringValue();
+                                            break;
+                                        case NUMERIC:
+                                            System.out.print(cellValue.getNumberValue());
+                                            dato = (int) cellValue.getNumberValue() + "";
+                                            break;
+                                    }
+                                    break;
+                                case STRING:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                                case BLANK:
+                                    dato = "";
+                                    break;
+                                default:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                            }
+                        }
+                        switch (cell.getColumnIndex()) {
+                            case 0:
+                                facturaPagadaNueva.setNumero(dato);
+                                break;
+                            case 1:
+                                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
+                                facturaPagadaNueva.setFecha(date);
+                                break;
+                            case 2:
+                                facturaPagadaNueva.setTipo(dato);
+                                break;
+                            case 3:
+                                facturaPagadaNueva.setValor(new BigDecimal(dato));
+                                break;
+                            case 4:
+                                facturaPagadaNueva.setDetalle(dato);
+                                break;
+                        }
+                    }
+                    catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionList();
+                    for (CatalogoTransaccion ct : catalogoList) {
+                        if (ct.getNombre().equals(facturaPagadaNueva.getTipo())) {
+                            idCatalogoTransaccion = ct.getCatalogoTransaccionId();
+                        }
+                    }
+                    Transaccion t = new Transaccion();
+                    t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
+                    facturaPagadaNueva.setTransaccionId(t);
+                    facturaPagadaNuevaList.add(facturaPagadaNueva);
+                }
+            }
+            for (FacturaPagada facturaPagada : facturaPagadaNuevaList) {
+                facturaPagadaServicio.crearFacturaPagada(facturaPagada);
+            }
+            List<Transaccion> transaccionList = new ArrayList<Transaccion>();
+            transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                    facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                    facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getMes(),
+                    facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getRemanenteMensualId());
+            for (Transaccion tl : transaccionList) {
+                if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)) {
+                    facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                            tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                            tl.getRemanenteMensualId().getMes(), 10);
+                }
+                if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)) {
+                    facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                            tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                            tl.getRemanenteMensualId().getMes(), 11);
+                }
+                if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
+                    facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                            tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                            tl.getRemanenteMensualId().getMes(), 12);
+                }
+            }
+            reloadFacturaPagada();
+            this.addInfoMessage("Se ha creado la nómina satisfactoriamente", "Info");
+        } catch (IOException ex) {
+            Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
+        }
+    }
+
+    //Getters & Setters
     public String getTituloEgreso() {
         return tituloEgreso;
     }

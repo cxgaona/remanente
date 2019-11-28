@@ -22,7 +22,7 @@
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25">
-                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected"/>
+                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuario:usuarioPnl"/>
                             <p:column headerText="ID Usuario" rendered="false">
                                 <h:outputText value="#{usuario.usuarioId}"/>
                             </p:column>
@@ -33,10 +33,16 @@
                                 <h:outputText value="#{usuario.institucionId.nombre}"/>
                             </p:column>
                             <p:column headerText="Tipo Institución" 
-                                      sortBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':usuario.institucionId.tipo eq 'GAD'?' Gobierno Autónomo Descentralizado':'Registro Propiedad / Mercantil'}" 
-                                      filterBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':usuario.institucionId.tipo eq 'GAD'?' Gobierno Autónomo Descentralizado':'Registro Propiedad / Mercantil'}" 
+                                      sortBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
+                                                usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
+                                                usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}" 
+                                      filterBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
+                                                  usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
+                                                  usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}" 
                                       filterMatchMode="contains">
-                                <h:outputText value="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':usuario.institucionId.tipo eq 'GAD'?' Gobierno Autónomo Descentralizado':'Registro Propiedad / Mercantil'}" />
+                                <h:outputText value="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
+                                                       usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
+                                                       usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}"/>
                             </p:column>
                             <p:column headerText="Login" sortBy="#{usuario.usuario}" filterBy="#{usuario.usuario}" filterMatchMode="contains">
                                 <h:outputText value="#{usuario.usuario}" />
@@ -55,11 +61,42 @@
                             </p:column>
                         </p:dataTable>                          
                     </h:panelGrid>
-                    <p:commandButton value="Nuevo Usuario"
-                                     style="margin-right:20px;" 
-                                     action="#{gestionUsuariosCtrl.nuevoUsuario}"
-                                     icon="fa fa-fw fa-plus-square"
-                                     update="formUsuarioSelected"/>                   
+
+                    <b:panelGrid id="usuarioPnl" colSpans="6,6" style="width: 40%; margin: 4px 5px;">
+                        <p:commandButton value="Nuevo Usuario"
+                                         style="margin-right:20px;" 
+                                         action="#{gestionUsuariosCtrl.nuevoUsuario}"
+                                         icon="fa fa-fw fa-plus-square"
+                                         update="formUsuarioSelected"></p:commandButton>
+                        <p:commandButton value="Eliminar Usuario" disabled="#{!gestionUsuariosCtrl.renderEdition}"
+                                         style="margin-right:20px;" 
+                                         action="#{gestionUsuariosCtrl.eliminarUsuario}"
+                                         icon="fa fa-fw fa-remove"
+                                         update="formUsuario, msgMensajes">                        
+                            <p:confirm header="Confirmación" message="¿Está seguro de eliminar al usuario Seleccionado." icon="fa fa-fw fa-warning" />
+                        </p:commandButton>
+                    </b:panelGrid>
+
+                    <b:panelGrid id="cargaUsuarioPnl" colSpans="4,8" style="width: 40%; margin: 4px 5px;">
+                        <p:outputLabel value="Carga de usuarios: " />
+                        <p:fileUpload                                    
+                            id="cargaUsuarios"
+                            messageTemplate="Tipo de Archivo no Válido"
+                            style="width:100%"
+                            mode="advanced"
+                            dragDropSupport="true"
+                            sizeLimit="90000000"
+                            allowTypes="/(\.|\/)(xlsx)$/"
+                            label=""
+                            uploadLabel=""
+                            cancelLabel=""                                
+                            fileUploadListener="#{gestionUsuariosCtrl.crearUsuariosBloque}"
+                            update="formUsuario, msgMensajes"/>
+                        <p:outputLabel rendered="false"/>                        
+                    </b:panelGrid>                        
+
+
+
                 </b:panel>
             </h:form>
             <h:form id="formUsuarioSelected" >
@@ -75,7 +112,6 @@
                             <f:selectItem itemLabel="Dirección Regional" itemValue="Dirección Regional" />
                             <f:selectItem itemLabel="GAD" itemValue="GAD" />
                             <f:selectItem itemLabel="Registro Propiedad / Mercantil" itemValue="Registro Propiedad / Mercantil" />
-
                         </p:selectOneMenu>
 
                         <p:outputLabel for="institucion" value="Institución:" />

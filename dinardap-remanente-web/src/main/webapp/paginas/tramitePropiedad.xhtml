@@ -93,22 +93,42 @@
                             </p:column>                            
                         </p:dataTable>                          
                     </h:panelGrid>
-                    <p:commandButton value="Nuevo Trámite"
-                                     style="margin-right:20px;" 
-                                     action="#{tramitePropiedadCtrl.nuevoTramite}"
-                                     icon="fa fa-fw fa-plus-square"
-                                     id="btnNuevoTramite"
-                                     disabled="#{tramitePropiedadCtrl.disableNuevoT}"
-                                     update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
-                    <p:commandButton value="Borrar Trámite"
-                                     style="margin-right:20px;" 
-                                     action="#{tramitePropiedadCtrl.borrarTramite}"
-                                     icon="fa fa-fw fa-trash"
-                                     id="btnBorrarTramite"
-                                     disabled="#{tramitePropiedadCtrl.disableDelete}"
-                                     update="formTramiteSelected, formTramite">
-                        <p:confirm header="Confirmación" message="¿Está seguro de eliminar el trámite?" icon="fa fa-fw fa-warning" />
-                    </p:commandButton>
+
+                    <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 35%; margin: 4px 5px;">
+                        <p:commandButton value="Nuevo Trámite"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{tramitePropiedadCtrl.nuevoTramite}"
+                                         icon="fa fa-fw fa-plus-square"
+                                         id="btnNuevoTramite"
+                                         disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                                         update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
+                        <p:commandButton value="Borrar Trámite"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{tramitePropiedadCtrl.borrarTramite}"
+                                         icon="fa fa-fw fa-trash"
+                                         id="btnBorrarTramite"
+                                         disabled="#{tramitePropiedadCtrl.disableDelete}"
+                                         update="formTramiteSelected, formTramite">
+                            <p:confirm header="Confirmación" message="¿Está seguro de eliminar el trámite?" icon="fa fa-fw fa-warning" />
+                        </p:commandButton>
+                    </b:panelGrid>
+                    <b:panelGrid id="cargaTramitesPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
+                        <p:outputLabel value="Carga de trámites en bloque: " />
+                        <p:fileUpload                                    
+                            id="cargaTramites"
+                            messageTemplate="Tipo de Archivo no Válido"
+                            style="width:100%"
+                            mode="advanced"
+                            dragDropSupport="true"
+                            sizeLimit="90000000"
+                            allowTypes="/(\.|\/)(xlsx)$/"
+                            label=""
+                            uploadLabel=""                            
+                            disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                            cancelLabel=""                                
+                            fileUploadListener="#{tramitePropiedadCtrl.crearTramitesBloque}"
+                            update="formTramite, msgMensajes"/>
+                    </b:panelGrid>
                 </b:panel>
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                     <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />

@@ -351,10 +351,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         //FIN ENVIO//
     }
 
-    public void uploadTransaccion(FileUploadEvent event) {
+  
+  public void uploadTransaccion(FileUploadEvent event) {
         try {
             UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+            
             String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat(transaccionSelected.getTransaccionId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
@@ -366,7 +368,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
     public void uploadSolicitud(FileUploadEvent event) {
         try {
             UploadedFile file = event.getFile();

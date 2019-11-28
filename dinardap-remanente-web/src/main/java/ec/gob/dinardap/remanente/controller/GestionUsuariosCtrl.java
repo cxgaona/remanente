@@ -12,6 +12,8 @@ import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
 import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,15 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 @Named(value = "gestionUsuariosCtrl")
 @ViewScoped
@@ -211,7 +222,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 if (userExistente.getUsuarioId() == null || userExistente.getUsuarioId().equals(usuarioSelected.getUsuarioId())) {
                     usuarioServicio.editUsuario(usuarioSelected);
                     this.addInfoMessage("El usuario se actualizó satisfactoriamente.", "");
-                    if (restablecer) {                        
+                    if (restablecer) {
                         correoRestablecerContraseña(contraseña);
                         this.addInfoMessage("La contraseña actualizada se ha enviado a " + usuarioSelected.getEmail(), "");
                     }
@@ -229,6 +240,167 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             }
         } else {
             this.addErrorMessage("1", "Debe ingresar un correo válido", "");
+        }
+    }
+
+    public void eliminarUsuario() {
+        System.out.println("Eliminar usuario");
+        usuarioSelected.setEstado("I");
+        usuarioServicio.editUsuario(usuarioSelected);
+        usuarioActivoList = new ArrayList<Usuario>();
+        usuarioSelected = new Usuario();
+        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+    }
+
+    public void crearUsuariosBloque(FileUploadEvent event) {
+        try {
+            UploadedFile uploadedFile = event.getFile();
+            InputStream in = uploadedFile.getInputstream();
+            XSSFWorkbook worbook = new XSSFWorkbook(in);
+            XSSFSheet sheet = worbook.getSheetAt(0);
+
+            XSSFRow row;
+            XSSFCell cell;
+
+            List<Usuario> usuarioNuevoList = new ArrayList<Usuario>();
+
+            for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
+                row = sheet.getRow(r);
+                Usuario usuarioNuevo = new Usuario();
+                if (row.getRowNum() != 0) {
+                    for (int c = 0; c < (int) row.getLastCellNum(); c++) {
+                        String dato = "";
+                        cell = row.getCell(c);
+                        if (cell == null) {
+                            dato = null;
+                        } else {
+                            switch (cell.getCellType()) {
+                                case NUMERIC:
+                                    int val = (int) cell.getNumericCellValue();
+                                    dato = val + "";
+                                    break;
+                                case FORMULA:
+                                    FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    switch (cellValue.getCellType()) {
+                                        case STRING:
+                                            System.out.print(cellValue.getStringValue());
+                                            dato = cellValue.getStringValue();
+                                            break;
+                                        case NUMERIC:
+                                            System.out.print(cellValue.getNumberValue());
+                                            dato = (int) cellValue.getNumberValue() + "";
+                                            break;
+                                    }
+                                    break;
+                                case STRING:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                                case BLANK:
+                                    dato = "";
+                                    break;
+                                default:
+                                    dato = cell.getStringCellValue();
+                                    break;
+                            }
+                        }
+                        switch (cell.getColumnIndex()) {
+                            case 0:
+                                InstitucionRequerida ir = new InstitucionRequerida();
+                                if (dato == null) {
+                                    ir.setInstitucionId(null);
+                                } else {
+                                    ir.setInstitucionId(Integer.parseInt(dato));
+                                }
+                                usuarioNuevo.setInstitucionId(ir);
+                                break;
+                            case 1:
+                                usuarioNuevo.setNombre(dato);
+                                break;
+                            case 2:
+                                usuarioNuevo.setEmail(dato);
+                                break;
+                            case 3:
+                                usuarioNuevo.setUsuario(dato);
+                                usuarioNuevo.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "R" + dato + "R"));
+                                break;
+                            case 4:
+                                usuarioNuevo.setRegistrador(Boolean.FALSE);
+                                usuarioNuevo.setVerificador(Boolean.FALSE);
+                                usuarioNuevo.setValidador(Boolean.FALSE);
+                                usuarioNuevo.setAdministrador(Boolean.FALSE);
+                                switch (dato) {
+                                    case "REGISTRADOR":
+                                        usuarioNuevo.setRegistrador(Boolean.TRUE);
+                                        break;
+                                    case "VERIFICADOR":
+                                        usuarioNuevo.setVerificador(Boolean.TRUE);
+                                        break;
+                                    case "VALIDADOR":
+                                        usuarioNuevo.setValidador(Boolean.TRUE);
+                                        break;
+                                    case "ADMINISTRADOR":
+                                        usuarioNuevo.setAdministrador(Boolean.TRUE);
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                    usuarioNuevo.setEstado("A");
+                    Boolean flagUsuarioRepetido = Boolean.FALSE;
+                    for (Usuario u : usuarioNuevoList) {
+                        if (usuarioNuevo.getUsuario().equals(u.getUsuario())) {
+                            flagUsuarioRepetido = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if (!flagUsuarioRepetido) {
+                        usuarioNuevoList.add(usuarioNuevo);
+                    }
+                }
+            }
+            Boolean errorUsuarios = Boolean.FALSE;
+            String mensajeError = "";            
+            for (Usuario u : usuarioNuevoList) {
+
+                if (usuarioServicio.getUsuarioByUsername(u.getUsuario()).getUsuarioId() != null) {
+                    errorUsuarios = Boolean.TRUE;
+                    mensajeError = "El usuario: " + u.getUsuario() + " ya se encuentra registrado, favor verificar su archivo de carga";
+                    break;
+                }
+                if (u.getUsuario() == null || u.getUsuario().equals("")) {
+                    errorUsuarios = Boolean.TRUE;
+                    mensajeError = "Error:Favor verificar su archivo de carga. Usuario no definido.";
+                    break;
+                }
+                if (u.getInstitucionId().getInstitucionId() == null
+                        || u.getInstitucionId().getInstitucionId().toString().equals("")) {
+                    errorUsuarios = Boolean.TRUE;
+                    mensajeError = "Error: Favor verificar su archivo de carga. Institución no definida.";
+                    break;
+                }
+                if (u.getEmail() == null || u.getEmail().equals("")) {
+                    errorUsuarios = Boolean.TRUE;
+                    mensajeError = "Error: Favor verificar su archivo de carga. Email no definido";
+                    break;
+                }
+            }
+
+            if (errorUsuarios) {
+                this.addErrorMessage("0", mensajeError, "No funcionó");
+            } else {
+                for (Usuario u : usuarioNuevoList) {
+                    usuarioServicio.createUsuario(u);
+                }
+                usuarioActivoList = new ArrayList<Usuario>();
+                usuarioActivoList = usuarioServicio.getUsuariosActivos();
+                this.addInfoMessage("Se ha creado el bloque de usuarios satisfactoriamente", "Info");
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(GestionUsuariosCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
         }
     }
 
