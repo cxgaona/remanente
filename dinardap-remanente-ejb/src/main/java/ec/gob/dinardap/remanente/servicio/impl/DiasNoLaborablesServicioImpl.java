@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,23 +88,53 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         System.out.println("diaSeleccionado = " + diaSeleccionado);
 
         List<DiasNoLaborables> feriados = new ArrayList<DiasNoLaborables>();
-        feriados = diasFestivosMes(mesActual, añoActual);
+        feriados = diasFestivosMes(mesActual + 1, añoActual);
 
-        Integer diasAdicionales = 2; // Obtener desde bdd      
+        Integer diasAdicionales = 2; // Obtener desde bdd     
+
+        Integer contadorDias = 0;
+        Boolean habilitar = Boolean.FALSE;
+
+        Calendar diaAux = Calendar.getInstance();
+
+        if (añoActual.equals(añoSeleccionado)
+                && mesActual.equals(mesSeleccionado)) {
+            habilitar = Boolean.TRUE;
+        } else {
+            if ((mesActual - 1 == mesSeleccionado && añoActual.equals(añoSeleccionado))
+                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {
+                System.out.println("***Validación mes anterior***");
+                for (int i = 1; i <= diaActual; i++) {
+                    Boolean flagDiaFeriado = Boolean.FALSE;
+                    diaAux.set(Calendar.DAY_OF_MONTH, i);                    
+                    String dayOfWeek = diaAux.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
+                    System.out.println(dayOfWeek);
+                    if (!dayOfWeek.equals("SUNDAY") || !dayOfWeek.equals("SATURDAY")) {
+                        for (DiasNoLaborables dnl : feriados) {
+                            if (dnl.getDia() == i) {
+                                flagDiaFeriado = Boolean.TRUE;
+                                break;
+                            }
+                        }
+                        if (!flagDiaFeriado) {
+                            contadorDias++;
+                        }
+                    }
+                    if (contadorDias <= diasAdicionales) {
+                        habilitar = Boolean.TRUE;
+                    } else {
+                        habilitar = Boolean.FALSE;
+                        break;
+                    }
+                }
+            }
+        }
+        return habilitar;
+    }
+}
 
 //        fechaSeleccionada.set(Calendar.DAY_OF_MONTH, fechaSeleccionada.getActualMaximum(Calendar.DAY_OF_MONTH));
 //        Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
-        Integer contadorDias = 0;
-        Boolean habilitar = Boolean.FALSE;
-        if (añoActual.equals(añoSeleccionado) && mesActual.equals(mesSeleccionado)) {
-            habilitar = Boolean.TRUE;
-        } else {
-            if ((mesActual - 1 == mesSeleccionado && añoActual == añoSeleccionado)
-                    || (mesActual == 0 && añoActual == añoSeleccionado + 1 && mesSeleccionado == 11)) {
-                System.out.println("Entro en el if");
-            }
-        }
-
 //        Calendar diaAux = Calendar.getInstance();
 //        if (mesActual - 1 == mesSeleccionado
 //                || (mesActual == 0 && mesSeleccionado == 11)) {
@@ -129,6 +160,5 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
 //                }
 //            }
 //        }
-        return habilitar;
-    }
-}
+//            }
+

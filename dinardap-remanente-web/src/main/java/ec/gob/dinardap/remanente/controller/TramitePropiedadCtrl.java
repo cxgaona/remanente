@@ -162,7 +162,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
-            System.out.println("Prueba");
+            System.out.println("===Prueba dias no laborables===");
             System.out.println(diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes()));
 //            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
 //                disableNuevoT = Boolean.FALSE;
