@@ -12,4 +12,6 @@ public interface DiasNoLaborablesServicio extends GenericService<DiasNoLaborable
 
     public List<Date> diasFestivosAtivos();
 
+    public Boolean habilitarDiasAdicionales(Integer mes);
+
 }

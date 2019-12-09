@@ -65,13 +65,14 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     private List<RemanenteMensual> remanenteMensualList;
     private Boolean onEdit;
     private Boolean onCreate;
-    private Boolean renderEdition;
-    private Boolean disableDelete;
     private String btnGuardar;
-    private Boolean disableNuevoT;
     private RemanenteMensual remanenteMensualSelected;
     private String fechaMin;
     private String fechaMax;
+
+    private Boolean disableNuevoT;
+    private Boolean disableDelete;
+    private Boolean renderEdition;
 
     @PostConstruct
     protected void init() {
@@ -95,42 +96,11 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-
         diasNoLaborablesServicio.diasFestivosAtivos();
-        for (Date d : diasNoLaborablesServicio.diasFestivosAtivos()) {
-            System.out.println("Dia d: " + d);
-        }
-        validar();
 
-    }
-
-    private void validar() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);//sig mes        
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-        if (calendar.DAY_OF_WEEK == Calendar.SUNDAY || calendar.DAY_OF_WEEK == Calendar.SATURDAY) {
-            System.out.println("Se debe prolongar 2 días más");
-        }
-
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//        //Fecha actual
-//
-//        System.out.println("Fecha Actual:" + sdf.format(calendar.getTime()));
-//
-//        //A la fecha actual le pongo el día 1
-//        System.out.println("Primer día del mes actual:" + sdf.format(calendar.getTime()));
-//
-//        //Se le agrega 1 mes 
-//        System.out.println("Pedido: " + calendar.getTime());
-//        //
-//        System.out.println("Fecha del del siguiente mes:" + sdf.format(calendar.getTime()));
-//        System.out.println("1-Último día del mes siguiente " + calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-//
-//        //Se le quita 1 mes
-//        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 2);//le quito 2 meses porque ya le había sumado 1 mes
-//        System.out.println("Fecha del primer día del mes anterior: " + sdf.format(calendar.getTime()));
-//        System.out.println("2.- Primer día del mes anterior" + calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+//        for (Date d : diasNoLaborablesServicio.diasFestivosAtivos()) {
+//            System.out.println("Dia d: " + d);
+//        }
     }
 
     private String fechasLimiteMin(Integer anio, Integer mes) {
@@ -189,10 +159,21 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
+            System.out.println("Prueba");
+            System.out.println(diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes()));
+//            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+//                disableNuevoT = Boolean.FALSE;
+//            } else {
+//                renderEdition = Boolean.FALSE;
+//                disableDelete = Boolean.TRUE;
+//                disableNuevoT = Boolean.TRUE;
+//            }
+
         } else {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
+
         }
     }
 

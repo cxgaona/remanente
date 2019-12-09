@@ -15,6 +15,7 @@ import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,4 +54,81 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         }
     }
 
+    private List<DiasNoLaborables> diasFestivosMes(Integer mes, Integer año) {
+        List<DiasNoLaborables> fechaList = new ArrayList<DiasNoLaborables>();
+        String[] criteriaNombres = {"estado", "mes", "anio"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {"A", mes, año};
+        String[] orderBy = {"dia"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        fechaList = findByCriterias(criteria);
+        return fechaList;
+    }
+
+    @Override
+    public Boolean habilitarDiasAdicionales(Integer mes) {
+        //Declaración        
+        Calendar fechaActual = Calendar.getInstance();
+        Integer añoActual = fechaActual.get(Calendar.YEAR);
+        Integer mesActual = fechaActual.get(Calendar.MONTH);
+        Integer diaActual = fechaActual.get(Calendar.DAY_OF_MONTH);
+        System.out.println("añoActual = " + añoActual);
+        System.out.println("mesActual = " + mesActual);
+        System.out.println("diaActual = " + diaActual);
+
+        Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.set(Calendar.MONTH, mes - 1);
+        Integer añoSeleccionado = fechaSeleccionada.get(Calendar.YEAR);
+        Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
+        Integer diaSeleccionado = fechaSeleccionada.get(Calendar.DAY_OF_MONTH);
+        System.out.println("añoSeleccionado = " + añoSeleccionado);
+        System.out.println("mesSeleccionado = " + mesSeleccionado);
+        System.out.println("diaSeleccionado = " + diaSeleccionado);
+
+        List<DiasNoLaborables> feriados = new ArrayList<DiasNoLaborables>();
+        feriados = diasFestivosMes(mesActual, añoActual);
+
+        Integer diasAdicionales = 2; // Obtener desde bdd      
+
+//        fechaSeleccionada.set(Calendar.DAY_OF_MONTH, fechaSeleccionada.getActualMaximum(Calendar.DAY_OF_MONTH));
+//        Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
+        Integer contadorDias = 0;
+        Boolean habilitar = Boolean.FALSE;
+        if (añoActual.equals(añoSeleccionado) && mesActual.equals(mesSeleccionado)) {
+            habilitar = Boolean.TRUE;
+        } else {
+            if ((mesActual - 1 == mesSeleccionado && añoActual == añoSeleccionado)
+                    || (mesActual == 0 && añoActual == añoSeleccionado + 1 && mesSeleccionado == 11)) {
+                System.out.println("Entro en el if");
+            }
+        }
+
+//        Calendar diaAux = Calendar.getInstance();
+//        if (mesActual - 1 == mesSeleccionado
+//                || (mesActual == 0 && mesSeleccionado == 11)) {
+//            for (int i = 1; i <= diaActual; i++) {
+//                diaAux.set(Calendar.DAY_OF_MONTH, i);
+//                if (diaAux.get(Calendar.DAY_OF_WEEK) != 6 || diaAux.get(Calendar.DAY_OF_WEEK) != 0) {
+//                    Boolean flag = Boolean.FALSE;
+//                    for (DiasNoLaborables dnl : feriados) {
+//                        if (dnl.getDia() == i) {
+//                            flag = Boolean.TRUE;
+//                        }
+//                        if (!flag) {
+//                            contadorDias++;
+//                        }
+//                    }
+//                    if (contadorDias >= diasAdicionales) {
+//                        habilitar = Boolean.TRUE;
+//                        break;
+//                    }
+//                } else {
+//                    habilitar = Boolean.TRUE;
+//                    break;
+//                }
+//            }
+//        }
+        return habilitar;
+    }
 }
