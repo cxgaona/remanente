@@ -327,16 +327,19 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                                 tramiteNuevo.setNumero(dato);
                                 break;
                             case 2:
+                                tramiteNuevo.setNumeroRepertorio(dato);
+                                break;
+                            case 3:
                                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
                                 tramiteNuevo.setFecha(date);
                                 break;
-                            case 3:
+                            case 4:
                                 tramiteNuevo.setNumeroComprobantePago(dato);
                                 break;
-                            case 4:
+                            case 5:
                                 tramiteNuevo.setValor(new BigDecimal(dato));
                                 break;
-                            case 5:
+                            case 6:
                                 tramiteNuevo.setActo(dato);
                                 break;
                         }

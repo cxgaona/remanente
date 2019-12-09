@@ -327,16 +327,19 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                                 tramiteNuevo.setNumero(dato);
                                 break;
                             case 2:
+                                tramiteNuevo.setNumeroRepertorio(dato);
+                                break;
+                            case 3:
                                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
                                 tramiteNuevo.setFecha(date);
                                 break;
-                            case 3:
+                            case 4:
                                 tramiteNuevo.setNumeroComprobantePago(dato);
                                 break;
-                            case 4:
+                            case 5:
                                 tramiteNuevo.setValor(new BigDecimal(dato));
                                 break;
-                            case 5:
+                            case 6:
                                 tramiteNuevo.setActo(dato);
                                 break;
                         }
@@ -356,11 +359,11 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             for (Tramite tramite : tramiteNuevoList) {
                 tramiteSelected = tramite;
                 tramiteServicio.crearTramite(tramite);
-                actualizarTransaccionValores();                            
+                actualizarTransaccionValores();
                 tramiteSelected = new Tramite();
             }
             reloadTramite();
-            actualizarTransaccionConteo();    
+            actualizarTransaccionConteo();
             this.addInfoMessage("Se ha creado el bloque de trámites satisfactoriamente", "Info");
         } catch (IOException ex) {
             Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);

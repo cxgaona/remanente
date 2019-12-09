@@ -77,6 +77,9 @@
                             <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
                                 <h:outputText value="#{tramite.numero}" />
                             </p:column>
+                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains">
+                                <h:outputText value="#{tramite.numeroRepertorio}" />
+                            </p:column>
                             <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
                                 <h:outputText value="#{tramite.fecha}" />
                             </p:column>
@@ -149,6 +152,11 @@
 
                         <p:outputLabel for="numero" value="Número:" />
                         <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        
+                        <p:outputLabel for="numeroRepertorio" value="Número Repertorio:" />
+                        <p:inputText id="numeroRepertorio" value="#{tramitePropiedadCtrl.tramiteSelected.numeroRepertorio}" maxlength="10" style="width: 90%" required="true">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
 
