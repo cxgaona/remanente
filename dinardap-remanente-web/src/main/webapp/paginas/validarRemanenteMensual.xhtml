@@ -135,9 +135,9 @@
                                 </h:outputText></b>                             
                         </p:column>
                         <p:column headerText="Aporte Patronal">
-                            <h:outputText value="#{nomina.aportePatronal}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                            
+                            <b><h:outputText value="#{nomina.aportePatronal}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Impuesto a la Renta">
                             <h:outputText value="#{nomina.impuestoRenta}" >
@@ -145,9 +145,9 @@
                             </h:outputText>                            
                         </p:column>
                         <p:column headerText="Fondos de Reserva">
-                            <h:outputText value="#{nomina.fondosReserva}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>
+                            <b><h:outputText value="#{nomina.fondosReserva}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Décimo Tercero">
                             <b><h:outputText value="#{nomina.decimoTercero}" >
