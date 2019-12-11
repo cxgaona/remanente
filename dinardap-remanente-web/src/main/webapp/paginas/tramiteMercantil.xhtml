@@ -77,6 +77,9 @@
                             <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
                                 <h:outputText value="#{tramite.numero}" />
                             </p:column>
+                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains">
+                                <h:outputText value="#{tramite.numeroRepertorio}" />
+                            </p:column>
                             <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
                                 <h:outputText value="#{tramite.fecha}" />
                             </p:column>
@@ -143,6 +146,7 @@
                                            value="#{tramiteMercantilCtrl.tramiteSelected.tipo}"
                                            style="width: 70%;"
                                            required="true">
+                            <p:ajax event="change" listener="#{tramiteMercantilCtrl.changeTipoTramite}" update="formTramiteSelected:numeroRepertorio, formTramiteSelected:numeroRepertorioLbl"/>
                             <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
@@ -151,6 +155,12 @@
                         <p:inputText id="numero" value="#{tramiteMercantilCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>
+
+                        <p:outputLabel id="numeroRepertorioLbl" for="numeroRepertorio" value="Número Repertorio:" />
+                        <p:inputText id="numeroRepertorio" value="#{tramiteMercantilCtrl.tramiteSelected.numeroRepertorio}" style="width: 90%" required="#{tramiteMercantilCtrl.renderedNumeroRepertorio}"  disabled="#{!tramiteMercantilCtrl.renderedNumeroRepertorio}">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>
+
                         <p:outputLabel for="fecha" value="Fecha:" />
                         <p:datePicker id="fecha" 
                                       value="#{tramiteMercantilCtrl.tramiteSelected.fecha}" 

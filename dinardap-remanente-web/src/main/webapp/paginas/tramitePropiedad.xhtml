@@ -38,7 +38,7 @@
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tramitePropiedadCtrl.tituloPropiedad}</h1>
             <h:form id="formTramite">
                 <p:remoteCommand name="onSelectRowTramite" 
-                                 update="formTramiteSelected"/>
+                                 update="formTramiteSelected"/>                
                 <b:panel title="Trámites Propiedad">
                     <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                         <p:outputLabel for="mesTramite" value="Mes:&nbsp;" />
@@ -76,6 +76,9 @@
                             </p:column>
                             <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
                                 <h:outputText value="#{tramite.numero}" />
+                            </p:column>
+                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains">
+                                <h:outputText value="#{tramite.numeroRepertorio}" />
                             </p:column>
                             <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
                                 <h:outputText value="#{tramite.fecha}" />
@@ -143,12 +146,18 @@
                                            value="#{tramitePropiedadCtrl.tramiteSelected.tipo}"
                                            style="width: 70%;"
                                            required="true">
-                            <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
+                            <p:ajax event="change" listener="#{tramitePropiedadCtrl.changeTipoTramite}" update="formTramiteSelected:numeroRepertorio, formTramiteSelected:numeroRepertorioLbl"/>
+                            <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones"  />
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
 
-                        <p:outputLabel for="numero" value="Número:" />
-                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true">
+                        <p:outputLabel for="numero" value="Número:"/>
+                        <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+
+                        <p:outputLabel id="numeroRepertorioLbl" for="numeroRepertorio" value="Número Repertorio:" />
+                        <p:inputText id="numeroRepertorio" value="#{tramitePropiedadCtrl.tramiteSelected.numeroRepertorio}" maxlength="10" style="width: 90%" required="#{tramitePropiedadCtrl.renderedNumeroRepertorio}"  disabled="#{!tramitePropiedadCtrl.renderedNumeroRepertorio}">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
 

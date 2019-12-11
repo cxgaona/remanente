@@ -69,6 +69,8 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     private String fechaMin;
     private String fechaMax;
 
+    private Boolean renderedNumeroRepertorio;
+
     @PostConstruct
     protected void init() {
         tituloPropiedad = "Trámite Propiedad";
@@ -327,16 +329,25 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                                 tramiteNuevo.setNumero(dato);
                                 break;
                             case 2:
+                                if (tramiteNuevo.getTipo().equals("Certificaciones")) {
+                                    if (dato.equals("NA")) {
+                                        tramiteNuevo.setNumeroRepertorio("");
+                                    }
+                                } else {
+                                    tramiteNuevo.setNumeroRepertorio(dato);
+                                }
+                                break;
+                            case 3:
                                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
                                 tramiteNuevo.setFecha(date);
                                 break;
-                            case 3:
+                            case 4:
                                 tramiteNuevo.setNumeroComprobantePago(dato);
                                 break;
-                            case 4:
+                            case 5:
                                 tramiteNuevo.setValor(new BigDecimal(dato));
                                 break;
-                            case 5:
+                            case 6:
                                 tramiteNuevo.setActo(dato);
                                 break;
                         }
@@ -368,6 +379,14 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
+        }
+    }
+
+    public void changeTipoTramite() {
+        if (tramiteSelected.getTipo().equals("Inscripciones")) {
+            renderedNumeroRepertorio = Boolean.TRUE;
+        } else {
+            renderedNumeroRepertorio = Boolean.FALSE;
         }
     }
 
@@ -522,6 +541,14 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
 
     public void setFechaMax(String fechaMax) {
         this.fechaMax = fechaMax;
+    }
+
+    public Boolean getRenderedNumeroRepertorio() {
+        return renderedNumeroRepertorio;
+    }
+
+    public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
+        this.renderedNumeroRepertorio = renderedNumeroRepertorio;
     }
 
 }
