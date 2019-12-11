@@ -69,8 +69,11 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     private String fechaMin;
     private String fechaMax;
 
+    private Boolean renderedNumeroRepertorio;
+
     @PostConstruct
     protected void init() {
+        renderedNumeroRepertorio = Boolean.FALSE;
         tituloPropiedad = "Trámite Propiedad";
         tituloMercantil = "Trámite Mercantil";
         actividadRegistral = "Propiedad";
@@ -327,7 +330,13 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                                 tramiteNuevo.setNumero(dato);
                                 break;
                             case 2:
-                                tramiteNuevo.setNumeroRepertorio(dato);
+                                if (tramiteNuevo.getTipo().equals("Certificaciones")) {
+                                    if (dato.equals("NA")) {
+                                        tramiteNuevo.setNumeroRepertorio("");
+                                    }
+                                } else {
+                                    tramiteNuevo.setNumeroRepertorio(dato);
+                                }
                                 break;
                             case 3:
                                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
@@ -371,6 +380,14 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
+        }
+    }
+
+    public void changeTipoTramite() {
+        if (tramiteSelected.getTipo().equals("Inscripciones")) {
+            renderedNumeroRepertorio = Boolean.TRUE;
+        } else {
+            renderedNumeroRepertorio = Boolean.FALSE;
         }
     }
 
@@ -525,6 +542,14 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
 
     public void setFechaMax(String fechaMax) {
         this.fechaMax = fechaMax;
+    }
+
+    public Boolean getRenderedNumeroRepertorio() {
+        return renderedNumeroRepertorio;
+    }
+
+    public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
+        this.renderedNumeroRepertorio = renderedNumeroRepertorio;
     }
 
 }

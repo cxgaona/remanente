@@ -146,6 +146,7 @@
                                            value="#{tramiteMercantilCtrl.tramiteSelected.tipo}"
                                            style="width: 70%;"
                                            required="true">
+                            <p:ajax event="change" listener="#{tramiteMercantilCtrl.changeTipoTramite}" update="formTramiteSelected:numeroRepertorio, formTramiteSelected:numeroRepertorioLbl"/>
                             <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
@@ -155,8 +156,8 @@
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>
 
-                        <p:outputLabel for="numeroRepertorio" value="Número Repertorio:" />
-                        <p:inputText id="numeroRepertorio" value="#{tramiteMercantilCtrl.tramiteSelected.numeroRepertorio}" style="width: 90%" required="true">
+                        <p:outputLabel id="numeroRepertorioLbl" for="numeroRepertorio" value="Número Repertorio:" />
+                        <p:inputText id="numeroRepertorio" value="#{tramiteMercantilCtrl.tramiteSelected.numeroRepertorio}" style="width: 90%" required="#{tramiteMercantilCtrl.renderedNumeroRepertorio}"  disabled="#{!tramiteMercantilCtrl.renderedNumeroRepertorio}">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>
 
