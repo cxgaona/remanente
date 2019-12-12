@@ -64,6 +64,8 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, 9);
         for (Nomina n : t.getNominaList()) {            
             valorTotalTransaccion = valorTotalTransaccion.add(n.getRemuneracion());
+            valorTotalTransaccion = valorTotalTransaccion.add(n.getAportePatronal());
+            valorTotalTransaccion = valorTotalTransaccion.add(n.getFondosReserva());
             valorTotalTransaccion = valorTotalTransaccion.add(n.getDecimoTercero());
             valorTotalTransaccion = valorTotalTransaccion.add(n.getDecimoCuarto());
         }

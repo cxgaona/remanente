@@ -110,14 +110,14 @@
                             <h:outputText value="#{nomina.cargo}" />
                         </p:column>
                         <p:column headerText="Remuneración">
-                            <h:outputText value="#{nomina.remuneracion}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                              
+                            <b><h:outputText value="#{nomina.remuneracion}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Aporte Patronal">
-                            <h:outputText value="#{nomina.aportePatronal}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                            
+                            <b><h:outputText value="#{nomina.aportePatronal}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Impuesto a la Renta">
                             <h:outputText value="#{nomina.impuestoRenta}" >
@@ -125,19 +125,19 @@
                             </h:outputText>                            
                         </p:column>
                         <p:column headerText="Fondos de Reserva">
-                            <h:outputText value="#{nomina.fondosReserva}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>
+                            <b><h:outputText value="#{nomina.fondosReserva}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Décimo Tercero">
-                            <h:outputText value="#{nomina.decimoTercero}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                            
+                            <b><h:outputText value="#{nomina.decimoTercero}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Décimo Cuarto">
-                            <h:outputText value="#{nomina.decimoCuarto}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>
+                            <b><h:outputText value="#{nomina.decimoCuarto}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
                         <p:column headerText="Total Descuento">
                             <h:outputText value="#{nomina.totalDesc}" >
