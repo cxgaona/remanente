@@ -106,10 +106,10 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
                 System.out.println("***Validación mes anterior***");
                 for (int i = 1; i <= diaActual; i++) {
                     Boolean flagDiaFeriado = Boolean.FALSE;
-                    diaAux.set(Calendar.DAY_OF_MONTH, i);                    
+                    diaAux.set(Calendar.DAY_OF_MONTH, i);
                     String dayOfWeek = diaAux.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
                     System.out.println(dayOfWeek);
-                    if (!dayOfWeek.equals("SUNDAY") || !dayOfWeek.equals("SATURDAY")) {
+                    if (!dayOfWeek.equals("SUNDAY") && !dayOfWeek.equals("SATURDAY")) {
                         for (DiasNoLaborables dnl : feriados) {
                             if (dnl.getDia() == i) {
                                 flagDiaFeriado = Boolean.TRUE;
@@ -117,6 +117,10 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
                             }
                         }
                         if (!flagDiaFeriado) {
+                            contadorDias++;
+                        }
+                    } else {
+                        if (contadorDias == diasAdicionales) {
                             contadorDias++;
                         }
                     }
@@ -132,33 +136,3 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         return habilitar;
     }
 }
-
-//        fechaSeleccionada.set(Calendar.DAY_OF_MONTH, fechaSeleccionada.getActualMaximum(Calendar.DAY_OF_MONTH));
-//        Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
-//        Calendar diaAux = Calendar.getInstance();
-//        if (mesActual - 1 == mesSeleccionado
-//                || (mesActual == 0 && mesSeleccionado == 11)) {
-//            for (int i = 1; i <= diaActual; i++) {
-//                diaAux.set(Calendar.DAY_OF_MONTH, i);
-//                if (diaAux.get(Calendar.DAY_OF_WEEK) != 6 || diaAux.get(Calendar.DAY_OF_WEEK) != 0) {
-//                    Boolean flag = Boolean.FALSE;
-//                    for (DiasNoLaborables dnl : feriados) {
-//                        if (dnl.getDia() == i) {
-//                            flag = Boolean.TRUE;
-//                        }
-//                        if (!flag) {
-//                            contadorDias++;
-//                        }
-//                    }
-//                    if (contadorDias >= diasAdicionales) {
-//                        habilitar = Boolean.TRUE;
-//                        break;
-//                    }
-//                } else {
-//                    habilitar = Boolean.TRUE;
-//                    break;
-//                }
-//            }
-//        }
-//            }
-

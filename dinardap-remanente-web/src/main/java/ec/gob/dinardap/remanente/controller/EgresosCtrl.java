@@ -4,9 +4,9 @@ import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.FacturaPagadaServicio;
 import ec.gob.dinardap.remanente.servicio.NominaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
@@ -56,6 +56,9 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
+
+    @EJB
+    private DiasNoLaborablesServicio diasNoLaborablesServicio;
 
     private String tituloEgreso;
     private String tituloN, tituloFP;
@@ -175,6 +178,13 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoRegistro = Boolean.FALSE;
             renderEdition = Boolean.TRUE;
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+                disableNuevoRegistro = Boolean.FALSE;
+                renderEdition = Boolean.TRUE;
+            } else {
+                renderEdition = Boolean.FALSE;
+                disableNuevoRegistro = Boolean.TRUE;
+            }
         } else {
             renderEdition = Boolean.FALSE;
             disableNuevoRegistro = Boolean.TRUE;

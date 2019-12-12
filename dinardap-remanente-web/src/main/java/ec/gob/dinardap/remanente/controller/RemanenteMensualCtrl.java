@@ -11,6 +11,7 @@ import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
@@ -98,6 +99,9 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private ParametroServicio parametroServicio;
+
+    @EJB
+    private DiasNoLaborablesServicio diasNoLaborablesServicio;
 
     @PostConstruct
     protected void init() {
@@ -202,6 +206,13 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             btnActivated = Boolean.FALSE;
             displayUploadEdit = Boolean.TRUE;
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+                btnActivated = Boolean.FALSE;
+                displayUploadEdit = Boolean.TRUE;
+            } else {
+                btnActivated = Boolean.TRUE;
+                displayUploadEdit = Boolean.FALSE;
+            }
         } else {
             btnActivated = Boolean.TRUE;
             displayUploadEdit = Boolean.FALSE;
@@ -351,12 +362,11 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         //FIN ENVIO//
     }
 
-  
-  public void uploadTransaccion(FileUploadEvent event) {
+    public void uploadTransaccion(FileUploadEvent event) {
         try {
             UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            
+
             String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat(transaccionSelected.getTransaccionId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
@@ -368,6 +378,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     public void uploadSolicitud(FileUploadEvent event) {
         try {
             UploadedFile file = event.getFile();

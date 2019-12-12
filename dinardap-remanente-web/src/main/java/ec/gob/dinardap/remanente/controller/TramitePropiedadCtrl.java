@@ -73,7 +73,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     private Boolean disableNuevoT;
     private Boolean disableDelete;
     private Boolean renderEdition;
-    
+
     private Boolean renderedNumeroRepertorio;
 
     @PostConstruct
@@ -162,16 +162,13 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
-            System.out.println("===Prueba dias no laborables===");
-            System.out.println(diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes()));
-//            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
-//                disableNuevoT = Boolean.FALSE;
-//            } else {
-//                renderEdition = Boolean.FALSE;
-//                disableDelete = Boolean.TRUE;
-//                disableNuevoT = Boolean.TRUE;
-//            }
-
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+                disableNuevoT = Boolean.FALSE;
+            } else {
+                renderEdition = Boolean.FALSE;
+                disableDelete = Boolean.TRUE;
+                disableNuevoT = Boolean.TRUE;
+            }
         } else {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
@@ -402,7 +399,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
         }
     }
-    
+
     public void changeTipoTramite() {
         if (tramiteSelected.getTipo().equals("Inscripciones")) {
             renderedNumeroRepertorio = Boolean.TRUE;
@@ -563,7 +560,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     public void setFechaMax(String fechaMax) {
         this.fechaMax = fechaMax;
     }
-    
+
     public Boolean getRenderedNumeroRepertorio() {
         return renderedNumeroRepertorio;
     }
