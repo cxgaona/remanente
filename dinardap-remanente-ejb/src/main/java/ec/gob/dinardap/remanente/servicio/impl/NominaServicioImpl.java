@@ -54,15 +54,15 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
         anio = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
         mes = nomina.getTransaccionId().getRemanenteMensualId().getMes();
         idInstitucion = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
-        this.delete(nomina.getNominaId());        
+        this.delete(nomina.getNominaId());
     }
-    
+
     @Override
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes) {
-        BigDecimal valorTotalTransaccion = new BigDecimal(0);        
+        BigDecimal valorTotalTransaccion = new BigDecimal(0);
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, 9);
-        for (Nomina n : t.getNominaList()) {            
+        for (Nomina n : t.getNominaList()) {
             valorTotalTransaccion = valorTotalTransaccion.add(n.getRemuneracion());
             valorTotalTransaccion = valorTotalTransaccion.add(n.getAportePatronal());
             valorTotalTransaccion = valorTotalTransaccion.add(n.getFondosReserva());
@@ -72,5 +72,4 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
         t.setValorTotal(valorTotalTransaccion);
         transaccionServicio.editTransaccion(t);
     }
-
 }
