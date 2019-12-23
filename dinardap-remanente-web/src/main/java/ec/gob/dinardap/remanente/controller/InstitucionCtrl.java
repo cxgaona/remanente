@@ -15,25 +15,66 @@ import javax.inject.Named;
 @ViewScoped
 public class InstitucionCtrl extends BaseCtrl implements Serializable {
 
-    private static final long serialVersionUID = 3066578283525294119L;
+    //Declaración de variables
+    //Variables de control visual
+    private String tituloPagina;
+    private Boolean renderEdition;
+
+    //Variables de negocio
+    private InstitucionRequerida institucionSelected;
+
+    //Listas
+    private List<InstitucionRequerida> institucionList;
+
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
-
-    private List<InstitucionRequerida> institucionList;
-    private List<InstitucionRequerida> direccionRegionalList;
-    private List<InstitucionRequerida> gadList;
-    private List<InstitucionRequerida> registroMixtoList;
+//
+//    private List<InstitucionRequerida> direccionRegionalList;
+//    private List<InstitucionRequerida> gadList;
+//    private List<InstitucionRequerida> registroMixtoList;
 
     @PostConstruct
     protected void init() {
-//        institucionList = new ArrayList<InstitucionRequerida>();
-//        institucionList = institucionRequeridaServicio.getInstitucion();
-        direccionRegionalList = new ArrayList<InstitucionRequerida>();
-        direccionRegionalList = institucionRequeridaServicio.getDireccionRegionalList();
-        gadList = new ArrayList<InstitucionRequerida>();
-        gadList = institucionRequeridaServicio.getGADList();
-        registroMixtoList = new ArrayList<InstitucionRequerida>();
-        registroMixtoList = institucionRequeridaServicio.getRegistroMixtoList();
+        tituloPagina = "Institución";
+        renderEdition = Boolean.FALSE;
+        institucionList = new ArrayList<InstitucionRequerida>();
+        institucionList = institucionRequeridaServicio.getInstitucion();
+//        direccionRegionalList = new ArrayList<InstitucionRequerida>();
+//        direccionRegionalList = institucionRequeridaServicio.getDireccionRegionalList();
+//        gadList = new ArrayList<InstitucionRequerida>();
+//        gadList = institucionRequeridaServicio.getGADList();
+//        registroMixtoList = new ArrayList<InstitucionRequerida>();
+//        registroMixtoList = institucionRequeridaServicio.getRegistroMixtoList();
+    }
+
+    public void seleccionarInstitucion() {
+        renderEdition = Boolean.TRUE;
+//        onCreate = Boolean.FALSE;
+//        onEdit = Boolean.TRUE;
+//        btnGuardar = "Actualizar";
+//        disabledRegistrador = Boolean.TRUE;
+//        disabledVerificador = Boolean.TRUE;
+//        disabledValidador = Boolean.TRUE;
+//        disabledAdministrador = Boolean.TRUE;
+//        disabledRestablecer = Boolean.FALSE;
+//        restablecer = Boolean.FALSE;       
+    }
+
+    public void nuevaInstitucion() {
+        System.out.println("Nueva Institucion");
+    }
+
+    public void deshabilitarInstitucion() {
+        System.out.println("Deshabilitar Institucion");
+    }
+
+//Getters & Setters
+    public String getTituloPagina() {
+        return tituloPagina;
+    }
+
+    public void setTituloPagina(String tituloPagina) {
+        this.tituloPagina = tituloPagina;
     }
 
     public List<InstitucionRequerida> getInstitucionList() {
@@ -44,28 +85,12 @@ public class InstitucionCtrl extends BaseCtrl implements Serializable {
         this.institucionList = institucionList;
     }
 
-    public List<InstitucionRequerida> getDireccionRegionalList() {
-        return direccionRegionalList;
+    public InstitucionRequerida getInstitucionSelected() {
+        return institucionSelected;
     }
 
-    public void setDireccionRegionalList(List<InstitucionRequerida> direccionRegionalList) {
-        this.direccionRegionalList = direccionRegionalList;
-    }
-
-    public List<InstitucionRequerida> getGadList() {
-        return gadList;
-    }
-
-    public void setGadList(List<InstitucionRequerida> gadList) {
-        this.gadList = gadList;
-    }
-
-    public List<InstitucionRequerida> getRegistroMixtoList() {
-        return registroMixtoList;
-    }
-
-    public void setRegistroMixtoList(List<InstitucionRequerida> registroMixtoList) {
-        this.registroMixtoList = registroMixtoList;
+    public void setInstitucionSelected(InstitucionRequerida institucionSelected) {
+        this.institucionSelected = institucionSelected;
     }
 
 }

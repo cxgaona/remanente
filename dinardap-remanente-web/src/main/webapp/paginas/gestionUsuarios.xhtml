@@ -73,8 +73,13 @@
                                          action="#{gestionUsuariosCtrl.eliminarUsuario}"
                                          icon="fa fa-fw fa-remove"
                                          update="formUsuario, msgMensajes">                        
-                            <p:confirm header="Confirmación" message="¿Está seguro de eliminar al usuario Seleccionado." icon="fa fa-fw fa-warning" />
+                            <p:confirm header="Confirmación" message="¿Está seguro de eliminar al usuario Seleccionado.jpg" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                        </p:confirmDialog>
+
                     </b:panelGrid>
 
                     <b:panelGrid id="cargaUsuarioPnl" colSpans="4,8" style="width: 40%; margin: 4px 5px;">
