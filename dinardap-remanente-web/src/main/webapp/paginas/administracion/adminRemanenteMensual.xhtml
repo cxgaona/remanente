@@ -338,11 +338,33 @@
                                 uploadLabel=""
                                 cancelLabel=""                                
                                 fileUploadListener="#{adminRemanenteMensualCtrl.uploadInformeSolicitudCambio}"
-                                update="formRemanenteMensual:btnAprobar,formRemanenteMensual:btnRechazar"/>
+                                update="formRemanenteMensual:btnAprobar,
+                                formRemanenteMensual:btnRechazar, 
+                                formRemanenteMensual:btnCancelarInf,
+                                formRemanenteMensual:remanenteMensualTbl"/>
                             <p:outputLabel value="Solicitud de cambio: " rendered="false"/>
-                            <b:panelGrid colSpans="6,6" style="width: 70%; margin: 4px 5px;">
-                                <p:commandButton id="btnAprobar" value="Aprobar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{adminRemanenteMensualCtrl.aprobarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRech}"/>
-                                <p:commandButton id="btnRechazar" value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRech}"/>
+                            <b:panelGrid colSpans="4,4,4" style="width: 95%; margin: 5px 5px;">
+                                <p:commandButton id="btnAprobar" value="Aprobar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{adminRemanenteMensualCtrl.aprobarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea Aprobar la Solicitud de Cambio? El Informe de Solicitud de Cambio no podrá ser modificado." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
+                                        <p:commandButton id="btnRechazar" value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
+                                        <p:confirm header="Confirmación" message="¿Está seguro que desea Rechazar la Solicitud de Cambio? El Informe de Solicitud de Cambio no podrá ser modificado." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
+                                        <p:commandButton id="btnCancelarInf" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-trash" action="#{adminRemanenteMensualCtrl.cancelarInformeSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea Cancelar el Informe de Solicitud de Cambio? El Informe de Solicitud de Cambio adjunto se eliminará." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
                             </b:panelGrid>                            
                         </b:panelGrid>                        
                     </h:panelGrid>                    

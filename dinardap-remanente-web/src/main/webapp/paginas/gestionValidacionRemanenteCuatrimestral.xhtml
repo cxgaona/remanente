@@ -117,6 +117,23 @@
                                 oncomplete="onCellEdit();"
                                 fileUploadListener="#{validarRemanenteCuatrimestralCtrl.uploadInformeTecnicoCuatrimestral}"
                                 update="formRemanenteCuatrimestral"/>
+                            <p:outputLabel rendered="false"/>
+                            <b:panelGrid colSpans="6,6" style="width: 70%; margin: 4px 5px;">
+                                <p:commandButton id="btnEnviarInforme" value="Enviar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{validarRemanenteCuatrimestralCtrl.enviarInformeTecnicoCuatrimestral}" update="formRemanenteCuatrimestral" disabled="#{validarRemanenteCuatrimestralCtrl.disabledBtnEnvCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea enviar el Informe Técnico Cuatrimestral? El archivo adjunto no podrá ser modificado." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
+                                        <p:commandButton id="btnCancelarInforme" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{validarRemanenteCuatrimestralCtrl.cancelarInformeTecnicoCuatrimestral}" update="formRemanenteCuatrimestral" disabled="#{validarRemanenteCuatrimestralCtrl.disabledBtnEnvCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea Cancelar el Informe Técnico Cuatrimestral suscrito? El archivo adjunto se eliminará." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
+                            </b:panelGrid>
                         </b:panelGrid>
 
                     </h:panelGrid>                    

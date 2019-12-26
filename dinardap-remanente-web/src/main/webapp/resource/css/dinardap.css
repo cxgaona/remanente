@@ -446,3 +446,7 @@ ui-fileupload ui-widget ui-fileupload-responsive{
     background-image: none !important;
     color: #000000 !important;
 }
+
+    .botonEliminar{
+    background-color: red !important;
+}

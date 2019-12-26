@@ -70,6 +70,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
 
     private Boolean displayUploadInformeCuatrimestral;
     private Boolean disabledBtnReload;
+    private Boolean disabledBtnEnvCan;
 
     private SftpDto sftpDto;
 
@@ -162,6 +163,11 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         totalEgresos = new BigDecimal(0);
         if (remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeSubido")) {
             displayUploadInformeCuatrimestral = Boolean.TRUE;
+            if (remanenteCuatrimestralSelected.getInformeTecnicoUrl() == null) {
+                disabledBtnEnvCan = Boolean.TRUE;
+            } else {
+                disabledBtnEnvCan = Boolean.FALSE;
+            }
         } else {
             displayUploadInformeCuatrimestral = Boolean.FALSE;
         }
@@ -234,7 +240,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         return rms;
     }
 
-    public void uploadInformeTecnicoCuatrimestral(FileUploadEvent event) {  
+    public void uploadInformeTecnicoCuatrimestral(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         try {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
@@ -244,47 +250,57 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
             remanenteCuatrimestralSelected.setInformeTecnicoUrl(realPath);
             remanenteCuatrimestralServicio.editRemanenteCuatrimestral(remanenteCuatrimestralSelected, sftpDto);
             fileByte = null;
-
-            EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
-            Usuario u = new Usuario();
-            u.setUsuarioId(usuarioId);
-            erc.setRemanenteCuatrimestral(remanenteCuatrimestralSelected);
-            erc.setUsuarioId(u);
-            erc.setFechaRegistro(new Date());
-            erc.setDescripcion("InformeTecnicoSubido");
-            estadoRemanenteCuatrimestralServicio.create(erc);
-            remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
-            displayUploadInformeCuatrimestral = Boolean.FALSE;
-            //ENVIO DE NOTIFICACION//
-            String meses = "";
-            switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
-                case 1:
-                    meses = "Enero - Abril";
-                    break;
-                case 2:
-                    meses = "Mayo - Agosto";
-                    break;
-                case 3:
-                    meses = "Septiembre - Diciembre";
-                    break;
-            }
-            Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
-            institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
-            usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                    "REM-Verificador", "REM-Validador", 1, remanenteCuatrimestralSelected);
-            String mensajeNotificacion = "Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
-            bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                    remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                    remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
-                    remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales - 1).getRemanenteMensualId(),
-                    mensajeNotificacion, "RC");
-            //FIN ENVIO//
+            disabledBtnEnvCan = Boolean.FALSE;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void enviarInformeTecnicoCuatrimestral() {
+        EstadoRemanenteCuatrimestral erc = new EstadoRemanenteCuatrimestral();
+        Usuario u = new Usuario();
+        u.setUsuarioId(usuarioId);
+        erc.setRemanenteCuatrimestral(remanenteCuatrimestralSelected);
+        erc.setUsuarioId(u);
+        erc.setFechaRegistro(new Date());
+        erc.setDescripcion("InformeTecnicoSubido");
+        estadoRemanenteCuatrimestralServicio.create(erc);
+        remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
+        displayUploadInformeCuatrimestral = Boolean.FALSE;
+
+        //ENVIO DE NOTIFICACION//
+        String meses = "";
+        switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
+            case 1:
+                meses = "Enero - Abril";
+                break;
+            case 2:
+                meses = "Mayo - Agosto";
+                break;
+            case 3:
+                meses = "Septiembre - Diciembre";
+                break;
+        }
+        Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
+        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
+                "REM-Verificador", "REM-Validador", 1, remanenteCuatrimestralSelected);
+        String mensajeNotificacion = "Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
+        bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
+                remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
+                remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales - 1).getRemanenteMensualId(),
+                mensajeNotificacion, "RC");
+        //FIN ENVIO//
+    }
+
+    public void cancelarInformeTecnicoCuatrimestral() {
+        remanenteCuatrimestralSelected.setInformeTecnicoUrl(null);
+        remanenteCuatrimestralServicio.update(remanenteCuatrimestralSelected);
+        disabledBtnEnvCan = Boolean.TRUE;
     }
 
     //Ingresos
@@ -644,6 +660,14 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
 
     public void setRutaArchivo(String rutaArchivo) {
         this.rutaArchivo = rutaArchivo;
+    }
+
+    public Boolean getDisabledBtnEnvCan() {
+        return disabledBtnEnvCan;
+    }
+
+    public void setDisabledBtnEnvCan(Boolean disabledBtnEnvCan) {
+        this.disabledBtnEnvCan = disabledBtnEnvCan;
     }
 
 }

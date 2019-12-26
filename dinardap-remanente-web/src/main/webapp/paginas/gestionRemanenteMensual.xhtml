@@ -11,10 +11,10 @@
             <!--Dialog para upload de archivos (PDF)--> 
             <p:dialog header = "Selección de Archivo... "
                       id="transaccionUploadDlg" widgetVar="transaccionUploadDlg" modal="true" resizable="false" width="25%" >
-                <h:form id="formTransaccionUploadDlg" enctype="multipart/forma-data">
+                <h:form id="formTransaccionUploadDlg" enctype="multipart/forma-data">                    
                     <p:fileUpload
                         messageTemplate="Tipo de Archivo no Válido"
-                        fileLimitMessage="Tamaño de Archivo Excedido"                        
+                        fileLimitMessage="Tamaño de Archivo Excedido"            
                         value="#{remanenteMensualCtrl.file}"
                         style="width:100%"
                         mode="advanced"
@@ -297,7 +297,7 @@
                                 </p:commandButton>
                             </p:column>
                         </p:dataTable>
-                        <b:panelGrid id="panelSolicitud" colSpans="4,8" style="width: 48%; margin: 4px 5px;" rendered="#{remanenteMensualCtrl.displaySolicitud}">                                                        
+                        <b:panelGrid id="panelSolicitud" colSpans="4,8" style="width: 48%; margin: 4px 5px;" rendered="#{remanenteMensualCtrl.displaySolicitud}">
                             <p:outputLabel value="Solicitud de cambio: " />
                             <p:fileUpload                                
                                 id="solicitudCambio"
@@ -313,6 +313,24 @@
                                 oncomplete="onCellEdit();"
                                 fileUploadListener="#{remanenteMensualCtrl.uploadSolicitud}"
                                 update="formRemanenteMensual, estadoRemanenteMensualDlg"/>
+                            <p:outputLabel rendered="false"/>
+                            <b:panelGrid colSpans="6,6" style="width: 70%; margin: 4px 5px;">
+                                <p:commandButton id="btnEnviarSolicitud" value="Enviar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{remanenteMensualCtrl.enviarSolicitudCambio}" update="formRemanenteMensual, estadoRemanenteMensualDlg" disabled="#{remanenteMensualCtrl.disabledBtnEnvCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea enviar la Solicitud de Cambio? El archivo adjunto no podrá ser modificado." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
+
+                                <p:commandButton id="btnCancelarSolicitud" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{remanenteMensualCtrl.cancelarSolicitudCambio}" update="formRemanenteMensual, estadoRemanenteMensualDlg" disabled="#{remanenteMensualCtrl.disabledBtnEnvCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea Cancelar la Solicitud de Cambio? El archivo adjunto se eliminará." icon="fa fa-fw fa-warning" />
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                    </p:confirmDialog>
+                                </p:commandButton>
+                            </b:panelGrid>
                         </b:panelGrid>
                     </h:panelGrid>                    
                 </b:panel>                
@@ -324,6 +342,10 @@
                                      update="formTransacciones:transaccionRPropiedadTbl,
                                      formTransacciones:transaccionRMercantilTbl,
                                      formTransacciones:transaccionEgresosTbl"/>
+
+                    <p:remoteCommand name="onBtnDelPro" 
+                                     update="formTransacciones:transaccionRPropiedadTbl"/>
+
                     <h:panelGrid columns="1" style="width: 60%;"> 
                         <p:dataTable id="transaccionRPropiedadTbl"
                                      styleClass="transaccionRPropiedadTbl"
@@ -376,6 +398,19 @@
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
                                     </h:commandLink>
+                                    &nbsp;
+                                    <p:commandButton icon="fa fa-fw fa-trash-o" 
+                                                     title="Eliminar Archivo"                                                     
+                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;"
+                                                     action="#{remanenteMensualCtrl.eliminarArchivo}"
+                                                     update="formTransacciones:transaccionRPropiedadTbl">
+                                        <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
+                                        <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar el Archivo Adjunto?" icon="fa fa-fw fa-warning" />
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                        </p:confirmDialog>
+                                    </p:commandButton>
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
@@ -453,7 +488,20 @@
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
-                                    </h:commandLink>                                    
+                                    </h:commandLink>    
+                                    &nbsp;
+                                    <p:commandButton icon="fa fa-fw fa-trash-o" 
+                                                     title="Eliminar Archivo"                                                     
+                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;"
+                                                     action="#{remanenteMensualCtrl.eliminarArchivo}"
+                                                     update="formTransacciones:transaccionRMercantilTbl">
+                                        <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
+                                        <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar el Archivo Adjunto?" icon="fa fa-fw fa-warning" />
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                        </p:confirmDialog>
+                                    </p:commandButton>
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
@@ -531,7 +579,20 @@
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
-                                    </h:commandLink>                                    
+                                    </h:commandLink>   
+                                    &nbsp;
+                                    <p:commandButton icon="fa fa-fw fa-trash-o" 
+                                                     title="Eliminar Archivo"                                                     
+                                                     style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}; background: none;border: none;width: auto;"
+                                                     action="#{remanenteMensualCtrl.eliminarArchivo}"
+                                                     update="formTransacciones:transaccionEgresosTbl">
+                                        <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
+                                        <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar el Archivo Adjunto?" icon="fa fa-fw fa-warning" />
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                                        </p:confirmDialog>
+                                    </p:commandButton>
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">

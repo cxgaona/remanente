@@ -40,7 +40,7 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
 
     @Override
     public void editTransaccion(Transaccion transaccion) {
-        this.update(transaccion);
+        this.update(transaccion);        
     }
 
     @Override

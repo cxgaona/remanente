@@ -50,7 +50,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private List<InstitucionRequerida> institucionRequeridaList;
     private InstitucionRequerida institucionSelected;
     private Boolean displaySolicitud;
-    private Boolean disabledBtnAproRech;
+    private Boolean disabledBtnAproRechCan;
 
     private String tituloPagina;
     private String nombreInstitucion;
@@ -79,7 +79,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private List<FacturaPagada> egresoFacturaList;
 
     private Boolean btnActivated;
-    private Boolean displayComment;
+    private Boolean displayComment;    
     private String comentariosRechazo;
 
     private SftpDto sftpDto;
@@ -112,7 +112,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     @PostConstruct
     protected void init() {
         sftpDto = new SftpDto();
-//        file = new DefaultUploadedFile();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         tituloPagina = "Administración Remanente Mensual";
@@ -134,7 +133,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         displaySolicitud = Boolean.FALSE;
         remanenteMensualList = new ArrayList<RemanenteMensual>();
         transaccionSelected = new Transaccion();
-        disabledBtnAproRech = Boolean.TRUE;
+        disabledBtnAproRechCan = Boolean.TRUE;
     }
 
     public void onRowSelectInstitucion() {
@@ -169,8 +168,6 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     }
 
     public void onRowSelectRemanenteMensual() {
-        disabledBtnAproRech = Boolean.TRUE;
-
         switch (remanenteMensualSelected.getMes()) {
             case 1:
                 mesSelected = "Enero";
@@ -231,6 +228,11 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioSolicitado")) {
             displaySolicitud = Boolean.TRUE;
+            if (remanenteMensualSelected.getInformeAprobacionUrl() == null) {
+                disabledBtnAproRechCan = Boolean.TRUE;
+            } else {
+                disabledBtnAproRechCan = Boolean.FALSE;
+            }
         } else {
             displaySolicitud = Boolean.FALSE;
         }
@@ -283,16 +285,16 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
             String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("isc_" + remanenteMensualSelected.getRemanenteMensualId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_SOLICITUD_CAMBIO.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
-            remanenteMensualSelected.setInformeAprobacionUrl(realPath);            
+            remanenteMensualSelected.setInformeAprobacionUrl(realPath);
+            remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected, sftpDto);
             fileByte = null;
-            disabledBtnAproRech = Boolean.FALSE;
+            disabledBtnAproRechCan = Boolean.FALSE;
         } catch (IOException ex) {
             Logger.getLogger(AdminRemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void aprobarSolicitudCambio() {
-        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected, sftpDto);
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
         Usuario u = new Usuario();
         u.setUsuarioId(usuarioId);
@@ -385,6 +387,12 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 remanenteMensualSelected.getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         //FIN ENVIO//
+    }
+
+    public void cancelarInformeSolicitudCambio() {
+        remanenteMensualSelected.setInformeAprobacionUrl(null);
+        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+        disabledBtnAproRechCan = Boolean.TRUE;
     }
 
     public void crearVersionRemanente(RemanenteMensual remanenteMensual) {
@@ -739,12 +747,12 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         this.displaySolicitud = displaySolicitud;
     }
 
-    public Boolean getDisabledBtnAproRech() {
-        return disabledBtnAproRech;
+    public Boolean getDisabledBtnAproRechCan() {
+        return disabledBtnAproRechCan;
     }
 
-    public void setDisabledBtnAproRech(Boolean disabledBtnAproRech) {
-        this.disabledBtnAproRech = disabledBtnAproRech;
+    public void setDisabledBtnAproRechCan(Boolean disabledBtnAproRechCan) {
+        this.disabledBtnAproRechCan = disabledBtnAproRechCan;
     }
 
     public String getRutaArchivo() {
@@ -753,6 +761,5 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 
     public void setRutaArchivo(String rutaArchivo) {
         this.rutaArchivo = rutaArchivo;
-    }
-
+    }  
 }

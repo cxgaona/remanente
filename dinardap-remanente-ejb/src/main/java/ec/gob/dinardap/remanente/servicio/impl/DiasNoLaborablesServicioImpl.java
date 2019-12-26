@@ -133,6 +133,12 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
                 }
             }
         }
-        return habilitar;
+        //Cambio para desarrollo y pruebas
+        Boolean flagCambios = Boolean.TRUE;
+        if (flagCambios) {
+            return Boolean.TRUE;
+        } else {
+            return habilitar;
+        }
     }
 }
