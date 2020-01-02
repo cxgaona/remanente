@@ -178,6 +178,10 @@ public class BaseCtrl implements Serializable {
         return sesion.get(variableName).toString();
     }
 
+    protected void logout() {
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+    }
+
     protected Integer getInstitucionID(String perfil) {
         Integer institucionID = 0;
         if (perfil.contains("REM-Registrador")) {

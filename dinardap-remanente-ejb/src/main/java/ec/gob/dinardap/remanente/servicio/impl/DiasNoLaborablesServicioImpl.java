@@ -134,7 +134,7 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
             }
         }
         //Cambio para desarrollo y pruebas
-        Boolean flagCambios = Boolean.TRUE;
+        Boolean flagCambios = Boolean.FALSE; //False para pro True para desarrollo y pruebas
         if (flagCambios) {
             return Boolean.TRUE;
         } else {

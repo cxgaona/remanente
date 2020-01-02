@@ -221,9 +221,13 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             displayUploadEdit = Boolean.FALSE;
         }
 
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
+        if ((remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado")) {
+                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado"))
+                && (!remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeSubido")
+                && !remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeTecnicoSubido"))) {
+            System.out.println("aaa: " + remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion());
+
             displaySolicitud = Boolean.TRUE;
             if (remanenteMensualSelected.getSolicitudCambioUrl() == null) {
                 disabledBtnEnvCan = Boolean.TRUE;
