@@ -13,6 +13,7 @@ import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
 import ec.gob.dinardap.remanente.dto.SftpDto;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
@@ -61,6 +62,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             }
         }
         for (RemanenteMensual remanenteMensual : remanenteMensualList) {
+            for (EstadoRemanenteCuatrimestral erc : remanenteMensual.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {
+                erc.getEstadoRemanenteCuatrimestral();
+            }
             for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
                 transaccion.getTransaccionId();
                 for (Tramite tramite : transaccion.getTramiteList()) {

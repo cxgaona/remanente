@@ -11,20 +11,14 @@ import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
-import ec.gob.dinardap.remanente.utils.FacesUtils;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
-import ec.gob.dinardap.sftp.exception.FtpException;
-import ec.gob.dinardap.sftp.util.CredencialesSFTP;
-import ec.gob.dinardap.sftp.util.GestionSFTP;
 import ec.gob.dinardap.util.TipoArchivo;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,15 +27,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.apache.poi.util.IOUtils;
-import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.UploadedFile;
@@ -103,6 +93,9 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
 
     @EJB
     private ParametroServicio parametroServicio;
+
+    @EJB
+    private DiasNoLaborablesServicio diasNoLaborablesServicio;
 
     @PostConstruct
     protected void init() {
@@ -203,6 +196,11 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         });
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo")) {
             btnActivated = Boolean.FALSE;
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+                btnActivated = Boolean.FALSE;
+            } else {
+                btnActivated = Boolean.TRUE;
+            }
         } else {
             btnActivated = Boolean.TRUE;
         }

@@ -5,6 +5,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
@@ -49,6 +50,9 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
+
+    @EJB
+    private DiasNoLaborablesServicio diasNoLaborablesServicio;
 
     private String tituloMercantil, tituloPropiedad, actividadRegistral;
     private List<Tramite> tramiteList;
@@ -152,6 +156,13 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+                disableNuevoT = Boolean.FALSE;
+            } else {
+                renderEdition = Boolean.FALSE;
+                disableDelete = Boolean.TRUE;
+                disableNuevoT = Boolean.TRUE;
+            }
         } else {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;

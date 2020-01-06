@@ -5,6 +5,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
@@ -50,6 +51,9 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
+    @EJB
+    private DiasNoLaborablesServicio diasNoLaborablesServicio;
+
     private String tituloMercantil, tituloPropiedad, actividadRegistral;
     private List<Tramite> tramiteList;
     private Integer anio, mes;
@@ -61,13 +65,14 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     private List<RemanenteMensual> remanenteMensualList;
     private Boolean onEdit;
     private Boolean onCreate;
-    private Boolean renderEdition;
-    private Boolean disableDelete;
     private String btnGuardar;
-    private Boolean disableNuevoT;
     private RemanenteMensual remanenteMensualSelected;
     private String fechaMin;
     private String fechaMax;
+
+    private Boolean disableNuevoT;
+    private Boolean disableDelete;
+    private Boolean renderEdition;
 
     private Boolean renderedNumeroRepertorio;
 
@@ -94,7 +99,11 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-        //disableNuevoT = Boolean.FALSE;
+        diasNoLaborablesServicio.diasFestivosAtivos();
+
+//        for (Date d : diasNoLaborablesServicio.diasFestivosAtivos()) {
+//            System.out.println("Dia d: " + d);
+//        }
     }
 
     private String fechasLimiteMin(Integer anio, Integer mes) {
@@ -153,10 +162,18 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+                disableNuevoT = Boolean.FALSE;
+            } else {
+                renderEdition = Boolean.FALSE;
+                disableDelete = Boolean.TRUE;
+                disableNuevoT = Boolean.TRUE;
+            }
         } else {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
+
         }
     }
 
@@ -269,7 +286,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     public void crearTramitesBloque(FileUploadEvent event) {
         InputStream in = null;
         try {
-            System.out.println("==Tramites en bloque==");
             UploadedFile uploadedFile = event.getFile();
             in = uploadedFile.getInputstream();
             XSSFWorkbook worbook = new XSSFWorkbook(in);
@@ -277,7 +293,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             XSSFRow row;
             XSSFCell cell;
             List<Tramite> tramiteNuevoList = new ArrayList<Tramite>();
-
             catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
 
             for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
@@ -362,7 +377,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                     t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
                     tramiteNuevo.setTransaccionId(t);
                     tramiteNuevoList.add(tramiteNuevo);
-//                    tramiteServicio.crearTramite(tramiteSelected);
                 }
             }
             for (Tramite tramite : tramiteNuevoList) {
@@ -388,6 +402,15 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             renderedNumeroRepertorio = Boolean.TRUE;
         } else {
             renderedNumeroRepertorio = Boolean.FALSE;
+        }
+    }
+
+    private static boolean isNumeric(String cadena) {
+        try {
+            Integer.parseInt(cadena);
+            return true;
+        } catch (NumberFormatException excepcion) {
+            return false;
         }
     }
 
