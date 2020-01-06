@@ -10,14 +10,17 @@
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminRemanenteMensualCtrl.tituloPagina}</h1>  
 
             <!--Dialogos-->
-            <!--Trámites-->
+            <!--Estado remanente mensual-->
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Estados de Remanente" 
                       modal="true"
-                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="auto" 
+                      widgetVar="estadoRemanenteMensualDlg"                      
+                      width="90%"
+                      position="top"
+                      height="500"
+                      blockScroll="true"
                       resizable="false">
                 <h:form id="formEstadoRemanenteMensualDlg">
-
                     <p:dataTable id="estadoRemanenteMensualTbl"
                                  value="#{adminRemanenteMensualCtrl.remanenteMensualSelected.estadoRemanenteMensualList}" 
                                  var="estadoRemanenteMensual"
@@ -54,42 +57,48 @@
                         </p:column>
                     </p:dataTable>
                 </h:form>
-            </p:dialog>                
+            </p:dialog>
 
+            <!--Detalle de trámites-->
             <p:dialog id="tramiteRegistroDlg"
-                      header="Trámites Registro de la Propiedad / Mercantil" 
+                      header="Trámites Registro de la Propiedad / Mercantil"                       
                       modal="true"
-                      widgetVar="tramiteRegistroDlg" width="90%" height="auto" 
-                      resizable="false">    
-                <h:form id="formTramiteRegistroDlg">
-                    <p:dataTable id="tramiteTbl"
-                                 value="#{adminRemanenteMensualCtrl.tramiteRPropiedadMercantilList}" 
-                                 var="tramite"
+                      widgetVar="tramiteRegistroDlg" 
+                      width="90%"
+                      position="top"
+                      height="500"
+                      blockScroll="true"
+                      resizable="false">
+                <h:form id="formTramiteRegistroDlg" >
+                    <p:dataTable id="tramiteTbl"                                 
+                                 value="#{adminRemanenteMensualCtrl.tramiteRPropiedadMercantilList}"                                 
+                                 var="tramite"                                 
                                  rowKey="#{tramite.tramiteId}"                                 
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,15">                        
-                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
+                                 rowsPerPageTemplate="5,10,15"
+                                 styleClass="tableDialogs">
+                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
                             <h:outputText value="#{tramite.tipo}" />
                         </p:column>
-                        <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
+                        <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.numero}" />
                         </p:column>
-                        <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains">
+                        <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.numeroRepertorio}" />
                         </p:column>
-                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
+                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}" width="10%" style="text-align: center">
                             <h:outputText value="#{tramite.fecha}" />
                         </p:column>
-                        <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
+                        <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.numeroComprobantePago}" />
                         </p:column>                            
-                        <p:column headerText="Valor" sortBy="#{tramite.valor}">
+                        <p:column headerText="Valor" sortBy="#{tramite.valor}" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.valor}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains">
+                        <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains"  width="40%">
                             <h:outputText value="#{tramite.acto}" />
                         </p:column>                            
                     </p:dataTable>   
@@ -97,22 +106,25 @@
             </p:dialog>
 
             <!--Egresos-->
-
             <p:dialog id="egresosDlg"
                       header="Egresos Registro de la Propiedad / Mercantil" 
                       modal="true"
-                      widgetVar="egresosDlg" width="95%" height="auto" 
-                      resizable="false">    
+                      widgetVar="egresosDlg"
+                      width="90%"
+                      position="top"
+                      height="500"
+                      blockScroll="true"
+                      resizable="false">
                 <h:form id="formEgresosDlg">
                     <p:dataTable id="nominaTbl"
-                                 styleClass="nominaTbl"                        
+                                 styleClass="nominaTbl tableDialogs"                        
                                  var="nomina" 
                                  value="#{adminRemanenteMensualCtrl.egresoNominaList}" 
                                  editable="true"                                  
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25"
-                                 style="margin-bottom: 10px">
+                                 style="margin-bottom: 10px">                                 
                         <f:facet name="header">
                             Gastos por Nómina
                         </f:facet>
@@ -128,42 +140,42 @@
                                   filterMatchMode="contains">
                             <h:outputText value="#{nomina.cargo}" />
                         </p:column>
-                        <p:column headerText="Remuneración">
+                        <p:column headerText="Remuneración" style="text-align: right">
                             <b><h:outputText value="#{nomina.remuneracion}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>                           
                         </p:column>
-                        <p:column headerText="Aporte Patronal">
+                        <p:column headerText="Aporte Patronal" style="text-align: right">
                             <b><h:outputText value="#{nomina.aportePatronal}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>
                         </p:column>
-                        <p:column headerText="Impuesto a la Renta">
+                        <p:column headerText="Impuesto a la Renta" style="text-align: right">
                             <h:outputText value="#{nomina.impuestoRenta}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>                            
                         </p:column>
-                        <p:column headerText="Fondos de Reserva">
-                               <b> <h:outputText value="#{nomina.fondosReserva}" >
+                        <p:column headerText="Fondos de Reserva" style="text-align: right">
+                            <b> <h:outputText value="#{nomina.fondosReserva}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>
                         </p:column>
-                        <p:column headerText="Décimo Tercero">
+                        <p:column headerText="Décimo Tercero" style="text-align: right">
                             <b><h:outputText value="#{nomina.decimoTercero}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>                          
                         </p:column>
-                        <p:column headerText="Décimo Cuarto">
+                        <p:column headerText="Décimo Cuarto" style="text-align: right">
                             <b><h:outputText value="#{nomina.decimoCuarto}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>
                         </p:column>
-                        <p:column headerText="Total Descuento">
+                        <p:column headerText="Total Descuento" style="text-align: right">
                             <h:outputText value="#{nomina.totalDesc}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="Líquido a Recibir">
+                        <p:column headerText="Líquido a Recibir" style="text-align: right">
                             <h:outputText value="#{nomina.liquidoRecibir}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -175,11 +187,12 @@
                                  value="#{adminRemanenteMensualCtrl.egresoFacturaList}"                                      
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,25">
+                                 rowsPerPageTemplate="5,10,25"
+                                 styleClass="tableDialogs">
                         <f:facet name="header">
                             Facturas Pagadas
                         </f:facet>                            
-                        <p:column headerText="Número">
+                        <p:column headerText="Número" style="text-align: right">
                             <h:outputText value="#{facturaPagada.numero}" />                                
                         </p:column>
                         <p:column headerText="Fecha">
@@ -193,7 +206,7 @@
                                   filterMatchMode="contains">
                             <h:outputText value="#{facturaPagada.tipo}" />  
                         </p:column>
-                        <p:column headerText="Valor">
+                        <p:column headerText="Valor" style="text-align: right">
                             <h:outputText value="#{facturaPagada.valor}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -210,7 +223,7 @@
                 </h:form>
             </p:dialog>  
 
-            <!--Dialogos-->
+            <!--Dialogos FIN-->
 
             <h:form id="formInstitucion">
                 <b:panel title="Instituciones">
@@ -351,14 +364,14 @@
                                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
                                     </p:confirmDialog>
                                 </p:commandButton>
-                                        <p:commandButton id="btnRechazar" value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
-                                        <p:confirm header="Confirmación" message="¿Está seguro que desea Rechazar la Solicitud de Cambio? El Informe de Solicitud de Cambio no podrá ser modificado." icon="fa fa-fw fa-warning" />
+                                <p:commandButton id="btnRechazar" value="Rechazar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{adminRemanenteMensualCtrl.rechazarSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
+                                    <p:confirm header="Confirmación" message="¿Está seguro que desea Rechazar la Solicitud de Cambio? El Informe de Solicitud de Cambio no podrá ser modificado." icon="fa fa-fw fa-warning" />
                                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                                         <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
                                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
                                     </p:confirmDialog>
                                 </p:commandButton>
-                                        <p:commandButton id="btnCancelarInf" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-trash" action="#{adminRemanenteMensualCtrl.cancelarInformeSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
+                                <p:commandButton id="btnCancelarInf" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-trash" action="#{adminRemanenteMensualCtrl.cancelarInformeSolicitudCambio}" update="formRemanenteMensual" disabled="#{adminRemanenteMensualCtrl.disabledBtnAproRechCan}">
                                     <p:confirm header="Confirmación" message="¿Está seguro que desea Cancelar el Informe de Solicitud de Cambio? El Informe de Solicitud de Cambio adjunto se eliminará." icon="fa fa-fw fa-warning" />
                                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                                         <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
@@ -394,7 +407,7 @@
                                 <p:column colspan="1" style="text-align: center"> 
                                     <p:commandButton icon="fa fa-fw fa-search" 
                                                      title="Detalle de transacción"                                                      
-                                                     onclick="PF('tramiteRegistroDlg').show();"
+                                                     onclick="PF('tramiteRegistroDlg').show(); PF('tramiteRegistroDlg').content.scrollTop('0')"
                                                      action="#{adminRemanenteMensualCtrl.detalleRPropiedad}" 
                                                      update="formTramiteRegistroDlg"/>
                                 </p:column>

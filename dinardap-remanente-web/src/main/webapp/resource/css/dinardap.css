@@ -447,6 +447,10 @@ ui-fileupload ui-widget ui-fileupload-responsive{
     color: #000000 !important;
 }
 
-    .botonEliminar{
+.botonEliminar{
     background-color: red !important;
+}
+
+.ui-datatable.tableDialogs th {
+    text-align: center !important;
 }
