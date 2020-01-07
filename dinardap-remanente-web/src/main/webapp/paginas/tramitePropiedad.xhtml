@@ -66,32 +66,31 @@
                                      selection="#{tramitePropiedadCtrl.tramiteSelected}"
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,25">
-                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
-                            <p:column headerText="ID Tramite" rendered="false">
-                                <h:outputText value="#{tramite.tramiteId}"/>
-                            </p:column>
-                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
+                                     rowsPerPageTemplate="5,10,25"
+                                     tableStyle="width:auto"
+                                     styleClass="tableDialogs">
+                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>                            
+                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
                                 <h:outputText value="#{tramite.tipo}" />
                             </p:column>
-                            <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
+                            <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.numero}" />
                             </p:column>
-                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains">
+                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.numeroRepertorio}" />
                             </p:column>
-                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
+                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}" width="10%" style="text-align: center">
                                 <h:outputText value="#{tramite.fecha}" />
                             </p:column>
-                            <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
+                            <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.numeroComprobantePago}" />
                             </p:column>                            
-                            <p:column headerText="Valor" sortBy="#{tramite.valor}">
+                            <p:column headerText="Valor" sortBy="#{tramite.valor}" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.valor}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains">
+                            <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains" width="40%">
                                 <h:outputText value="#{tramite.acto}" />
                             </p:column>                            
                         </p:dataTable>                          

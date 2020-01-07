@@ -286,7 +286,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     public void crearTramitesBloque(FileUploadEvent event) {
         InputStream in = null;
         try {
-            System.out.println("==Tramites en bloque==");
             UploadedFile uploadedFile = event.getFile();
             in = uploadedFile.getInputstream();
             XSSFWorkbook worbook = new XSSFWorkbook(in);
@@ -294,7 +293,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             XSSFRow row;
             XSSFCell cell;
             List<Tramite> tramiteNuevoList = new ArrayList<Tramite>();
-
             catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
 
             for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
@@ -379,7 +377,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                     t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
                     tramiteNuevo.setTransaccionId(t);
                     tramiteNuevoList.add(tramiteNuevo);
-//                    tramiteServicio.crearTramite(tramiteSelected);
                 }
             }
             for (Tramite tramite : tramiteNuevoList) {
@@ -405,6 +402,15 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             renderedNumeroRepertorio = Boolean.TRUE;
         } else {
             renderedNumeroRepertorio = Boolean.FALSE;
+        }
+    }
+
+    private static boolean isNumeric(String cadena) {
+        try {
+            Integer.parseInt(cadena);
+            return true;
+        } catch (NumberFormatException excepcion) {
+            return false;
         }
     }
 
