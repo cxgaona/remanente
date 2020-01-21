@@ -242,6 +242,7 @@
             </p:dialog>            
             <!--Dialogos FIN-->
 
+
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{remanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
@@ -400,7 +401,7 @@
                                             }" /></f:facet>
                                 </p:cellEditor>
                             </p:column >                              
-                            <p:column width="15%" >
+                            <p:column width="15%">
                                 <f:facet name="header">
                                     <h:outputText value="Archivo"/>
                                 </f:facet>
@@ -409,15 +410,14 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; margin: 1px">
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
-                                    </h:commandLink>
-                                    &nbsp;
+                                    </h:commandLink>                                    
                                     <p:commandButton icon="fa fa-fw fa-trash-o" 
                                                      title="Eliminar Archivo"                                                     
-                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;"
+                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto; margin: 1px"
                                                      action="#{remanenteMensualCtrl.eliminarArchivo}"
                                                      update="formTransacciones:transaccionRPropiedadTbl">
                                         <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
@@ -500,15 +500,14 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'};margin: 1px">
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
-                                    </h:commandLink>    
-                                    &nbsp;
+                                    </h:commandLink>                                        
                                     <p:commandButton icon="fa fa-fw fa-trash-o" 
                                                      title="Eliminar Archivo"                                                     
-                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;"
+                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;margin: 1px;"
                                                      action="#{remanenteMensualCtrl.eliminarArchivo}"
                                                      update="formTransacciones:transaccionRMercantilTbl">
                                         <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
@@ -591,15 +590,14 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}">
+                                                   style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}; margin: 1px;">
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
                                     </h:commandLink>   
-                                    &nbsp;
                                     <p:commandButton icon="fa fa-fw fa-trash-o" 
                                                      title="Eliminar Archivo"                                                     
-                                                     style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}; background: none;border: none;width: auto;"
+                                                     style="visibility:  #{not empty transaccion.respaldoUrl ? 'visible':'hidden'}; background: none;border: none;width: auto;margin:1px;"
                                                      action="#{remanenteMensualCtrl.eliminarArchivo}"
                                                      update="formTransacciones:transaccionEgresosTbl">
                                         <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />

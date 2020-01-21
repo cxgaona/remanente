@@ -22,7 +22,7 @@
             </h:form>
 
             <!-- NOMINA -->
-            <h:form id="formNomina"> 
+            <h:form id="formNomina">                
                 <h:outputLabel value="Mes Seleccionado: #{egresosCtrl.mes eq 1? 'Enero':
                                                           egresosCtrl.mes eq 2? 'Febrero':
                                                           egresosCtrl.mes eq 3? 'Marzo':
@@ -37,6 +37,9 @@
                                                           egresosCtrl.mes eq 12? 'Diciembre':'Sin mes'}" styleClass="form-label-izquierda-15" style="width: 100%"/>
                 <b:panel title="#{egresosCtrl.tituloN}">
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <p:messages id="messagesNomina" showDetail="true" closable="true">
+                            
+                        </p:messages>
                         <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
                             <p:commandButton 
                                 value="Agregar Registro"
@@ -60,7 +63,7 @@
                                 disabled="#{egresosCtrl.disableNuevoRegistro}"
                                 cancelLabel=""                                
                                 fileUploadListener="#{egresosCtrl.crearNominaBloque}"
-                                update="formNomina, msgMensajes"/>
+                                update="formNomina, formNomina:messagesNomina"/>
                         </b:panelGrid>
                         <p:remoteCommand name="onCellDelete" update="formNomina:nominaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
@@ -205,9 +208,12 @@
                 </b:panel>
             </h:form>
             <!-- FACTURAS PAGADAS-->
-            <h:form id="formFacturaPagada">  
+            <h:form id="formFacturaPagada">                
                 <b:panel title="#{egresosCtrl.tituloFP}">
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <p:messages id="messagesFacturaPagada" showDetail="true" closable="true">
+                            
+                        </p:messages>
                         <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
                             <p:commandButton 
                                 value="Agregar Registro"  
@@ -231,7 +237,7 @@
                                 disabled="#{egresosCtrl.disableNuevoRegistro}"
                                 cancelLabel=""                                
                                 fileUploadListener="#{egresosCtrl.crearFacturaBloque}"
-                                update="formFacturaPagada, msgMensajes"/>
+                                update="formFacturaPagada, formFacturaPagada:messagesFacturaPagada"/>
                         </b:panelGrid>
                         <p:remoteCommand name="onCellDeleteFP" update="formFacturaPagada:facturaPagadaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
