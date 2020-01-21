@@ -209,7 +209,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             btnActivated = Boolean.FALSE;
             displayUploadEdit = Boolean.TRUE;
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),remanenteMensualSelected.getMes())) {
                 btnActivated = Boolean.FALSE;
                 displayUploadEdit = Boolean.TRUE;
             } else {

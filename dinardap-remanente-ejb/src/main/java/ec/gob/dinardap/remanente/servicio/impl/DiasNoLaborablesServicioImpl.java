@@ -68,24 +68,21 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
     }
 
     @Override
-    public Boolean habilitarDiasAdicionales(Integer mes) {
+    public Boolean habilitarDiasAdicionales(Integer año, Integer mes) {
         //Declaración        
         Calendar fechaActual = Calendar.getInstance();
         Integer añoActual = fechaActual.get(Calendar.YEAR);
         Integer mesActual = fechaActual.get(Calendar.MONTH);
         Integer diaActual = fechaActual.get(Calendar.DAY_OF_MONTH);
-        System.out.println("añoActual = " + añoActual);
-        System.out.println("mesActual = " + mesActual);
-        System.out.println("diaActual = " + diaActual);
+        
 
         Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.set(Calendar.YEAR, año);
         fechaSeleccionada.set(Calendar.MONTH, mes - 1);
         Integer añoSeleccionado = fechaSeleccionada.get(Calendar.YEAR);
         Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
         Integer diaSeleccionado = fechaSeleccionada.get(Calendar.DAY_OF_MONTH);
-        System.out.println("añoSeleccionado = " + añoSeleccionado);
-        System.out.println("mesSeleccionado = " + mesSeleccionado);
-        System.out.println("diaSeleccionado = " + diaSeleccionado);
+        
 
         List<DiasNoLaborables> feriados = new ArrayList<DiasNoLaborables>();
         feriados = diasFestivosMes(mesActual + 1, añoActual);
@@ -102,13 +99,11 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
             habilitar = Boolean.TRUE;
         } else {
             if ((mesActual - 1 == mesSeleccionado && añoActual.equals(añoSeleccionado))
-                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {
-                System.out.println("***Validación mes anterior***");
+                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {                
                 for (int i = 1; i <= diaActual; i++) {
                     Boolean flagDiaFeriado = Boolean.FALSE;
                     diaAux.set(Calendar.DAY_OF_MONTH, i);
                     String dayOfWeek = diaAux.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
-                    System.out.println(dayOfWeek);
                     if (!dayOfWeek.equals("SUNDAY") && !dayOfWeek.equals("SATURDAY")) {
                         for (DiasNoLaborables dnl : feriados) {
                             if (dnl.getDia() == i) {
@@ -134,7 +129,7 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
             }
         }
         //Cambio para desarrollo y pruebas
-        Boolean flagCambios = Boolean.TRUE; //False para pro True para desarrollo y pruebas
+        Boolean flagCambios = Boolean.FALSE; //False para pro True para desarrollo y pruebas
         if (flagCambios) {
             return Boolean.TRUE;
         } else {

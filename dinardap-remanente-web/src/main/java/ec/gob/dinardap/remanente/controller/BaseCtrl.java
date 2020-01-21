@@ -1,8 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
-import ec.gob.dinardap.util.TipoArchivo;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -10,8 +8,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
-
 import javax.faces.application.FacesMessage;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletOutputStream;
@@ -126,9 +124,7 @@ public class BaseCtrl implements Serializable {
             String detail) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                 summary, detail);
-
         FacesContext fc = FacesContext.getCurrentInstance();
-
         fc.addMessage(componentId, facesMsg);
     }
 

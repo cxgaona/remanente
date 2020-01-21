@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -162,7 +164,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getMes())) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
                 disableNuevoT = Boolean.FALSE;
             } else {
                 renderEdition = Boolean.FALSE;
@@ -283,9 +285,17 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         disableDelete = Boolean.TRUE;
     }
 
+    public void changeTipoTramite() {
+        if (tramiteSelected.getTipo().equals("Inscripciones")) {
+            renderedNumeroRepertorio = Boolean.TRUE;
+        } else {
+            renderedNumeroRepertorio = Boolean.FALSE;
+        }
+    }
+
     public void crearTramitesBloque(FileUploadEvent event) {
-        InputStream in = null;
         try {
+            InputStream in = null;
             UploadedFile uploadedFile = event.getFile();
             in = uploadedFile.getInputstream();
             XSSFWorkbook worbook = new XSSFWorkbook(in);
@@ -295,121 +305,255 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             List<Tramite> tramiteNuevoList = new ArrayList<Tramite>();
             catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
 
+            Boolean flagValidacionCampos = Boolean.TRUE;
+            List<String> celdaErrorVacio = new ArrayList<String>();
             for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
                 row = sheet.getRow(r);
-                Tramite tramiteNuevo = new Tramite();
-                tramiteNuevo.setActividadRegistral(actividadRegistral);
-                tramiteNuevo.setFechaRegistro(new Date());
-
                 if (row.getRowNum() != 0) {
+                    Tramite tramiteNuevo = new Tramite();
+                    tramiteNuevo.setActividadRegistral(actividadRegistral);
+                    tramiteNuevo.setFechaRegistro(new Date());
                     for (int c = 0; c < (int) row.getLastCellNum(); c++) {
-                        String dato = "";
+                        String dato = null;
                         cell = row.getCell(c);
                         if (cell == null) {
                             dato = null;
                         } else {
-                            switch (cell.getCellType()) {
-                                case NUMERIC:
-                                    dato = cell.getNumericCellValue() + "";
-                                    break;
-                                case FORMULA:
-                                    FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
-                                    CellValue cellValue = evaluator.evaluate(cell);
-                                    switch (cellValue.getCellType()) {
-                                        case STRING:
-                                            System.out.print(cellValue.getStringValue());
-                                            dato = cellValue.getStringValue();
-                                            break;
-                                        case NUMERIC:
-                                            System.out.print(cellValue.getNumberValue());
-                                            dato = (int) cellValue.getNumberValue() + "";
-                                            break;
+                            dato = getDato(worbook, cell);
+                            String datoVal;
+                            switch (cell.getColumnIndex()) {
+                                case 0:
+                                    if (dato.equals("Certificaciones") || dato.equals("Inscripciones")) {
+                                        tramiteNuevo.setTipo(dato);
+                                        for (CatalogoTransaccion ct : catalogoList) {
+                                            if (ct.getNombre().equals(tramiteNuevo.getTipo())&& ct.getTipo().equals("Ingreso-Propiedad")) {
+                                                idCatalogoTransaccion = ct.getCatalogoTransaccionId();
+                                                break;
+                                            }
+                                        }
+                                        Transaccion t = new Transaccion();
+                                        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
+                                        tramiteNuevo.setTransaccionId(t);
                                     }
                                     break;
-                                case STRING:
-                                    dato = cell.getStringCellValue();
+                                case 1:
+                                    datoVal = validarCampoNumero(dato);
+                                    if (!datoVal.equals("INVALIDO")) {
+                                        tramiteNuevo.setNumero(datoVal);
+                                    }
                                     break;
-                                case BLANK:
-                                    dato = "";
+                                case 2:
+                                    if (tramiteNuevo.getTipo() == null) {
+                                        tramiteNuevo.setNumeroRepertorio(null);
+                                    } else {
+                                        if (tramiteNuevo.getTipo().equals("Certificaciones")) {
+                                            tramiteNuevo.setNumeroRepertorio("");
+                                        } else {
+                                            datoVal = validarCampoNumero(dato);
+                                            if (!datoVal.equals("INVALIDO")) {
+                                                tramiteNuevo.setNumeroRepertorio(datoVal);
+                                            }
+                                        }
+                                    }
                                     break;
-                                default:
-                                    dato = cell.getStringCellValue();
+                                case 3:
+                                    datoVal = validarCampoFecha(dato);
+                                    if (!datoVal.equals("INVALIDO")) {
+                                        tramiteNuevo.setFecha(new SimpleDateFormat("yyyy-MM-dd").parse(datoVal));
+                                    }
+                                    break;
+                                case 4:
+                                    datoVal = validarCampoNumero(dato);
+                                    if (!datoVal.equals("INVALIDO")) {
+                                        tramiteNuevo.setNumeroComprobantePago(datoVal);
+                                    }
+                                    break;
+                                case 5:
+                                    datoVal = validarCampoValorNumerico(dato);
+                                    if (!datoVal.equals("INVALIDO")) {
+                                        tramiteNuevo.setValor(new BigDecimal(datoVal));
+                                    }
+                                    break;
+                                case 6:
+                                    datoVal = validarCampoVacio(dato);
+                                    if (!datoVal.equals("INVALIDO")) {
+                                        tramiteNuevo.setActo(datoVal);
+                                    }
                                     break;
                             }
                         }
-                        switch (cell.getColumnIndex()) {
-                            case 0:
-                                tramiteNuevo.setTipo(dato);
-                                break;
-                            case 1:
-                                tramiteNuevo.setNumero(dato);
-                                break;
-                            case 2:
-                                if (tramiteNuevo.getTipo().equals("Certificaciones")) {
-                                    if (dato.equals("NA")) {
-                                        tramiteNuevo.setNumeroRepertorio("");
-                                    }
-                                } else {
-                                    tramiteNuevo.setNumeroRepertorio(dato);
-                                }
-                                break;
-                            case 3:
-                                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
-                                tramiteNuevo.setFecha(date);
-                                break;
-                            case 4:
-                                tramiteNuevo.setNumeroComprobantePago(dato);
-                                break;
-                            case 5:
-                                tramiteNuevo.setValor(new BigDecimal(dato));
-                                break;
-                            case 6:
-                                tramiteNuevo.setActo(dato);
-                                break;
+                    }
+                    if (tramiteNuevo.getTipo() == null) {
+                        flagValidacionCampos = Boolean.FALSE;
+                        celdaErrorVacio.add("A" + (r + 1));
+                    } else {
+                        if (tramiteNuevo.getTipo().equals("Inscripciones")) {
+                            if (tramiteNuevo.getNumeroRepertorio() == null || tramiteNuevo.getNumeroRepertorio().isEmpty()) {
+                                flagValidacionCampos = Boolean.FALSE;
+                                celdaErrorVacio.add("C" + (r + 1));
+                            }
                         }
                     }
-                    for (CatalogoTransaccion ct : catalogoList) {
-                        if (ct.getNombre().equals(tramiteNuevo.getTipo())) {
-                            idCatalogoTransaccion = ct.getCatalogoTransaccionId();
-                        }
+
+                    if (tramiteNuevo.getNumero() == null || tramiteNuevo.getNumero().isEmpty()) {
+                        flagValidacionCampos = Boolean.FALSE;
+                        celdaErrorVacio.add("B" + (r + 1));
                     }
-                    Transaccion t = new Transaccion();
-                    t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
-                    tramiteNuevo.setTransaccionId(t);
+
+                    if (tramiteNuevo.getFecha() == null || tramiteNuevo.getFecha().equals("")) {
+                        flagValidacionCampos = Boolean.FALSE;
+                        celdaErrorVacio.add("D" + (r + 1));
+                    }
+                    if (tramiteNuevo.getNumeroComprobantePago() == null || tramiteNuevo.getNumeroComprobantePago().isEmpty()) {
+                        flagValidacionCampos = Boolean.FALSE;
+                        celdaErrorVacio.add("E" + (r + 1));
+                    }
+                    if (tramiteNuevo.getValor() == null) {
+                        flagValidacionCampos = Boolean.FALSE;
+                        celdaErrorVacio.add("F" + (r + 1));
+                    }
+                    if (tramiteNuevo.getActo() == null || tramiteNuevo.getActo().isEmpty()) {
+                        flagValidacionCampos = Boolean.FALSE;
+                        celdaErrorVacio.add("G" + (r + 1));
+                    }
                     tramiteNuevoList.add(tramiteNuevo);
                 }
             }
-            for (Tramite tramite : tramiteNuevoList) {
-                tramiteSelected = tramite;
-                tramiteServicio.crearTramite(tramite);
-                actualizarTransaccionValores();
-                tramiteSelected = new Tramite();
+            if (flagValidacionCampos) {
+                for (Tramite tramite : tramiteNuevoList) {
+                    tramiteSelected = tramite;
+                    tramiteServicio.crearTramite(tramite);
+                    actualizarTransaccionValores();
+                    tramiteSelected = new Tramite();
+                }
+                reloadTramite();
+                actualizarTransaccionConteo();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Se ha creado el bloque de trámites satisfactoriamente"));
+            } else {
+                String celdas = "";
+                for (String s : celdaErrorVacio) {
+                    celdas += s + ", ";
+                }
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Favor verificar su archivo de carga. \n Verificar las celdas: " + celdas + "de su archivo de carga"));
             }
-            reloadTramite();
-            actualizarTransaccionConteo();
-            this.addInfoMessage("Se ha creado el bloque de trámites satisfactoriamente", "Info");
+
         } catch (IOException ex) {
+            System.out.println("Error carga de Archivo");
             Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
+            System.out.println("Error Parseo de fecha");
             Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
         }
     }
 
-    public void changeTipoTramite() {
-        if (tramiteSelected.getTipo().equals("Inscripciones")) {
-            renderedNumeroRepertorio = Boolean.TRUE;
-        } else {
-            renderedNumeroRepertorio = Boolean.FALSE;
+    private static String getDato(XSSFWorkbook worbook, XSSFCell cell) {
+        String dato = "";
+        switch (cell.getCellType()) {
+            case NUMERIC:
+                dato = cell.getNumericCellValue() + "";
+                break;
+            case FORMULA:
+                FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
+                CellValue cellValue = evaluator.evaluate(cell);
+                switch (cellValue.getCellType()) {
+                    case STRING:
+                        dato = cellValue.getStringValue();
+                        break;
+                    case NUMERIC:
+                        dato = (int) cellValue.getNumberValue() + "";
+                        break;
+                }
+                break;
+            case STRING:
+                dato = cell.getStringCellValue();
+                break;
+            case BLANK:
+                dato = "";
+                break;
+            default:
+                dato = cell.getStringCellValue();
+                break;
         }
+        return dato;
+    }
+
+    private static String validarCampoNumero(String data) { //Valida campos Número de tramites comprobantes numero repertorio
+        String datoValidado = "INVALIDO";
+        if (data.equals("") || data == null) {
+            datoValidado = "INVALIDO";
+        } else {
+            if (isNumeric(data)) {
+                if (data.contains(".") || data.contains(",")) {
+                    Double datoAux = Double.parseDouble(data);
+                    data = datoAux.intValue() + "";
+                }
+                datoValidado = data;
+            }
+        }
+        return datoValidado;
+    }
+
+    private static String validarCampoValorNumerico(String data) {
+        String datoValidado = "INVALIDO";
+        if (data.equals("") || data == null) {
+            datoValidado = "INVALIDO";
+        } else {
+            if (isNumeric(data)) {
+                datoValidado = Double.parseDouble(data) + "";
+            } else {
+                datoValidado = "INVALIDO";
+            }
+        }
+        return datoValidado + "";
+    }
+
+    private String validarCampoFecha(String data) {
+        String datoValidado = "INVALIDO";
+        if (data == null || data.equals("")) {
+            datoValidado = "INVALIDO";
+        } else {
+            if (isDate(data)) {
+                try {
+                    Calendar fecha = Calendar.getInstance();
+                    fecha.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(data));
+                    Calendar fechaActual = Calendar.getInstance();
+                    if (diasNoLaborablesServicio.habilitarDiasAdicionales(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH) + 1)) {
+                        datoValidado = data;
+                    } else {
+                        datoValidado = "INVALIDO";
+                    }
+                } catch (ParseException ex) {
+                    Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return datoValidado;
+    }
+
+    private static String validarCampoVacio(String data) {
+        String datoValidado = "INVALIDO";
+        if (data.equals("") || data == null) {
+            datoValidado = "INVALIDO";
+        } else {
+            datoValidado = data;
+        }
+        return datoValidado;
     }
 
     private static boolean isNumeric(String cadena) {
         try {
-            Integer.parseInt(cadena);
+            Double.parseDouble(cadena);
             return true;
         } catch (NumberFormatException excepcion) {
+            return false;
+        }
+    }
+
+    private static boolean isDate(String cadena) {
+        try {
+            new SimpleDateFormat("yyyy-MM-dd").parse(cadena);
+            return true;
+        } catch (ParseException ex) {
             return false;
         }
     }

@@ -37,6 +37,9 @@
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tramiteMercantilCtrl.tituloMercantil}</h1>
             <h:form id="formTramite">
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
                 <p:remoteCommand name="onSelectRowTramite" 
                                  update="formTramiteSelected"/>
                 <b:panel title="Trámites Mercantil">
@@ -129,7 +132,7 @@
                             disabled="#{tramiteMercantilCtrl.disableNuevoT}"
                             cancelLabel=""                                
                             fileUploadListener="#{tramiteMercantilCtrl.crearTramitesBloque}"
-                            update="formTramite, msgMensajes"/>
+                            update="formTramite"/>
                     </b:panelGrid>
 
                 </b:panel>
