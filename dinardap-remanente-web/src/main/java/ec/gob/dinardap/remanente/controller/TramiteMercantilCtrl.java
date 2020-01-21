@@ -561,5 +561,4 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
         this.renderedNumeroRepertorio = renderedNumeroRepertorio;
     }
-
 }
