@@ -23,10 +23,7 @@
                             <p:ajax event="rowSelect" listener="#{institucionCtrl.seleccionarInstitucion()}" update="formInstitucion:institucionPnl"/>
                             <p:column headerText="ID Institución" rendered="false">
                                 <h:outputText value="#{institucion.institucionId}"/>
-                            </p:column>
-                            <p:column headerText="RUC" sortBy="#{institucion.ruc}" filterBy="#{institucion.ruc}" filterMatchMode="contains">
-                                <h:outputText value="#{institucion.ruc}" rendered="false"/>
-                            </p:column>
+                            </p:column>                            
                             <p:column headerText="Nombre" sortBy="#{institucion.nombre}" filterBy="#{institucion.nombre}" filterMatchMode="contains" >
                                 <h:outputText value="#{institucion.nombre}"/>
                             </p:column>                            
@@ -65,11 +62,8 @@
                             </p:confirmDialog>
                         </p:commandButton>
                     </b:panelGrid>
-
                 </b:panel>
-            </h:form>      
-
-
+            </h:form>
         </ui:define>
     </ui:composition>
 </html>

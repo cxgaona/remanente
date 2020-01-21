@@ -60,6 +60,8 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
             }
+            rm.getRemanenteCuatrimestral();
+            rm.getRemanenteCuatrimestral().getRemanenteAnual();
         }
         for (RemanenteMensual remanenteMensual : remanenteMensualList) {
             for (EstadoRemanenteCuatrimestral erc : remanenteMensual.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {

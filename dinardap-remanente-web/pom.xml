@@ -123,7 +123,7 @@
         <dependency> 
             <groupId>ec.gob.dinardap.autorizacion</groupId> 
             <artifactId>dinardap-autorizacion</artifactId> 
-            <version>1.0-SNAPSHOT</version> 
+            <version>1.0.1-SNAPSHOT</version> 
         </dependency>
         <dependency>
             <groupId>ec.gob.dinardap.remanente</groupId>
