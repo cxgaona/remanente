@@ -207,6 +207,9 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
             tramiteSelected.setTransaccionId(t);
             tramiteSelected.setFechaRegistro(new Date());
+            if(tramiteSelected.getTipo().equals("Certificaciones")){
+                tramiteSelected.setNumeroRepertorio(null);
+            }
             tramiteServicio.editTramite(tramiteSelected);
         }
         actualizarTransaccionValores();
