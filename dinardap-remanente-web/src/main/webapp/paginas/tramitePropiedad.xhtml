@@ -69,14 +69,14 @@
                                      selection="#{tramitePropiedadCtrl.tramiteSelected}"
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,25"
+                                     rowsPerPageTemplate="5,10,25,50"
                                      tableStyle="width:auto"
                                      styleClass="tableDialogs">
                             <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>                            
                             <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
                                 <h:outputText value="#{tramite.tipo}" />
                             </p:column>
-                            <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
+                            <p:column headerText="Número Inscripción/Certificación" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.numero}" />
                             </p:column>
                             <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
@@ -153,7 +153,10 @@
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
 
-                        <p:outputLabel for="numero" value="Número:"/>
+                        <p:outputLabel for="numero" value="#{tramitePropiedadCtrl.tramiteSelected.tipo eq 'Inscripciones'?'Número (Inscripción):':
+                                                             tramitePropiedadCtrl.tramiteSelected.tipo eq 'Certificaciones'?'Número (Certificación):':'Número:'}">
+                            <p:autoUpdate />
+                        </p:outputLabel>
                         <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
