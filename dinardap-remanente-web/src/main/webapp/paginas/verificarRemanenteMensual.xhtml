@@ -6,7 +6,8 @@
       xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
-        <ui:define name="content">            
+        <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{verificarRemanenteMensualCtrl.tituloPagina}</h1> 
             <!--Dialogos-->
             <!--Estado remanente mensual-->
             <p:dialog id="estadoRemanenteMensualDlg"
@@ -74,12 +75,13 @@
                                  rowKey="#{tramite.tramiteId}"                                 
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,25"
+                                 rowsPerPageTemplate="5,10,25,50"
+                                 tableStyle="width:auto"
                                  styleClass="tableDialogs">                        
                         <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
                             <h:outputText value="#{tramite.tipo}" />
                         </p:column>
-                        <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
+                        <p:column headerText="Número Inscripción/Certificación" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.numero}" />
                         </p:column>
                         <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
@@ -102,8 +104,7 @@
                     </p:dataTable>   
                 </h:form>
             </p:dialog>
-
-            <!--Egresos-->
+            <!--Detalle de Egresos R. Propiedad o R. Mercantil--> 
             <p:dialog id="egresosDlg"
                       header="Egresos Registro de la Propiedad / Mercantil" 
                       modal="true"
@@ -122,6 +123,7 @@
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25"
+                                 tableStyle="width:auto"
                                  style="margin-bottom: 10px">
                         <f:facet name="header">
                             Gastos por Nómina
@@ -186,25 +188,36 @@
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25"
+                                 tableStyle="width:auto"
                                  styleClass="tableDialogs">
                         <f:facet name="header">
                             Facturas Pagadas
                         </f:facet>                            
-                        <p:column headerText="Número" style="text-align: right">
+                        <p:column headerText="Número Factura" 
+                                  sortBy="#{facturaPagada.numero}" 
+                                  filterBy="#{facturaPagada.numero}" 
+                                  filterMatchMode="contains"
+                                  width="10%"
+                                  style="text-align: right">
                             <h:outputText value="#{facturaPagada.numero}" />                                
                         </p:column>
-                        <p:column headerText="Fecha">
-                            <h:outputText value="#{facturaPagada.fecha}" >
+                        <p:column headerText="Fecha" sortBy="#{facturaPagada.numero}" 
+                                  width="10%"
+                                  style="text-align: center">
+                            <h:outputText value="#{facturaPagada.fecha}">
                                 <f:convertDateTime pattern="yyyy/MM/dd" />
                             </h:outputText>
                         </p:column>
                         <p:column headerText="Tipo"
                                   sortBy="#{facturaPagada.tipo}" 
                                   filterBy="#{facturaPagada.tipo}" 
-                                  filterMatchMode="contains">
+                                  filterMatchMode="contains"
+                                  width="30%">
                             <h:outputText value="#{facturaPagada.tipo}" />  
                         </p:column>
-                        <p:column headerText="Valor" style="text-align: right">
+                        <p:column headerText="Valor" 
+                                  width="10%"
+                                  style="text-align: right">
                             <h:outputText value="#{facturaPagada.valor}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -212,7 +225,8 @@
                         <p:column headerText="Detalle" 
                                   sortBy="#{facturaPagada.detalle}" 
                                   filterBy="#{facturaPagada.detalle}" 
-                                  filterMatchMode="contains">
+                                  filterMatchMode="contains"
+                                  width="40%">
                             <h:outputText value="#{facturaPagada.detalle}">
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -220,11 +234,7 @@
                     </p:dataTable>  
                 </h:form>
             </p:dialog>
-
             <!--Dialogos FIN-->
-
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{verificarRemanenteMensualCtrl.tituloPagina}</h1> 
-
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{verificarRemanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">
