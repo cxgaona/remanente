@@ -4,12 +4,12 @@
     <parent>
         <artifactId>dinardap-remanente</artifactId>
         <groupId>ec.gob.dinardap.remanente</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.2</version>
     </parent>
 
     <groupId>ec.gob.dinardap.remanente</groupId>
     <artifactId>dinardap-remanente-ejb</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>ejb</packaging>
 
     <name>dinardap-remanente-ejb</name>

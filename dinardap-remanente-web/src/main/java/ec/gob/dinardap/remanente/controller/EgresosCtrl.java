@@ -467,7 +467,9 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                                 case 0:
                                     datoVal = validarCampoNumero(dato);
                                     if (!datoVal.equals("INVALIDO")) {
-                                        facturaPagadaNueva.setNumero(datoVal);
+                                        if (datoVal.length() <= 15) {
+                                            facturaPagadaNueva.setNumero(datoVal);
+                                        }
                                     }
                                     break;
                                 case 1:
