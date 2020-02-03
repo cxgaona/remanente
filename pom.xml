@@ -18,7 +18,7 @@
         <wildfly.user>admin</wildfly.user>
         <wildfly.password>dINARDAP.2019</wildfly.password>
         <wildfly.host>localhost</wildfly.host>
-        <wildfly.port>9990</wildfly.port>
+        <wildfly.port>9990</wildfly.port>        
     </properties>
 
     <dependencyManagement>

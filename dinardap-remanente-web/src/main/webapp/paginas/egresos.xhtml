@@ -250,7 +250,6 @@
                             <f:facet name="header">
                                 Facturas Pagadas
                             </f:facet>
-
                             <p:ajax event="rowEdit" listener="#{egresosCtrl.onRowEditFacturaPagada}" update="formFacturaPagada:facturaPagadaTbl"  />
                             <p:column style="width:32px" rendered="#{egresosCtrl.renderEdition}">
                                 <p:rowEditor />
