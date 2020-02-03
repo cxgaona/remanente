@@ -89,7 +89,7 @@ public class InstitucionRequeridaServicioImpl extends GenericServiceImpl<Institu
         String[] criteriaNombres = {"tipo"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS};
         Object[] criteriaValores = {"REGIONAL"};
-        String[] orderBy = {"ruc"};
+        String[] orderBy = {"institucionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         direccionRegionalList = findByCriterias(criteria);

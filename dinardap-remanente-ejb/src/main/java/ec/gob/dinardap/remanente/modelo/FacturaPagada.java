@@ -54,7 +54,7 @@ public class FacturaPagada implements Serializable {
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
-    @Size(max = 10)
+    @Size(max = 15)
     @Column(name = "numero")
     private String numero;
     @Column(name = "tipo", length = 60)

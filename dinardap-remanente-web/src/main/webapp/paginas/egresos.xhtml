@@ -4,12 +4,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:b="http://bootsfaces.net/ui"
-      xmlns:p="http://primefaces.org/ui">
-
-    <!-- 
-            Replace path to template, title, header and body
-            with actual data.
-    -->
+      xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{egresosCtrl.tituloEgreso}</h1>
@@ -22,7 +17,7 @@
             </h:form>
 
             <!-- NOMINA -->
-            <h:form id="formNomina"> 
+            <h:form id="formNomina">                
                 <h:outputLabel value="Mes Seleccionado: #{egresosCtrl.mes eq 1? 'Enero':
                                                           egresosCtrl.mes eq 2? 'Febrero':
                                                           egresosCtrl.mes eq 3? 'Marzo':
@@ -37,6 +32,9 @@
                                                           egresosCtrl.mes eq 12? 'Diciembre':'Sin mes'}" styleClass="form-label-izquierda-15" style="width: 100%"/>
                 <b:panel title="#{egresosCtrl.tituloN}">
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <p:messages id="messagesNomina" showDetail="true" closable="true">
+
+                        </p:messages>
                         <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
                             <p:commandButton 
                                 value="Agregar Registro"
@@ -60,7 +58,7 @@
                                 disabled="#{egresosCtrl.disableNuevoRegistro}"
                                 cancelLabel=""                                
                                 fileUploadListener="#{egresosCtrl.crearNominaBloque}"
-                                update="formNomina, msgMensajes"/>
+                                update="formNomina, formNomina:messagesNomina"/>
                         </b:panelGrid>
                         <p:remoteCommand name="onCellDelete" update="formNomina:nominaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
@@ -205,9 +203,12 @@
                 </b:panel>
             </h:form>
             <!-- FACTURAS PAGADAS-->
-            <h:form id="formFacturaPagada">  
+            <h:form id="formFacturaPagada">                
                 <b:panel title="#{egresosCtrl.tituloFP}">
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <p:messages id="messagesFacturaPagada" showDetail="true" closable="true">
+
+                        </p:messages>
                         <b:panelGrid colSpans="12" style="width: 20%; margin: 4px 5px;">
                             <p:commandButton 
                                 value="Agregar Registro"  
@@ -231,7 +232,7 @@
                                 disabled="#{egresosCtrl.disableNuevoRegistro}"
                                 cancelLabel=""                                
                                 fileUploadListener="#{egresosCtrl.crearFacturaBloque}"
-                                update="formFacturaPagada, msgMensajes"/>
+                                update="formFacturaPagada, formFacturaPagada:messagesFacturaPagada"/>
                         </b:panelGrid>
                         <p:remoteCommand name="onCellDeleteFP" update="formFacturaPagada:facturaPagadaTbl"/>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
@@ -249,7 +250,6 @@
                             <f:facet name="header">
                                 Facturas Pagadas
                             </f:facet>
-
                             <p:ajax event="rowEdit" listener="#{egresosCtrl.onRowEditFacturaPagada}" update="formFacturaPagada:facturaPagadaTbl"  />
                             <p:column style="width:32px" rendered="#{egresosCtrl.renderEdition}">
                                 <p:rowEditor />
@@ -259,11 +259,11 @@
                                     <p:confirm header="Confirmación" message="¿Está seguro de eliminar el registro?" icon="fa fa-fw fa-warning" />
                                 </p:commandButton>
                             </p:column>
-                            <p:column headerText="Número">
+                            <p:column headerText="Número Factura">
                                 <p:cellEditor>
                                     <f:facet name="output"><h:outputText value="#{facturaPagada.numero}" /></f:facet>
                                     <f:facet name="input">
-                                        <p:inputText id="numero" value="#{facturaPagada.numero}" maxlength="10" style="width:100%" onkeypress="if (event.keyCode == 13) {
+                                        <p:inputText id="numero" value="#{facturaPagada.numero}" maxlength="15" style="width:100%" onkeypress="if (event.keyCode == 13) {
                                                     return false;
                                                 }">
                                             <p:keyFilter regEx="/[\d]/"/>  

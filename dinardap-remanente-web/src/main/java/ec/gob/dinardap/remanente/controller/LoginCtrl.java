@@ -28,6 +28,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
 
     @PostConstruct
     protected void init() {
+        this.logout();
         usuario = "";
         contraseña = "";
         u = new UsuarioDTO();
@@ -55,7 +56,7 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             this.setSessionVariable("usuarioId", u.getUsuarioID().toString());
             this.setSessionVariable("institucionId", u.getInstitucionID().toString());
             this.setSessionVariable("institucionTipo", u.getTipo());
-            this.setSessionVariable("gadId", u.getGadID().toString());            
+            this.setSessionVariable("gadId", u.getGadID().toString());
 
             FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {

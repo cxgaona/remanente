@@ -6,12 +6,18 @@
       xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
-        <ui:define name="content">            
-
+        <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{verificarRemanenteMensualCtrl.tituloPagina}</h1> 
+            <!--Dialogos-->
+            <!--Estado remanente mensual-->
             <p:dialog id="estadoRemanenteMensualDlg"
                       header="Estados de Remanente" 
                       modal="true"
-                      widgetVar="estadoRemanenteMensualDlg" width="1000" height="auto" 
+                      widgetVar="estadoRemanenteMensualDlg" 
+                      width="90%"
+                      position="top"
+                      height="500"
+                      blockScroll="true"
                       resizable="false">
                 <h:form id="formEstadoRemanenteMensualDlg">
                     <p:dataTable id="estadoRemanenteMensualTbl"
@@ -48,17 +54,20 @@
                         <p:column headerText="Estado" sortBy="#{estadoRemanenteMensual.descripcion}" filterBy="#{estadoRemanenteMensual.descripcion}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.descripcion}"/>
                         </p:column>
-
                     </p:dataTable>
                 </h:form>
-            </p:dialog>                
+            </p:dialog>
 
+            <!--Detalle de trámites-->
             <p:dialog id="tramiteRegistroPropiedadDlg"
                       header="Trámites Registro de la Propiedad / Mercantil" 
                       modal="true"
-                      widgetVar="tramiteRegistroPropiedadDlg" width="90%" height="auto" 
-                      resizable="false"
-                      blockScroll="true">    
+                      widgetVar="tramiteRegistroPropiedadDlg" 
+                      width="90%"
+                      position="top"
+                      height="500"
+                      blockScroll="true"
+                      resizable="false">    
                 <h:form id="formTramiteRegistroPropiedadDlg">
                     <p:dataTable id="tramiteTbl"
                                  value="#{verificarRemanenteMensualCtrl.tramiteRPropiedadMercantilList}" 
@@ -66,51 +75,55 @@
                                  rowKey="#{tramite.tramiteId}"                                 
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,25">                        
-                        <p:column headerText="ID Tramite" rendered="false">
-                            <f:facet name="header">
-                                #{verificarRemanenteMensualCtrl.tituloDetalleDlg}
-                            </f:facet>  
-                            <h:outputText value="#{tramite.tramiteId}"/>
-                        </p:column>
-                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
+                                 rowsPerPageTemplate="5,10,25,50"
+                                 tableStyle="width:auto"
+                                 styleClass="tableDialogs">                        
+                        <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
                             <h:outputText value="#{tramite.tipo}" />
                         </p:column>
-                        <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
+                        <p:column headerText="Número Inscripción/Certificación" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.numero}" />
                         </p:column>
-                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
+                        <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
+                            <h:outputText value="#{tramite.numeroRepertorio}" />
+                        </p:column>
+                        <p:column headerText="Fecha" sortBy="#{tramite.fecha}" width="10%" style="text-align: center">
                             <h:outputText value="#{tramite.fecha}" />
                         </p:column>
-                        <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
+                        <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.numeroComprobantePago}" />
                         </p:column>                            
-                        <p:column headerText="Valor" sortBy="#{tramite.valor}">
+                        <p:column headerText="Valor" sortBy="#{tramite.valor}" width="10%" style="text-align: right">
                             <h:outputText value="#{tramite.valor}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains">
+                        <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains" width="40%">
                             <h:outputText value="#{tramite.acto}" />
                         </p:column>                            
                     </p:dataTable>   
                 </h:form>
             </p:dialog>
-
+            <!--Detalle de Egresos R. Propiedad o R. Mercantil--> 
             <p:dialog id="egresosDlg"
                       header="Egresos Registro de la Propiedad / Mercantil" 
                       modal="true"
-                      widgetVar="egresosDlg" width="95%" height="auto" 
+                      widgetVar="egresosDlg" 
+                      width="90%"
+                      position="top"
+                      height="500"
+                      blockScroll="true"
                       resizable="false">    
                 <h:form id="formEgresosDlg">
                     <p:dataTable id="nominaTbl"
-                                 styleClass="nominaTbl"                        
+                                 styleClass="nominaTbl tableDialogs"                        
                                  var="nomina" 
                                  value="#{verificarRemanenteMensualCtrl.egresoNominaList}" 
                                  editable="true"                                  
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,25"
+                                 tableStyle="width:auto"
                                  style="margin-bottom: 10px">
                         <f:facet name="header">
                             Gastos por Nómina
@@ -127,42 +140,42 @@
                                   filterMatchMode="contains">
                             <h:outputText value="#{nomina.cargo}" />
                         </p:column>
-                        <p:column headerText="Remuneración">
+                        <p:column headerText="Remuneración" style="text-align: right">
                             <b><h:outputText value="#{nomina.remuneracion}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>                              
                         </p:column>
-                        <p:column headerText="Aporte Patronal">
-                            <h:outputText value="#{nomina.aportePatronal}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>                            
+                        <p:column headerText="Aporte Patronal" style="text-align: right">
+                            <b><h:outputText value="#{nomina.aportePatronal}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
-                        <p:column headerText="Impuesto a la Renta">
+                        <p:column headerText="Impuesto a la Renta" style="text-align: right">
                             <h:outputText value="#{nomina.impuestoRenta}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>                            
                         </p:column>
-                        <p:column headerText="Fondos de Reserva">
-                            <h:outputText value="#{nomina.fondosReserva}" >
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                            </h:outputText>
+                        <p:column headerText="Fondos de Reserva" style="text-align: right">
+                            <b><h:outputText value="#{nomina.fondosReserva}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText></b>
                         </p:column>
-                        <p:column headerText="Décimo Tercero">
+                        <p:column headerText="Décimo Tercero" style="text-align: right">
                             <b><h:outputText value="#{nomina.decimoTercero}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>                          
                         </p:column>
-                        <p:column headerText="Décimo Cuarto">
+                        <p:column headerText="Décimo Cuarto" style="text-align: right">
                             <b><h:outputText value="#{nomina.decimoCuarto}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText></b>
                         </p:column>
-                        <p:column headerText="Total Descuento">
+                        <p:column headerText="Total Descuento" style="text-align: right">
                             <h:outputText value="#{nomina.totalDesc}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="Líquido a Recibir">
+                        <p:column headerText="Líquido a Recibir" style="text-align: right">
                             <h:outputText value="#{nomina.liquidoRecibir}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -174,25 +187,37 @@
                                  value="#{verificarRemanenteMensualCtrl.egresoFacturaList}"                                      
                                  reflow="true" rows="5" paginator="true"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,25">
+                                 rowsPerPageTemplate="5,10,25"
+                                 tableStyle="width:auto"
+                                 styleClass="tableDialogs">
                         <f:facet name="header">
                             Facturas Pagadas
                         </f:facet>                            
-                        <p:column headerText="Número">
+                        <p:column headerText="Número Factura" 
+                                  sortBy="#{facturaPagada.numero}" 
+                                  filterBy="#{facturaPagada.numero}" 
+                                  filterMatchMode="contains"
+                                  width="10%"
+                                  style="text-align: right">
                             <h:outputText value="#{facturaPagada.numero}" />                                
                         </p:column>
-                        <p:column headerText="Fecha">
-                            <h:outputText value="#{facturaPagada.fecha}" >
+                        <p:column headerText="Fecha" sortBy="#{facturaPagada.numero}" 
+                                  width="10%"
+                                  style="text-align: center">
+                            <h:outputText value="#{facturaPagada.fecha}">
                                 <f:convertDateTime pattern="yyyy/MM/dd" />
                             </h:outputText>
                         </p:column>
                         <p:column headerText="Tipo"
                                   sortBy="#{facturaPagada.tipo}" 
                                   filterBy="#{facturaPagada.tipo}" 
-                                  filterMatchMode="contains">
+                                  filterMatchMode="contains"
+                                  width="30%">
                             <h:outputText value="#{facturaPagada.tipo}" />  
                         </p:column>
-                        <p:column headerText="Valor">
+                        <p:column headerText="Valor" 
+                                  width="10%"
+                                  style="text-align: right">
                             <h:outputText value="#{facturaPagada.valor}" >
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
@@ -200,17 +225,16 @@
                         <p:column headerText="Detalle" 
                                   sortBy="#{facturaPagada.detalle}" 
                                   filterBy="#{facturaPagada.detalle}" 
-                                  filterMatchMode="contains">
+                                  filterMatchMode="contains"
+                                  width="40%">
                             <h:outputText value="#{facturaPagada.detalle}">
                                 <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                             </h:outputText>
                         </p:column>
                     </p:dataTable>  
                 </h:form>
-            </p:dialog>                
-
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{verificarRemanenteMensualCtrl.tituloPagina}</h1> 
-
+            </p:dialog>
+            <!--Dialogos FIN-->
             <h:form id="formRemanenteMensual">
                 <b:panel title="Remanentes Mensuales - #{verificarRemanenteMensualCtrl.nombreInstitucion}">
                     <h:panelGrid columns="1" style="width: 100%;">

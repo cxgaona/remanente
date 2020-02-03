@@ -7,5 +7,6 @@
     session.setAttribute("institucionId", "186");
     session.setAttribute("usuarioId", "1");*/
 //    response.sendRedirect("paginas/brand.jsf");
+    session.invalidate();
     response.sendRedirect("login.jsf");
 %>

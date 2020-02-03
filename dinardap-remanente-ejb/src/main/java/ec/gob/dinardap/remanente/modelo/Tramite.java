@@ -43,16 +43,19 @@ import javax.validation.constraints.Size;
 public class Tramite implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @SequenceGenerator(name = "TRAMITE_GENERATOR", sequenceName = "tramite_tramite_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAMITE_GENERATOR")
     @Column(name = "tramite_id")
     private Integer tramiteId;
-    
+
     @Size(max = 10)
     @Column(name = "numero")
     private String numero;
+    @Size(max = 10)
+    @Column(name = "numero_repertorio")
+    private String numeroRepertorio;
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
@@ -165,6 +168,14 @@ public class Tramite implements Serializable {
         this.transaccionId = transaccionId;
     }
 
+    public String getNumeroRepertorio() {
+        return numeroRepertorio;
+    }
+
+    public void setNumeroRepertorio(String numeroRepertorio) {
+        this.numeroRepertorio = numeroRepertorio;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -189,5 +200,5 @@ public class Tramite implements Serializable {
     public String toString() {
         return "ec.gob.dinardap.remanente.modelo.Tramite[ tramiteId=" + tramiteId + " ]";
     }
-    
+
 }

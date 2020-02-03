@@ -28,9 +28,9 @@ body{
 .pie{
     /*position: fixed;*/
     text-align: center;
-    bottom: 0;
+    bottom: 0px;
     width: 100%; 
-    height: 30%;
+    height: 100%;
 }
 
 .h-wai{
@@ -43,8 +43,7 @@ body{
 
 .contenido{
     padding-left: 5%;
-    padding-right: 5%;
-    padding-bottom: 3%;
+    padding-right: 5%;    
 }
 
 table{
@@ -446,4 +445,12 @@ ui-fileupload ui-widget ui-fileupload-responsive{
     background-color: #fca752 !important;
     background-image: none !important;
     color: #000000 !important;
+}
+
+.botonEliminar{
+    background-color: red !important;
+}
+
+.ui-datatable.tableDialogs th {
+    text-align: center !important;
 }

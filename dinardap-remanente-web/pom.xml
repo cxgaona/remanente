@@ -6,7 +6,7 @@
     <parent>
         <artifactId>dinardap-remanente</artifactId>
         <groupId>ec.gob.dinardap.remanente</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.2</version>
     </parent>
 
     <artifactId>dinardap-remanente-web</artifactId>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.primefaces.themes</groupId>
             <artifactId>hot-sneaks</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.10</version>            
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -123,12 +123,12 @@
         <dependency> 
             <groupId>ec.gob.dinardap.autorizacion</groupId> 
             <artifactId>dinardap-autorizacion</artifactId> 
-            <version>1.0-SNAPSHOT</version> 
+            <version>1.0.1-SNAPSHOT</version> 
         </dependency>
         <dependency>
             <groupId>ec.gob.dinardap.remanente</groupId>
             <artifactId>dinardap-remanente-ejb</artifactId>
-            <version>${project.version}</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>

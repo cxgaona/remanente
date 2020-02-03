@@ -6,7 +6,7 @@
       xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">
     <script type="text/javascript">
-        PrimeFaces.locales['fr'] = {
+        PrimeFaces.locales['es'] = {
             closeText: 'Cerrar',
             prevText: 'Anterior',
             nextText: 'Siguiente',
@@ -16,7 +16,7 @@
             dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
             dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
             weekHeader: 'Semana',
-            firstDay: 1,
+            firstDayOfWeek: 1,
             isRTL: false,
             showMonthAfterYear: false,
             yearSuffix: '',
@@ -37,12 +37,15 @@
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tramiteMercantilCtrl.tituloMercantil}</h1>
             <h:form id="formTramite">
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
                 <p:remoteCommand name="onSelectRowTramite" 
                                  update="formTramiteSelected"/>
                 <b:panel title="Trámites Mercantil">
                     <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                         <p:outputLabel for="mesTramite" value="Mes:&nbsp;" />
-                        <p:datePicker id="mesTramite" view="month" value="#{tramiteMercantilCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" />
+                        <p:datePicker id="mesTramite" view="month" value="#{tramiteMercantilCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
                         <p:commandButton action="#{tramiteMercantilCtrl.reloadTramite}" update="formTramite, formTramiteSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                     </b:panelGrid>
                     <h:panelGrid columns="1" style="width: 100%;">
@@ -66,33 +69,36 @@
                                      selection="#{tramiteMercantilCtrl.tramiteSelected}"
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,25">
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:auto"
+                                     styleClass="tableDialogs">
                             <p:ajax event="rowSelect" listener="#{tramiteMercantilCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
-                            <p:column headerText="ID Tramite" rendered="false">
-                                <h:outputText value="#{tramite.tramiteId}"/>
-                            </p:column>
-                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}">
+                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
                                 <h:outputText value="#{tramite.tipo}" />
                             </p:column>
-                            <p:column headerText="Número" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains">
+                            <p:column headerText="Número Inscripción/Certificación" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.numero}" />
                             </p:column>
-                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}">
+                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
+                                <h:outputText value="#{tramite.numeroRepertorio}" />
+                            </p:column>
+                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}" width="10%" style="text-align: center">
                                 <h:outputText value="#{tramite.fecha}" />
                             </p:column>
-                            <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains">
+                            <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.numeroComprobantePago}" />
                             </p:column>                            
-                            <p:column headerText="Valor" sortBy="#{tramite.valor}">
+                            <p:column headerText="Valor" sortBy="#{tramite.valor}" width="10%" style="text-align: right">
                                 <h:outputText value="#{tramite.valor}" >
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains">
+                            <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains" width="40%">
                                 <h:outputText value="#{tramite.acto}" />
                             </p:column>                            
                         </p:dataTable>                          
                     </h:panelGrid>
+
                     <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 35%; margin: 4px 5px;">
                         <p:commandButton value="Nuevo Trámite"
                                          style="margin-right:20px; width: 100%" 
@@ -126,9 +132,8 @@
                             disabled="#{tramiteMercantilCtrl.disableNuevoT}"
                             cancelLabel=""                                
                             fileUploadListener="#{tramiteMercantilCtrl.crearTramitesBloque}"
-                            update="formTramite, msgMensajes"/>
+                            update="formTramite"/>
                     </b:panelGrid>
-
                 </b:panel>
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                     <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
@@ -143,14 +148,24 @@
                                            value="#{tramiteMercantilCtrl.tramiteSelected.tipo}"
                                            style="width: 70%;"
                                            required="true">
+                            <p:ajax event="change" listener="#{tramiteMercantilCtrl.changeTipoTramite}" update="formTramiteSelected:numeroRepertorio, formTramiteSelected:numeroRepertorioLbl"/>
                             <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones" />
                             <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
                         </p:selectOneButton>                        
 
-                        <p:outputLabel for="numero" value="Número:" />                        
+                        <p:outputLabel for="numero" value="#{tramiteMercantilCtrl.tramiteSelected.tipo eq 'Inscripciones'?'Número (Inscripción):':
+                                                             tramiteMercantilCtrl.tramiteSelected.tipo eq 'Certificaciones'?'Número (Certificación):':'Número:'}">
+                            <p:autoUpdate />
+                        </p:outputLabel>                      
                         <p:inputText id="numero" value="#{tramiteMercantilCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true">
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>
+
+                        <p:outputLabel id="numeroRepertorioLbl" for="numeroRepertorio" value="Número Repertorio:" />
+                        <p:inputText id="numeroRepertorio" value="#{tramiteMercantilCtrl.tramiteSelected.numeroRepertorio}" maxlength="10" style="width: 90%" required="#{tramiteMercantilCtrl.renderedNumeroRepertorio}"  disabled="#{!tramiteMercantilCtrl.renderedNumeroRepertorio}">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>
+
                         <p:outputLabel for="fecha" value="Fecha:" />
                         <p:datePicker id="fecha" 
                                       value="#{tramiteMercantilCtrl.tramiteSelected.fecha}" 
