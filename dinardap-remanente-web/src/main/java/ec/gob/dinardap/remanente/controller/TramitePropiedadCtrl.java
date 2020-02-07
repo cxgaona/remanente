@@ -214,7 +214,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
             tramiteSelected.setTransaccionId(t);
             tramiteSelected.setFechaRegistro(new Date());
-            if(tramiteSelected.getTipo().equals("Certificaciones")){
+            if (tramiteSelected.getTipo().equals("Certificaciones")) {
                 tramiteSelected.setNumeroRepertorio(null);
             }
             tramiteServicio.editTramite(tramiteSelected);
@@ -329,7 +329,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                                     if (dato.equals("Certificaciones") || dato.equals("Inscripciones")) {
                                         tramiteNuevo.setTipo(dato);
                                         for (CatalogoTransaccion ct : catalogoList) {
-                                            if (ct.getNombre().equals(tramiteNuevo.getTipo())&& ct.getTipo().equals("Ingreso-Propiedad")) {
+                                            if (ct.getNombre().equals(tramiteNuevo.getTipo()) && ct.getTipo().equals("Ingreso-Propiedad")) {
                                                 idCatalogoTransaccion = ct.getCatalogoTransaccionId();
                                                 break;
                                             }
@@ -368,7 +368,9 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                                 case 4:
                                     datoVal = validarCampoNumero(dato);
                                     if (!datoVal.equals("INVALIDO")) {
-                                        tramiteNuevo.setNumeroComprobantePago(datoVal);
+                                        if (datoVal.length() <= 15) {
+                                            tramiteNuevo.setNumeroComprobantePago(datoVal);
+                                        }
                                     }
                                     break;
                                 case 5:

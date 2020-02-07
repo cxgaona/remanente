@@ -62,7 +62,7 @@ public class Tramite implements Serializable {
     @Column(name = "fecha_registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
-    @Size(max = 10)
+    @Size(max = 15)
     @Column(name = "numero_comprobante_pago")
     private String numeroComprobantePago;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
