@@ -207,7 +207,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
             tramiteSelected.setTransaccionId(t);
             tramiteSelected.setFechaRegistro(new Date());
-            if(tramiteSelected.getTipo().equals("Certificaciones")){
+            if (tramiteSelected.getTipo().equals("Certificaciones")) {
                 tramiteSelected.setNumeroRepertorio(null);
             }
             tramiteServicio.editTramite(tramiteSelected);
@@ -361,7 +361,9 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                                 case 4:
                                     datoVal = validarCampoNumero(dato);
                                     if (!datoVal.equals("INVALIDO")) {
-                                        tramiteNuevo.setNumeroComprobantePago(datoVal);
+                                        if (datoVal.length() <= 15) {
+                                            tramiteNuevo.setNumeroComprobantePago(datoVal);
+                                        }
                                     }
                                     break;
                                 case 5:
@@ -424,7 +426,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 }
                 reloadTramite();
                 actualizarTransaccionConteo();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Se ha creado el bloque de trámites satisfactoriamente"));                
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Se ha creado el bloque de trámites satisfactoriamente"));
             } else {
                 String celdas = "";
                 for (String s : celdaErrorVacio) {
