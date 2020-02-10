@@ -38,6 +38,8 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
+    //****Declaración de variables****//
+    //Variables de control visual
     private Boolean onEdit;
     private Boolean onCreate;
     private Boolean renderEdition;
@@ -48,6 +50,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Boolean disabledAdministrador;
     private Boolean disabledRestablecer;
 
+    //Listas
     private List<Usuario> usuarioActivoList;
     private List<InstitucionRequerida> institucionRequeridaList;
     private List<Pregunta> preguntaList;
@@ -244,7 +247,6 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
 
     public void eliminarUsuario() {
-        System.out.println("Eliminar usuario");
         usuarioSelected.setEstado("I");
         usuarioServicio.editUsuario(usuarioSelected);
         usuarioActivoList = new ArrayList<Usuario>();
@@ -360,7 +362,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 }
             }
             Boolean errorUsuarios = Boolean.FALSE;
-            String mensajeError = "";            
+            String mensajeError = "";
             for (Usuario u : usuarioNuevoList) {
 
                 if (usuarioServicio.getUsuarioByUsername(u.getUsuario()).getUsuarioId() != null) {
@@ -474,7 +476,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public List<InstitucionRequerida> completeNombreInstitucion(String query) {
         List<InstitucionRequerida> filteredInstituciones = new ArrayList<InstitucionRequerida>();
         for (InstitucionRequerida ir : institucionRequeridaList) {
-            if (ir.getNombre().toLowerCase().contains(query)) {
+            if (ir.getNombre().toLowerCase().contains(query)
+                    || ir.getNombre().toUpperCase().contains(query)) {
                 filteredInstituciones.add(ir);
             }
         }
@@ -593,5 +596,4 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void setRestablecer(Boolean restablecer) {
         this.restablecer = restablecer;
     }
-
 }
