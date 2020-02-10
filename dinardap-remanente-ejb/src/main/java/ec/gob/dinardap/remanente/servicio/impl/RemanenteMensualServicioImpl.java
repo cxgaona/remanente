@@ -24,6 +24,8 @@ import ec.gob.dinardap.sftp.exception.FtpException;
 import ec.gob.dinardap.sftp.util.CredencialesSFTP;
 import ec.gob.dinardap.sftp.util.GestionSFTP;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,6 +103,12 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
+            Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+                @Override
+                public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
+                    return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+                }
+            });
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
             }
