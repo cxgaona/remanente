@@ -723,5 +723,4 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
         this.renderedNumeroRepertorio = renderedNumeroRepertorio;
     }
-
 }
