@@ -21,16 +21,21 @@
                                      selection="#{gestionUsuariosCtrl.usuarioSelected}"
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,25">
-                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuario:usuarioPnl"/>
-                            <p:column headerText="ID Usuario" rendered="false">
-                                <h:outputText value="#{usuario.usuarioId}"/>
-                            </p:column>
+                                     rowsPerPageTemplate="5,10,25"
+                                     tableStyle="width:auto"
+                                     widgetVar="usuarioTblWidgetVar">
+                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuario:usuarioPnl"/>                            
                             <p:column headerText="Nombre" sortBy="#{usuario.nombre}" filterBy="#{usuario.nombre}" filterMatchMode="contains">
                                 <h:outputText value="#{usuario.nombre}" />
                             </p:column>
+                            <p:column headerText="Login" sortBy="#{usuario.usuario}" filterBy="#{usuario.usuario}" filterMatchMode="contains">
+                                <h:outputText value="#{usuario.usuario}" />
+                            </p:column>
                             <p:column headerText="Institución" sortBy="#{usuario.institucionId.nombre}" filterBy="#{usuario.institucionId.nombre}" filterMatchMode="contains" >
                                 <h:outputText value="#{usuario.institucionId.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" sortBy="#{usuario.institucionId.provinciaCanton}" filterBy="#{usuario.institucionId.provinciaCanton}" filterMatchMode="contains" >
+                                <h:outputText value="#{usuario.institucionId.provinciaCanton}"/>
                             </p:column>
                             <p:column headerText="Tipo Institución" 
                                       sortBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
@@ -44,19 +49,17 @@
                                                        usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
                                                        usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}"/>
                             </p:column>
-                            <p:column headerText="Login" sortBy="#{usuario.usuario}" filterBy="#{usuario.usuario}" filterMatchMode="contains">
-                                <h:outputText value="#{usuario.usuario}" />
-                            </p:column>                            
-                            <p:column headerText="Registrador" sortBy="#{usuario.registrador}" width="10%">
+
+                            <p:column headerText="Registrador" sortBy="#{usuario.registrador}">
                                 <p:selectBooleanCheckbox value="#{usuario.registrador}" disabled="true" />
                             </p:column>                            
-                            <p:column headerText="Validador" sortBy="#{usuario.validador}" width="10%">
+                            <p:column headerText="Validador" sortBy="#{usuario.validador}">
                                 <p:selectBooleanCheckbox value="#{usuario.validador}" disabled="true"/>
                             </p:column>
-                            <p:column headerText="Verificador" sortBy="#{usuario.verificador}" width="10%">
+                            <p:column headerText="Verificador" sortBy="#{usuario.verificador}">
                                 <p:selectBooleanCheckbox value="#{usuario.verificador}" disabled="true" />
                             </p:column>
-                            <p:column headerText="Administrador" sortBy="#{usuario.administrador}" width="10%">
+                            <p:column headerText="Administrador" sortBy="#{usuario.administrador}">
                                 <p:selectBooleanCheckbox value="#{usuario.administrador}" disabled="true" />
                             </p:column>
                         </p:dataTable>                          
@@ -72,7 +75,8 @@
                                          style="margin-right:20px;" 
                                          action="#{gestionUsuariosCtrl.eliminarUsuario}"
                                          icon="fa fa-fw fa-remove"
-                                         update="formUsuario, msgMensajes">                        
+                                         update="formUsuario, msgMensajes, formUsuario:usuarioTbl"
+                                         oncomplete="PF('usuarioTblWidgetVar').filter()"> 
                             <p:confirm header="Confirmación" message="¿Está seguro de eliminar al usuario Seleccionado" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
@@ -131,8 +135,7 @@
                                         inputStyle="width: 90%"
                                         maxResults="5"
                                         required="true"
-                                        title="#{usuario.institucionId.nombre}"
-                                        />                        
+                                        title="#{usuario.institucionId.nombre}"/>                        
 
                         <p:outputLabel for="usuario" value="Usuario:" />
                         <p:inputText id="usuario" value="#{gestionUsuariosCtrl.usuarioSelected.usuario}" style="width: 90%" required="true" maxlength="10">
