@@ -152,6 +152,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.TRUE;
         disableDelete = Boolean.FALSE;
         btnGuardar = "Actualizar";
+        changeTipoTramite();
         obtenerRemanenteMensual();
     }
 
@@ -175,7 +176,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
-
         }
     }
 

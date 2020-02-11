@@ -147,6 +147,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.TRUE;
         disableDelete = Boolean.FALSE;
         btnGuardar = "Actualizar";
+        changeTipoTramite();
         obtenerRemanenteMensual();
     }
 
