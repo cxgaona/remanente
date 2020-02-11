@@ -4,7 +4,7 @@
 
     <groupId>ec.gob.dinardap.remanente</groupId>
     <artifactId>dinardap-remanente</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
 
     <packaging>pom</packaging>
 
