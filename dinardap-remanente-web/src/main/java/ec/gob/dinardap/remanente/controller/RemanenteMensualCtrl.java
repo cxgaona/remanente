@@ -151,7 +151,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         mesSelected = "Sin Selección";
     }
 
-    public void onRowSelectRemanenteMensual() {
+    public void onRowSelectRemanenteMensual() {        
         switch (remanenteMensualSelected.getMes()) {
             case 1:
                 mesSelected = "Enero";
@@ -197,13 +197,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         transaccionEgresosList = new ArrayList<Transaccion>();
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
-        totalEgresos = new BigDecimal(0);
-        Collections.sort(remanenteMensualSelected.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
-            @Override
-            public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
-                return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
-            }
-        });
+        totalEgresos = new BigDecimal(0);        
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
@@ -226,23 +220,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado"))
                 && (!remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeSubido")
                 && !remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeTecnicoSubido"))) {
-            System.out.println("aaa: " + remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualSelected.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion());
-
             displaySolicitud = Boolean.TRUE;
             if (remanenteMensualSelected.getSolicitudCambioUrl() == null) {
                 disabledBtnEnvCan = Boolean.TRUE;
             } else {
                 disabledBtnEnvCan = Boolean.FALSE;
             }
-
-//            System.out.println("remanenteMensualSelected.getSolicitudCambioUrl()" + remanenteMensualSelected.getSolicitudCambioUrl());
-//            if (!remanenteMensualSelected.getSolicitudCambioUrl().equals("") || remanenteMensualSelected.getSolicitudCambioUrl() != null) {
-//                System.out.println("Habilitar");
-////                disabledBtnEnvCan=Boolean.FALSE;
-//            } else {
-//                System.out.println("Deshabilitar");
-////                disabledBtnEnvCan=Boolean.TRUE;
-//            }
         } else {
             displaySolicitud = Boolean.FALSE;
         }
@@ -289,9 +272,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
 
     }
 
-    public void rowTransaccionEdit(RowEditEvent event) {
+    public void rowTransaccionEdit(RowEditEvent event) {        
         Transaccion transaccion = new Transaccion();
-        transaccion = (Transaccion) event.getObject();
+        transaccion = (Transaccion) event.getObject();        
+        if(transaccion.getValorTotal()==null){
+            transaccion.setValorTotal(BigDecimal.ZERO);
+        }        
         transaccionServicio.editTransaccion(transaccion);
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
@@ -329,11 +315,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         }
     }
 
-    public void eliminarArchivo() {
-        System.out.println("ELiminando archivo...");
-//        transaccionSelected.set
-        System.out.println("transaccionSelected: " + transaccionSelected.getRespaldoUrl());
-
+    public void eliminarArchivo() {        
         transaccionSelected.setRespaldoUrl(null);
         transaccionServicio.update(transaccionSelected);
     }

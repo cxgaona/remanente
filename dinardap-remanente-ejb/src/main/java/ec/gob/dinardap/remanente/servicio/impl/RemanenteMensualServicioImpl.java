@@ -59,6 +59,12 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
+            Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+                @Override
+                public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
+                    return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+                }
+            });
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
             }
