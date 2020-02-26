@@ -37,6 +37,10 @@
                             <p:column headerText="Provincia - Cantón" sortBy="#{usuario.institucionId.provinciaCanton}" filterBy="#{usuario.institucionId.provinciaCanton}" filterMatchMode="contains" >
                                 <h:outputText value="#{usuario.institucionId.provinciaCanton}"/>
                             </p:column>
+                            <p:column headerText="Dirección Regional" sortBy="#{usuario.institucionId.direccionRegional.nombre}" 
+                                      filterBy="#{usuario.institucionId.provinciaCanton}" filterMatchMode="contains" >
+                                <h:outputText value="#{usuario.institucionId.direccionRegional.nombre}"/>
+                            </p:column>
                             <p:column headerText="Tipo Institución" 
                                       sortBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
                                                 usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
