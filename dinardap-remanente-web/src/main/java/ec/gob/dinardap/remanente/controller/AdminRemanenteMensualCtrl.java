@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.dto.RemanenteMensualDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
@@ -56,8 +57,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private String nombreInstitucion;
     private String rutaArchivo;
     private Integer año;
-    private List<RemanenteMensual> remanenteMensualList;
-    private RemanenteMensual remanenteMensualSelected;
+    private List<RemanenteMensualDTO> remanenteMensualDTOList;
+    private RemanenteMensualDTO remanenteMensualDTOSelected;
     private String mesSelected;
     private Integer institucionId;
     private Integer usuarioId;
@@ -79,7 +80,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     private List<FacturaPagada> egresoFacturaList;
 
     private Boolean btnActivated;
-    private Boolean displayComment;    
+    private Boolean displayComment;
     private String comentariosRechazo;
 
     private SftpDto sftpDto;
@@ -122,7 +123,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         año = calendar.get(Calendar.YEAR);
         tituloDetalleDlg = "";
         mesSelected = "Sin Selección";
-        remanenteMensualSelected = new RemanenteMensual();
+        remanenteMensualDTOSelected = new RemanenteMensualDTO();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
         transaccionEgresosList = new ArrayList<Transaccion>();
@@ -131,7 +132,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         totalEgresos = new BigDecimal(0);
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
         displaySolicitud = Boolean.FALSE;
-        remanenteMensualList = new ArrayList<RemanenteMensual>();
+        remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
         transaccionSelected = new Transaccion();
         disabledBtnAproRechCan = Boolean.TRUE;
     }
@@ -139,8 +140,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     public void onRowSelectInstitucion() {
         institucionId = institucionSelected.getInstitucionId();
         nombreInstitucion = institucionSelected.getNombre();
-        remanenteMensualList = new ArrayList<RemanenteMensual>();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
+        remanenteMensualDTOList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
 
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
@@ -159,8 +160,8 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         btnActivated = Boolean.TRUE;
         displaySolicitud = Boolean.FALSE;
         displayComment = Boolean.FALSE;
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
-        remanenteMensualSelected = new RemanenteMensual();
+        remanenteMensualDTOList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        remanenteMensualDTOSelected = new RemanenteMensualDTO();
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
         transaccionEgresosList = new ArrayList<Transaccion>();
@@ -168,7 +169,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
     }
 
     public void onRowSelectRemanenteMensual() {
-        switch (remanenteMensualSelected.getMes()) {
+        switch (remanenteMensualDTOSelected.getRemanenteMensual().getMes()) {
             case 1:
                 mesSelected = "Enero";
                 break;
@@ -206,7 +207,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                 mesSelected = "Diciembre";
                 break;
         }
-        remanenteMensualSelected.getRemanenteMensualId();
+        remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId();
         btnActivated = Boolean.FALSE;
         transaccionRPropiedadList = new ArrayList<Transaccion>();
         transaccionRMercantilList = new ArrayList<Transaccion>();
@@ -214,21 +215,21 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        Collections.sort(remanenteMensualSelected.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+        Collections.sort(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
             @Override
             public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
                 return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
             }
         });
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")) {
+        if (remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")) {
             btnActivated = Boolean.FALSE;
         } else {
             btnActivated = Boolean.TRUE;
         }
 
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioSolicitado")) {
+        if (remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioSolicitado")) {
             displaySolicitud = Boolean.TRUE;
-            if (remanenteMensualSelected.getInformeAprobacionUrl() == null) {
+            if (remanenteMensualDTOSelected.getRemanenteMensual().getInformeAprobacionUrl() == null) {
                 disabledBtnAproRechCan = Boolean.TRUE;
             } else {
                 disabledBtnAproRechCan = Boolean.FALSE;
@@ -238,10 +239,10 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         }
 
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                remanenteMensualSelected.getMes(),
-                remanenteMensualSelected.getRemanenteMensualId());
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getMes(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId());
         for (Transaccion t : transaccionList) {
             if (t.getCatalogoTransaccionId().getTipo().equals("Ingreso-Propiedad")) {
                 transaccionRPropiedadList.add(t);
@@ -282,11 +283,11 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         try {
             UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("isc_" + remanenteMensualSelected.getRemanenteMensualId().toString()).concat(".pdf");
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("isc_" + remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_SOLICITUD_CAMBIO.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
-            remanenteMensualSelected.setInformeAprobacionUrl(realPath);
-            remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected, sftpDto);
+            remanenteMensualDTOSelected.getRemanenteMensual().setInformeAprobacionUrl(realPath);
+            remanenteMensualServicio.editRemanenteMensual(remanenteMensualDTOSelected.getRemanenteMensual(), sftpDto);
             fileByte = null;
             disabledBtnAproRechCan = Boolean.FALSE;
         } catch (IOException ex) {
@@ -298,100 +299,100 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
         Usuario u = new Usuario();
         u.setUsuarioId(usuarioId);
-        erm.setRemanenteMensualId(remanenteMensualSelected);
+        erm.setRemanenteMensualId(remanenteMensualDTOSelected.getRemanenteMensual());
         erm.setUsuarioId(u);
         erm.setFechaRegistro(new Date());
         erm.setDescripcion("CambioAprobado");
         estadoRemanenteMensualServicio.create(erm);
         displaySolicitud = Boolean.FALSE;
-        crearVersionRemanente(remanenteMensualSelected);
+        crearVersionRemanente(remanenteMensualDTOSelected.getRemanenteMensual());
 
         //ENVIO DE NOTIFICACION//
 //        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
-        institucionNotificacion = remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
+        institucionNotificacion = remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Registrador", "REM-Administrador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Registrador", "REM-Administrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         String mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido APROBADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                remanenteMensualSelected.getRemanenteMensualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Administrador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Verificador", "REM-Administrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         mensajeNotificacion = "La solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() + " ha sido APROBADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                remanenteMensualSelected.getRemanenteMensualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Validador", "REM-Administrador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Validador", "REM-Administrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                remanenteMensualSelected.getRemanenteMensualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         //FIN ENVIO//
 
-        remanenteMensualSelected = new RemanenteMensual();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        remanenteMensualDTOSelected = new RemanenteMensualDTO();
+        remanenteMensualDTOList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
     }
 
     public void rechazarSolicitudCambio() {
-        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected, sftpDto);
+        remanenteMensualServicio.editRemanenteMensual(remanenteMensualDTOSelected.getRemanenteMensual(), sftpDto);
         EstadoRemanenteMensual erm = new EstadoRemanenteMensual();
         Usuario u = new Usuario();
         u.setUsuarioId(usuarioId);
-        erm.setRemanenteMensualId(remanenteMensualSelected);
+        erm.setRemanenteMensualId(remanenteMensualDTOSelected.getRemanenteMensual());
         erm.setUsuarioId(u);
         erm.setFechaRegistro(new Date());
         erm.setDescripcion("CambioRechazado");
         estadoRemanenteMensualServicio.create(erm);
         displaySolicitud = Boolean.FALSE;
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
+        remanenteMensualDTOList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
         //ENVIO DE NOTIFICACION//
 //        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
-        institucionNotificacion = remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
+        institucionNotificacion = remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida();
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Registrador", "REM-Administrador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Registrador", "REM-Administrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         String mensajeNotificacion = "Su solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido RECHAZADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                remanenteMensualSelected.getRemanenteMensualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Administrador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Verificador", "REM-Administrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         mensajeNotificacion = "La solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADA.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                remanenteMensualSelected.getRemanenteMensualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Validador", "REM-Administrador", 1, remanenteMensualSelected.getRemanenteCuatrimestral());
+                "REM-Validador", "REM-Administrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                remanenteMensualSelected.getRemanenteMensualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId(),
                 mensajeNotificacion, "RM");
         //FIN ENVIO//
     }
 
     public void cancelarInformeSolicitudCambio() {
-        remanenteMensualSelected.setInformeAprobacionUrl(null);
-        remanenteMensualServicio.editRemanenteMensual(remanenteMensualSelected);
+        remanenteMensualDTOSelected.getRemanenteMensual().setInformeAprobacionUrl(null);
+        remanenteMensualServicio.editRemanenteMensual(remanenteMensualDTOSelected.getRemanenteMensual());
         disabledBtnAproRechCan = Boolean.TRUE;
     }
 
@@ -563,12 +564,12 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         this.tituloPagina = tituloPagina;
     }
 
-    public List<RemanenteMensual> getRemanenteMensualList() {
-        return remanenteMensualList;
+    public List<RemanenteMensualDTO> getRemanenteMensualDTOList() {
+        return remanenteMensualDTOList;
     }
 
-    public void setRemanenteMensualList(List<RemanenteMensual> remanenteMensualList) {
-        this.remanenteMensualList = remanenteMensualList;
+    public void setRemanenteMensualDTOList(List<RemanenteMensualDTO> remanenteMensualDTOList) {
+        this.remanenteMensualDTOList = remanenteMensualDTOList;
     }
 
     public String getNombreInstitucion() {
@@ -579,12 +580,12 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
         this.nombreInstitucion = nombreInstitucion;
     }
 
-    public RemanenteMensual getRemanenteMensualSelected() {
-        return remanenteMensualSelected;
+    public RemanenteMensualDTO getRemanenteMensualDTOSelected() {
+        return remanenteMensualDTOSelected;
     }
 
-    public void setRemanenteMensualSelected(RemanenteMensual remanenteMensualSelected) {
-        this.remanenteMensualSelected = remanenteMensualSelected;
+    public void setRemanenteMensualDTOSelected(RemanenteMensualDTO remanenteMensualDTOSelected) {
+        this.remanenteMensualDTOSelected = remanenteMensualDTOSelected;
     }
 
     public String getMesSelected() {
@@ -761,5 +762,5 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
 
     public void setRutaArchivo(String rutaArchivo) {
         this.rutaArchivo = rutaArchivo;
-    }  
+    }
 }

@@ -31,6 +31,11 @@
                                       sortBy="#{institucion.provinciaCanton}" 
                                       filterBy="#{institucion.provinciaCanton}" filterMatchMode="contains">
                                 <h:outputText value="#{institucion.provinciaCanton}" />
+                            </p:column>  
+                            <p:column headerText="Dirección Regional" 
+                                      sortBy="#{institucion.direccionRegional.nombre}" 
+                                      filterBy="#{institucion.direccionRegional.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.direccionRegional.nombre}" />
                             </p:column>                            
                             <p:column headerText="Tipo de Registro" 
                                       sortBy="#{institucion.tipo}">

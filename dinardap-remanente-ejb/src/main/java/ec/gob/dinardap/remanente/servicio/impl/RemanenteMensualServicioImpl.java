@@ -12,6 +12,7 @@ import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
+import ec.gob.dinardap.remanente.dto.RemanenteMensualDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
@@ -48,8 +49,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
+    public List<RemanenteMensualDTO> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
+        List<RemanenteMensualDTO> remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
         String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
@@ -57,7 +59,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         String[] orderBy = {"mes"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        remanenteMensualList = findByCriterias(criteria);
+        remanenteMensualList = findByCriterias(criteria);       
         for (RemanenteMensual rm : remanenteMensualList) {
             Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
                 @Override
@@ -68,21 +70,32 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
             }
-            rm.getRemanenteCuatrimestral();
-            rm.getRemanenteCuatrimestral().getRemanenteAnual();
-        }
-        for (RemanenteMensual remanenteMensual : remanenteMensualList) {
-            for (EstadoRemanenteCuatrimestral erc : remanenteMensual.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {
+
+            Collections.sort(rm.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList(), new Comparator<EstadoRemanenteCuatrimestral>() {
+                @Override
+                public int compare(EstadoRemanenteCuatrimestral erm1, EstadoRemanenteCuatrimestral erm2) {
+                    return new Integer(erm1.getEstadoRemanenteCuatrimestral()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestral()));
+                }
+            });
+            for (EstadoRemanenteCuatrimestral erc : rm.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {
                 erc.getEstadoRemanenteCuatrimestral();
             }
-            for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+
+            rm.getRemanenteCuatrimestral();
+            rm.getRemanenteCuatrimestral().getRemanenteAnual();
+
+            for (Transaccion transaccion : rm.getTransaccionList()) {
                 transaccion.getTransaccionId();
                 for (Tramite tramite : transaccion.getTramiteList()) {
                     tramite.getTramiteId();
                 }
             }
+
         }
-        return remanenteMensualList;
+        for (RemanenteMensual rm : remanenteMensualList) {
+            remanenteMensualDTOList.add(new RemanenteMensualDTO(rm));
+        }
+        return remanenteMensualDTOList;
     }
 
     @Override
