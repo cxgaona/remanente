@@ -1,10 +1,8 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
@@ -38,12 +36,43 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.UploadedFile;
 
 @Named(value = "egresosCtrl")
 @ViewScoped
 public class EgresosCtrl extends BaseCtrl implements Serializable {
+
+    //Declaración de variables
+    //Variables de control visual
+    private String tituloPagina;
+    private String tituloNomina;
+    private String tituloFacturaPagada;
+
+    private Boolean disableNuevoEgreso;
+
+    private Boolean disabledDeleteNomina;
+    private Boolean disabledDeleteNominaTodos;
+    private Boolean disabledDeleteFacturaPagada;
+    private Boolean disabledDeleteFacturaPagadaTodos;
+
+//    private Boolean disableDelete;
+    private Boolean renderEdition;
+
+    //Variables de negocio
+    private Integer institucionId;
+    private Date fechaSeleccionada;
+    private Integer año;
+    private Integer mes;
+    private RemanenteMensual remanenteMensualSelected;
+
+    private Nomina nominaSelected;
+
+    //Listas
+    private List<RemanenteMensual> remanenteMensualList;
+    private List<Nomina> nominaList;
+    private List<Nomina> nominaSelectedList;
+    private List<FacturaPagada> facturaPagadaList;
+    private List<FacturaPagada> facturaPagadaSelectedList;
 
     @EJB
     private NominaServicio nominaServicio;
@@ -63,221 +92,115 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     @EJB
     private DiasNoLaborablesServicio diasNoLaborablesServicio;
 
-    private String tituloEgreso;
-    private String tituloN, tituloFP;
-    private List<Nomina> nominaList;
-    private Integer anio, mes;
-    private Integer institucionId;
-    private Date fecha;
-    private Nomina nominaSelected;
-    private List<FacturaPagada> facturaPagadaList;
-    private FacturaPagada facturaPagadaSelected;
-    private Integer idCatalogoTransaccion;
-    private List<CatalogoTransaccion> catalogoList;
-    private Boolean disableNuevoRegistro;
-    private Boolean renderEdition;
-    private List<RemanenteMensual> remanenteMensualList;
-    private RemanenteMensual remanenteMensualSelected;
-    private String fechaMin;
-    private String fechaMax;
-
     @PostConstruct
     protected void init() {
-        tituloEgreso = "Egresos";
-        tituloN = "Nómina";
-        tituloFP = "Factura Pagada";
-        facturaPagadaList = new ArrayList<FacturaPagada>();
+        tituloPagina = "Egresos";
+        tituloNomina = "Nómina";
+        tituloFacturaPagada = "Factura Pagada";
+
+        disableNuevoEgreso = Boolean.FALSE;
+        disabledDeleteNomina = Boolean.TRUE;
+        disabledDeleteFacturaPagada = Boolean.TRUE;
+
+        renderEdition = Boolean.FALSE;
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        fecha = new Date();
-        anio = calendar.get(Calendar.YEAR);
+        fechaSeleccionada = new Date();
+        año = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
-        fechaMin = fechasLimiteMin(anio, mes);
-        fechaMax = fechasLimiteMax(anio, mes);
+
         institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
+
+        obtenerRemanenteMensual();
         nominaList = new ArrayList<Nomina>();
-        nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
-        nominaSelected = new Nomina();
+        nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, año, mes);
         facturaPagadaList = new ArrayList<FacturaPagada>();
-        facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, anio, mes);
-        facturaPagadaSelected = new FacturaPagada();
-        disableNuevoRegistro = Boolean.FALSE;
-        renderEdition = Boolean.TRUE;
-        obtenerRemanenteMensual();
-    }
-
-    private String fechasLimiteMin(Integer anio, Integer mes) {
-        return anio + "-" + mes + "-01";
-    }
-
-    private String fechasLimiteMax(Integer anio, Integer mes) {
-        try {
-            String stringDate = anio + "-" + mes + "-01";
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = formatter.parse(stringDate);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            return anio + "-" + mes + "-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-        } catch (ParseException ex) {
-            Logger.getLogger(TramiteMercantilCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            return "0000-00-00";
-        }
-    }
-
-    public void addRowNomina() {
-        Nomina newNomina = new Nomina();
-        newNomina.setAportePatronal(BigDecimal.ZERO);
-        newNomina.setDecimoCuarto(BigDecimal.ZERO);
-        newNomina.setDecimoTercero(BigDecimal.ZERO);
-        newNomina.setFechaRegistro(new Date());
-        newNomina.setFondosReserva(BigDecimal.ZERO);
-        newNomina.setImpuestoRenta(BigDecimal.ZERO);
-        newNomina.setLiquidoRecibir(BigDecimal.ZERO);
-        newNomina.setRemuneracion(BigDecimal.ZERO);
-        newNomina.setTotalDesc(BigDecimal.ZERO);
-        newNomina.setNominaId(null);
-        Transaccion t = new Transaccion();
-        //9 CORRESPONDE A REMUNERACIONES(NOMINA) DEL CATALOGO DE TRANSACCIONES
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 9);
-        newNomina.setTransaccionId(t);
-        nominaServicio.crearNomina(newNomina);
-        nominaList.add(newNomina);
-    }
-
-    public void onRowEditNomina(RowEditEvent event) {
-        Nomina nomina = new Nomina();
-        nomina = (Nomina) event.getObject();
-        Transaccion t = new Transaccion();
-        //9 CORRESPONDE A REMUNERACIONES(NOMINA) DEL CATALOGO DE TRANSACCIONES
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 9);
-        nomina.setTransaccionId(t);
-        nomina.setFechaRegistro(new Date());
-        nominaServicio.editNomina(nomina);
-    }
-
-    public void reloadNomina() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(fecha);
-        anio = calendar.get(Calendar.YEAR);
-        mes = calendar.get(Calendar.MONTH) + 1;
-        nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, anio, mes);
-        reloadFacturaPagada();
-        obtenerRemanenteMensual();
-    }
-
-    public void onRowDeleteNomina() {
-        nominaServicio.borrarNomina(nominaSelected);
-        nominaServicio.actualizarTransaccionValor(institucionId, anio, mes);
-        reloadNomina();
+        facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, año, mes);
     }
 
     public void obtenerRemanenteMensual() {
         remanenteMensualList = new ArrayList<RemanenteMensual>();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
+        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, año, mes);
         remanenteMensualSelected = new RemanenteMensual();
         remanenteMensualSelected = remanenteMensualList.get(remanenteMensualList.size() - 1);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
-            disableNuevoRegistro = Boolean.FALSE;
-            renderEdition = Boolean.TRUE;
+            disableNuevoEgreso = Boolean.FALSE;
             if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
-                disableNuevoRegistro = Boolean.FALSE;
-                renderEdition = Boolean.TRUE;
+                disableNuevoEgreso = Boolean.FALSE;
             } else {
                 renderEdition = Boolean.FALSE;
-                disableNuevoRegistro = Boolean.TRUE;
+                disabledDeleteNomina = Boolean.TRUE;
+                disabledDeleteFacturaPagada = Boolean.TRUE;
+                disableNuevoEgreso = Boolean.TRUE;
             }
         } else {
             renderEdition = Boolean.FALSE;
-            disableNuevoRegistro = Boolean.TRUE;
+            disabledDeleteNomina = Boolean.TRUE;
+            disabledDeleteFacturaPagada = Boolean.TRUE;
+            disableNuevoEgreso = Boolean.TRUE;
         }
     }
 
-    public void addRowFacturaPagada() {
-        FacturaPagada newFacturaPagada = new FacturaPagada();
-        String fechaStr = anio + "-" + mes + "-01";
-        Date date;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaStr);
-            newFacturaPagada.setFecha(date);
-        } catch (ParseException ex) {
-            Logger.getLogger(EgresosCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        newFacturaPagada.setNumero(null);
-        newFacturaPagada.setTipo("Otros");
-        newFacturaPagada.setDetalle(null);
-        newFacturaPagada.setValor(BigDecimal.ZERO);
-        newFacturaPagada.setFechaRegistro(new Date());
-        newFacturaPagada.setFacturaPagadaId(null);
-        Transaccion t = new Transaccion();
-        //11 CORRESPONDE A OTROS DEL CATALOGO DE TRANSACCIONES
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 11);
-        newFacturaPagada.setTransaccionId(t);
-        facturaPagadaServicio.crearFacturaPagada(newFacturaPagada);
-        facturaPagadaList.add(newFacturaPagada);
-    }
-
-    public void onRowEditFacturaPagada(RowEditEvent event) {
-        FacturaPagada facturaPagada = new FacturaPagada();
-        facturaPagada = (FacturaPagada) event.getObject();
-        catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionList();
-        for (CatalogoTransaccion ct : catalogoList) {
-            if (ct.getNombre().equals(facturaPagada.getTipo())) {
-                idCatalogoTransaccion = ct.getCatalogoTransaccionId();
-            }
-        }
-        Transaccion t = new Transaccion();
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
-        facturaPagada.setTransaccionId(t);
-        facturaPagada.setFechaRegistro(new Date());
-        facturaPagadaServicio.editFacturaPagada(facturaPagada);
-        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
-        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getMes(),
-                facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteMensualId());
-        for (Transaccion tl : transaccionList) {
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)) {
-                facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 10);
-            }
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)) {
-                facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 11);
-            }
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
-                facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 12);
-            }
-        }
-    }
-
-    public void reloadFacturaPagada() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(fecha);
-        anio = calendar.get(Calendar.YEAR);
-        mes = calendar.get(Calendar.MONTH) + 1;
-        fechaMin = fechasLimiteMin(anio, mes);
-        fechaMax = fechasLimiteMax(anio, mes);
-        facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, anio, mes);
-    }
-
-    public void onRowDeleteFacturaPagada() {
-        facturaPagadaServicio.borrarFacturaPagada(facturaPagadaSelected);
-        facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 10);
-        facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 11);
-        facturaPagadaServicio.actualizarTransaccionValor(institucionId, anio, mes, 12);
+    public void reloadEgresos() {
+        reloadNomina();
         reloadFacturaPagada();
+        obtenerRemanenteMensual();
+    }
+
+    private void reloadNomina() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fechaSeleccionada);
+        año = calendar.get(Calendar.YEAR);
+        mes = calendar.get(Calendar.MONTH) + 1;
+        nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, año, mes);
+
+    }
+
+    private void reloadFacturaPagada() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fechaSeleccionada);
+        año = calendar.get(Calendar.YEAR);
+        mes = calendar.get(Calendar.MONTH) + 1;
+        facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, año, mes);
+    }
+
+    public void onRowSelectNomina() {
+        System.out.println("Selección de fila");
+        renderEdition = Boolean.TRUE;
+//        onCreate = Boolean.FALSE;
+//        onEdit = Boolean.TRUE;
+//        disableDelete = Boolean.FALSE;
+//        btnGuardar = "Actualizar";
+        nominaSelected = nominaSelectedList.get(0);
+        obtenerRemanenteMensual();
+
+//        onCreate = Boolean.FALSE;
+//        onEdit = Boolean.TRUE;
+//        disableDelete = Boolean.FALSE;
+//        btnGuardar = "Actualizar";
+//        tramiteSelected = tramiteSelectedList.get(0);
+//        obtenerRemanenteMensual();
+    }
+
+    public void nuevoRegistroNomina() {
+        System.out.println("Nuevo Registro");
+    }
+
+    public void borrarRegistroNominaSeleccionado() {
+        System.out.println("Borrar Seleccion Registro");
+    }
+
+    public void borrarTodosRegistrosNomina() {
+        System.out.println("Borrar todo");
     }
 
     public void crearNominaBloque(FileUploadEvent event) {
         InputStream in = null;
         try {
+            Nomina nominaSelected = new Nomina();
             UploadedFile uploadedFile = event.getFile();
             in = uploadedFile.getInputstream();
             XSSFWorkbook worbook = new XSSFWorkbook(in);
@@ -307,7 +230,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                                     if (!datoVal.equals("INVALIDO")) {
                                         Transaccion t = new Transaccion();
                                         //9 CORRESPONDE A REMUNERACIONES(NOMINA) DEL CATALOGO DE TRANSACCIONES
-                                        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 9);
+                                        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, 9);
                                         nominaNuevo.setTransaccionId(t);
                                         nominaNuevo.setNombre(datoVal);
                                     }
@@ -420,7 +343,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                     nominaSelected = new Nomina();
                 }
                 reloadNomina();
-                nominaServicio.actualizarTransaccionValor(institucionId, anio, mes);
+                nominaServicio.actualizarTransaccionValor(institucionId, año, mes);
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Se ha creado la Nómina en bloque satisfactoriamente"));
             } else {
                 String celdas = "";
@@ -432,150 +355,6 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
 
         } catch (IOException ex) {
             System.out.println("Error carga de Archivo");
-            Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void crearFacturaBloque(FileUploadEvent event) {
-        InputStream in = null;
-        try {
-            UploadedFile uploadedFile = event.getFile();
-            in = uploadedFile.getInputstream();
-            XSSFWorkbook worbook = new XSSFWorkbook(in);
-            XSSFSheet sheet = worbook.getSheetAt(0);
-            XSSFRow row;
-            XSSFCell cell;
-            List<FacturaPagada> facturaPagadaNuevaList = new ArrayList<FacturaPagada>();
-            catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionList();
-
-            Boolean flagValidacionCampos = Boolean.TRUE;
-            List<String> celdaError = new ArrayList<String>();
-            for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
-                row = sheet.getRow(r);
-                if (row.getRowNum() != 0) {
-                    FacturaPagada facturaPagadaNueva = new FacturaPagada();
-                    facturaPagadaNueva.setFechaRegistro(new Date());
-                    for (int c = 0; c < (int) row.getLastCellNum(); c++) {
-                        String dato = null;
-                        cell = row.getCell(c);
-                        if (cell == null) {
-                            dato = null;
-                        } else {
-                            dato = getDato(worbook, cell);
-                            String datoVal;
-                            switch (cell.getColumnIndex()) {
-                                case 0:
-                                    datoVal = validarCampoNumero(dato);
-                                    if (!datoVal.equals("INVALIDO")) {
-                                        if (datoVal.length() <= 15) {
-                                            facturaPagadaNueva.setNumero(datoVal);
-                                        }
-                                    }
-                                    break;
-                                case 1:
-                                    datoVal = validarCampoFecha(dato);
-                                    if (!datoVal.equals("INVALIDO")) {
-                                        facturaPagadaNueva.setFecha(new SimpleDateFormat("yyyy-MM-dd").parse(datoVal));
-                                    }
-                                    break;
-                                case 2:
-                                    if (dato.equals("Otros")
-                                            || dato.equals("Bienes y Servicios de Consumo (Arriendo, Servicios Básicos)")
-                                            || dato.equals("Bienes de Larga Duración")) {
-                                        facturaPagadaNueva.setTipo(dato);
-                                        for (CatalogoTransaccion ct : catalogoList) {
-                                            if (ct.getNombre().equals(facturaPagadaNueva.getTipo()) && ct.getTipo().equals("Egreso")) {
-                                                idCatalogoTransaccion = ct.getCatalogoTransaccionId();
-                                                break;
-                                            }
-                                        }
-                                        Transaccion t = new Transaccion();
-                                        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
-                                        facturaPagadaNueva.setTransaccionId(t);
-                                    }
-                                    break;
-                                case 3:
-                                    datoVal = validarCampoValorNumerico(dato);
-                                    if (!datoVal.equals("INVALIDO")) {
-                                        facturaPagadaNueva.setValor(new BigDecimal(datoVal));
-                                    }
-                                    break;
-                                case 4:
-                                    datoVal = validarCampoVacio(dato);
-                                    if (!datoVal.equals("INVALIDO")) {
-                                        facturaPagadaNueva.setDetalle(datoVal);
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-
-                    if (facturaPagadaNueva.getNumero() == null || facturaPagadaNueva.getNumero().isEmpty()) {
-                        flagValidacionCampos = Boolean.FALSE;
-                        celdaError.add("A" + (r + 1));
-                    }
-                    if (facturaPagadaNueva.getFecha() == null || facturaPagadaNueva.getFecha().equals("")) {
-                        flagValidacionCampos = Boolean.FALSE;
-                        celdaError.add("B" + (r + 1));
-                    }
-                    if (facturaPagadaNueva.getTipo() == null) {
-                        flagValidacionCampos = Boolean.FALSE;
-                        celdaError.add("C" + (r + 1));
-                    }
-                    if (facturaPagadaNueva.getValor() == null) {
-                        flagValidacionCampos = Boolean.FALSE;
-                        celdaError.add("D" + (r + 1));
-                    }
-                    if (facturaPagadaNueva.getDetalle() == null) {
-                        flagValidacionCampos = Boolean.FALSE;
-                        celdaError.add("E" + (r + 1));
-                    }
-                    facturaPagadaNuevaList.add(facturaPagadaNueva);
-                }
-            }
-
-            if (flagValidacionCampos) {
-                for (FacturaPagada facturaPagada : facturaPagadaNuevaList) {
-                    facturaPagadaSelected = facturaPagada;
-                    facturaPagadaServicio.crearFacturaPagada(facturaPagada);
-                    facturaPagadaSelected = new FacturaPagada();
-                }
-                reloadFacturaPagada();
-                List<Transaccion> transaccionList = new ArrayList<Transaccion>();
-                transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getMes(),
-                        facturaPagadaNuevaList.get(0).getTransaccionId().getRemanenteMensualId().getRemanenteMensualId());
-                for (Transaccion tl : transaccionList) {
-                    if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(10)) {
-                        facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                                tl.getRemanenteMensualId().getMes(), 10);
-                    }
-                    if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(11)) {
-                        facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                                tl.getRemanenteMensualId().getMes(), 11);
-                    }
-                    if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(12)) {
-                        facturaPagadaServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                                tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                                tl.getRemanenteMensualId().getMes(), 12);
-                    }
-                }
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Se ha creado el bloque de Facturas Pagadas satisfactoriamente"));
-            } else {
-                String celdas = "";
-                for (String s : celdaError) {
-                    celdas += s + ", ";
-                }
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Favor verificar su archivo de carga. \n Verificar las celdas: " + celdas + "de su archivo de carga"));
-            }
-        } catch (IOException ex) {
-            System.out.println("Error carga de Archivo");
-            Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
-            System.out.println("Error Parseo de fecha");
             Logger.getLogger(TramitePropiedadCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -693,28 +472,36 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     }
 
     //Getters & Setters
-    public String getTituloEgreso() {
-        return tituloEgreso;
+    public String getTituloPagina() {
+        return tituloPagina;
     }
 
-    public void setTituloEgreso(String tituloEgreso) {
-        this.tituloEgreso = tituloEgreso;
+    public void setTituloPagina(String tituloPagina) {
+        this.tituloPagina = tituloPagina;
     }
 
-    public String getTituloN() {
-        return tituloN;
+    public String getTituloNomina() {
+        return tituloNomina;
     }
 
-    public void setTituloN(String tituloN) {
-        this.tituloN = tituloN;
+    public void setTituloNomina(String tituloNomina) {
+        this.tituloNomina = tituloNomina;
     }
 
-    public String getTituloFP() {
-        return tituloFP;
+    public String getTituloFacturaPagada() {
+        return tituloFacturaPagada;
     }
 
-    public void setTituloFP(String tituloFP) {
-        this.tituloFP = tituloFP;
+    public void setTituloFacturaPagada(String tituloFacturaPagada) {
+        this.tituloFacturaPagada = tituloFacturaPagada;
+    }
+
+    public Date getFechaSeleccionada() {
+        return fechaSeleccionada;
+    }
+
+    public void setFechaSeleccionada(Date fechaSeleccionada) {
+        this.fechaSeleccionada = fechaSeleccionada;
     }
 
     public List<Nomina> getNominaList() {
@@ -725,12 +512,36 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         this.nominaList = nominaList;
     }
 
-    public Integer getAnio() {
-        return anio;
+    public List<FacturaPagada> getFacturaPagadaList() {
+        return facturaPagadaList;
     }
 
-    public void setAnio(Integer anio) {
-        this.anio = anio;
+    public void setFacturaPagadaList(List<FacturaPagada> facturaPagadaList) {
+        this.facturaPagadaList = facturaPagadaList;
+    }
+
+    public List<Nomina> getNominaSelectedList() {
+        return nominaSelectedList;
+    }
+
+    public void setNominaSelectedList(List<Nomina> nominaSelectedList) {
+        this.nominaSelectedList = nominaSelectedList;
+    }
+
+    public List<FacturaPagada> getFacturaPagadaSelectedList() {
+        return facturaPagadaSelectedList;
+    }
+
+    public void setFacturaPagadaSelectedList(List<FacturaPagada> facturaPagadaSelectedList) {
+        this.facturaPagadaSelectedList = facturaPagadaSelectedList;
+    }
+
+    public Integer getAño() {
+        return año;
+    }
+
+    public void setAño(Integer año) {
+        this.año = año;
     }
 
     public Integer getMes() {
@@ -741,60 +552,12 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         this.mes = mes;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public Boolean getDisableNuevoEgreso() {
+        return disableNuevoEgreso;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
-    public Nomina getNominaSelected() {
-        return nominaSelected;
-    }
-
-    public void setNominaSelected(Nomina nominaSelected) {
-        this.nominaSelected = nominaSelected;
-    }
-
-    public List<FacturaPagada> getFacturaPagadaList() {
-        return facturaPagadaList;
-    }
-
-    public void setFacturaPagadaList(List<FacturaPagada> facturaPagadaList) {
-        this.facturaPagadaList = facturaPagadaList;
-    }
-
-    public FacturaPagada getFacturaPagadaSelected() {
-        return facturaPagadaSelected;
-    }
-
-    public void setFacturaPagadaSelected(FacturaPagada facturaPagadaSelected) {
-        this.facturaPagadaSelected = facturaPagadaSelected;
-    }
-
-    public Integer getIdCatalogoTransaccion() {
-        return idCatalogoTransaccion;
-    }
-
-    public void setIdCatalogoTransaccion(Integer idCatalogoTransaccion) {
-        this.idCatalogoTransaccion = idCatalogoTransaccion;
-    }
-
-    public List<CatalogoTransaccion> getCatalogoList() {
-        return catalogoList;
-    }
-
-    public void setCatalogoList(List<CatalogoTransaccion> catalogoList) {
-        this.catalogoList = catalogoList;
-    }
-
-    public Boolean getDisableNuevoRegistro() {
-        return disableNuevoRegistro;
-    }
-
-    public void setDisableNuevoRegistro(Boolean disableNuevoRegistro) {
-        this.disableNuevoRegistro = disableNuevoRegistro;
+    public void setDisableNuevoEgreso(Boolean disableNuevoEgreso) {
+        this.disableNuevoEgreso = disableNuevoEgreso;
     }
 
     public Boolean getRenderEdition() {
@@ -805,20 +568,44 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         this.renderEdition = renderEdition;
     }
 
-    public String getFechaMin() {
-        return fechaMin;
+    public Boolean getDisabledDeleteNomina() {
+        return disabledDeleteNomina;
     }
 
-    public void setFechaMin(String fechaMin) {
-        this.fechaMin = fechaMin;
+    public void setDisabledDeleteNomina(Boolean disabledDeleteNomina) {
+        this.disabledDeleteNomina = disabledDeleteNomina;
     }
 
-    public String getFechaMax() {
-        return fechaMax;
+    public Boolean getDisabledDeleteNominaTodos() {
+        return disabledDeleteNominaTodos;
     }
 
-    public void setFechaMax(String fechaMax) {
-        this.fechaMax = fechaMax;
+    public void setDisabledDeleteNominaTodos(Boolean disabledDeleteNominaTodos) {
+        this.disabledDeleteNominaTodos = disabledDeleteNominaTodos;
+    }
+
+    public Boolean getDisabledDeleteFacturaPagada() {
+        return disabledDeleteFacturaPagada;
+    }
+
+    public void setDisabledDeleteFacturaPagada(Boolean disabledDeleteFacturaPagada) {
+        this.disabledDeleteFacturaPagada = disabledDeleteFacturaPagada;
+    }
+
+    public Boolean getDisabledDeleteFacturaPagadaTodos() {
+        return disabledDeleteFacturaPagadaTodos;
+    }
+
+    public void setDisabledDeleteFacturaPagadaTodos(Boolean disabledDeleteFacturaPagadaTodos) {
+        this.disabledDeleteFacturaPagadaTodos = disabledDeleteFacturaPagadaTodos;
+    }
+
+    public Nomina getNominaSelected() {
+        return nominaSelected;
+    }
+
+    public void setNominaSelected(Nomina nominaSelected) {
+        this.nominaSelected = nominaSelected;
     }
 
 }

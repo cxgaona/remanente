@@ -55,6 +55,17 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
     }
 
     @Override
+    public void borrarTramites(List<Tramite> tramites) {
+        Integer anio, mes, idInstitucion;
+        for (Tramite tramite : tramites) {
+            anio = tramite.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
+            mes = tramite.getTransaccionId().getRemanenteMensualId().getMes();
+            idInstitucion = tramite.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
+            this.delete(tramite.getTramiteId());
+        }
+    }
+
+    @Override
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
         BigDecimal valorTotalTransaccion = new BigDecimal(0);
         Transaccion t = new Transaccion();

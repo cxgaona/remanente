@@ -11,12 +11,14 @@ import ec.gob.dinardap.remanente.modelo.Tramite;
 public interface TramiteServicio extends GenericService<Tramite, Integer> {
 
     public void crearTramite(Tramite tramite);
-    
-    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad,Integer idRemanenteMensual);
-    
+
+    public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad, Integer idRemanenteMensual);
+
     public void editTramite(Tramite tramite);
-    
+
     public void borrarTramite(Tramite tramite);
-    
+
+    public void borrarTramites(List<Tramite> tramites);
+
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo);
 }

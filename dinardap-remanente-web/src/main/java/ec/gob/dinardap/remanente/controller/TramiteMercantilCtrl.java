@@ -62,9 +62,12 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     private Integer institucionId;
     private Date fecha;
     private Tramite tramiteSelected;
+    private List<Tramite> tramiteSelectedList;
     private Integer idCatalogoTransaccion;
+    
     private List<CatalogoTransaccion> catalogoList;
     private List<RemanenteMensual> remanenteMensualList;
+    
     private Boolean onEdit;
     private Boolean onCreate;
     private Boolean renderEdition;
@@ -94,12 +97,12 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         obtenerRemanenteMensual();
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Mercantil", remanenteMensualSelected.getRemanenteMensualId());
         tramiteSelected = new Tramite();
+        tramiteSelectedList = new ArrayList<Tramite>();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-//        disableNuevoT = Boolean.FALSE;
     }
 
     private String fechasLimiteMin(Integer anio, Integer mes) {
@@ -146,7 +149,16 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.TRUE;
         disableDelete = Boolean.FALSE;
         btnGuardar = "Actualizar";
+        tramiteSelected = tramiteSelectedList.get(0);
         obtenerRemanenteMensual();
+    }
+    
+     public void onRowSelectTramiteCheckbox() {
+        if (tramiteSelectedList.size() != 0) {
+            disableDelete = Boolean.FALSE;
+        } else {
+            disableDelete = Boolean.TRUE;
+        }
     }
 
     public void obtenerRemanenteMensual() {
@@ -272,10 +284,19 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.FALSE;
     }
 
-    public void borrarTramite() {
-        tramiteServicio.borrarTramite(tramiteSelected);
+    public void borrarTramiteSeleccionado() {
+        tramiteServicio.borrarTramites(tramiteSelectedList);
         tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 5);
         tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 6);
+        reloadTramite();
+        actualizarTransaccionConteo();
+        disableDelete = Boolean.TRUE;
+    }
+    
+    public void borrarTodosTramites() {
+        tramiteServicio.borrarTramites(tramiteList);
+        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 1);
+        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 2);
         reloadTramite();
         actualizarTransaccionConteo();
         disableDelete = Boolean.TRUE;
@@ -716,4 +737,13 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
     public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
         this.renderedNumeroRepertorio = renderedNumeroRepertorio;
     }
+
+    public List<Tramite> getTramiteSelectedList() {
+        return tramiteSelectedList;
+    }
+
+    public void setTramiteSelectedList(List<Tramite> tramiteSelectedList) {
+        this.tramiteSelectedList = tramiteSelectedList;
+    }
+    
 }
