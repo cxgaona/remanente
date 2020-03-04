@@ -46,14 +46,14 @@ public class Usuario implements Serializable {
     @OneToMany(mappedBy = "usuarioId")
     private List<Respuesta> respuestaList;
 
-    private static final long serialVersionUID = 1L;   
-    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @SequenceGenerator(name = "USUARIO_GENERATOR", sequenceName = "usuario_usuario_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USUARIO_GENERATOR")
     @Column(name = "usuario_id")
     private Integer usuarioId;
-    
+
     @Size(max = 300)
     @Column(name = "nombre")
     private String nombre;
@@ -73,6 +73,8 @@ public class Usuario implements Serializable {
     private Boolean verificador;
     @Column(name = "administrador")
     private Boolean administrador;
+    @Column(name = "super_administrador")
+    private Boolean superAdministrador;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 2)
@@ -160,6 +162,14 @@ public class Usuario implements Serializable {
 
     public Boolean getAdministrador() {
         return administrador;
+    }
+
+    public Boolean getSuperAdministrador() {
+        return superAdministrador;
+    }
+
+    public void setSuperAdministrador(Boolean superAdministrador) {
+        this.superAdministrador = superAdministrador;
     }
 
     public void setAdministrador(Boolean administrador) {

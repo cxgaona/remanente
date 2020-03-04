@@ -76,6 +76,7 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
                 udto.setVerificador(u.getVerificador());
                 udto.setValidador(u.getValidador());
                 udto.setAdministrador(u.getAdministrador());
+                udto.setSuperAdministrador(u.getSuperAdministrador());
                 if (u.getInstitucionId().getGad() != null) {
                     udto.setGadID(u.getInstitucionId().getGad().getInstitucionId());
                 } else {
