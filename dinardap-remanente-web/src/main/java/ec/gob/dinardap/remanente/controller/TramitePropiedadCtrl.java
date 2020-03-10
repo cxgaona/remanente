@@ -77,6 +77,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
 
     private Boolean disableNuevoT;
     private Boolean disableDelete;
+    private Boolean disableDeleteTotal;
     private Boolean renderEdition;
 
     private Boolean renderedNumeroRepertorio;
@@ -105,7 +106,12 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         renderEdition = Boolean.FALSE;
         disableDelete = Boolean.TRUE;
         btnGuardar = "";
-        diasNoLaborablesServicio.diasFestivosAtivos();
+        disabledDeleteTotal();
+//        diasNoLaborablesServicio.diasFestivosAtivos();
+    }
+
+    private void disabledDeleteTotal() {
+        disableDeleteTotal = tramiteList.size() == 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     private String fechasLimiteMin(Integer anio, Integer mes) {
@@ -173,16 +179,20 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
             disableNuevoT = Boolean.FALSE;
+            disabledDeleteTotal(); 
             if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
                 disableNuevoT = Boolean.FALSE;
+                disabledDeleteTotal(); 
             } else {
                 renderEdition = Boolean.FALSE;
                 disableDelete = Boolean.TRUE;
+                disableDeleteTotal = Boolean.TRUE;
                 disableNuevoT = Boolean.TRUE;
             }
         } else {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
+            disableDeleteTotal = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
 
         }
@@ -281,9 +291,9 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         mes = calendar.get(Calendar.MONTH) + 1;
         fechaMin = fechasLimiteMin(anio, mes);
         fechaMax = fechasLimiteMax(anio, mes);
-        tramiteList = new ArrayList<Tramite>();
         obtenerRemanenteMensual();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());
+        tramiteList = new ArrayList<Tramite>();
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());               
         disableDelete = Boolean.TRUE;
         renderEdition = Boolean.FALSE;
     }
@@ -295,7 +305,9 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         reloadTramite();
         actualizarTransaccionConteo();
         disableDelete = Boolean.TRUE;
+        disabledDeleteTotal();
     }
+
     public void borrarTodosTramites() {
         tramiteServicio.borrarTramites(tramiteList);
         tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 1);
@@ -303,6 +315,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         reloadTramite();
         actualizarTransaccionConteo();
         disableDelete = Boolean.TRUE;
+        disabledDeleteTotal();
     }
 
     public void changeTipoTramite() {
@@ -747,6 +760,14 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
 
     public void setTramiteSelectedList(List<Tramite> tramiteSelectedList) {
         this.tramiteSelectedList = tramiteSelectedList;
+    }
+
+    public Boolean getDisableDeleteTotal() {
+        return disableDeleteTotal;
+    }
+
+    public void setDisableDeleteTotal(Boolean disableDeleteTotal) {
+        this.disableDeleteTotal = disableDeleteTotal;
     }
 
 }

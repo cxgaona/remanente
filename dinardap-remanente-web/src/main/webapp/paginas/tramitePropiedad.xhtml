@@ -96,6 +96,7 @@
                                          action="#{tramitePropiedadCtrl.borrarTodosTramites}"
                                          icon="fa fa-fw fa-trash"
                                          id="btnBorrarTodoTramite"
+                                         disabled="#{tramitePropiedadCtrl.disableDeleteTotal}"
                                          update="formTramiteSelected, formTramite">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar todos los trámites?" icon="fa fa-fw fa-warning" />
                         </p:commandButton>

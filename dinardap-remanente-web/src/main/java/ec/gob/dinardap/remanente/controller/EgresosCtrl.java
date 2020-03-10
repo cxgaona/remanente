@@ -47,6 +47,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     private String tituloPagina;
     private String tituloNomina;
     private String tituloFacturaPagada;
+    private String strBtnGuardar;
 
     private Boolean disableNuevoEgreso;
 
@@ -55,8 +56,10 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
     private Boolean disabledDeleteFacturaPagada;
     private Boolean disabledDeleteFacturaPagadaTodos;
 
-//    private Boolean disableDelete;
     private Boolean renderEdition;
+
+    private Boolean onCreateNomina;
+    private Boolean onEditNomina;
 
     //Variables de negocio
     private Integer institucionId;
@@ -98,6 +101,9 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         tituloNomina = "Nómina";
         tituloFacturaPagada = "Factura Pagada";
 
+        onCreateNomina = Boolean.FALSE;
+        onEditNomina = Boolean.FALSE;
+
         disableNuevoEgreso = Boolean.FALSE;
         disabledDeleteNomina = Boolean.TRUE;
         disabledDeleteFacturaPagada = Boolean.TRUE;
@@ -117,6 +123,8 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, año, mes);
         facturaPagadaList = new ArrayList<FacturaPagada>();
         facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, año, mes);
+
+        disabledDeleteNomina();
     }
 
     public void obtenerRemanenteMensual() {
@@ -133,12 +141,14 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
             } else {
                 renderEdition = Boolean.FALSE;
                 disabledDeleteNomina = Boolean.TRUE;
+                disabledDeleteNominaTodos = Boolean.TRUE;
                 disabledDeleteFacturaPagada = Boolean.TRUE;
                 disableNuevoEgreso = Boolean.TRUE;
             }
         } else {
             renderEdition = Boolean.FALSE;
             disabledDeleteNomina = Boolean.TRUE;
+            disabledDeleteNominaTodos = Boolean.TRUE;
             disabledDeleteFacturaPagada = Boolean.TRUE;
             disableNuevoEgreso = Boolean.TRUE;
         }
@@ -156,7 +166,9 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         año = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         nominaList = nominaServicio.getNominaByInstitucionFecha(institucionId, año, mes);
-
+        nominaSelectedList = new ArrayList<Nomina>();
+        nominaSelected = new Nomina();
+        disabledDeleteNomina();
     }
 
     private void reloadFacturaPagada() {
@@ -165,36 +177,89 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         año = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
         facturaPagadaList = facturaPagadaServicio.getFacturaPagadaByInstitucionFecha(institucionId, año, mes);
+        facturaPagadaSelectedList = new ArrayList<FacturaPagada>();
+//        facnominaSelected = new Nomina();
     }
 
     public void onRowSelectNomina() {
-        System.out.println("Selección de fila");
+        strBtnGuardar = "Actualizar";
+
+        onEditNomina = Boolean.TRUE;
+        onCreateNomina = Boolean.FALSE;
+        disabledDeleteNomina = Boolean.FALSE;
         renderEdition = Boolean.TRUE;
-//        onCreate = Boolean.FALSE;
-//        onEdit = Boolean.TRUE;
-//        disableDelete = Boolean.FALSE;
-//        btnGuardar = "Actualizar";
+
         nominaSelected = nominaSelectedList.get(0);
         obtenerRemanenteMensual();
+    }
 
-//        onCreate = Boolean.FALSE;
-//        onEdit = Boolean.TRUE;
-//        disableDelete = Boolean.FALSE;
-//        btnGuardar = "Actualizar";
-//        tramiteSelected = tramiteSelectedList.get(0);
-//        obtenerRemanenteMensual();
+    public void onRowSelectNominaCheckbox() {
+        if (nominaSelectedList.size() != 0) {
+            disabledDeleteNomina = Boolean.FALSE;
+        } else {
+            disabledDeleteNomina = Boolean.TRUE;
+        }
     }
 
     public void nuevoRegistroNomina() {
-        System.out.println("Nuevo Registro");
+        strBtnGuardar = "Guardar";
+
+        onCreateNomina = Boolean.TRUE;
+        onEditNomina = Boolean.TRUE;
+        disabledDeleteNomina = Boolean.TRUE;
+        renderEdition = Boolean.TRUE;
+
+        nominaSelected = new Nomina();
     }
 
     public void borrarRegistroNominaSeleccionado() {
-        System.out.println("Borrar Seleccion Registro");
+        nominaServicio.borrarNominas(nominaSelectedList);
+        nominaServicio.actualizarTransaccionValor(institucionId, año, mes);
+        nominaSelectedList = new ArrayList<Nomina>();
+        reloadEgresos();
+        onCreateNomina = Boolean.FALSE;
+        onEditNomina = Boolean.FALSE;
+        disabledDeleteNomina = Boolean.TRUE;
+        disabledDeleteNomina();
+        renderEdition = Boolean.FALSE;
+    }
+
+    private void disabledDeleteNomina() {
+        disabledDeleteNominaTodos = nominaList.size() == 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     public void borrarTodosRegistrosNomina() {
-        System.out.println("Borrar todo");
+        nominaServicio.borrarNominas(nominaList);
+        nominaServicio.actualizarTransaccionValor(institucionId, año, mes);
+        reloadEgresos();
+        onCreateNomina = Boolean.FALSE;
+        onEditNomina = Boolean.FALSE;
+        disabledDeleteNomina();
+        renderEdition = Boolean.FALSE;
+    }
+
+    public void guardar() {
+        Transaccion t = new Transaccion();
+        //9 CORRESPONDE A REMUNERACIONES(NOMINA) DEL CATALOGO DE TRANSACCIONES
+        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, 9);
+        nominaSelected.setTransaccionId(t);
+        nominaSelected.setFechaRegistro(new Date());
+        if (onCreateNomina) {
+            nominaServicio.crearNomina(nominaSelected);
+        } else if (onEditNomina) {
+            nominaServicio.editNomina(nominaSelected);
+        }
+        nominaSelected = new Nomina();
+        reloadEgresos();
+        onCreateNomina = Boolean.FALSE;
+        onEditNomina = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+        disabledDeleteNomina = Boolean.TRUE;
+    }
+
+    public void cancelar() {
+        System.out.println("Cancelar");
+        renderEdition = Boolean.FALSE;
     }
 
     public void crearNominaBloque(FileUploadEvent event) {
@@ -606,6 +671,14 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
 
     public void setNominaSelected(Nomina nominaSelected) {
         this.nominaSelected = nominaSelected;
+    }
+
+    public String getStrBtnGuardar() {
+        return strBtnGuardar;
+    }
+
+    public void setStrBtnGuardar(String strBtnGuardar) {
+        this.strBtnGuardar = strBtnGuardar;
     }
 
 }

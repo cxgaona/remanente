@@ -13,7 +13,7 @@
                     <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                         <p:outputLabel for="mes" value="#{etiquetas['mes']}: &nbsp;" />
                         <p:datePicker id="mes" view="month" value="#{egresosCtrl.fechaSeleccionada}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
-                        <p:commandButton action="#{egresosCtrl.reloadEgresos}" update="formFiltro:mesSeleccionadoLbl, formNomina" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                        <p:commandButton action="#{egresosCtrl.reloadEgresos}" update="formFiltro:mesSeleccionadoLbl, formNomina, formNominaSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                     </b:panelGrid>
                     <h:outputLabel id="mesSeleccionadoLbl" value="Mes Seleccionado: #{egresosCtrl.mes eq 1? 'Enero':
                                                                                       egresosCtrl.mes eq 2? 'Febrero':
@@ -45,7 +45,10 @@
                             rowsPerPageTemplate="5,10,25,50"                         
                             tableStyle="width:auto">
                             <f:facet name="header">Gastos por Nómina</f:facet>
-                            <p:ajax event="rowSelect" listener="#{egresosCtrl.onRowSelectNomina}" update="@form"/>
+                            <p:ajax event="rowSelectCheckbox" listener="#{egresosCtrl.onRowSelectNominaCheckbox}" update="formNomina, formNominaSelected"/>
+                            <p:ajax event="rowUnselectCheckbox" listener="#{egresosCtrl.onRowSelectNominaCheckbox}" update="formNomina, formNominaSelected"/>
+                            <p:ajax event="toggleSelect" listener="#{egresosCtrl.onRowSelectNominaCheckbox}" update="formNomina, formNominaSelected"/>
+                            <p:ajax event="rowSelect" listener="#{egresosCtrl.onRowSelectNomina}" update="formNomina, formNominaSelected"/>
                             <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
                             <p:column headerText="Nombre" sortBy="#{nomina.nombre}" 
                                       filterBy="#{nomina.nombre}" filterMatchMode="contains" width="10%" style="text-align: left">
@@ -110,21 +113,28 @@
                                          style="margin-right:20px; width: 100%" 
                                          action="#{egresosCtrl.nuevoRegistroNomina}"
                                          icon="fa fa-fw fa-plus-square"                                         
-                                         disabled="#{egresosCtrl.disableNuevoEgreso}"/>
+                                         disabled="#{egresosCtrl.disableNuevoEgreso}"
+                                         update="formNomina, formNominaSelected"/>
                         <p:commandButton value="Borrar Registros Seleccionados"
                                          style="margin-right:20px; width: 100%"
                                          action="#{egresosCtrl.borrarRegistroNominaSeleccionado}"
                                          icon="fa fa-fw fa-trash"                                         
-                                         disabled="#{egresosCtrl.disabledDeleteNomina}">
+                                         disabled="#{egresosCtrl.disabledDeleteNomina}"
+                                         update="formNomina, formNominaSelected">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar los registros seleccionados?" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
                         <p:commandButton value="Borrar todos los Trámites"
                                          style="margin-right:20px; width: 100%"
                                          action="#{egresosCtrl.borrarTodosRegistrosNomina}"
                                          icon="fa fa-fw fa-trash"
-                                         disabled="#{egresosCtrl.disabledDeleteNominaTodos}">
+                                         disabled="#{egresosCtrl.disabledDeleteNominaTodos}"
+                                         update="formNomina, formNominaSelected">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar todos los registros?" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                        </p:confirmDialog>
                     </b:panelGrid>
                     <b:panelGrid id="cargaNominaPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
                         <p:outputLabel value="Carga de Nómina: " />
@@ -141,64 +151,67 @@
                             disabled="#{egresosCtrl.disableNuevoEgreso}"
                             cancelLabel=""                                
                             fileUploadListener="#{egresosCtrl.crearNominaBloque}"
-                            update="formNomina, formNomina:messagesNomina"/>
-                    </b:panelGrid>
-                    <h:form id="formNominaSelected" >
-                        <b:panel style="width: 50%" rendered="#{egresosCtrl.renderEdition}">
-                            <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="#{egresosCtrl.nominaSelected.nombre}"
-                                             maxlength="100" style="width: 90%" required="true"/>
-
-                                <p:outputLabel for="cargo" value="Cargo:" />
-                                <p:inputText id="cargo" value="#{egresosCtrl.nominaSelected.cargo}"
-                                             maxlength="300" style="width: 90%" required="true"/>
-
-                                <p:outputLabel for="remuneracion" value="Remuneración:" />
-                                <p:inputNumber id="remuneracion" 
-                                               value="#{egresosCtrl.nominaSelected.remuneracion}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="aportePatronal" value="Aporte Patronal:" />
-                                <p:inputNumber id="aportePatronal" 
-                                               value="#{egresosCtrl.nominaSelected.aportePatronal}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="impuestoRenta" value="Impuesto a la Renta:" />
-                                <p:inputNumber id="impuestoRenta" 
-                                               value="#{egresosCtrl.nominaSelected.impuestoRenta}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="fondosReserva" value="Fondos de reserva:" />
-                                <p:inputNumber id="fondosReserva" 
-                                               value="#{egresosCtrl.nominaSelected.fondosReserva}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="decimoTercero" value="Décimo Tercero:" />
-                                <p:inputNumber id="decimoTercero" 
-                                               value="#{egresosCtrl.nominaSelected.decimoTercero}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="decimoCuarto" value="Décimo Cuarto:" />
-                                <p:inputNumber id="decimoCuarto" 
-                                               value="#{egresosCtrl.nominaSelected.decimoCuarto}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="totalDescuento" value="Descuento:" />
-                                <p:inputNumber id="totalDescuento" 
-                                               value="#{egresosCtrl.nominaSelected.totalDesc}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-                                
-                                <p:outputLabel for="liquidoRecibir" value="Líquido a Recibir:" />
-                                <p:inputNumber id="liquidoRecibir" 
-                                               value="#{egresosCtrl.nominaSelected.liquidoRecibir}" 
-                                               style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-
-                            </b:panelGrid>                            
-                        </b:panel>
-                    </h:form>
+                            update="formNomina,formNominaSelected, formNomina:messagesNomina"/>
+                    </b:panelGrid>                    
                 </b:panel>                
-            </h:form>            
+            </h:form>
+            <h:form id="formNominaSelected" >
+                <b:panel style="width: 50%" rendered="#{egresosCtrl.renderEdition}">
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="nombre" value="Nombre:" />
+                        <p:inputText id="nombre" value="#{egresosCtrl.nominaSelected.nombre}"
+                                     maxlength="100" style="width: 90%" required="true"/>
+
+                        <p:outputLabel for="cargo" value="Cargo:" />
+                        <p:inputText id="cargo" value="#{egresosCtrl.nominaSelected.cargo}"
+                                     maxlength="300" style="width: 90%" required="true"/>
+
+                        <p:outputLabel for="remuneracion" value="Remuneración:" />
+                        <p:inputNumber id="remuneracion" 
+                                       value="#{egresosCtrl.nominaSelected.remuneracion}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="aportePatronal" value="Aporte Patronal:" />
+                        <p:inputNumber id="aportePatronal" 
+                                       value="#{egresosCtrl.nominaSelected.aportePatronal}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="impuestoRenta" value="Impuesto a la Renta:" />
+                        <p:inputNumber id="impuestoRenta" 
+                                       value="#{egresosCtrl.nominaSelected.impuestoRenta}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="fondosReserva" value="Fondos de reserva:" />
+                        <p:inputNumber id="fondosReserva" 
+                                       value="#{egresosCtrl.nominaSelected.fondosReserva}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="decimoTercero" value="Décimo Tercero:" />
+                        <p:inputNumber id="decimoTercero" 
+                                       value="#{egresosCtrl.nominaSelected.decimoTercero}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="decimoCuarto" value="Décimo Cuarto:" />
+                        <p:inputNumber id="decimoCuarto" 
+                                       value="#{egresosCtrl.nominaSelected.decimoCuarto}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="totalDescuento" value="Descuento:" />
+                        <p:inputNumber id="totalDescuento" 
+                                       value="#{egresosCtrl.nominaSelected.totalDesc}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
+
+                        <p:outputLabel for="liquidoRecibir" value="Líquido a Recibir:" />
+                        <p:inputNumber id="liquidoRecibir" 
+                                       value="#{egresosCtrl.nominaSelected.liquidoRecibir}" 
+                                       style="width: 90%" symbol="$" emptyValue="sign" required="true"/>                                
+                    </b:panelGrid>
+                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton id="btnGuardar" value="#{egresosCtrl.strBtnGuardar}"  style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{egresosCtrl.guardar}" update="formNomina, formNominaSelected"/>
+                        <p:commandButton id="btnCancelar" value="Cancelar"  style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{egresosCtrl.cancelar}" update="formNomina, formNominaSelected"/>
+                    </b:panelGrid>
+                </b:panel>
+            </h:form>
         </ui:define>
     </ui:composition>
 </html>

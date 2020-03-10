@@ -10,6 +10,7 @@ import ec.gob.dinardap.remanente.servicio.NominaServicio;
 import java.util.ArrayList;
 import java.util.List;
 import ec.gob.dinardap.remanente.dao.NominaDao1;
+import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.math.BigDecimal;
@@ -31,6 +32,9 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
     @Override
     public void crearNomina(Nomina nomina) {
         this.create(nomina);
+        actualizarTransaccionValor(nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                nomina.getTransaccionId().getRemanenteMensualId().getMes());
     }
 
     @Override
@@ -55,6 +59,17 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
         mes = nomina.getTransaccionId().getRemanenteMensualId().getMes();
         idInstitucion = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
         this.delete(nomina.getNominaId());
+    }
+
+    @Override
+    public void borrarNominas(List<Nomina> nominas) {
+        Integer anio, mes, idInstitucion;
+        for (Nomina nomina : nominas) {
+            anio = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
+            mes = nomina.getTransaccionId().getRemanenteMensualId().getMes();
+            idInstitucion = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
+            this.delete(nomina.getNominaId());
+        }        
     }
 
     @Override
