@@ -52,13 +52,20 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
             if (u.getAdministrador()) {
                 variableSesionPerfil += "REM-Administrador, ";
             }
+            if (u.getSuperAdministrador()) {
+                variableSesionPerfil += "REM-SuperAdministrador, ";
+            }
             this.setSessionVariable("perfil", variableSesionPerfil);
             this.setSessionVariable("usuarioId", u.getUsuarioID().toString());
             this.setSessionVariable("institucionId", u.getInstitucionID().toString());
             this.setSessionVariable("institucionTipo", u.getTipo());
             this.setSessionVariable("gadId", u.getGadID().toString());
+            if (variableSesionPerfil.equals("REM-SuperAdministrador, ")) {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/gestionUsuarios.jsf");
+            } else {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
+            }
 
-            FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
         } else {
             u = new UsuarioDTO();
             usuario = "";

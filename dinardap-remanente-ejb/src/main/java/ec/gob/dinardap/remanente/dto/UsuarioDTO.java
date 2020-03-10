@@ -19,6 +19,7 @@ public class UsuarioDTO {
     private Boolean verificador;
     private Boolean validador;
     private Boolean administrador;
+    private Boolean superAdministrador;
     private String tipo;
 
     public String getPerfil() {
@@ -91,6 +92,14 @@ public class UsuarioDTO {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public Boolean getSuperAdministrador() {
+        return superAdministrador;
+    }
+
+    public void setSuperAdministrador(Boolean superAdministrador) {
+        this.superAdministrador = superAdministrador;
     }
 
 }
