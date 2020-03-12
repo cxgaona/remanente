@@ -157,12 +157,8 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     }
 
     public void obtenerRemanenteMensual() {
-        remanenteMensualList = new ArrayList<RemanenteMensual>();
-        remanenteMensualList = remanenteMensualServicio.getRemanenteMensualByInstitucionAñoMes(institucionId, anio, mes);
         remanenteMensualSelected = new RemanenteMensual();
-        if (!remanenteMensualList.isEmpty()) {
-            remanenteMensualSelected = remanenteMensualList.get(0);
-        }
+        remanenteMensualSelected = remanenteMensualServicio.getUltimoRemanenteMensual(institucionId, anio, mes);
         if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
                 || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
@@ -178,7 +174,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
             renderEdition = Boolean.FALSE;
             disableDelete = Boolean.TRUE;
             disableNuevoT = Boolean.TRUE;
-
         }
     }
 

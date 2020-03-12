@@ -59,7 +59,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         String[] orderBy = {"mes"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        remanenteMensualList = findByCriterias(criteria);       
+        remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
             Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
                 @Override
@@ -112,6 +112,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
 
     @Override
     public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer idInstitucion, Integer anio, Integer mes) {
+        System.out.println("inst: " + idInstitucion);
+        System.out.println("anio: " + anio);
+        System.out.println("mes: " + mes);
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio", "mes"};
@@ -133,6 +136,36 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             }
         }
         return remanenteMensualList;
+    }
+
+    @Override
+    public RemanenteMensual getUltimoRemanenteMensual(Integer idInstitucion, Integer anio, Integer mes) {
+        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+            "remanenteCuatrimestral.remanenteAnual.anio",
+            "mes"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {idInstitucion, anio, mes};
+        String[] orderBy = {"remanenteMensualId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        remanenteMensualList = findByCriterias(criteria);
+        for (RemanenteMensual rm : remanenteMensualList) {
+            Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+                @Override
+                public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
+                    return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+                }
+            });
+            for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
+                erm.getEstadoRemanenteMensualId();
+            }
+        }
+        RemanenteMensual remanenteMensual = new RemanenteMensual();
+        if (!remanenteMensualList.isEmpty()) {
+            remanenteMensual = remanenteMensualList.get(0);
+        }
+        return remanenteMensual;
     }
 
     @Override
