@@ -23,8 +23,8 @@ public class FacesUtils {
             return null;
         }
     }
-    
-     public static String generarContraseña() {
+
+    public static String generarContraseña() {
         String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         String claveGenerada = "";
         int numero;

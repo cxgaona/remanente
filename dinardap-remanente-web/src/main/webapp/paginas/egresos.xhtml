@@ -13,7 +13,7 @@
                     <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                         <p:outputLabel for="mes" value="#{etiquetas['mes']}: &nbsp;" />
                         <p:datePicker id="mes" view="month" value="#{egresosCtrl.fechaSeleccionada}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
-                        <p:commandButton action="#{egresosCtrl.reloadEgresos}" update="formFiltro:mesSeleccionadoLbl, formNomina, formNominaSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                        <p:commandButton action="#{egresosCtrl.reloadEgresos}" update="formFiltro:mesSeleccionadoLbl, formNomina, formNominaSelected, formFacturaPagada" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                     </b:panelGrid>
                     <h:outputLabel id="mesSeleccionadoLbl" value="Mes Seleccionado: #{egresosCtrl.mes eq 1? 'Enero':
                                                                                       egresosCtrl.mes eq 2? 'Febrero':
@@ -42,7 +42,7 @@
                             selection="#{egresosCtrl.nominaSelectedList}"
                             reflow="true" rows="5" paginator="true"
                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                            rowsPerPageTemplate="5,10,25,50"                         
+                            rowsPerPageTemplate="5,10,25,50"
                             tableStyle="width:auto">
                             <f:facet name="header">Gastos por Nómina</f:facet>
                             <p:ajax event="rowSelectCheckbox" listener="#{egresosCtrl.onRowSelectNominaCheckbox}" update="formNomina, formNominaSelected"/>
@@ -123,7 +123,7 @@
                                          update="formNomina, formNominaSelected">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar los registros seleccionados?" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
-                        <p:commandButton value="Borrar todos los Trámites"
+                        <p:commandButton value="Borrar todos los Registros"
                                          style="margin-right:20px; width: 100%"
                                          action="#{egresosCtrl.borrarTodosRegistrosNomina}"
                                          icon="fa fa-fw fa-trash"
@@ -212,6 +212,95 @@
                     </b:panelGrid>
                 </b:panel>
             </h:form>
+            <!--Factura Pagada-->
+            <h:form id="formFacturaPagada">                
+                <b:panel title="#{egresosCtrl.tituloFacturaPagada}">
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <p:messages id="messagesFacturaPagada" showDetail="true" closable="true"/>
+                        <p:dataTable 
+                            id="facturaPagadaTbl"
+                            value="#{egresosCtrl.facturaPagadaList}"
+                            var="facturaPagada"
+                            rowKey="#{facturaPagada.facturaPagadaId}"
+                            selection="#{egresosCtrl.facturaPagadaSelectedList}"
+                            reflow="true" rows="5" paginator="true"
+                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="5,10,25,50"
+                            tableStyle="width:auto">
+                            <f:facet name="header">Facturas Pagadas</f:facet>
+                            <p:ajax event="rowSelectCheckbox" listener="#{egresosCtrl.onRowSelectFacturaPagadaCheckbox}" update="formFacturaPagada"/>
+                            <p:ajax event="rowUnselectCheckbox" listener="#{egresosCtrl.onRowSelectFacturaPagadaCheckbox}" update="formFacturaPagada"/>
+                            <p:ajax event="toggleSelect" listener="#{egresosCtrl.onRowSelectFacturaPagadaCheckbox}" update="formFacturaPagada"/>
+                            <p:ajax event="rowSelect" listener="#{egresosCtrl.onRowSelectFacturaPagada}" update="formFacturaPagada"/>
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                            <p:column headerText="Número Factura" sortBy="#{facturaPagada.numero}" filterBy="#{facturaPagada.numero}" filterMatchMode="contains" width="15%" style="text-align: right">
+                                <h:outputText value="#{facturaPagada.numero}" />
+                            </p:column>
+                            <p:column headerText="Fecha" sortBy="#{facturaPagada.fecha}" width="10%" style="text-align: center">
+                                <h:outputText value="#{facturaPagada.fecha}" />
+                            </p:column>
+                            <p:column headerText="Tipo" sortBy="#{facturaPagada.tipo}" width="25%">
+                                <h:outputText value="#{facturaPagada.tipo}" />
+                            </p:column>
+                            <p:column headerText="Valor" sortBy="#{facturaPagada.valor}" width="10%" style="text-align: right">
+                                <h:outputText value="#{facturaPagada.valor}" >
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Detalle" sortBy="#{facturaPagada.detalle}" filterBy="#{facturaPagada.detalle}" filterMatchMode="contains" width="40%">
+                                <h:outputText value="#{facturaPagada.detalle}" />
+                            </p:column>
+                        </p:dataTable>        
+                    </h:panelGrid>
+                    <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
+                        <p:commandButton value="Nuevo Registro"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{egresosCtrl.nuevoRegistroFacturaPagada}"
+                                         icon="fa fa-fw fa-plus-square"                                         
+                                         disabled="#{egresosCtrl.disableNuevoEgreso}"
+                                         update="formFacturaPagada"/>
+                        <p:commandButton value="Borrar Registros Seleccionados"
+                                         style="margin-right:20px; width: 100%"
+                                         action="#{egresosCtrl.borrarRegistroFacturaPagadaSeleccionada}"
+                                         icon="fa fa-fw fa-trash"                                         
+                                         disabled="#{egresosCtrl.disabledDeleteFacturaPagada}"
+                                         update="formFacturaPagada">
+                            <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar los registros seleccionados?" icon="fa fa-fw fa-warning" />
+                        </p:commandButton>
+                        <p:commandButton value="Borrar todos los Registros"
+                                         style="margin-right:20px; width: 100%"
+                                         action="#{egresosCtrl.borrarTodosRegistrosFacturaPagada}"
+                                         icon="fa fa-fw fa-trash"
+                                         disabled="#{egresosCtrl.disabledDeleteFacturaPagadaTodos}"
+                                         update="formFacturaPagada">
+                            <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar todos los registros?" icon="fa fa-fw fa-warning" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                        </p:confirmDialog>
+                    </b:panelGrid>
+                    <b:panelGrid id="cargaNominaPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
+                        <p:outputLabel value="Carga de Facturas Pagadas: " />
+                        <p:fileUpload                                    
+                            id="cargaFacturaPagada"
+                            messageTemplate="Tipo de Archivo no Válido"
+                            style="width:100%"
+                            mode="advanced"
+                            dragDropSupport="true"
+                            sizeLimit="90000000"
+                            allowTypes="/(\.|\/)(xlsx)$/"
+                            label=""
+                            uploadLabel=""                            
+                            disabled="#{egresosCtrl.disableNuevoEgreso}"
+                            cancelLabel=""                                
+                            fileUploadListener="#{egresosCtrl.crearNominaBloque(event)}"
+                            update="formFacturaPagada, formFacturaPagada:messagesFacturaPagada"/>
+                    </b:panelGrid>   
+                </b:panel>
+            </h:form>
+
+
         </ui:define>
     </ui:composition>
 </html>

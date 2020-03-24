@@ -59,7 +59,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         String[] orderBy = {"mes"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-        remanenteMensualList = findByCriterias(criteria);       
+        remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
             Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
                 @Override
@@ -111,13 +111,14 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer idInstitucion, Integer anio, Integer mes) {
+    public RemanenteMensual getUltimoRemanenteMensual(Integer idInstitucion, Integer anio, Integer mes) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
-            "remanenteCuatrimestral.remanenteAnual.anio", "mes"};
+            "remanenteCuatrimestral.remanenteAnual.anio",
+            "mes"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {idInstitucion, anio, mes};
-        String[] orderBy = {"mes"};
+        String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
@@ -132,7 +133,11 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
                 erm.getEstadoRemanenteMensualId();
             }
         }
-        return remanenteMensualList;
+        RemanenteMensual remanenteMensual = new RemanenteMensual();
+        if (!remanenteMensualList.isEmpty()) {
+            remanenteMensual = remanenteMensualList.get(0);
+        }
+        return remanenteMensual;
     }
 
     @Override

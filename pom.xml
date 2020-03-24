@@ -17,7 +17,7 @@
         <path.server.deployments>C:/wildfly-14.0.1.Final</path.server.deployments>
         <wildfly.user>admin</wildfly.user>
         <wildfly.password>dINARDAP.2019</wildfly.password>
-        <wildfly.host>localhost</wildfly.host>
+        <wildfly.host>127.0.0.1</wildfly.host>
         <wildfly.port>9990</wildfly.port>        
     </properties>
 

@@ -11,12 +11,14 @@ import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 public interface FacturaPagadaServicio extends GenericService<FacturaPagada, Integer> {
 
     public void crearFacturaPagada(FacturaPagada facturaPagada);
-    
+
     public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
-    
+
     public void editFacturaPagada(FacturaPagada facturaPagada);
-    
+
     public void borrarFacturaPagada(FacturaPagada facturaPagada);
-    
+
+    public void borrarFacturasPagadas(List<FacturaPagada> facturasPagadas);
+
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo);
 }

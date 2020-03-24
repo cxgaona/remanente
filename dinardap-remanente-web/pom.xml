@@ -116,7 +116,8 @@
         en el repositorio maven -->
         <dependency> 
             <groupId>ec.gob.dinardap.seguridad</groupId> 
-            <artifactId>dinardap-seguridad-ejb</artifactId> 
+            <artifactId>dinardap-seguridad-ejb</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <type>ejb</type> 
             <scope>provided</scope> 
         </dependency> 

@@ -21,8 +21,8 @@ public interface RemanenteMensualServicio extends GenericService<RemanenteMensua
     public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen);
 
     public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen);
-
-    public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes);
+    
+    public RemanenteMensual getUltimoRemanenteMensual(Integer institucionId, Integer año, Integer mes);
 
     public byte[] descargarArchivo(SftpDto sftpDto);
 

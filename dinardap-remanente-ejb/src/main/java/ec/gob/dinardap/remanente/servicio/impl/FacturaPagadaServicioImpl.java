@@ -9,6 +9,7 @@ import ec.gob.dinardap.remanente.dao.FacturaPagadaDao;
 import java.util.ArrayList;
 import java.util.List;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
+import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.FacturaPagadaServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
@@ -42,7 +43,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
 
     @Override
     public void editFacturaPagada(FacturaPagada facturaPagada) {
-        this.update(facturaPagada);           
+        this.update(facturaPagada);
     }
 
     @Override
@@ -51,18 +52,29 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
         anio = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
         mes = facturaPagada.getTransaccionId().getRemanenteMensualId().getMes();
         idInstitucion = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
-        this.delete(facturaPagada.getFacturaPagadaId());        
+        this.delete(facturaPagada.getFacturaPagadaId());
     }
-    
+
+    @Override
+    public void borrarFacturasPagadas(List<FacturaPagada> facturasPagadas) {
+        Integer anio, mes, idInstitucion;
+        for (FacturaPagada facturaPagada : facturasPagadas) {
+            anio = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
+            mes = facturaPagada.getTransaccionId().getRemanenteMensualId().getMes();
+            idInstitucion = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
+            this.delete(facturaPagada.getFacturaPagadaId());
+        }
+    }
+
     @Override
     public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
         BigDecimal valorTotalTransaccion = new BigDecimal(0);
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
-        for (FacturaPagada fp : t.getFacturaPagadaList()) {            
+        for (FacturaPagada fp : t.getFacturaPagadaList()) {
             valorTotalTransaccion = valorTotalTransaccion.add(fp.getValor());
         }
-        t.setValorTotal(valorTotalTransaccion);        
+        t.setValorTotal(valorTotalTransaccion);
         transaccionServicio.editTransaccion(t);
     }
 
