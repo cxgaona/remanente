@@ -215,6 +215,9 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             btnActivated = Boolean.TRUE;
             displayUploadEdit = Boolean.FALSE;
         }
+        System.out.println("RemanenteMensualDTOSeleccionado: "+remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId());
+        System.out.println("RemanenteMensualDTOSeleccionado: "+remanenteMensualDTOSelected.getRemanenteMensual().getMes());
+        System.out.println("RemanenteMensualDTOSeleccionado: "+remanenteMensualDTOSelected.getRemanenteMensual().getTotal());
 
         if ((remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
                 || remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")

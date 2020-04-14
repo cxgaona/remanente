@@ -12,6 +12,7 @@ import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.persistence.util.DateBetween;
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
+import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
@@ -21,6 +22,7 @@ import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
+import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
 import ec.gob.dinardap.sftp.exception.FtpException;
 import ec.gob.dinardap.sftp.util.CredencialesSFTP;
@@ -40,6 +42,9 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
 
     @EJB
     private ParametroServicio parametroServicio;
+
+    @EJB
+    private RemanenteMensualServicio remanenteMensualServicio;
 
     @Override
     public GenericDao<RemanenteCuatrimestral, RemanenteCuatrimestralPK> getDao() {
@@ -136,6 +141,7 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     }
 
     @Override
+    @SuppressWarnings("empty-statement")
     public List<RemanenteCuatrimestral> getRemanenteCuatrimestralListByInstitucion(Integer institucionId, Integer año) {
         List<RemanenteCuatrimestral> remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         String[] criteriaNombres = {
@@ -156,15 +162,7 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
             for (EstadoRemanenteCuatrimestral estadoRemanenteCuatrimestral : remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList()) {
                 estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestral();
             }
-            for (RemanenteMensual remanenteMensual : remanenteCuatrimestral.getRemanenteMensualList()) {
-                remanenteMensual.getRemanenteMensualId();
-                for (EstadoRemanenteMensual estadoRemanenteMensual : remanenteMensual.getEstadoRemanenteMensualList()) {
-                    estadoRemanenteMensual.getEstadoRemanenteMensualId();
-                }
-                for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
-                    transaccion.getTransaccionId();
-                }
-            }
+            remanenteCuatrimestral.setRemanenteMensualList(new ArrayList<RemanenteMensual>());
         }
         return remanenteCuatrimestralList;
     }

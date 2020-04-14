@@ -21,7 +21,7 @@ public class TramiteDaoEjb extends RemanenteGenericDao<Tramite, Integer> impleme
                 + "t.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
                 + "t.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
                 + "t.transaccionId.remanenteMensualId.mes=:mes AND "
-                + "t.actividadRegistral=:actividad");        
+                + "t.actividadRegistral=:actividad");
         query.setParameter("idRemanenteMensual", idRemanenteMensual);
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);

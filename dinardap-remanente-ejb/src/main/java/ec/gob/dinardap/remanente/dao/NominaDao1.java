@@ -9,5 +9,5 @@ import java.util.List;
 @Local
 public interface NominaDao1 extends GenericDao<Nomina, Integer> {
 
-    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
+    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual);
 }

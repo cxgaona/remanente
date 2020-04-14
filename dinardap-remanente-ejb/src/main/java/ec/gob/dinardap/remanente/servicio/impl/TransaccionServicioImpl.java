@@ -40,7 +40,7 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
 
     @Override
     public void editTransaccion(Transaccion transaccion) {
-        this.update(transaccion);        
+        this.update(transaccion);
     }
 
     @Override
@@ -81,9 +81,36 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
     }
 
     @Override
+    public List<Transaccion> getTransacciones(Integer remanenteMensualID) {        
+        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
+        String[] criteriaNombres = {"remanenteMensualId.remanenteMensualId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {remanenteMensualID};
+        String[] orderBy = {"catalogoTransaccionId.catalogoTransaccionId"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        transaccionList = findByCriterias(criteria);
+        for (Transaccion transaccion : transaccionList) {
+            for (Tramite tramite : transaccion.getTramiteList()) {
+                tramite.getTramiteId();
+            }
+            for (Nomina nomina : transaccion.getNominaList()) {
+                nomina.getNominaId();
+            }
+            for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
+                facturaPagada.getFacturaPagadaId();
+            }
+            transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId();            
+        }
+        return transaccionList;
+    }
+
+    @Override
     public Transaccion getTransaccionByInstitucionFechaTipo(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
         Transaccion transaccion = new Transaccion();
         transaccion = transaccionDao.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
+        transaccion.getTramiteList();
+        transaccion.getCatalogoTransaccionId();
         return transaccion;
     }
 

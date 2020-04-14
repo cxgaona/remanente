@@ -1,19 +1,21 @@
 package ec.gob.dinardap.remanente.servicio.impl;
 
+import ec.gob.dinardap.persistence.constante.CriteriaTypeEnum;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
+import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.servicio.NominaServicio;
 import java.util.ArrayList;
 import java.util.List;
 import ec.gob.dinardap.remanente.dao.NominaDao1;
-import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Stateless(name = "NominaServicio")
 public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> implements NominaServicio {
@@ -30,61 +32,58 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
     }
 
     @Override
-    public void crearNomina(Nomina nomina) {
-        this.create(nomina);
-        actualizarTransaccionValor(nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                nomina.getTransaccionId().getRemanenteMensualId().getMes());
-    }
-
-    @Override
-    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes) {
+    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual) {
         List<Nomina> nominaList = new ArrayList<Nomina>();
-        nominaList = nominaDao.getNominaByInstitucionFecha(idInstitucion, anio, mes);
+        nominaList = nominaDao.getNominaByInstitucionFecha(idInstitucion, anio, mes, idRemanenteMensual);
         return nominaList;
     }
 
     @Override
-    public void editNomina(Nomina nomina) {
-        this.update(nomina);
-        actualizarTransaccionValor(nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                nomina.getTransaccionId().getRemanenteMensualId().getMes());
+    public List<Nomina> getNominaByTransaccion(Integer transaccionId) {
+        List<Nomina> nominaList = new ArrayList<Nomina>();
+        String[] criteriaNombres = {"transaccionId.transaccionId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {transaccionId};
+        String[] orderBy = {"nominaId"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        nominaList = findByCriterias(criteria);
+        return nominaList;
     }
 
     @Override
-    public void borrarNomina(Nomina nomina) {
-        Integer anio, mes, idInstitucion;
-        anio = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
-        mes = nomina.getTransaccionId().getRemanenteMensualId().getMes();
-        idInstitucion = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
-        this.delete(nomina.getNominaId());
+    public void crearNominas(List<Nomina> nominas) {
+        for (Nomina nomina : nominas) {
+            this.create(nomina);
+        }
     }
 
     @Override
     public void borrarNominas(List<Nomina> nominas) {
-        Integer anio, mes, idInstitucion;
         for (Nomina nomina : nominas) {
-            anio = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
-            mes = nomina.getTransaccionId().getRemanenteMensualId().getMes();
-            idInstitucion = nomina.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
             this.delete(nomina.getNominaId());
-        }        
+        }
     }
 
     @Override
-    public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes) {
-        BigDecimal valorTotalTransaccion = new BigDecimal(0);
-        Transaccion t = new Transaccion();
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, 9);
-        for (Nomina n : t.getNominaList()) {
-            valorTotalTransaccion = valorTotalTransaccion.add(n.getRemuneracion());
-            valorTotalTransaccion = valorTotalTransaccion.add(n.getAportePatronal());
-            valorTotalTransaccion = valorTotalTransaccion.add(n.getFondosReserva());
-            valorTotalTransaccion = valorTotalTransaccion.add(n.getDecimoTercero());
-            valorTotalTransaccion = valorTotalTransaccion.add(n.getDecimoCuarto());
+    public void actualizarTransaccionValor(Integer remanenteMensualId) {
+        Integer catalogoNomina[] = {9};
+        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
+        transaccionList = transaccionServicio.getTransacciones(remanenteMensualId);
+        for (Transaccion transaccion : transaccionList) {
+            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[0])) {
+                Double valor = 0.0;
+                for (Nomina nomina : this.getNominaByTransaccion(transaccion.getTransaccionId())) {
+                    valor += nomina.getRemuneracion().doubleValue()
+                            + nomina.getAportePatronal().doubleValue()
+                            + nomina.getFondosReserva().doubleValue()
+                            + nomina.getDecimoTercero().doubleValue()
+                            + nomina.getDecimoCuarto().doubleValue();
+                }
+                transaccion.setValorTotal(new BigDecimal(valor));
+                transaccionServicio.update(transaccion);
+                break;
+            }
         }
-        t.setValorTotal(valorTotalTransaccion);
-        transaccionServicio.editTransaccion(t);
     }
 }

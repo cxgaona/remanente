@@ -17,22 +17,25 @@
                 <b:panel title="Trámites Propiedad">
                     <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                         <p:outputLabel for="mesTramite" value="#{etiquetas['mes']}: &nbsp;" />
-                        <p:datePicker id="mesTramite" view="month" value="#{tramitePropiedadCtrl.fecha}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
+                        <p:datePicker id="mesTramite" view="month" value="#{tramitePropiedadCtrl.fechaSeleccionada}" pattern="MM/yyyy" yearNavigator="true" yearRange="2000:2030" locale="es" />
                         <p:commandButton action="#{tramitePropiedadCtrl.reloadTramite}" update="formTramite, formTramiteSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                     </b:panelGrid>
                     <h:panelGrid columns="1" style="width: 100%;">
-                        <h:outputLabel value="Mes Seleccionado: #{tramitePropiedadCtrl.mes eq 1? 'Enero':
-                                                                  tramitePropiedadCtrl.mes eq 2? 'Febrero':
-                                                                  tramitePropiedadCtrl.mes eq 3? 'Marzo':
-                                                                  tramitePropiedadCtrl.mes eq 4? 'Abril':
-                                                                  tramitePropiedadCtrl.mes eq 5? 'Mayo':
-                                                                  tramitePropiedadCtrl.mes eq 6? 'Junio':
-                                                                  tramitePropiedadCtrl.mes eq 7? 'Julio':
-                                                                  tramitePropiedadCtrl.mes eq 8? 'Agosto':
-                                                                  tramitePropiedadCtrl.mes eq 9? 'Septiembre':
-                                                                  tramitePropiedadCtrl.mes eq 10? 'Octubre':
-                                                                  tramitePropiedadCtrl.mes eq 11? 'Noviembre':
-                                                                  tramitePropiedadCtrl.mes eq 12? 'Diciembre':'Sin mes'}" styleClass="form-label-izquierda-15" style="width: 100%"/>
+                        <b:panelGrid colSpans="6,6" style="width: 100%;">
+                            <h:outputLabel value="Mes Seleccionado: #{tramitePropiedadCtrl.mes eq 1? 'Enero':
+                                                                      tramitePropiedadCtrl.mes eq 2? 'Febrero':
+                                                                      tramitePropiedadCtrl.mes eq 3? 'Marzo':
+                                                                      tramitePropiedadCtrl.mes eq 4? 'Abril':
+                                                                      tramitePropiedadCtrl.mes eq 5? 'Mayo':
+                                                                      tramitePropiedadCtrl.mes eq 6? 'Junio':
+                                                                      tramitePropiedadCtrl.mes eq 7? 'Julio':
+                                                                      tramitePropiedadCtrl.mes eq 8? 'Agosto':
+                                                                      tramitePropiedadCtrl.mes eq 9? 'Septiembre':
+                                                                      tramitePropiedadCtrl.mes eq 10? 'Octubre':
+                                                                      tramitePropiedadCtrl.mes eq 11? 'Noviembre':
+                                                                      tramitePropiedadCtrl.mes eq 12? 'Diciembre':'Sin mes'}" styleClass="form-label-izquierda-15" style="width: 100%; padding-left:15px;"/>
+                            <h:outputLabel value="Estado Actual: #{tramitePropiedadCtrl.ultimoEstado}" styleClass="form-label-izquierda-15" style="width: 100%; padding-left: 15px;"/>
+                        </b:panelGrid>
                         <p:dataTable id="tramiteTbl"
                                      value="#{tramitePropiedadCtrl.tramiteList}" 
                                      var="tramite"                                     
@@ -77,17 +80,17 @@
                     <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
                         <p:commandButton value="Nuevo Trámite"
                                          style="margin-right:20px; width: 100%" 
-                                         action="#{tramitePropiedadCtrl.nuevoTramite}"
+                                         action="#{tramitePropiedadCtrl.nuevoRegistroTramite}"
                                          icon="fa fa-fw fa-plus-square"
                                          id="btnNuevoTramite"
-                                         disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                                         disabled="#{tramitePropiedadCtrl.disableNuevoTramite}"
                                          update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                         <p:commandButton value="Borrar Trámites seleccionados"
                                          style="margin-right:20px; width: 100%"
                                          action="#{tramitePropiedadCtrl.borrarTramiteSeleccionado}"
                                          icon="fa fa-fw fa-trash"
                                          id="btnBorrarTramite"
-                                         disabled="#{tramitePropiedadCtrl.disableDelete}"
+                                         disabled="#{tramitePropiedadCtrl.disableDeleteTramite}"
                                          update="formTramiteSelected, formTramite">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar los trámites seleccionados?" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
@@ -95,8 +98,8 @@
                                          style="margin-right:20px; width: 100%"
                                          action="#{tramitePropiedadCtrl.borrarTodosTramites}"
                                          icon="fa fa-fw fa-trash"
-                                         id="btnBorrarTodoTramite"
-                                         disabled="#{tramitePropiedadCtrl.disableDeleteTotal}"
+                                         id="btnBorrarTodoTramite"                                         
+                                         disabled="#{tramitePropiedadCtrl.disableDeleteTramiteTodos}"
                                          update="formTramiteSelected, formTramite">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar todos los trámites?" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
@@ -113,7 +116,7 @@
                             allowTypes="/(\.|\/)(xlsx)$/"
                             label=""
                             uploadLabel=""                            
-                            disabled="#{tramitePropiedadCtrl.disableNuevoT}"
+                            disabled="#{tramitePropiedadCtrl.disableNuevoTramite}"
                             cancelLabel=""                                
                             fileUploadListener="#{tramitePropiedadCtrl.crearTramitesBloque}"
                             update="formTramite"/>
@@ -175,8 +178,8 @@
 
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-                        <p:commandButton value="#{tramitePropiedadCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tramitePropiedadCtrl.guardar}" update=":formTramiteSelected, :formTramite"/>
-                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{tramitePropiedadCtrl.cancelar}" update=":formTramiteSelected, :formTramite"/>
+                        <p:commandButton value="#{tramitePropiedadCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tramitePropiedadCtrl.guardarTramite}" update=":formTramiteSelected, :formTramite"/>
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{tramitePropiedadCtrl.cancelarTramite}" update=":formTramiteSelected, :formTramite"/>
                     </b:panelGrid>
                 </b:panel>
             </h:form>

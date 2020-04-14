@@ -431,7 +431,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                         tramiteOrigen.setTramiteId(null);
                         tramiteOrigen.setTransaccionId(transaccionNueva);
                         tramiteOrigen.setFechaRegistro(new Date());
-                        tramiteServicio.crearTramite(tramiteOrigen);
+                        tramiteServicio.create(tramiteOrigen);
                         break;
                     }
                 }
@@ -444,7 +444,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                         nominaOrigen.setNominaId(null);
                         nominaOrigen.setTransaccionId(transaccionNueva);
                         nominaOrigen.setFechaRegistro(new Date());
-                        nominaServicio.crearNomina(nominaOrigen);
+                        nominaServicio.create(nominaOrigen);
                         break;
                     }
                 }
@@ -457,7 +457,7 @@ public class AdminRemanenteMensualCtrl extends BaseCtrl implements Serializable 
                         facturaPagadaOrigen.setFacturaPagadaId(null);
                         facturaPagadaOrigen.setTransaccionId(transaccionNueva);
                         facturaPagadaOrigen.setFechaRegistro(new Date());
-                        facturaPagadaServicio.crearFacturaPagada(facturaPagadaOrigen);
+                        facturaPagadaServicio.create(facturaPagadaOrigen);
                         break;
                     }
                 }

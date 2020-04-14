@@ -14,6 +14,7 @@ import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
+import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
@@ -92,6 +93,9 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
     @EJB
+    private RemanenteMensualServicio remanenteMensualServicio;
+
+    @EJB
     private BandejaServicio bandejaServicio;
     @EJB
     private UsuarioServicio usuarioServicio;
@@ -145,7 +149,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     }
 
     public void onRowSelectRemanenteCuatrimestral() {
-        List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
+
         transaccionRegistrosList = new ArrayList<Row>();
         transaccionEgresosList = new ArrayList<Row>();
         totalIngRPropiedad = new BigDecimal(0);
@@ -153,7 +157,39 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         totalEgresos = new BigDecimal(0);
         btnInfDisabled = Boolean.FALSE;
         Boolean flagDisplay = Boolean.TRUE;
-        rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
+
+        List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
+        List<Integer> mesesCuatrimestreList = new ArrayList<Integer>();
+        switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
+            case 1:
+                mesesCuatrimestreList.add(1);
+                mesesCuatrimestreList.add(2);
+                mesesCuatrimestreList.add(3);
+                mesesCuatrimestreList.add(4);
+                break;
+            case 2:
+                mesesCuatrimestreList.add(5);
+                mesesCuatrimestreList.add(6);
+                mesesCuatrimestreList.add(7);
+                mesesCuatrimestreList.add(8);
+                break;
+            case 3:
+                mesesCuatrimestreList.add(9);
+                mesesCuatrimestreList.add(10);
+                mesesCuatrimestreList.add(11);
+                mesesCuatrimestreList.add(12);
+                break;
+            default:
+                break;
+        }
+        for (Integer mes : mesesCuatrimestreList) {
+            RemanenteMensual remanenteMensual = new RemanenteMensual();
+            remanenteMensual = remanenteMensualServicio.getUltimoRemanenteMensual(
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getAnio(),
+                    mes);
+            rms.add(remanenteMensual);
+        }
 
         for (RemanenteMensual remanenteMensual : rms) {
             if (!(remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")

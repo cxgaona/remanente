@@ -38,9 +38,6 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     private RemanenteMensualDao remanenteMensualDao;
 
     @EJB
-    private InstitucionRequeridaDao institucionRequeridaDao;
-
-    @EJB
     private ParametroServicio parametroServicio;
 
     @Override
@@ -131,6 +128,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             });
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
+            }
+            for (Transaccion transaccion : rm.getTransaccionList()) {
+                transaccion.getTransaccionId();
             }
         }
         RemanenteMensual remanenteMensual = new RemanenteMensual();

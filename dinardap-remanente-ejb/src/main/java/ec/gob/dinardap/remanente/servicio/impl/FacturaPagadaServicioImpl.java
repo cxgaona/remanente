@@ -1,10 +1,12 @@
 package ec.gob.dinardap.remanente.servicio.impl;
 
+import ec.gob.dinardap.persistence.constante.CriteriaTypeEnum;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
+import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.dao.FacturaPagadaDao;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.FacturaPagadaServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Stateless(name = "FacturaPagadaServicio")
 public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada, Integer> implements FacturaPagadaServicio {
@@ -30,52 +33,70 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
     }
 
     @Override
-    public void crearFacturaPagada(FacturaPagada facturaPagada) {
-        this.create(facturaPagada);
-    }
-
-    @Override
-    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes) {
+    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual) {
         List<FacturaPagada> facturaPagadaList = new ArrayList<FacturaPagada>();
-        facturaPagadaList = facturaPagadaDao.getFacturaPagadaByInstitucionFecha(idInstitucion, anio, mes);
+        facturaPagadaList = facturaPagadaDao.getFacturaPagadaByInstitucionFecha(idInstitucion, anio, mes, idRemanenteMensual);
         return facturaPagadaList;
     }
 
     @Override
-    public void editFacturaPagada(FacturaPagada facturaPagada) {
-        this.update(facturaPagada);
+    public List<FacturaPagada> getFacturaPagadaByTransaccion(Integer transaccionId) {
+        List<FacturaPagada> facturaPagadaList = new ArrayList<FacturaPagada>();
+        String[] criteriaNombres = {"transaccionId.transaccionId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
+        Object[] criteriaValores = {transaccionId};
+        String[] orderBy = {"facturaPagadaId"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        facturaPagadaList = findByCriterias(criteria);
+        return facturaPagadaList;
     }
 
     @Override
-    public void borrarFacturaPagada(FacturaPagada facturaPagada) {
-        Integer anio, mes, idInstitucion;
-        anio = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
-        mes = facturaPagada.getTransaccionId().getRemanenteMensualId().getMes();
-        idInstitucion = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
-        this.delete(facturaPagada.getFacturaPagadaId());
+    public void crearFacturaPagadas(List<FacturaPagada> facturaPagadas) {
+        for (FacturaPagada facturaPagada : facturaPagadas) {
+            this.create(facturaPagada);
+        }
     }
 
     @Override
     public void borrarFacturasPagadas(List<FacturaPagada> facturasPagadas) {
-        Integer anio, mes, idInstitucion;
         for (FacturaPagada facturaPagada : facturasPagadas) {
-            anio = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
-            mes = facturaPagada.getTransaccionId().getRemanenteMensualId().getMes();
-            idInstitucion = facturaPagada.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId();
             this.delete(facturaPagada.getFacturaPagadaId());
         }
     }
 
     @Override
-    public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
-        BigDecimal valorTotalTransaccion = new BigDecimal(0);
-        Transaccion t = new Transaccion();
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
-        for (FacturaPagada fp : t.getFacturaPagadaList()) {
-            valorTotalTransaccion = valorTotalTransaccion.add(fp.getValor());
+    public void actualizarTransaccionValor(Integer remanenteMensualId) {
+        Integer catalogoNomina[] = {10, 11, 12};
+        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
+        transaccionList = transaccionServicio.getTransacciones(remanenteMensualId);
+        for (Transaccion transaccion : transaccionList) {
+            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[0])) {
+                Double valor = 0.0;
+                for (FacturaPagada facturaPagada : this.getFacturaPagadaByTransaccion(transaccion.getTransaccionId())) {
+                    valor += facturaPagada.getValor().doubleValue();
+                }
+                transaccion.setValorTotal(new BigDecimal(valor));
+                transaccionServicio.update(transaccion);
+            }
+            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[1])) {
+                Double valor = 0.0;
+                for (FacturaPagada facturaPagada : this.getFacturaPagadaByTransaccion(transaccion.getTransaccionId())) {
+                    valor += facturaPagada.getValor().doubleValue();
+                }
+                transaccion.setValorTotal(new BigDecimal(valor));
+                transaccionServicio.update(transaccion);
+            }
+            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[2])) {
+                Double valor = 0.0;
+                for (FacturaPagada facturaPagada : this.getFacturaPagadaByTransaccion(transaccion.getTransaccionId())) {
+                    valor += facturaPagada.getValor().doubleValue();
+                }
+                transaccion.setValorTotal(new BigDecimal(valor));
+                transaccionServicio.update(transaccion);
+            }
         }
-        t.setValorTotal(valorTotalTransaccion);
-        transaccionServicio.editTransaccion(t);
     }
 
 }

@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -42,6 +41,45 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
 
+    //Declaración de variables
+    //Variables de control visual
+    private String tituloPropiedad;
+    private String strBtnGuardar;
+
+    private Boolean disableNuevoTramite;
+    private Boolean disableDeleteTramite;
+    private Boolean disableDeleteTramiteTodos;
+
+    private Boolean renderEdition;
+    private Boolean onCreate;
+    private Boolean onEdit;
+
+    private Boolean renderedNumeroRepertorio;
+
+    //Variables de negocio
+    private Integer institucionId;
+    private Date fechaSeleccionada;
+    private Integer año;
+    private Integer mes;
+    private RemanenteMensual remanenteMensualSelected;
+
+    private Tramite tramiteSelected;
+
+    private String actividadRegistral;
+    private String ultimoEstado;
+    private Integer idCatalogoTransaccion;
+
+    private String fechaMin;
+    private String fechaMax;
+
+    //Listas
+    private List<Tramite> tramiteList;
+    private List<Tramite> tramiteSelectedList;
+
+    private List<CatalogoTransaccion> catalogoList;
+    private List<RemanenteMensual> remanenteMensualList;
+
+    //
     @EJB
     private TramiteServicio tramiteServicio;
 
@@ -57,62 +95,184 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     @EJB
     private DiasNoLaborablesServicio diasNoLaborablesServicio;
 
-    private String tituloMercantil, tituloPropiedad, actividadRegistral;
-    private List<Tramite> tramiteList;
-    private Integer anio, mes;
-    private Integer institucionId;
-    private Date fecha;
-    private Tramite tramiteSelected;
-    private List<Tramite> tramiteSelectedList;
-    private Integer idCatalogoTransaccion;
-
-    private List<CatalogoTransaccion> catalogoList;
-    private List<RemanenteMensual> remanenteMensualList;
-
-    private Boolean onEdit;
-    private Boolean onCreate;
-    private String btnGuardar;
-    private RemanenteMensual remanenteMensualSelected;
-    private String fechaMin;
-    private String fechaMax;
-
-    private Boolean disableNuevoT;
-    private Boolean disableDelete;
-    private Boolean disableDeleteTotal;
-    private Boolean renderEdition;
-
-    private Boolean renderedNumeroRepertorio;
-
     @PostConstruct
     protected void init() {
-        renderedNumeroRepertorio = Boolean.FALSE;
         tituloPropiedad = "Trámite Propiedad";
-        tituloMercantil = "Trámite Mercantil";
         actividadRegistral = "Propiedad";
-        tramiteList = new ArrayList<Tramite>();
+        ultimoEstado = "";
+
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.FALSE;
+
+        disableNuevoTramite = Boolean.FALSE;
+        disableDeleteTramite = Boolean.TRUE;
+        disableDeleteTramiteTodos = Boolean.TRUE;
+
+        renderEdition = Boolean.FALSE;
+        renderedNumeroRepertorio = Boolean.FALSE;
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        fecha = new Date();
-        anio = calendar.get(Calendar.YEAR);
+        fechaSeleccionada = new Date();
+        año = calendar.get(Calendar.YEAR);
         mes = calendar.get(Calendar.MONTH) + 1;
-        fechaMin = fechasLimiteMin(anio, mes);
-        fechaMax = fechasLimiteMax(anio, mes);
+        fechaMin = fechasLimiteMin(año, mes);
+        fechaMax = fechasLimiteMax(año, mes);
+
         institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
+
+        tramiteList = new ArrayList<Tramite>();
         obtenerRemanenteMensual();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());
-        tramiteSelected = new Tramite();
+    }
+
+    public void obtenerRemanenteMensual() {
+        remanenteMensualSelected = new RemanenteMensual();
+        remanenteMensualSelected = remanenteMensualServicio.getUltimoRemanenteMensual(institucionId, año, mes);
+        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, año, mes, actividadRegistral, remanenteMensualSelected.getRemanenteMensualId());
+        ultimoEstado = remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion();
+
+        if (ultimoEstado.equals("GeneradoAutomaticamente")
+                || ultimoEstado.equals("Verificado-Rechazado")
+                || ultimoEstado.equals("GeneradoNuevaVersion")) {
+            disableNuevoTramite = Boolean.FALSE;
+            disableDeleteTramite();
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
+                disableNuevoTramite = Boolean.FALSE;
+                disableDeleteTramite();
+            } else {
+                renderEdition = Boolean.FALSE;
+                disableDeleteTramite = Boolean.TRUE;
+                disableDeleteTramiteTodos = Boolean.TRUE;
+                disableNuevoTramite = Boolean.TRUE;
+            }
+        } else {
+            renderEdition = Boolean.FALSE;
+            disableDeleteTramite = Boolean.TRUE;
+            disableDeleteTramiteTodos = Boolean.TRUE;
+            disableNuevoTramite = Boolean.TRUE;
+        }
+    }
+
+    public void reloadTramite() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fechaSeleccionada);
+        año = calendar.get(Calendar.YEAR);
+        mes = calendar.get(Calendar.MONTH) + 1;
+        fechaMin = fechasLimiteMin(año, mes);
+        fechaMax = fechasLimiteMax(año, mes);
+
+        tramiteList = new ArrayList<Tramite>();
+        obtenerRemanenteMensual();
+
         tramiteSelectedList = new ArrayList<Tramite>();
+        tramiteSelected = new Tramite();
+
+        renderEdition = Boolean.FALSE;
+    }
+
+    public void onRowSelectTramite() {
+        strBtnGuardar = "Actualizar";
+
+        onEdit = Boolean.TRUE;
+        onCreate = Boolean.FALSE;
+        disableDeleteTramite = Boolean.FALSE;
+        renderEdition = Boolean.TRUE;
+
+        tramiteSelected = tramiteSelectedList.get(0);
+        obtenerRemanenteMensual();
+    }
+
+    public void onRowSelectTramiteCheckbox() {
+        disableDeleteTramite = ultimoEstado.equals("GeneradoAutomaticamente")
+                || ultimoEstado.equals("Verificado-Rechazado")
+                || ultimoEstado.equals("GeneradoNuevaVersion") ? tramiteSelectedList.isEmpty() ? Boolean.TRUE : Boolean.FALSE : Boolean.TRUE;
+    }
+
+    public void nuevoRegistroTramite() {
+        strBtnGuardar = "Guardar";
+
+        onCreate = Boolean.TRUE;
+        onEdit = Boolean.FALSE;
+        disableDeleteTramite = Boolean.TRUE;
+        renderEdition = Boolean.TRUE;
+
+        tramiteSelected = new Tramite();
+    }
+
+    public void borrarTramiteSeleccionado() {
+        tramiteServicio.borrarTramites(tramiteSelectedList);
+        tramiteServicio.actualizarTransaccionValor(remanenteMensualSelected.getRemanenteMensualId(), actividadRegistral);
+
+        reloadTramite();
+
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.FALSE;
+        disableDeleteTramite = Boolean.TRUE;
+        //disableDeleteTramite();
+        renderEdition = Boolean.FALSE;
+    }
+
+    private void disableDeleteTramite() {
+        disableDeleteTramiteTodos = tramiteList.isEmpty() ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    public void borrarTodosTramites() {
+        tramiteServicio.borrarTramites(tramiteList);
+        tramiteServicio.actualizarTransaccionValor(remanenteMensualSelected.getRemanenteMensualId(), actividadRegistral);
+
+        reloadTramite();
+
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.FALSE;
+
+        disableDeleteTramite = Boolean.TRUE;
+//        disableDeleteTramite();
+
+        renderEdition = Boolean.FALSE;
+    }
+
+    public void guardarTramite() {
+        tramiteSelected.setActividadRegistral(actividadRegistral);
+
+        CatalogoTransaccion catalogoTransaccion = new CatalogoTransaccion();
+        catalogoTransaccion = catalogoTransaccionServicio.getCatalogoTransaccionIngresoTipoNombre(tramiteSelected.getActividadRegistral(), tramiteSelected.getTipo());
+
+        Transaccion t = new Transaccion();
+        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, catalogoTransaccion.getCatalogoTransaccionId());
+
+        tramiteSelected.setTransaccionId(t);
+        tramiteSelected.setFechaRegistro(new Date());
+
+        if (onCreate) {
+            tramiteServicio.create(tramiteSelected);
+        } else if (onEdit) {
+            if (tramiteSelected.getTipo().equals("Certificaciones")) {
+                tramiteSelected.setNumeroRepertorio(null);
+            }
+            tramiteServicio.update(tramiteSelected);
+        }
+        tramiteServicio.actualizarTransaccionValor(remanenteMensualSelected.getRemanenteMensualId(), actividadRegistral);
+
+        tramiteSelected = new Tramite();
+        reloadTramite();
+
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
-        disableDelete = Boolean.TRUE;
-        btnGuardar = "";
-        disabledDeleteTotal();
-//        diasNoLaborablesServicio.diasFestivosAtivos();
     }
 
-    private void disabledDeleteTotal() {
-        disableDeleteTotal = tramiteList.size() == 0 ? Boolean.TRUE : Boolean.FALSE;
+    public void cancelarTramite() {
+        tramiteSelected = new Tramite();
+
+        reloadTramite();
+
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+    }
+
+    public void changeTipoTramite() {
+        renderedNumeroRepertorio = tramiteSelected.getTipo().equals("Inscripciones") ? Boolean.TRUE : Boolean.FALSE;
     }
 
     private String fechasLimiteMin(Integer anio, Integer mes) {
@@ -130,197 +290,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         } catch (ParseException ex) {
             Logger.getLogger(TramiteMercantilCtrl.class.getName()).log(Level.SEVERE, null, ex);
             return "0000-00-00";
-        }
-    }
-
-    public Boolean getDisableDelete() {
-        return disableDelete;
-    }
-
-    public void setDisableDelete(Boolean disableDelete) {
-        this.disableDelete = disableDelete;
-    }
-
-    public void nuevoTramite() {
-        renderEdition = Boolean.TRUE;
-        onCreate = Boolean.TRUE;
-        onEdit = Boolean.FALSE;
-        disableDelete = Boolean.TRUE;
-        tramiteSelected = new Tramite();
-        btnGuardar = "Guardar";
-        //tipoInstitucion = "Dirección Regional";
-        //institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
-
-    }
-
-    public void onRowSelectTramite() {
-        renderEdition = Boolean.TRUE;
-        onCreate = Boolean.FALSE;
-        onEdit = Boolean.TRUE;
-        disableDelete = Boolean.FALSE;
-        btnGuardar = "Actualizar";
-        tramiteSelected = tramiteSelectedList.get(0);
-        obtenerRemanenteMensual();
-    }
-
-    public void onRowSelectTramiteCheckbox() {
-        if (tramiteSelectedList.size() != 0) {
-            disableDelete = Boolean.FALSE;
-        } else {
-            disableDelete = Boolean.TRUE;
-        }
-    }
-
-    public void obtenerRemanenteMensual() {
-        remanenteMensualSelected = new RemanenteMensual();
-        remanenteMensualSelected = remanenteMensualServicio.getUltimoRemanenteMensual(institucionId, anio, mes);
-        if (remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
-                || remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
-            disableNuevoT = Boolean.FALSE;
-            disabledDeleteTotal(); 
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
-                disableNuevoT = Boolean.FALSE;
-                disabledDeleteTotal(); 
-            } else {
-                renderEdition = Boolean.FALSE;
-                disableDelete = Boolean.TRUE;
-                disableDeleteTotal = Boolean.TRUE;
-                disableNuevoT = Boolean.TRUE;
-            }
-        } else {
-            renderEdition = Boolean.FALSE;
-            disableDelete = Boolean.TRUE;
-            disableDeleteTotal = Boolean.TRUE;
-            disableNuevoT = Boolean.TRUE;
-        }
-    }
-
-    public void cancelar() {
-        tramiteList = new ArrayList<Tramite>();
-        tramiteSelected = new Tramite();
-        reloadTramite();
-        onEdit = Boolean.FALSE;
-        onCreate = Boolean.FALSE;
-        renderEdition = Boolean.FALSE;
-    }
-
-    public void guardar() {
-        tramiteSelected.setActividadRegistral(actividadRegistral);
-        if (onCreate) {
-            tramiteSelected.setFechaRegistro(new Date());
-            catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
-            for (CatalogoTransaccion ct : catalogoList) {
-                if (ct.getNombre().equals(tramiteSelected.getTipo())) {
-                    idCatalogoTransaccion = ct.getCatalogoTransaccionId();
-                }
-            }
-            Transaccion t = new Transaccion();
-            t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
-            tramiteSelected.setTransaccionId(t);
-            tramiteSelected.setFechaRegistro(new Date());
-            tramiteServicio.crearTramite(tramiteSelected);
-        } else if (onEdit) {
-            catalogoList = catalogoTransaccionServicio.getCatalogoTransaccionListTipo(actividadRegistral);
-            for (CatalogoTransaccion ct : catalogoList) {
-                if (ct.getNombre().equals(tramiteSelected.getTipo())) {
-                    idCatalogoTransaccion = ct.getCatalogoTransaccionId();
-                }
-            }
-            Transaccion t = new Transaccion();
-            t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
-            tramiteSelected.setTransaccionId(t);
-            tramiteSelected.setFechaRegistro(new Date());
-            if (tramiteSelected.getTipo().equals("Certificaciones")) {
-                tramiteSelected.setNumeroRepertorio(null);
-            }
-            tramiteServicio.editTramite(tramiteSelected);
-        }
-        actualizarTransaccionValores();
-        tramiteSelected = new Tramite();
-        reloadTramite();
-        actualizarTransaccionConteo();
-        onEdit = Boolean.FALSE;
-        onCreate = Boolean.FALSE;
-        renderEdition = Boolean.FALSE;
-        disableDelete = Boolean.TRUE;
-    }
-
-    public void actualizarTransaccionValores() {
-        List<Transaccion> transaccionList = new ArrayList<Transaccion>();
-        transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                tramiteSelected.getTransaccionId().getRemanenteMensualId().getMes(),
-                tramiteSelected.getTransaccionId().getRemanenteMensualId().getRemanenteMensualId());
-        for (Transaccion tl : transaccionList) {
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
-                tramiteServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 1);
-            }
-            if (tl.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
-                tramiteServicio.actualizarTransaccionValor(tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
-                        tl.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
-                        tl.getRemanenteMensualId().getMes(), 2);
-            }
-        }
-    }
-
-    public void actualizarTransaccionConteo() {
-        Integer cantidadTramites = 0;
-        for (Tramite trl : tramiteList) {
-            if (trl.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId().equals(1)) {
-                cantidadTramites++;
-            }
-            if (trl.getTransaccionId().getCatalogoTransaccionId().getCatalogoTransaccionId().equals(2)) {
-                cantidadTramites++;
-            }
-        }
-        Transaccion t = new Transaccion();
-        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, 4);
-        t.setValorTotal(new BigDecimal(cantidadTramites));
-        transaccionServicio.editTransaccion(t);
-    }
-
-    public void reloadTramite() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(fecha);
-        anio = calendar.get(Calendar.YEAR);
-        mes = calendar.get(Calendar.MONTH) + 1;
-        fechaMin = fechasLimiteMin(anio, mes);
-        fechaMax = fechasLimiteMax(anio, mes);
-        obtenerRemanenteMensual();
-        tramiteList = new ArrayList<Tramite>();
-        tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, anio, mes, "Propiedad", remanenteMensualSelected.getRemanenteMensualId());               
-        disableDelete = Boolean.TRUE;
-        renderEdition = Boolean.FALSE;
-    }
-
-    public void borrarTramiteSeleccionado() {
-        tramiteServicio.borrarTramites(tramiteSelectedList);
-        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 1);
-        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 2);
-        reloadTramite();
-        actualizarTransaccionConteo();
-        disableDelete = Boolean.TRUE;
-        disabledDeleteTotal();
-    }
-
-    public void borrarTodosTramites() {
-        tramiteServicio.borrarTramites(tramiteList);
-        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 1);
-        tramiteServicio.actualizarTransaccionValor(institucionId, anio, mes, 2);
-        reloadTramite();
-        actualizarTransaccionConteo();
-        disableDelete = Boolean.TRUE;
-        disabledDeleteTotal();
-    }
-
-    public void changeTipoTramite() {
-        if (tramiteSelected.getTipo().equals("Inscripciones")) {
-            renderedNumeroRepertorio = Boolean.TRUE;
-        } else {
-            renderedNumeroRepertorio = Boolean.FALSE;
         }
     }
 
@@ -363,7 +332,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                                             }
                                         }
                                         Transaccion t = new Transaccion();
-                                        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, anio, mes, idCatalogoTransaccion);
+                                        t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, idCatalogoTransaccion);
                                         tramiteNuevo.setTransaccionId(t);
                                     }
                                     break;
@@ -453,14 +422,9 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                 }
             }
             if (flagValidacionCampos) {
-                for (Tramite tramite : tramiteNuevoList) {
-                    tramiteSelected = tramite;
-                    tramiteServicio.crearTramite(tramite);
-                    actualizarTransaccionValores();
-                    tramiteSelected = new Tramite();
-                }
+                tramiteServicio.crearTramites(tramiteNuevoList);
+                tramiteServicio.actualizarTransaccionValor(remanenteMensualSelected.getRemanenteMensualId(), actividadRegistral);
                 reloadTramite();
-                actualizarTransaccionConteo();
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Se ha creado el bloque de trámites satisfactoriamente"));
             } else {
                 String celdas = "";
@@ -592,14 +556,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     }
 
     //Getters & Setters
-    public String getTituloMercantil() {
-        return tituloMercantil;
-    }
-
-    public void setTituloMercantil(String tituloMercantil) {
-        this.tituloMercantil = tituloMercantil;
-    }
-
     public String getTituloPropiedad() {
         return tituloPropiedad;
     }
@@ -608,84 +564,36 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         this.tituloPropiedad = tituloPropiedad;
     }
 
-    public List<Tramite> getTramiteList() {
-        return tramiteList;
+    public String getStrBtnGuardar() {
+        return strBtnGuardar;
     }
 
-    public void setTramiteList(List<Tramite> tramiteList) {
-        this.tramiteList = tramiteList;
+    public void setStrBtnGuardar(String strBtnGuardar) {
+        this.strBtnGuardar = strBtnGuardar;
     }
 
-    public Integer getAnio() {
-        return anio;
+    public Boolean getDisableNuevoTramite() {
+        return disableNuevoTramite;
     }
 
-    public void setAnio(Integer anio) {
-        this.anio = anio;
+    public void setDisableNuevoTramite(Boolean disableNuevoTramite) {
+        this.disableNuevoTramite = disableNuevoTramite;
     }
 
-    public Integer getMes() {
-        return mes;
+    public Boolean getDisableDeleteTramite() {
+        return disableDeleteTramite;
     }
 
-    public void setMes(Integer mes) {
-        this.mes = mes;
+    public void setDisableDeleteTramite(Boolean disableDeleteTramite) {
+        this.disableDeleteTramite = disableDeleteTramite;
     }
 
-    public Integer getInstitucionId() {
-        return institucionId;
+    public Boolean getDisableDeleteTramiteTodos() {
+        return disableDeleteTramiteTodos;
     }
 
-    public void setInstitucionId(Integer institucionId) {
-        this.institucionId = institucionId;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
-    public Tramite getTramiteSelected() {
-        return tramiteSelected;
-    }
-
-    public void setTramiteSelected(Tramite tramiteSelected) {
-        this.tramiteSelected = tramiteSelected;
-    }
-
-    public Integer getIdCatalogoTransaccion() {
-        return idCatalogoTransaccion;
-    }
-
-    public void setIdCatalogoTransaccion(Integer idCatalogoTransaccion) {
-        this.idCatalogoTransaccion = idCatalogoTransaccion;
-    }
-
-    public List<CatalogoTransaccion> getCatalogoList() {
-        return catalogoList;
-    }
-
-    public void setCatalogoList(List<CatalogoTransaccion> catalogoList) {
-        this.catalogoList = catalogoList;
-    }
-
-    public Boolean getOnEdit() {
-        return onEdit;
-    }
-
-    public void setOnEdit(Boolean onEdit) {
-        this.onEdit = onEdit;
-    }
-
-    public Boolean getOnCreate() {
-        return onCreate;
-    }
-
-    public void setOnCreate(Boolean onCreate) {
-        this.onCreate = onCreate;
+    public void setDisableDeleteTramiteTodos(Boolean disableDeleteTramiteTodos) {
+        this.disableDeleteTramiteTodos = disableDeleteTramiteTodos;
     }
 
     public Boolean getRenderEdition() {
@@ -696,28 +604,44 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         this.renderEdition = renderEdition;
     }
 
-    public String getBtnGuardar() {
-        return btnGuardar;
+    public Boolean getOnCreate() {
+        return onCreate;
     }
 
-    public void setBtnGuardar(String btnGuardar) {
-        this.btnGuardar = btnGuardar;
+    public void setOnCreate(Boolean onCreate) {
+        this.onCreate = onCreate;
     }
 
-    public List<RemanenteMensual> getRemanenteMensualList() {
-        return remanenteMensualList;
+    public Boolean getOnEdit() {
+        return onEdit;
     }
 
-    public void setRemanenteMensualList(List<RemanenteMensual> remanenteMensualList) {
-        this.remanenteMensualList = remanenteMensualList;
+    public void setOnEdit(Boolean onEdit) {
+        this.onEdit = onEdit;
     }
 
-    public Boolean getDisableNuevoT() {
-        return disableNuevoT;
+    public Boolean getRenderedNumeroRepertorio() {
+        return renderedNumeroRepertorio;
     }
 
-    public void setDisableNuevoT(Boolean disableNuevoT) {
-        this.disableNuevoT = disableNuevoT;
+    public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
+        this.renderedNumeroRepertorio = renderedNumeroRepertorio;
+    }
+
+    public Date getFechaSeleccionada() {
+        return fechaSeleccionada;
+    }
+
+    public void setFechaSeleccionada(Date fechaSeleccionada) {
+        this.fechaSeleccionada = fechaSeleccionada;
+    }
+
+    public Integer getMes() {
+        return mes;
+    }
+
+    public void setMes(Integer mes) {
+        this.mes = mes;
     }
 
     public RemanenteMensual getRemanenteMensualSelected() {
@@ -726,6 +650,14 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
 
     public void setRemanenteMensualSelected(RemanenteMensual remanenteMensualSelected) {
         this.remanenteMensualSelected = remanenteMensualSelected;
+    }
+
+    public Tramite getTramiteSelected() {
+        return tramiteSelected;
+    }
+
+    public void setTramiteSelected(Tramite tramiteSelected) {
+        this.tramiteSelected = tramiteSelected;
     }
 
     public String getFechaMin() {
@@ -744,14 +676,6 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         this.fechaMax = fechaMax;
     }
 
-    public Boolean getRenderedNumeroRepertorio() {
-        return renderedNumeroRepertorio;
-    }
-
-    public void setRenderedNumeroRepertorio(Boolean renderedNumeroRepertorio) {
-        this.renderedNumeroRepertorio = renderedNumeroRepertorio;
-    }
-
     public List<Tramite> getTramiteSelectedList() {
         return tramiteSelectedList;
     }
@@ -760,12 +684,28 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         this.tramiteSelectedList = tramiteSelectedList;
     }
 
-    public Boolean getDisableDeleteTotal() {
-        return disableDeleteTotal;
+    public List<RemanenteMensual> getRemanenteMensualList() {
+        return remanenteMensualList;
     }
 
-    public void setDisableDeleteTotal(Boolean disableDeleteTotal) {
-        this.disableDeleteTotal = disableDeleteTotal;
+    public void setRemanenteMensualList(List<RemanenteMensual> remanenteMensualList) {
+        this.remanenteMensualList = remanenteMensualList;
+    }
+
+    public List<Tramite> getTramiteList() {
+        return tramiteList;
+    }
+
+    public void setTramiteList(List<Tramite> tramiteList) {
+        this.tramiteList = tramiteList;
+    }
+
+    public String getUltimoEstado() {
+        return ultimoEstado;
+    }
+
+    public void setUltimoEstado(String ultimoEstado) {
+        this.ultimoEstado = ultimoEstado;
     }
 
 }

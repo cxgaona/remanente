@@ -17,11 +17,7 @@ public class TransaccionDaoEjb extends RemanenteGenericDao<Transaccion, Integer>
 
     @Override
     public Transaccion getTransaccionByInstitucionFechaTipo(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
-        Query query = em.createQuery("SELECT t FROM Transaccion t WHERE "
-                + "t.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
-                + "t.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
-                + "t.remanenteMensualId.mes=:mes AND "
-                + "t.catalogoTransaccionId.catalogoTransaccionId=:tipo");
+        Query query = em.createQuery("SELECT t FROM Transaccion t WHERE t.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND t.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND t.remanenteMensualId.mes=:mes AND t.catalogoTransaccionId.catalogoTransaccionId=:tipo ORDER BY t.transaccionId ASC");
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);
         query.setParameter("mes", mes);
@@ -31,7 +27,7 @@ public class TransaccionDaoEjb extends RemanenteGenericDao<Transaccion, Integer>
         List<Transaccion> transaccionListActiva = new ArrayList<Transaccion>();
         for (Transaccion transaccion : transaccionList) {
             if (!transaccion.getRemanenteMensualId().getEstadoRemanenteMensualList().get(transaccion.getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioAprobado")) {
-                transaccionListActiva.add(transaccion);                
+                transaccionListActiva.add(transaccion);
             }
         }
         for (Transaccion transaccion : transaccionListActiva) {

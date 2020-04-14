@@ -282,7 +282,8 @@
                                             <f:convertDateTime pattern="yyyy-MM-dd" />
                                         </h:outputText>
                                     </f:facet>
-                                    <f:facet name="input"><p:calendar id="fecha" value="#{facturaPagada.fecha}" locale="es" pattern="yyyy-MM-dd" mindate="#{egresosCtrl.fechaMin}" maxdate="#{egresosCtrl.fechaMax}" readonlyInput="true"/>
+                                    <f:facet name="input">
+                                        <p:calendar id="fecha" value="#{facturaPagada.fecha}" locale="es" pattern="yyyy-MM-dd" mindate="#{egresosCtrl.fechaMin}" maxdate="#{egresosCtrl.fechaMax}" readonlyInput="true"/>
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
