@@ -10,7 +10,6 @@ import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
-import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
 import ec.gob.dinardap.remanente.dto.RemanenteMensualDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
