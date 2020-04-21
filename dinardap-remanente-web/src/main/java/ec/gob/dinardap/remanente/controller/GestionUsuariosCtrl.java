@@ -43,7 +43,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Boolean onEdit;
     private Boolean onCreate;
     private Boolean renderEdition;
-
+    
     private Boolean disabledRegistrador;
     private Boolean disabledVerificador;
     private Boolean disabledValidador;
@@ -57,47 +57,47 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Boolean restablecer;
     private String tituloPagina;
     private Usuario usuarioSelected;
-
+    
     private String nombre;
     private String btnGuardar;
     private String tipoInstitucion;
-
+    
     @EJB
     private UsuarioServicio usuarioServicio;
-
+    
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
-
+    
     @EJB
     private PreguntaServicio preguntaServicio;
-
+    
     @EJB
     private RespuestaServicio respuestaServicio;
-
+    
     @PostConstruct
     protected void init() {
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
-
+        
         disabledRegistrador = Boolean.TRUE;
         disabledVerificador = Boolean.TRUE;
         disabledValidador = Boolean.TRUE;
         disabledAdministrador = Boolean.TRUE;
         disabledRestablecer = Boolean.TRUE;
-
+        
         restablecer = Boolean.FALSE;
-
+        
         tituloPagina = "Gestión de Usuarios";
         nombre = "";
         btnGuardar = "";
         tipoInstitucion = "";
-
+        
         institucionRequeridaList = new ArrayList<InstitucionRequerida>();
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
     }
-
+    
     public void nuevoUsuario() {
         renderEdition = Boolean.TRUE;
         onCreate = Boolean.TRUE;
@@ -108,7 +108,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledAdministrador = Boolean.TRUE;
         disabledRestablecer = Boolean.TRUE;
         restablecer = Boolean.TRUE;
-
+        
         institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
         usuarioSelected = new Usuario();
         usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
@@ -116,21 +116,21 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         usuarioSelected.setValidador(Boolean.FALSE);
         usuarioSelected.setRegistrador(Boolean.FALSE);
         usuarioSelected.setVerificador(Boolean.FALSE);
-
+        
         btnGuardar = "Guardar";
         tipoInstitucion = "Dirección Nacional";
-
+        
     }
-
+    
     public void cambioRolReg() {
         if (usuarioSelected.getRegistrador()) {
             usuarioSelected.setVerificador(Boolean.FALSE);
         } else {
             usuarioSelected.setVerificador(Boolean.TRUE);
         }
-
+        
     }
-
+    
     public void cambioRolVer() {
         if (usuarioSelected.getVerificador()) {
             usuarioSelected.setRegistrador(Boolean.FALSE);
@@ -138,7 +138,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             usuarioSelected.setRegistrador(Boolean.TRUE);
         }
     }
-
+    
     public void onRowSelectUsuario() {
         renderEdition = Boolean.TRUE;
         onCreate = Boolean.FALSE;
@@ -157,7 +157,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             disabledVerificador = Boolean.FALSE;
             disabledValidador = Boolean.TRUE;
             disabledAdministrador = Boolean.TRUE;
-
+            
         } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
             tipoInstitucion = "GAD";
             institucionRequeridaList = institucionRequeridaServicio.getGADList();
@@ -174,7 +174,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             disabledAdministrador = Boolean.TRUE;
         }
     }
-
+    
     public void cancelar() {
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioSelected = new Usuario();
@@ -183,7 +183,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         onCreate = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
     }
-
+    
     public void guardar() {
         String contraseña = "";
         Usuario userExistente = new Usuario();
@@ -196,6 +196,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             if (onCreate) {
                 if (userExistente.getUsuarioId() == null) {
                     usuarioSelected.setEstado("A");
+                    usuarioSelected.setSuperAdministrador(Boolean.FALSE);
                     usuarioServicio.createUsuario(usuarioSelected);
                     preguntaList = new ArrayList<Pregunta>();
                     preguntaList = preguntaServicio.getPreguntasActivas();
@@ -214,7 +215,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     usuarioActivoList = new ArrayList<Usuario>();
                     usuarioSelected = new Usuario();
                     usuarioActivoList = usuarioServicio.getUsuariosActivos();
-
+                    
                     onEdit = Boolean.FALSE;
                     onCreate = Boolean.FALSE;
                     renderEdition = Boolean.FALSE;
@@ -229,11 +230,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                         correoRestablecerContraseña(contraseña);
                         this.addInfoMessage("La contraseña actualizada se ha enviado a " + usuarioSelected.getEmail(), "");
                     }
-
+                    
                     usuarioActivoList = new ArrayList<Usuario>();
                     usuarioSelected = new Usuario();
                     usuarioActivoList = usuarioServicio.getUsuariosActivos();
-
+                    
                     onEdit = Boolean.FALSE;
                     onCreate = Boolean.FALSE;
                     renderEdition = Boolean.FALSE;
@@ -245,7 +246,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             this.addErrorMessage("1", "Debe ingresar un correo válido", "");
         }
     }
-
+    
     public void eliminarUsuario() {
         usuarioSelected.setEstado("I");
         usuarioServicio.editUsuario(usuarioSelected);
@@ -253,19 +254,19 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         usuarioSelected = new Usuario();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
     }
-
+    
     public void crearUsuariosBloque(FileUploadEvent event) {
         try {
             UploadedFile uploadedFile = event.getFile();
             InputStream in = uploadedFile.getInputstream();
             XSSFWorkbook worbook = new XSSFWorkbook(in);
             XSSFSheet sheet = worbook.getSheetAt(0);
-
+            
             XSSFRow row;
             XSSFCell cell;
-
+            
             List<Usuario> usuarioNuevoList = new ArrayList<Usuario>();
-
+            
             for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
                 row = sheet.getRow(r);
                 Usuario usuarioNuevo = new Usuario();
@@ -349,6 +350,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                         }
                     }
                     usuarioNuevo.setEstado("A");
+                    usuarioNuevo.setSuperAdministrador(Boolean.FALSE);
                     Boolean flagUsuarioRepetido = Boolean.FALSE;
                     for (Usuario u : usuarioNuevoList) {
                         if (usuarioNuevo.getUsuario().equals(u.getUsuario())) {
@@ -364,7 +366,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             Boolean errorUsuarios = Boolean.FALSE;
             String mensajeError = "";
             for (Usuario u : usuarioNuevoList) {
-
+                
                 if (usuarioServicio.getUsuarioByUsername(u.getUsuario()).getUsuarioId() != null) {
                     errorUsuarios = Boolean.TRUE;
                     mensajeError = "El usuario: " + u.getUsuario() + " ya se encuentra registrado, favor verificar su archivo de carga";
@@ -387,7 +389,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     break;
                 }
             }
-
+            
             if (errorUsuarios) {
                 this.addErrorMessage("0", mensajeError, "No funcionó");
             } else {
@@ -398,14 +400,14 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 usuarioActivoList = usuarioServicio.getUsuariosActivos();
                 this.addInfoMessage("Se ha creado el bloque de usuarios satisfactoriamente", "Info");
             }
-
+            
         } catch (IOException ex) {
             Logger.getLogger(GestionUsuariosCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
         }
     }
-
+    
     private void correoRestablecerContraseña(String contraseña) {
         Email email = new Email();
         try {
@@ -417,7 +419,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public void seleccionarTipoInstitucion() {
         InstitucionRequerida ir = new InstitucionRequerida();
         usuarioSelected.setInstitucionId(ir);
@@ -428,7 +430,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(false);
             usuarioSelected.setRegistrador(true);
-
+            
             disabledRegistrador = Boolean.FALSE;
             disabledValidador = Boolean.TRUE;
             disabledVerificador = Boolean.FALSE;
@@ -440,7 +442,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(true);
             usuarioSelected.setRegistrador(false);
-
+            
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
@@ -452,7 +454,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(false);
             usuarioSelected.setRegistrador(false);
-
+            
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
@@ -465,14 +467,14 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             usuarioSelected.setAdministrador(Boolean.TRUE);
             usuarioSelected.setVerificador(Boolean.FALSE);
             usuarioSelected.setRegistrador(Boolean.FALSE);
-
+            
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
             disabledAdministrador = Boolean.TRUE;
         }
     }
-
+    
     public List<InstitucionRequerida> completeNombreInstitucion(String query) {
         List<InstitucionRequerida> filteredInstituciones = new ArrayList<InstitucionRequerida>();
         for (InstitucionRequerida ir : institucionRequeridaList) {
@@ -488,111 +490,111 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public Boolean getRenderEdition() {
         return renderEdition;
     }
-
+    
     public String getTituloPagina() {
         return tituloPagina;
     }
-
+    
     public void setTituloPagina(String tituloPagina) {
         this.tituloPagina = tituloPagina;
     }
-
+    
     public List<Usuario> getUsuarioActivoList() {
         return usuarioActivoList;
     }
-
+    
     public void setUsuarioActivoList(List<Usuario> usuarioActivoList) {
         this.usuarioActivoList = usuarioActivoList;
     }
-
+    
     public Usuario getUsuarioSelected() {
         return usuarioSelected;
     }
-
+    
     public void setUsuarioSelected(Usuario usuarioSelected) {
         this.usuarioSelected = usuarioSelected;
     }
-
+    
     public String getBtnGuardar() {
         return btnGuardar;
     }
-
+    
     public void setBtnGuardar(String btnGuardar) {
         this.btnGuardar = btnGuardar;
     }
-
+    
     public String getTipoInstitucion() {
         return tipoInstitucion;
     }
-
+    
     public void setTipoInstitucion(String tipoInstitucion) {
         this.tipoInstitucion = tipoInstitucion;
     }
-
+    
     public List<InstitucionRequerida> getInstitucionRequeridaList() {
         return institucionRequeridaList;
     }
-
+    
     public void setInstitucionRequeridaList(List<InstitucionRequerida> institucionRequeridaList) {
         this.institucionRequeridaList = institucionRequeridaList;
     }
-
+    
     public String getNombre() {
         return nombre;
     }
-
+    
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
+    
     public Boolean getOnCreate() {
         return onCreate;
     }
-
+    
     public Boolean getDisabledRegistrador() {
         return disabledRegistrador;
     }
-
+    
     public void setDisabledRegistrador(Boolean disabledRegistrador) {
         this.disabledRegistrador = disabledRegistrador;
     }
-
+    
     public Boolean getDisabledVerificador() {
         return disabledVerificador;
     }
-
+    
     public void setDisabledVerificador(Boolean disabledVerificador) {
         this.disabledVerificador = disabledVerificador;
     }
-
+    
     public Boolean getDisabledValidador() {
         return disabledValidador;
     }
-
+    
     public void setDisabledValidador(Boolean disabledValidador) {
         this.disabledValidador = disabledValidador;
     }
-
+    
     public Boolean getDisabledAdministrador() {
         return disabledAdministrador;
     }
-
+    
     public void setDisabledAdministrador(Boolean disabledAdministrador) {
         this.disabledAdministrador = disabledAdministrador;
     }
-
+    
     public Boolean getDisabledRestablecer() {
         return disabledRestablecer;
     }
-
+    
     public void setDisabledRestablecer(Boolean disabledRestablecer) {
         this.disabledRestablecer = disabledRestablecer;
     }
-
+    
     public Boolean getRestablecer() {
         return restablecer;
     }
-
+    
     public void setRestablecer(Boolean restablecer) {
         this.restablecer = restablecer;
     }
