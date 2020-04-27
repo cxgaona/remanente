@@ -69,6 +69,11 @@ public class RemanenteMensual implements Serializable {
     @Column(name = "informe_aprobacion_url", length = 2147483647)
     private String informeAprobacionUrl;
 
+    //Prórroga
+    @ManyToOne
+    @JoinColumn(name = "prorroga_remanente_mensual_id", referencedColumnName = "prorroga_remanente_mensual_id")
+    private ProrrogaRemanenteMensual prorrogaRemanenteMensualId;
+
     //Bandeja//
     @OneToMany(mappedBy = "remanenteMensualId")
     private List<Bandeja> bandejaList;
@@ -230,6 +235,14 @@ public class RemanenteMensual implements Serializable {
     @Override
     public String toString() {
         return "RemanenteMensual{" + "remanenteMensualId=" + remanenteMensualId + ", mes=" + mes + ", fechaRegistro=" + fechaRegistro + ", total=" + total + ", comentarios=" + comentarios + ", solicitudCambioUrl=" + solicitudCambioUrl + ", informeAprobacionUrl=" + informeAprobacionUrl + ", bandejaList=" + bandejaList + ", remanenteCuatrimestral=" + remanenteCuatrimestral + ", remanenteMensualList=" + remanenteMensualList + ", remanenteMensualOrigenId=" + remanenteMensualOrigenId + ", estadoRemanenteMensualList=" + estadoRemanenteMensualList + ", transaccionList=" + transaccionList + '}';
+    }
+
+    public ProrrogaRemanenteMensual getProrrogaRemanenteMensualId() {
+        return prorrogaRemanenteMensualId;
+    }
+
+    public void setProrrogaRemanenteMensualId(ProrrogaRemanenteMensual prorrogaRemanenteMensualId) {
+        this.prorrogaRemanenteMensualId = prorrogaRemanenteMensualId;
     }
 
 }
