@@ -1,12 +1,15 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.dto.ProrrogaRemanenteMensualDTO;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
+import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.ProrrogaRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
+import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.ProrrogaRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TramiteServicio;
@@ -46,14 +49,19 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     //Declaración de variables
     //Variables de control visual
     //Variables de Negocio
-    private ProrrogaRemanenteMensual prorrogaRemanenteMensualSelected;
+    private ProrrogaRemanenteMensualDTO prorrogaRemanenteMensualSelected;
+    private InstitucionRequerida registroMixto;
 
     //Listas
-    private List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualActivasList;
+    private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList;
+    private List<InstitucionRequerida> registrosMixtosList;
 
     //EJB's
     @EJB
     private ProrrogaRemanenteMensualServicio prorrogaRemanenteMensualServicio;
+
+    @EJB
+    private InstitucionRequeridaServicio institucionRequeridaServicio;
 
 //Desde Aqui
     //Declaración de variables
@@ -104,8 +112,13 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 //    private DiasNoLaborablesServicio diasNoLaborablesServicio;
     @PostConstruct
     protected void init() {
-        prorrogaRemanenteMensualActivasList = new ArrayList<ProrrogaRemanenteMensual>();
+        prorrogaRemanenteMensualActivasList = new ArrayList<ProrrogaRemanenteMensualDTO>();
         prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualServicio.getListProrrogaRemanenteMensualEstado("A");
+
+        registrosMixtosList = new ArrayList<InstitucionRequerida>();
+        registrosMixtosList = institucionRequeridaServicio.getRegistroMixtoList();
+
+        registroMixto = new InstitucionRequerida();
 //        tituloPropiedad = "Trámite Propiedad";
 //        actividadRegistral = "Propiedad";
 //        ultimoEstado = "";
@@ -134,20 +147,40 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 //        obtenerRemanenteMensual();
     }
 
-    public List<ProrrogaRemanenteMensual> getProrrogaRemanenteMensualActivasList() {
-        return prorrogaRemanenteMensualActivasList;
+    public List<InstitucionRequerida> completeNombreRegistroMixto(String query) {
+        List<InstitucionRequerida> filteredInstituciones = new ArrayList<InstitucionRequerida>();
+        for (InstitucionRequerida ir : registrosMixtosList) {
+            if (ir.getNombre().toLowerCase().contains(query)
+                    || ir.getNombre().toUpperCase().contains(query)) {
+                filteredInstituciones.add(ir);
+            }
+        }
+        return filteredInstituciones;
     }
 
-    public void setProrrogaRemanenteMensualActivasList(List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualActivasList) {
-        this.prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualActivasList;
-    }
-
-    public ProrrogaRemanenteMensual getProrrogaRemanenteMensualSelected() {
+    //Getters & Setters
+    public ProrrogaRemanenteMensualDTO getProrrogaRemanenteMensualSelected() {
         return prorrogaRemanenteMensualSelected;
     }
 
-    public void setProrrogaRemanenteMensualSelected(ProrrogaRemanenteMensual prorrogaRemanenteMensualSelected) {
+    public void setProrrogaRemanenteMensualSelected(ProrrogaRemanenteMensualDTO prorrogaRemanenteMensualSelected) {
         this.prorrogaRemanenteMensualSelected = prorrogaRemanenteMensualSelected;
+    }
+
+    public List<ProrrogaRemanenteMensualDTO> getProrrogaRemanenteMensualActivasList() {
+        return prorrogaRemanenteMensualActivasList;
+    }
+
+    public void setProrrogaRemanenteMensualActivasList(List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList) {
+        this.prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualActivasList;
+    }
+
+    public InstitucionRequerida getRegistroMixto() {
+        return registroMixto;
+    }
+
+    public void setRegistroMixto(InstitucionRequerida registroMixto) {
+        this.registroMixto = registroMixto;
     }
 
 }

@@ -19,151 +19,94 @@
                         <p:dataTable id="prorrogaTbl"
                                      value="#{prorrogaMensualCtrl.prorrogaRemanenteMensualActivasList}" 
                                      var="prorroga"
-                                     rowKey="#{prorroga.prorrogaRemanenteMensualId}"
+                                     rowKey="#{prorroga.prorrogaRemanenteMensual.prorrogaRemanenteMensualId}"
                                      selection="#{prorrogaMensualCtrl.prorrogaRemanenteMensualSelected}"
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25,50"
                                      tableStyle="width:auto">
 
-                            <p:ajax event="rowSelectCheckbox" listener="#{tramitePropiedadCtrl.onRowSelectTramiteCheckbox}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
+<!--                            <p:ajax event="rowSelectCheckbox" listener="#{tramitePropiedadCtrl.onRowSelectTramiteCheckbox}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                             <p:ajax event="rowUnselectCheckbox" listener="#{tramitePropiedadCtrl.onRowSelectTramiteCheckbox}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
                             <p:ajax event="toggleSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramiteCheckbox}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
-                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
+                            <p:ajax event="rowSelect" listener="#{tramitePropiedadCtrl.onRowSelectTramite}" update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>-->
                             <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
-                            <p:column headerText="Tipo" sortBy="#{tramite.tipo}" width="10%">
-                                <h:outputText value="#{tramite.tipo}" />
+                            <p:column headerText="Institución" 
+                                      sortBy="#{prorroga.institucionNombre}" 
+                                      filterBy="#{prorroga.institucionNombre}" filterMatchMode="contains" 
+                                      width="40%" style="text-align: center">
+                                <h:outputText value="#{prorroga.institucionNombre}" />
                             </p:column>
-                            <p:column headerText="Número Inscripción/Certificación" sortBy="#{tramite.numero}" filterBy="#{tramite.numero}" filterMatchMode="contains" width="10%" style="text-align: right">
-                                <h:outputText value="#{tramite.numero}" />
+                            <p:column headerText="Mes de Prórroga" 
+                                      sortBy="#{prorroga.mesStr} / #{prorroga.año}" 
+                                      filterBy="#{prorroga.mesStr} / #{prorroga.año}" filterMatchMode="contains" 
+                                      width="10%" style="text-align: right">
+                                <h:outputText value="#{prorroga.mesStr} / #{prorroga.año}" />
                             </p:column>
-                            <p:column headerText="Número Repertorio" sortBy="#{tramite.numeroRepertorio}" filterBy="#{tramite.numeroRepertorio}" filterMatchMode="contains" width="10%" style="text-align: right">
-                                <h:outputText value="#{tramite.numeroRepertorio}" />
+                            <p:column headerText="Comentario Apertura" 
+                                      sortBy="#{prorroga.prorrogaRemanenteMensual.comentarioApertura}" 
+                                      filterBy="#{prorroga.prorrogaRemanenteMensual.comentarioApertura}" filterMatchMode="contains" 
+                                      width="20%" style="text-align: left">
+                                <h:outputText value="#{prorroga.prorrogaRemanenteMensual.comentarioApertura}" />
                             </p:column>
-                            <p:column headerText="Fecha" sortBy="#{tramite.fecha}" width="10%" style="text-align: center">
-                                <h:outputText value="#{tramite.fecha}" />
+                            <p:column headerText="Comentario Cierre" 
+                                      sortBy="#{prorroga.prorrogaRemanenteMensual.comentarioCierre}" 
+                                      filterBy="#{prorroga.prorrogaRemanenteMensual.comentarioCierre}" filterMatchMode="contains" 
+                                      width="20%" style="text-align: left">
+                                <h:outputText value="#{prorroga.prorrogaRemanenteMensual.comentarioCierre}" />
                             </p:column>
-                            <p:column headerText="Número de Comprobante de Pago" sortBy="#{tramite.numeroComprobantePago}" filterBy="#{tramite.numeroComprobantePago}" filterMatchMode="contains" width="10%" style="text-align: right">
-                                <h:outputText value="#{tramite.numeroComprobantePago}" />
-                            </p:column>                            
-                            <p:column headerText="Valor" sortBy="#{tramite.valor}" width="10%" style="text-align: right">
-                                <h:outputText value="#{tramite.valor}" >
-                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="10" maxFractionDigits="2"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Acto" sortBy="#{tramite.acto}" filterBy="#{tramite.acto}" filterMatchMode="contains" width="40%">
-                                <h:outputText value="#{tramite.acto}" />
+                            <p:column headerText="Estado" sortBy="#{prorroga.prorrogaRemanenteMensual.estado}" 
+                                      width="10%" style="text-align: center">
+                                <h:outputText value="#{prorroga.prorrogaRemanenteMensual.estado}" />
                             </p:column>
                         </p:dataTable>                          
                     </h:panelGrid>
 
-                    <!--                    <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
-                                            <p:commandButton value="Nuevo Trámite"
-                                                             style="margin-right:20px; width: 100%" 
-                                                             action="#{tramitePropiedadCtrl.nuevoRegistroTramite}"
-                                                             icon="fa fa-fw fa-plus-square"
-                                                             id="btnNuevoTramite"
-                                                             disabled="#{tramitePropiedadCtrl.disableNuevoTramite}"
-                                                             update="formTramiteSelected, formTramite:btnBorrarTramite, formTramite:btnNuevoTramite"/>
-                                            <p:commandButton value="Borrar Trámites seleccionados"
-                                                             style="margin-right:20px; width: 100%"
-                                                             action="#{tramitePropiedadCtrl.borrarTramiteSeleccionado}"
-                                                             icon="fa fa-fw fa-trash"
-                                                             id="btnBorrarTramite"
-                                                             disabled="#{tramitePropiedadCtrl.disableDeleteTramite}"
-                                                             update="formTramiteSelected, formTramite">
-                                                <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar los trámites seleccionados?" icon="fa fa-fw fa-warning" />
-                                            </p:commandButton>
-                                            <p:commandButton value="Borrar todos los Trámites"
-                                                             style="margin-right:20px; width: 100%"
-                                                             action="#{tramitePropiedadCtrl.borrarTodosTramites}"
-                                                             icon="fa fa-fw fa-trash"
-                                                             id="btnBorrarTodoTramite"                                         
-                                                             disabled="#{tramitePropiedadCtrl.disableDeleteTramiteTodos}"
-                                                             update="formTramiteSelected, formTramite">
-                                                <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar todos los trámites?" icon="fa fa-fw fa-warning" />
-                                            </p:commandButton>
-                                        </b:panelGrid>
-                                        <b:panelGrid id="cargaTramitesPnl" colSpans="4,8" style="width: 50%; margin: 4px 5px;">
-                                            <p:outputLabel value="Carga de trámites en bloque: " />
-                                            <p:fileUpload                                    
-                                                id="cargaTramites"
-                                                messageTemplate="Tipo de Archivo no Válido"
-                                                style="width:100%"
-                                                mode="advanced"
-                                                dragDropSupport="true"
-                                                sizeLimit="90000000"
-                                                allowTypes="/(\.|\/)(xlsx)$/"
-                                                label=""
-                                                uploadLabel=""                            
-                                                disabled="#{tramitePropiedadCtrl.disableNuevoTramite}"
-                                                cancelLabel=""                                
-                                                fileUploadListener="#{tramitePropiedadCtrl.crearTramitesBloque}"
-                                                update="formTramite"/>
-                                        </b:panelGrid>-->
-                </b:panel>
-                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
-                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
-                </p:confirmDialog>
+                    <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
+                        <p:commandButton value="#{etiquetas['nombreBtn.generarProrroga']}"
+                                         style="margin-right:20px; width: 100%"
+                                         icon="fa fa-fw fa-plus-square"
+                                         id="btnNuevaProrroga"
+                                         disabled="false"/>
+                        <p:commandButton value="#{etiquetas['nombreBtn.cerrarProrrogas']}"
+                                         style="margin-right:20px; width: 100%"                                         
+                                         icon="fa fa-fw fa-close"
+                                         id="btnCerrarProrrogas"
+                                         disabled="false">                  
+                        </p:commandButton>
+                        <p:commandButton value="#{etiquetas['nombreBtn.cerrarTodasProrrogas']}"
+                                         style="margin-right:20px; width: 100%"
+                                         icon="fa fa-fw fa-close"
+                                         id="btnCerrarTodasProrrogas"
+                                         disabled="false">                            
+                        </p:commandButton>
+                    </b:panelGrid>                    
+                </b:panel>                
             </h:form>
 
-            <!--            <h:form id="formTramiteSelected" >
-                            <b:panel style="width: 50%" rendered="#{tramitePropiedadCtrl.renderEdition}">                    
-                                <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
-                                    <p:outputLabel for="tipo" value="Tipo:" />
-                                    <p:selectOneButton id="tipo" 
-                                                       value="#{tramitePropiedadCtrl.tramiteSelected.tipo}"
-                                                       style="width: 70%;"
-                                                       required="true">
-                                        <p:ajax event="change" listener="#{tramitePropiedadCtrl.changeTipoTramite}" update="formTramiteSelected:numeroRepertorio, formTramiteSelected:numeroRepertorioLbl"/>
-                                        <f:selectItem itemLabel="Inscripciones" itemValue="Inscripciones"  />
-                                        <f:selectItem itemLabel="Certificaciones" itemValue="Certificaciones" />
-                                    </p:selectOneButton>                        
-            
-                                    <p:outputLabel for="numero" value="#{tramitePropiedadCtrl.tramiteSelected.tipo eq 'Inscripciones'?'Número (Inscripción):':
-                                                 tramitePropiedadCtrl.tramiteSelected.tipo eq 'Certificaciones'?'Número (Certificación):':'Número:'}">
-                <p:autoUpdate />
-            </p:outputLabel>
-            <p:inputText id="numero" value="#{tramitePropiedadCtrl.tramiteSelected.numero}" maxlength="10" style="width: 90%" required="true" >
-                <p:keyFilter regEx="/[\d]/"/>  
-            </p:inputText>                        
-
-            <p:outputLabel id="numeroRepertorioLbl" for="numeroRepertorio" value="Número Repertorio:" />
-            <p:inputText id="numeroRepertorio" value="#{tramitePropiedadCtrl.tramiteSelected.numeroRepertorio}" maxlength="10" style="width: 90%" required="#{tramitePropiedadCtrl.renderedNumeroRepertorio}"  disabled="#{!tramitePropiedadCtrl.renderedNumeroRepertorio}">
-                <p:keyFilter regEx="/[\d]/"/>  
-            </p:inputText>                        
-
-            <p:outputLabel for="fecha" value="Fecha:" />
-            <p:datePicker id="fecha" 
-                          value="#{tramitePropiedadCtrl.tramiteSelected.fecha}" 
-                          locale="es" 
-                          monthNavigator="true" 
-                          pattern="yyyy-MM-dd" 
-                          style="width: 90%" 
-                          mindate="#{tramitePropiedadCtrl.fechaMin}" 
-                          maxdate="#{tramitePropiedadCtrl.fechaMax}"
-                          readonlyInput="true"
-                          required="true"/>
-
-            <p:outputLabel for="comprobante" value="No. Comprobante de Pago:" />
-            <p:inputText id="comprobante" value="#{tramitePropiedadCtrl.tramiteSelected.numeroComprobantePago}" maxlength="15" style="width: 90%" required="true">
-                <p:keyFilter regEx="/[\d]/"/>  
-            </p:inputText>                                  
-
-            <p:outputLabel for="valor" value="Valor:" />
-            <p:inputNumber id="valor" value="#{tramitePropiedadCtrl.tramiteSelected.valor}" style="width: 90%" symbol="$" emptyValue="sign" required="true"/>
-
-            <p:outputLabel for="acto" value="Acto:" />
-            <p:inputTextarea id="acto" rows="3" cols="40" maxlength="300" autoResize="false" value="#{tramitePropiedadCtrl.tramiteSelected.acto}" required="true"/>
-
-        </b:panelGrid>    
-        <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-            <p:commandButton value="#{tramitePropiedadCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tramitePropiedadCtrl.guardarTramite}" update=":formTramiteSelected, :formTramite"/>
-            <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{tramitePropiedadCtrl.cancelarTramite}" update=":formTramiteSelected, :formTramite"/>
-        </b:panelGrid>
-    </b:panel>
-</h:form>-->
+            <h:form id="formNuevaProrroga" >
+                <b:panel style="width: 50%" rendered="true">
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="institucion" value="#{etiquetas['nombreLbl.institucion']}:" />
+                        <p:autoComplete id="institucion"
+                                        value="#{prorrogaMensualCtrl.registroMixto}"
+                                        title="#{prorrogaMensualCtrl.registroMixto.nombre}"
+                                        itemLabel="#{registroMixto.nombre}"
+                                        itemValue="#{registroMixto}"
+                                        completeMethod="#{prorrogaMensualCtrl.completeNombreRegistroMixto}"
+                                        converter="#{institucionConverter}"
+                                        var="registroMixto"
+                                        style="width: 90%" 
+                                        inputStyle="width: 100%"
+                                        maxResults="20"
+                                        required="true"/>
+                    </b:panelGrid>    
+                    <!--                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                                            <p:commandButton value="#{tramitePropiedadCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tramitePropiedadCtrl.guardarTramite}" update=":formTramiteSelected, :formTramite"/>
+                                            <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{tramitePropiedadCtrl.cancelarTramite}" update=":formTramiteSelected, :formTramite"/>
+                                        </b:panelGrid>-->
+                </b:panel>
+            </h:form>
         </ui:define>
     </ui:composition>
 </html>
