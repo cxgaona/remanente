@@ -653,7 +653,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                                             || dato.equals("Bienes de Larga Duración")) {
                                         facturaPagadaNueva.setTipo(dato);
                                         CatalogoTransaccion catalogoTransaccion = new CatalogoTransaccion();
-                                        catalogoTransaccion = catalogoTransaccionServicio.getCatalogoTransaccionEgresoNombre(facturaPagadaSelected.getTipo());
+                                        catalogoTransaccion = catalogoTransaccionServicio.getCatalogoTransaccionEgresoNombre(facturaPagadaNueva.getTipo());
                                         Transaccion t = new Transaccion();
                                         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, catalogoTransaccion.getCatalogoTransaccionId());
                                         facturaPagadaNueva.setTransaccionId(t);

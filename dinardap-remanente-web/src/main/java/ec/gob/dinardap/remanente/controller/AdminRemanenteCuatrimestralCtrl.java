@@ -13,6 +13,7 @@ import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
+import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
 import ec.gob.dinardap.util.TipoArchivo;
@@ -77,6 +78,8 @@ public class AdminRemanenteCuatrimestralCtrl extends BaseCtrl implements Seriali
     private UsuarioServicio usuarioServicio;
     @EJB
     private ParametroServicio parametroServicio;
+    @EJB
+    private RemanenteMensualServicio remanenteMensualServicio;
 
     @PostConstruct
     protected void init() {
@@ -144,18 +147,49 @@ public class AdminRemanenteCuatrimestralCtrl extends BaseCtrl implements Seriali
     }
 
     public void onRowSelectRemanenteCuatrimestral() {
-        List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
         transaccionRegistrosList = new ArrayList<Row>();
         transaccionEgresosList = new ArrayList<Row>();
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
+
+        List<RemanenteMensual> rms = new ArrayList<RemanenteMensual>();
+        List<Integer> mesesCuatrimestreList = new ArrayList<Integer>();
+        switch (remanenteCuatrimestralSelected.getCuatrimestre()) {
+            case 1:
+                mesesCuatrimestreList.add(1);
+                mesesCuatrimestreList.add(2);
+                mesesCuatrimestreList.add(3);
+                mesesCuatrimestreList.add(4);
+                break;
+            case 2:
+                mesesCuatrimestreList.add(5);
+                mesesCuatrimestreList.add(6);
+                mesesCuatrimestreList.add(7);
+                mesesCuatrimestreList.add(8);
+                break;
+            case 3:
+                mesesCuatrimestreList.add(9);
+                mesesCuatrimestreList.add(10);
+                mesesCuatrimestreList.add(11);
+                mesesCuatrimestreList.add(12);
+                break;
+            default:
+                break;
+        }
         if (remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeSubido")) {
             displayUploadInformeCuatrimestral = Boolean.TRUE;
         } else {
             displayUploadInformeCuatrimestral = Boolean.FALSE;
         }
-        rms = getRemanentesActivos(remanenteCuatrimestralSelected.getRemanenteMensualList());
+        for (Integer mes : mesesCuatrimestreList) {
+            RemanenteMensual remanenteMensual = new RemanenteMensual();
+            remanenteMensual = remanenteMensualServicio.getUltimoRemanenteMensual(
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getAnio(),
+                    mes);
+            rms.add(remanenteMensual);
+        }       
 
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {
