@@ -85,6 +85,7 @@
             </h:form>
 
             <h:form id="formNuevaProrroga" >
+                <p:remoteCommand name="rc" action="#{prorrogaMensualCtrl.prueba}" />
                 <b:panel style="width: 50%" rendered="true">
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
                         <p:outputLabel for="institucion" value="#{etiquetas['nombreLbl.institucion']}:" />
@@ -100,6 +101,18 @@
                                         inputStyle="width: 100%"
                                         maxResults="20"
                                         required="true"/>
+
+                        <p:outputLabel for="mesProrroga" value="#{etiquetas['nombreLbl.mesProrroga']}:" />
+                        <p:datePicker id="mesProrroga" 
+                                      view="month"
+                                      pattern="MM/yyyy" 
+                                      yearNavigator="true"
+                                      disabledDates="#{prorrogaMensualCtrl.invalidaMonths}"
+                                      maxdate="5/2020"
+                                      yearRange="2020:2020" 
+                                      locale="es">
+                            <p:ajax event="dateSelect" listener="#{prorrogaMensualCtrl.prueba}"/>
+                        </p:datePicker>
                     </b:panelGrid>    
                     <!--                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
                                             <p:commandButton value="#{tramitePropiedadCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tramitePropiedadCtrl.guardarTramite}" update=":formTramiteSelected, :formTramite"/>

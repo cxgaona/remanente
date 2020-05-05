@@ -55,6 +55,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     //Listas
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList;
     private List<InstitucionRequerida> registrosMixtosList;
+    private List<Date> invalidaMonths;
 
     //EJB's
     @EJB
@@ -115,6 +116,9 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         prorrogaRemanenteMensualActivasList = new ArrayList<ProrrogaRemanenteMensualDTO>();
         prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualServicio.getListProrrogaRemanenteMensualEstado("A");
 
+        invalidaMonths = new ArrayList<Date>();
+        invalidaMonths.add(new Date());
+
         registrosMixtosList = new ArrayList<InstitucionRequerida>();
         registrosMixtosList = institucionRequeridaServicio.getRegistroMixtoList();
 
@@ -158,6 +162,10 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         return filteredInstituciones;
     }
 
+    public void prueba() {
+        System.out.println("aQUi");
+    }
+
     //Getters & Setters
     public ProrrogaRemanenteMensualDTO getProrrogaRemanenteMensualSelected() {
         return prorrogaRemanenteMensualSelected;
@@ -181,6 +189,14 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setRegistroMixto(InstitucionRequerida registroMixto) {
         this.registroMixto = registroMixto;
+    }
+
+    public List<Date> getInvalidaMonths() {
+        return invalidaMonths;
+    }
+
+    public void setInvalidaMonths(List<Date> invalidaMonths) {
+        this.invalidaMonths = invalidaMonths;
     }
 
 }
