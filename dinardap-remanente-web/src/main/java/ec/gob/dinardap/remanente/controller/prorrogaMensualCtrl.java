@@ -1,31 +1,17 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.dto.ProrrogaRemanenteMensualDTO;
-import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.ProrrogaRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Tramite;
-import ec.gob.dinardap.remanente.modelo.Transaccion;
-import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
-import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.ProrrogaRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
-import ec.gob.dinardap.remanente.servicio.TramiteServicio;
-import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -33,14 +19,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
 
 @Named(value = "prorrogaMensualCtrl")
 @ViewScoped
@@ -48,14 +26,26 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     //Declaración de variables
     //Variables de control visual
-    //Variables de Negocio
-    private ProrrogaRemanenteMensualDTO prorrogaRemanenteMensualSelected;
+    private Boolean renderAbrirProrroga;
+    private Boolean renderCerrarProrroga;
+
+    private Boolean disableAbrirProrroga;
+
+    private Boolean onAbrirProrroga;
+    private Boolean onCerrarProrroga;
+
+    //Variables de Negocio    
     private InstitucionRequerida registroMixto;
+    private Integer institucionId;
+
+    private ProrrogaRemanenteMensual prorrogaApertura;
 
     //Listas
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList;
+    private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteSelectedList;
+
     private List<InstitucionRequerida> registrosMixtosList;
-    private List<Date> invalidaMonths;
+    private Date fechaApertura;
 
     //EJB's
     @EJB
@@ -63,20 +53,17 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private InstitucionRequeridaServicio institucionRequeridaServicio;
+    @EJB
+    private RemanenteMensualServicio remanenteMensualServicio;
 
 //Desde Aqui
     //Declaración de variables
     //Variables de control visual
-//    private String tituloPropiedad;
-//    private String strBtnGuardar;
 //
 //    private Boolean disableNuevoTramite;
 //    private Boolean disableDeleteTramite;
 //    private Boolean disableDeleteTramiteTodos;
 //
-//    private Boolean renderEdition;
-//    private Boolean onCreate;
-//    private Boolean onEdit;
 //
 //    private Boolean renderedNumeroRepertorio;
     //Variables de negocio
@@ -113,42 +100,46 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 //    private DiasNoLaborablesServicio diasNoLaborablesServicio;
     @PostConstruct
     protected void init() {
-        prorrogaRemanenteMensualActivasList = new ArrayList<ProrrogaRemanenteMensualDTO>();
-        prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualServicio.getListProrrogaRemanenteMensualEstado("A");
+        reloadProrrogasActivas();
 
-        invalidaMonths = new ArrayList<Date>();
-        invalidaMonths.add(new Date());
+        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
 
         registrosMixtosList = new ArrayList<InstitucionRequerida>();
         registrosMixtosList = institucionRequeridaServicio.getRegistroMixtoList();
 
         registroMixto = new InstitucionRequerida();
-//        tituloPropiedad = "Trámite Propiedad";
-//        actividadRegistral = "Propiedad";
-//        ultimoEstado = "";
-//
-//        onCreate = Boolean.FALSE;
-//        onEdit = Boolean.FALSE;
-//
-//        disableNuevoTramite = Boolean.FALSE;
-//        disableDeleteTramite = Boolean.TRUE;
-//        disableDeleteTramiteTodos = Boolean.TRUE;
-//
-//        renderEdition = Boolean.FALSE;
-//        renderedNumeroRepertorio = Boolean.FALSE;
-//
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(new Date());
-//        fechaSeleccionada = new Date();
-//        año = calendar.get(Calendar.YEAR);
-//        mes = calendar.get(Calendar.MONTH) + 1;
-//        fechaMin = fechasLimiteMin(año, mes);
-//        fechaMax = fechasLimiteMax(año, mes);
-//
-//        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
-//
-//        tramiteList = new ArrayList<Tramite>();
-//        obtenerRemanenteMensual();
+        prorrogaApertura = new ProrrogaRemanenteMensual();
+
+        renderAbrirProrroga = Boolean.FALSE;
+        renderCerrarProrroga = Boolean.FALSE;
+
+        disableAbrirProrroga = Boolean.TRUE;
+
+        onAbrirProrroga = Boolean.FALSE;
+        onCerrarProrroga = Boolean.FALSE;
+    }
+
+    private void reloadProrrogasActivas() {
+        prorrogaRemanenteMensualActivasList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+        prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualServicio.getListProrrogaRemanenteMensualEstado("A");
+    }
+
+    public void abrirProrroga() {
+        renderAbrirProrroga = Boolean.TRUE;
+        renderCerrarProrroga = Boolean.FALSE;
+
+        onAbrirProrroga = Boolean.TRUE;
+        onCerrarProrroga = Boolean.FALSE;
+
+        prorrogaApertura = new ProrrogaRemanenteMensual();
+        registroMixto = new InstitucionRequerida();
+        fechaApertura = null;
+    }
+
+    public void onInstitucionSelect() {
+        institucionId = registroMixto.getInstitucionId();
+        disableAbrirProrroga = Boolean.TRUE;
+        fechaApertura = null;
     }
 
     public List<InstitucionRequerida> completeNombreRegistroMixto(String query) {
@@ -162,17 +153,46 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         return filteredInstituciones;
     }
 
-    public void prueba() {
-        System.out.println("aQUi");
+    public void onDateSelect() {
+        RemanenteMensual remanenteMensual = new RemanenteMensual();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fechaApertura);
+        remanenteMensual = remanenteMensualServicio.getUltimoRemanenteMensual(
+                institucionId,
+                calendar.get(Calendar.YEAR),
+                (calendar.get(Calendar.MONTH) + 1));
+        prorrogaApertura.setRemanenteMensualId(remanenteMensual);
+        disableAbrirProrroga = Boolean.FALSE;
+        for (ProrrogaRemanenteMensualDTO prmdto : prorrogaRemanenteMensualActivasList) {
+            if (prmdto.getProrrogaRemanenteMensual().getRemanenteMensualId().getRemanenteMensualId()
+                    .equals(prorrogaApertura.getRemanenteMensualId().getRemanenteMensualId())) {
+                disableAbrirProrroga = Boolean.TRUE;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "No es posible aperturar la prorroga, ya que existe una prorroga Vigente"));
+                break;
+            }
+        }
+
+    }
+
+    public void guardarProrroga() {
+        prorrogaApertura.setEstado("A");
+        prorrogaRemanenteMensualServicio.create(prorrogaApertura);
+        prorrogaApertura = new ProrrogaRemanenteMensual();
+        reloadProrrogasActivas();
+        registroMixto = new InstitucionRequerida();
+
+        disableAbrirProrroga = Boolean.TRUE;
+        onAbrirProrroga = Boolean.FALSE;
+        renderAbrirProrroga = Boolean.FALSE;
     }
 
     //Getters & Setters
-    public ProrrogaRemanenteMensualDTO getProrrogaRemanenteMensualSelected() {
-        return prorrogaRemanenteMensualSelected;
+    public List<ProrrogaRemanenteMensualDTO> getProrrogaRemanenteSelectedList() {
+        return prorrogaRemanenteSelectedList;
     }
 
-    public void setProrrogaRemanenteMensualSelected(ProrrogaRemanenteMensualDTO prorrogaRemanenteMensualSelected) {
-        this.prorrogaRemanenteMensualSelected = prorrogaRemanenteMensualSelected;
+    public void setProrrogaRemanenteSelectedList(List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteSelectedList) {
+        this.prorrogaRemanenteSelectedList = prorrogaRemanenteSelectedList;
     }
 
     public List<ProrrogaRemanenteMensualDTO> getProrrogaRemanenteMensualActivasList() {
@@ -191,12 +211,60 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         this.registroMixto = registroMixto;
     }
 
-    public List<Date> getInvalidaMonths() {
-        return invalidaMonths;
+    public ProrrogaRemanenteMensual getProrrogaApertura() {
+        return prorrogaApertura;
     }
 
-    public void setInvalidaMonths(List<Date> invalidaMonths) {
-        this.invalidaMonths = invalidaMonths;
+    public void setProrrogaApertura(ProrrogaRemanenteMensual prorrogaApertura) {
+        this.prorrogaApertura = prorrogaApertura;
+    }
+
+    public Date getFechaApertura() {
+        return fechaApertura;
+    }
+
+    public void setFechaApertura(Date fechaApertura) {
+        this.fechaApertura = fechaApertura;
+    }
+
+    public Boolean getRenderAbrirProrroga() {
+        return renderAbrirProrroga;
+    }
+
+    public void setRenderAbrirProrroga(Boolean renderAbrirProrroga) {
+        this.renderAbrirProrroga = renderAbrirProrroga;
+    }
+
+    public Boolean getRenderCerrarProrroga() {
+        return renderCerrarProrroga;
+    }
+
+    public void setRenderCerrarProrroga(Boolean renderCerrarProrroga) {
+        this.renderCerrarProrroga = renderCerrarProrroga;
+    }
+
+    public Boolean getOnAbrirProrroga() {
+        return onAbrirProrroga;
+    }
+
+    public void setOnAbrirProrroga(Boolean onAbrirProrroga) {
+        this.onAbrirProrroga = onAbrirProrroga;
+    }
+
+    public Boolean getOnCerrarProrroga() {
+        return onCerrarProrroga;
+    }
+
+    public void setOnCerrarProrroga(Boolean onCerrarProrroga) {
+        this.onCerrarProrroga = onCerrarProrroga;
+    }
+
+    public Boolean getDisableAbrirProrroga() {
+        return disableAbrirProrroga;
+    }
+
+    public void setDisableAbrirProrroga(Boolean disableAbrirProrroga) {
+        this.disableAbrirProrroga = disableAbrirProrroga;
     }
 
 }

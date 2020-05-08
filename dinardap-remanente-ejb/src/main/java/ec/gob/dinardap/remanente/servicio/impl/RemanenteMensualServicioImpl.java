@@ -104,9 +104,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
-        for (RemanenteMensual rm : remanenteMensualList) {
-            rm.getProrrogaRemanenteMensualId();
-        }
+//        for (RemanenteMensual rm : remanenteMensualList) {
+//            rm.getProrrogaRemanenteMensualId();
+//        }
         return remanenteMensualList;
     }
 
@@ -168,7 +168,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         rm.setInformeAprobacionUrl(null);
         rm.setFechaRegistro(new Date());
         create(rm);
-        rmo.setProrrogaRemanenteMensualId(null);
+//        rmo.setProrrogaRemanenteMensualId(null);
         update(rmo);
     }
 

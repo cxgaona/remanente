@@ -19,21 +19,21 @@ public class ProrrogaRemanenteMensualDaoEjb extends RemanenteGenericDao<Prorroga
 
     @Override
     public List<ProrrogaRemanenteMensualDTO> getProrrogaListEstado(String estado) {
-        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualList = new ArrayList<ProrrogaRemanenteMensualDTO>();
-        Query query = em.createQuery("SELECT rm FROM RemanenteMensual rm WHERE rm.prorrogaRemanenteMensualId IS NOT NULL AND rm.prorrogaRemanenteMensualId.estado=:estado");
+        List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList = new ArrayList<ProrrogaRemanenteMensual>();
+        List<ProrrogaRemanenteMensualDTO> prorrogaDtoList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+        Query query = em.createQuery("SELECT prm FROM ProrrogaRemanenteMensual prm WHERE prm.prorrogaRemanenteMensualId.estado=:estado");
         query.setParameter("estado", estado);
         if (!query.getResultList().isEmpty()) {
-            remanenteMensualList = query.getResultList();
-            for (RemanenteMensual rm : remanenteMensualList) {
-                prorrogaRemanenteMensualList.add(new ProrrogaRemanenteMensualDTO(
-                        rm.getProrrogaRemanenteMensualId(),
-                        rm.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
-                        rm.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getNombre(),
-                        rm.getMes(),
-                        rm.getRemanenteCuatrimestral().getRemanenteAnual().getAnio()));
+            prorrogaRemanenteMensualList = query.getResultList();
+            for (ProrrogaRemanenteMensual prm : prorrogaRemanenteMensualList) {
+                prorrogaDtoList.add(new ProrrogaRemanenteMensualDTO(
+                        prm,
+                        prm.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida(),
+                        prm.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getNombre(),
+                        prm.getRemanenteMensualId().getMes(),
+                        prm.getRemanenteMensualId().getRemanenteCuatrimestral().getRemanenteAnual().getAnio()));
             }
         }
-        return prorrogaRemanenteMensualList;
+        return prorrogaDtoList;
     }
 }

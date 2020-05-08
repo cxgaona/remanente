@@ -6,16 +6,17 @@
 package ec.gob.dinardap.remanente.modelo;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -33,24 +34,29 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "ProrrogaRemanenteMensual.findByEstado", query = "SELECT p FROM ProrrogaRemanenteMensual p WHERE p.estado = :estado")})
 public class ProrrogaRemanenteMensual implements Serializable {
 
-    @OneToMany(mappedBy = "prorrogaRemanenteMensualId")
-    private List<RemanenteMensual> remanenteMensualList;
-
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "PRORROGA_REMANENTE_MENSUAL_GENERATOR", sequenceName = "prorroga_remanente_mensual_prorroga_remanente_mensual_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRORROGA_REMANENTE_MENSUAL_GENERATOR")
     @Basic(optional = false)
     @Column(name = "prorroga_remanente_mensual_id")
     private Integer prorrogaRemanenteMensualId;
+
     @Size(max = 2147483647)
     @Column(name = "comentario_apertura")
     private String comentarioApertura;
+    
     @Size(max = 2147483647)
     @Column(name = "comentario_cierre")
     private String comentarioCierre;
+    
     @Size(max = 2)
     @Column(name = "estado")
     private String estado;
+
+    @JoinColumn(name = "remanente_mensual_id", referencedColumnName = "remanente_mensual_id")
+    @ManyToOne
+    private RemanenteMensual remanenteMensualId;
 
     public ProrrogaRemanenteMensual() {
     }
@@ -116,12 +122,12 @@ public class ProrrogaRemanenteMensual implements Serializable {
         return "ec.gob.dinardap.remanente.modelo.ProrrogaRemanenteMensual[ prorrogaRemanenteMensualId=" + prorrogaRemanenteMensualId + " ]";
     }
 
-    public List<RemanenteMensual> getRemanenteMensualList() {
-        return remanenteMensualList;
+    public RemanenteMensual getRemanenteMensualId() {
+        return remanenteMensualId;
     }
 
-    public void setRemanenteMensualList(List<RemanenteMensual> remanenteMensualList) {
-        this.remanenteMensualList = remanenteMensualList;
+    public void setRemanenteMensualId(RemanenteMensual remanenteMensualId) {
+        this.remanenteMensualId = remanenteMensualId;
     }
-    
+
 }

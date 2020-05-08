@@ -68,12 +68,7 @@ public class RemanenteMensual implements Serializable {
 
     @Column(name = "informe_aprobacion_url", length = 2147483647)
     private String informeAprobacionUrl;
-
-    //Prórroga
-    @ManyToOne
-    @JoinColumn(name = "prorroga_remanente_mensual_id", referencedColumnName = "prorroga_remanente_mensual_id")
-    private ProrrogaRemanenteMensual prorrogaRemanenteMensualId;
-
+    
     //Bandeja//
     @OneToMany(mappedBy = "remanenteMensualId")
     private List<Bandeja> bandejaList;
@@ -100,6 +95,10 @@ public class RemanenteMensual implements Serializable {
 
     @OneToMany(mappedBy = "remanenteMensualId")
     private List<Transaccion> transaccionList;
+    
+    //Prórroga
+    @OneToMany(mappedBy = "remanenteMensualId")
+    private List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList;
 
     public RemanenteMensual() {
     }
@@ -237,12 +236,12 @@ public class RemanenteMensual implements Serializable {
         return "RemanenteMensual{" + "remanenteMensualId=" + remanenteMensualId + ", mes=" + mes + ", fechaRegistro=" + fechaRegistro + ", total=" + total + ", comentarios=" + comentarios + ", solicitudCambioUrl=" + solicitudCambioUrl + ", informeAprobacionUrl=" + informeAprobacionUrl + ", bandejaList=" + bandejaList + ", remanenteCuatrimestral=" + remanenteCuatrimestral + ", remanenteMensualList=" + remanenteMensualList + ", remanenteMensualOrigenId=" + remanenteMensualOrigenId + ", estadoRemanenteMensualList=" + estadoRemanenteMensualList + ", transaccionList=" + transaccionList + '}';
     }
 
-    public ProrrogaRemanenteMensual getProrrogaRemanenteMensualId() {
-        return prorrogaRemanenteMensualId;
+    public List<ProrrogaRemanenteMensual> getProrrogaRemanenteMensualList() {
+        return prorrogaRemanenteMensualList;
     }
 
-    public void setProrrogaRemanenteMensualId(ProrrogaRemanenteMensual prorrogaRemanenteMensualId) {
-        this.prorrogaRemanenteMensualId = prorrogaRemanenteMensualId;
+    public void setProrrogaRemanenteMensualList(List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList) {
+        this.prorrogaRemanenteMensualList = prorrogaRemanenteMensualList;
     }
 
 }
