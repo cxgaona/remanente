@@ -30,6 +30,8 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     private Boolean renderCerrarProrroga;
 
     private Boolean disableAbrirProrroga;
+    private Boolean disableCerrarProrrogas;
+    private Boolean disableCerrarProrrogasTodas;
 
     private Boolean onAbrirProrroga;
     private Boolean onCerrarProrroga;
@@ -39,6 +41,8 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     private Integer institucionId;
 
     private ProrrogaRemanenteMensual prorrogaApertura;
+
+    private String comentarioCierre;
 
     //Listas
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList;
@@ -55,49 +59,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     private InstitucionRequeridaServicio institucionRequeridaServicio;
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
-
-//Desde Aqui
-    //Declaración de variables
-    //Variables de control visual
-//
-//    private Boolean disableNuevoTramite;
-//    private Boolean disableDeleteTramite;
-//    private Boolean disableDeleteTramiteTodos;
-//
-//
-//    private Boolean renderedNumeroRepertorio;
-    //Variables de negocio
-//    private Integer institucionId;
-//    private Date fechaSeleccionada;
-//    private Integer año;
-//    private Integer mes;
-//
-//    private Tramite tramiteSelected;
-//
-//    private String actividadRegistral;
-//    private String ultimoEstado;
-//    private Integer idCatalogoTransaccion;
-//
-//    private String fechaMin;
-//    private String fechaMax;
-    //Listas
-//    private List<Tramite> tramiteList;
-//    private List<Tramite> tramiteSelectedList;
-//
-//    private List<CatalogoTransaccion> catalogoList;
-//    private List<RemanenteMensual> remanenteMensualList;
-    //
-//    @EJB
-//    private TransaccionServicio transaccionServicio;
-//
-//    @EJB
-//    private CatalogoTransaccionServicio catalogoTransaccionServicio;
-//
-//    @EJB
-//    private RemanenteMensualServicio remanenteMensualServicio;
-//
-//    @EJB
-//    private DiasNoLaborablesServicio diasNoLaborablesServicio;
+    
     @PostConstruct
     protected void init() {
         reloadProrrogasActivas();
@@ -115,8 +77,23 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
         disableAbrirProrroga = Boolean.TRUE;
 
+        disableCerrarProrrogas = Boolean.TRUE;
+        disableCerrarProrrogasTodas = Boolean.TRUE;
+
         onAbrirProrroga = Boolean.FALSE;
         onCerrarProrroga = Boolean.FALSE;
+
+        disableCerrarProrrogasBtn();
+
+    }
+
+    private void disableCerrarProrrogasBtn() {
+        disableCerrarProrrogasTodas = prorrogaRemanenteMensualActivasList.isEmpty() ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    public void onRowSelectProrrogaCheckbox() {
+        disableCerrarProrrogas = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.TRUE : Boolean.FALSE;
+        renderCerrarProrroga = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
     }
 
     private void reloadProrrogasActivas() {
@@ -134,6 +111,36 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         prorrogaApertura = new ProrrogaRemanenteMensual();
         registroMixto = new InstitucionRequerida();
         fechaApertura = null;
+    }
+
+    public void cerrarProrroga() {
+        renderAbrirProrroga = Boolean.FALSE;
+        renderCerrarProrroga = Boolean.TRUE;
+
+        onAbrirProrroga = Boolean.FALSE;
+        onCerrarProrroga = Boolean.TRUE;
+    }
+    
+    public void cancelarCerrarProrroga(){
+        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+        renderAbrirProrroga = Boolean.FALSE;
+        renderCerrarProrroga = Boolean.FALSE;
+        
+        disableCerrarProrrogas = Boolean.TRUE;        
+
+        onAbrirProrroga = Boolean.FALSE;
+        onCerrarProrroga = Boolean.FALSE;        
+    }
+
+    public void cerrarProrrogaTodas() {
+        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+        prorrogaRemanenteSelectedList = prorrogaRemanenteMensualActivasList;
+
+        renderAbrirProrroga = Boolean.FALSE;
+        renderCerrarProrroga = Boolean.TRUE;
+
+        onAbrirProrroga = Boolean.FALSE;
+        onCerrarProrroga = Boolean.TRUE;
     }
 
     public void onInstitucionSelect() {
@@ -167,7 +174,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
             if (prmdto.getProrrogaRemanenteMensual().getRemanenteMensualId().getRemanenteMensualId()
                     .equals(prorrogaApertura.getRemanenteMensualId().getRemanenteMensualId())) {
                 disableAbrirProrroga = Boolean.TRUE;
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "No es posible aperturar la prorroga, ya que existe una prorroga Vigente"));
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "Ya existe una Prórroga Vigente para la FECHA e INSTITUCIÓN seleccionada"));
                 break;
             }
         }
@@ -184,6 +191,28 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         disableAbrirProrroga = Boolean.TRUE;
         onAbrirProrroga = Boolean.FALSE;
         renderAbrirProrroga = Boolean.FALSE;
+    }
+
+    public void guardarCerrarProrroga() {
+        List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList = new ArrayList<ProrrogaRemanenteMensual>();
+        for (ProrrogaRemanenteMensualDTO prorroga : prorrogaRemanenteSelectedList) {
+            prorroga.getProrrogaRemanenteMensual().setComentarioCierre(comentarioCierre);
+            prorroga.getProrrogaRemanenteMensual().setEstado("I");
+            prorrogaRemanenteMensualList.add(prorroga.getProrrogaRemanenteMensual());
+        }
+        prorrogaRemanenteMensualServicio.update(prorrogaRemanenteMensualList);
+
+        reloadProrrogasActivas();
+        registroMixto = new InstitucionRequerida();
+        comentarioCierre = null;
+
+        disableCerrarProrrogas = Boolean.TRUE;
+
+        onCerrarProrroga = Boolean.FALSE;
+
+        renderCerrarProrroga = Boolean.FALSE;
+
+        disableCerrarProrrogasBtn();
     }
 
     //Getters & Setters
@@ -265,6 +294,30 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setDisableAbrirProrroga(Boolean disableAbrirProrroga) {
         this.disableAbrirProrroga = disableAbrirProrroga;
+    }
+
+    public Boolean getDisableCerrarProrrogas() {
+        return disableCerrarProrrogas;
+    }
+
+    public void setDisableCerrarProrrogas(Boolean disableCerrarProrrogas) {
+        this.disableCerrarProrrogas = disableCerrarProrrogas;
+    }
+
+    public Boolean getDisableCerrarProrrogasTodas() {
+        return disableCerrarProrrogasTodas;
+    }
+
+    public void setDisableCerrarProrrogasTodas(Boolean disableCerrarProrrogasTodas) {
+        this.disableCerrarProrrogasTodas = disableCerrarProrrogasTodas;
+    }
+
+    public String getComentarioCierre() {
+        return comentarioCierre;
+    }
+
+    public void setComentarioCierre(String comentarioCierre) {
+        this.comentarioCierre = comentarioCierre;
     }
 
 }

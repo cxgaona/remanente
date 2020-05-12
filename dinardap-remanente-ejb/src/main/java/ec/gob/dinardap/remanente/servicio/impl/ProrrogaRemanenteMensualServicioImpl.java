@@ -31,4 +31,11 @@ public class ProrrogaRemanenteMensualServicioImpl extends GenericServiceImpl<Pro
         return prorrogaRemanenteMensualDTOList;
     }
 
+    @Override
+    public void update(List<ProrrogaRemanenteMensual> prorrogaList) {
+        for (ProrrogaRemanenteMensual prm : prorrogaList) {
+            this.update(prm);
+        }
+    }
+
 }
