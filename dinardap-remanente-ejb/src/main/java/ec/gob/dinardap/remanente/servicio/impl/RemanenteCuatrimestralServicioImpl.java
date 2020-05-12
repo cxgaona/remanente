@@ -30,6 +30,8 @@ import ec.gob.dinardap.sftp.util.GestionSFTP;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -162,6 +164,12 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
             for (EstadoRemanenteCuatrimestral estadoRemanenteCuatrimestral : remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList()) {
                 estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestral();
             }
+            Collections.sort(remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList(), new Comparator<EstadoRemanenteCuatrimestral>() {
+                @Override
+                public int compare(EstadoRemanenteCuatrimestral erm1, EstadoRemanenteCuatrimestral erm2) {
+                    return new Integer(erm1.getEstadoRemanenteCuatrimestral()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestral()));
+                }
+            });
             remanenteCuatrimestral.setRemanenteMensualList(new ArrayList<RemanenteMensual>());
         }
         return remanenteCuatrimestralList;
