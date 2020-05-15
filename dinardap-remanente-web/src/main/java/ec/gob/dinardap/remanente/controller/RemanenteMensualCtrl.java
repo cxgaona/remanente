@@ -199,9 +199,13 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         totalIngRPropiedad = new BigDecimal(0);
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
-        if (remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")
-                || remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Rechazado")
-                || remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("GeneradoNuevaVersion")) {
+
+        String ultimoEstadoMensual = remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion();
+        String ultimoEstadoCuatrimestral = remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion();
+
+        if (ultimoEstadoMensual.equals("GeneradoAutomaticamente")
+                || ultimoEstadoMensual.equals("Verificado-Rechazado")
+                || ultimoEstadoMensual.equals("GeneradoNuevaVersion")) {
             btnActivated = Boolean.FALSE;
             displayUploadEdit = Boolean.TRUE;
             if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes())) {
@@ -215,15 +219,12 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             btnActivated = Boolean.TRUE;
             displayUploadEdit = Boolean.FALSE;
         }
-        System.out.println("RemanenteMensualDTOSeleccionado: "+remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId());
-        System.out.println("RemanenteMensualDTOSeleccionado: "+remanenteMensualDTOSelected.getRemanenteMensual().getMes());
-        System.out.println("RemanenteMensualDTOSeleccionado: "+remanenteMensualDTOSelected.getRemanenteMensual().getTotal());
 
-        if ((remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Verificado-Aprobado")
-                || remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
-                || remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado"))
-                && (!remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeSubido")
-                && !remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("InformeTecnicoSubido"))) {
+        if ((ultimoEstadoMensual.equals("Verificado-Aprobado")
+                || ultimoEstadoMensual.equals("Validado-Aprobado")
+                || ultimoEstadoMensual.equals("Validado-Rechazado"))
+                && (!ultimoEstadoCuatrimestral.equals("InformeTecnicoSubido")
+                && !ultimoEstadoCuatrimestral.equals("InformeSubido"))) {
             displaySolicitud = Boolean.TRUE;
             if (remanenteMensualDTOSelected.getRemanenteMensual().getSolicitudCambioUrl() == null) {
                 disabledBtnEnvCan = Boolean.TRUE;
@@ -233,7 +234,6 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         } else {
             displaySolicitud = Boolean.FALSE;
         }
-
         transaccionList = transaccionServicio.getTransaccionByInstitucionAñoMes(
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),

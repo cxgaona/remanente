@@ -192,14 +192,15 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         }
 
         for (RemanenteMensual remanenteMensual : rms) {
-            if (!(remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Aprobado")
-                    || remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Validado-Rechazado")
-                    || remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioRechazado"))) {
+            String estadoRemanenteMensual = remanenteMensual.getEstadoRemanenteMensualList().get(remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion();            
+            if (!estadoRemanenteMensual.equals("Validado-Aprobado")) {
                 flagDisplay = Boolean.FALSE;
+                break;
             }
         }
+        String estadoRemanenteCuatrimestral = remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion();
         if (flagDisplay
-                && remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().get(remanenteCuatrimestralSelected.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion().equals("GeneradoAutomaticamente")) {
+                && estadoRemanenteCuatrimestral.equals("GeneradoAutomaticamente")) {
             displayUploadInformeCuatrimestral = Boolean.TRUE;
             if (remanenteCuatrimestralSelected.getInformeRemanenteUrl() == null) {
                 disabledBtnEnvCan = Boolean.TRUE;
