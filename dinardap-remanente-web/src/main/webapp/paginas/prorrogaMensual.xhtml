@@ -140,7 +140,10 @@
                                          action="#{prorrogaMensualCtrl.guardarProrroga}"
                                          disabled="#{prorrogaMensualCtrl.disableAbrirProrroga}"
                                          update="formNuevaProrroga, formProrroga, messages"/>
-                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" />
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" 
+                                         action="#{prorrogaMensualCtrl.cancelarAbrirProrroga}"
+                                         process="@this"
+                                         update="formNuevaProrroga, formProrroga, messages"/>                        
                     </b:panelGrid>
                 </b:panel>
             </h:form>
@@ -181,7 +184,11 @@
                         <h:outputText id="display" />
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-                        <p:commandButton id="guardarBtn" value="Cerrar Prórrogas Seleccionadas" style="margin-right:20px;" icon="fa fa-fw fa-edit" action="#{prorrogaMensualCtrl.guardarCerrarProrroga}" update="formCerrarProrroga, formProrroga, messagesCerrar"/>
+                        <p:commandButton id="guardarBtn" value="Cerrar Prórrogas Seleccionadas" style="margin-right:20px;" 
+                                         icon="fa fa-fw fa-edit"
+                                         disabled="#{prorrogaMensualCtrl.disableCerrarProrrogas}"
+                                         action="#{prorrogaMensualCtrl.guardarCerrarProrroga}" 
+                                         update="formCerrarProrroga, formProrroga, messagesCerrar"/>
                         <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban"
                                          action="#{prorrogaMensualCtrl.cancelarCerrarProrroga}"
                                          process="@this"

@@ -34,6 +34,11 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "ProrrogaRemanenteMensual.findByEstado", query = "SELECT p FROM ProrrogaRemanenteMensual p WHERE p.estado = :estado")})
 public class ProrrogaRemanenteMensual implements Serializable {
 
+    @Column(name = "anio")
+    private Integer anio;
+    @Column(name = "mes")
+    private Integer mes;
+
     private static final long serialVersionUID = 1L;
     @Id
     @SequenceGenerator(name = "PRORROGA_REMANENTE_MENSUAL_GENERATOR", sequenceName = "prorroga_remanente_mensual_prorroga_remanente_mensual_id_seq", allocationSize = 1)
@@ -45,11 +50,11 @@ public class ProrrogaRemanenteMensual implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "comentario_apertura")
     private String comentarioApertura;
-    
+
     @Size(max = 2147483647)
     @Column(name = "comentario_cierre")
     private String comentarioCierre;
-    
+
     @Size(max = 2)
     @Column(name = "estado")
     private String estado;
@@ -128,6 +133,22 @@ public class ProrrogaRemanenteMensual implements Serializable {
 
     public void setRemanenteMensualId(RemanenteMensual remanenteMensualId) {
         this.remanenteMensualId = remanenteMensualId;
+    }
+
+    public Integer getAnio() {
+        return anio;
+    }
+
+    public void setAnio(Integer anio) {
+        this.anio = anio;
+    }
+
+    public Integer getMes() {
+        return mes;
+    }
+
+    public void setMes(Integer mes) {
+        this.mes = mes;
     }
 
 }

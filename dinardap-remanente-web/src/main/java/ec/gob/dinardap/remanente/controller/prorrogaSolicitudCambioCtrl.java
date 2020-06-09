@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.dto.ProrrogaRemanenteMensualDTO;
+import ec.gob.dinardap.remanente.dto.SolicitudCambioDTO;
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.ProrrogaRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
@@ -20,9 +21,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-@Named(value = "prorrogaMensualCtrl")
+@Named(value = "prorrogaSolicitudCambioCtrl")
 @ViewScoped
-public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
+public class prorrogaSolicitudCambioCtrl extends BaseCtrl implements Serializable {
 
     //Declaración de variables
     //Variables de control visual
@@ -40,12 +41,15 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     private InstitucionRequerida registroMixto;
     private Integer institucionId;
 
+    private SolicitudCambioDTO solicitudCambioSelectedDTO;
+
     private ProrrogaRemanenteMensual prorrogaApertura;
 
     private String comentarioCierre;
 
     //Listas
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList;
+    private List<SolicitudCambioDTO> solicitudCambioDTOList;
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteSelectedList;
 
     private List<InstitucionRequerida> registrosMixtosList;
@@ -59,15 +63,18 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     private InstitucionRequeridaServicio institucionRequeridaServicio;
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
-    
+
     @PostConstruct
     protected void init() {
         reloadProrrogasActivas();
+        solicitudCambioSelectedDTO = new SolicitudCambioDTO();
 
         prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
 
         registrosMixtosList = new ArrayList<InstitucionRequerida>();
         registrosMixtosList = institucionRequeridaServicio.getRegistroMixtoList();
+
+        solicitudCambioDTOList = new ArrayList<SolicitudCambioDTO>();
 
         registroMixto = new InstitucionRequerida();
         prorrogaApertura = new ProrrogaRemanenteMensual();
@@ -93,12 +100,26 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void onRowSelectProrrogaCheckbox() {
         disableCerrarProrrogas = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.TRUE : Boolean.FALSE;
-        renderCerrarProrroga = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
+//        renderCerrarProrroga = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
+    }
+
+    public void onRowSelectSolicitudCambio() {
+        prorrogaApertura.setRemanenteMensualId(solicitudCambioSelectedDTO.getRemanenteMensual());
+        disableCrearProrrogaBtn();
+        for (ProrrogaRemanenteMensualDTO prmdto : prorrogaRemanenteMensualActivasList) {
+            if (prmdto.getProrrogaRemanenteMensual().getRemanenteMensualId().getRemanenteMensualId()
+                    .equals(prorrogaApertura.getRemanenteMensualId().getRemanenteMensualId())) {
+                disableAbrirProrroga = Boolean.TRUE;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "Ya existe una Prórroga Vigente para la Solicitud de Cambio seleccionada"));
+                break;
+            }
+        }
     }
 
     private void reloadProrrogasActivas() {
         prorrogaRemanenteMensualActivasList = new ArrayList<ProrrogaRemanenteMensualDTO>();
-        prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualServicio.getListProrrogaRemanenteMensualEstado("A");
+        prorrogaRemanenteMensualActivasList = prorrogaRemanenteMensualServicio.getListProrrogaRemanenteMensualEstado("AC");
+
     }
 
     public void abrirProrroga() {
@@ -110,6 +131,8 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
         prorrogaApertura = new ProrrogaRemanenteMensual();
         registroMixto = new InstitucionRequerida();
+        solicitudCambioSelectedDTO = new SolicitudCambioDTO();
+        solicitudCambioDTOList = new ArrayList<SolicitudCambioDTO>();
         fechaApertura = null;
     }
 
@@ -120,21 +143,37 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         onAbrirProrroga = Boolean.FALSE;
         onCerrarProrroga = Boolean.TRUE;
     }
-    
-    public void cancelarCerrarProrroga(){
-        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+
+    public void cancelarAbrirProrroga() {
+        prorrogaApertura = new ProrrogaRemanenteMensual();
+        registroMixto = new InstitucionRequerida();
+
         renderAbrirProrroga = Boolean.FALSE;
         renderCerrarProrroga = Boolean.FALSE;
-        
-        disableCerrarProrrogas = Boolean.TRUE;        
+
+        disableAbrirProrroga = Boolean.TRUE;
 
         onAbrirProrroga = Boolean.FALSE;
-        onCerrarProrroga = Boolean.FALSE;        
+        onCerrarProrroga = Boolean.FALSE;
+    }
+
+    public void cancelarCerrarProrroga() {
+        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+
+        renderAbrirProrroga = Boolean.FALSE;
+        renderCerrarProrroga = Boolean.FALSE;
+
+        disableCerrarProrrogas = Boolean.TRUE;
+
+        onAbrirProrroga = Boolean.FALSE;
+        onCerrarProrroga = Boolean.FALSE;
     }
 
     public void cerrarProrrogaTodas() {
         prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
         prorrogaRemanenteSelectedList = prorrogaRemanenteMensualActivasList;
+
+        onRowSelectProrrogaCheckbox();
 
         renderAbrirProrroga = Boolean.FALSE;
         renderCerrarProrroga = Boolean.TRUE;
@@ -145,8 +184,12 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void onInstitucionSelect() {
         institucionId = registroMixto.getInstitucionId();
-        disableAbrirProrroga = Boolean.TRUE;
-        fechaApertura = null;
+        solicitudCambioDTOList = prorrogaRemanenteMensualServicio.getRemanenteMensualSolicitudCambioAprobada(institucionId);
+        solicitudCambioSelectedDTO = new SolicitudCambioDTO();
+        if (solicitudCambioDTOList.isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "La Institución Seleccionada no tiene Solicitudes de Cambio Pendientes"));
+        }
+        disableCrearProrrogaBtn();
     }
 
     public List<InstitucionRequerida> completeNombreRegistroMixto(String query) {
@@ -158,6 +201,11 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
             }
         }
         return filteredInstituciones;
+    }
+
+    public void disableCrearProrrogaBtn() {
+        disableAbrirProrroga = solicitudCambioSelectedDTO.getRemanenteMensual() == null
+                ? Boolean.TRUE : Boolean.FALSE;
     }
 
     public void onDateSelect() {
@@ -182,11 +230,12 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     }
 
     public void guardarProrroga() {
-        prorrogaApertura.setEstado("A");
+        prorrogaApertura.setEstado("AC");
         prorrogaRemanenteMensualServicio.create(prorrogaApertura);
         prorrogaApertura = new ProrrogaRemanenteMensual();
         reloadProrrogasActivas();
         registroMixto = new InstitucionRequerida();
+        disableCerrarProrrogasBtn();
 
         disableAbrirProrroga = Boolean.TRUE;
         onAbrirProrroga = Boolean.FALSE;
@@ -197,7 +246,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList = new ArrayList<ProrrogaRemanenteMensual>();
         for (ProrrogaRemanenteMensualDTO prorroga : prorrogaRemanenteSelectedList) {
             prorroga.getProrrogaRemanenteMensual().setComentarioCierre(comentarioCierre);
-            prorroga.getProrrogaRemanenteMensual().setEstado("I");
+            prorroga.getProrrogaRemanenteMensual().setEstado("IC");
             prorrogaRemanenteMensualList.add(prorroga.getProrrogaRemanenteMensual());
         }
         prorrogaRemanenteMensualServicio.update(prorrogaRemanenteMensualList);
@@ -318,6 +367,22 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setComentarioCierre(String comentarioCierre) {
         this.comentarioCierre = comentarioCierre;
+    }
+
+    public List<SolicitudCambioDTO> getSolicitudCambioDTOList() {
+        return solicitudCambioDTOList;
+    }
+
+    public void setSolicitudCambioDTOList(List<SolicitudCambioDTO> solicitudCambioDTOList) {
+        this.solicitudCambioDTOList = solicitudCambioDTOList;
+    }
+
+    public SolicitudCambioDTO getSolicitudCambioSelectedDTO() {
+        return solicitudCambioSelectedDTO;
+    }
+
+    public void setSolicitudCambioSelectedDTO(SolicitudCambioDTO solicitudCambioSelectedDTO) {
+        this.solicitudCambioSelectedDTO = solicitudCambioSelectedDTO;
     }
 
 }

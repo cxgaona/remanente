@@ -5,33 +5,24 @@
  */
 package ec.gob.dinardap.remanente.dto;
 
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.ProrrogaRemanenteMensual;
 
 /**
  *
  * @author christian.gaona
  */
-public class ProrrogaRemanenteMensualDTO {
+public class ProrrogaRemanenteGeneralDTO {
 
     private ProrrogaRemanenteMensual prorrogaRemanenteMensual;
-    private InstitucionRequerida institucion;
-    private String institucionNombre;
-    private Integer mesInt;
-    private Integer año;
     private String mesStr;
 
-    public ProrrogaRemanenteMensualDTO() {
-
+    public ProrrogaRemanenteGeneralDTO() {
+        this.prorrogaRemanenteMensual = new ProrrogaRemanenteMensual();
     }
 
-    public ProrrogaRemanenteMensualDTO(ProrrogaRemanenteMensual prorrogaRemanenteMensual, InstitucionRequerida institucion, String institucionNombre, Integer mesInt, Integer año) {
+    public ProrrogaRemanenteGeneralDTO(ProrrogaRemanenteMensual prorrogaRemanenteMensual) {
         this.prorrogaRemanenteMensual = prorrogaRemanenteMensual;
-        this.institucion = institucion;
-        this.institucionNombre = institucionNombre;
-        this.mesInt = mesInt;
-        this.año = año;
-        this.mesStr = getMesStr(mesInt);
+        this.mesStr = getMesStr(this.prorrogaRemanenteMensual.getMes());
     }
 
     private String getMesStr(Integer mes) {
@@ -88,44 +79,12 @@ public class ProrrogaRemanenteMensualDTO {
         this.prorrogaRemanenteMensual = prorrogaRemanenteMensual;
     }
 
-    public InstitucionRequerida getInstitucion() {
-        return institucion;
-    }
-
-    public void setInstitucion(InstitucionRequerida institucion) {
-        this.institucion = institucion;
-    }
-
-    public String getInstitucionNombre() {
-        return institucionNombre;
-    }
-
-    public void setInstitucionNombre(String institucionNombre) {
-        this.institucionNombre = institucionNombre;
-    }
-
-    public Integer getMesInt() {
-        return mesInt;
-    }
-
-    public void setMesInt(Integer mesInt) {
-        this.mesInt = mesInt;
-    }
-
     public String getMesStr() {
         return mesStr;
     }
 
     public void setMesStr(String mesStr) {
         this.mesStr = mesStr;
-    }
-
-    public Integer getAño() {
-        return año;
-    }
-
-    public void setAño(Integer año) {
-        this.año = año;
     }
 
 }

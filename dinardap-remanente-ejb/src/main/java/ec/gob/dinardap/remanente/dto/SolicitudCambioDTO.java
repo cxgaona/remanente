@@ -6,29 +6,39 @@
 package ec.gob.dinardap.remanente.dto;
 
 import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.modelo.ProrrogaRemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 
 /**
  *
  * @author christian.gaona
  */
-public class ProrrogaRemanenteMensualDTO {
+public class SolicitudCambioDTO {
 
-    private ProrrogaRemanenteMensual prorrogaRemanenteMensual;
     private InstitucionRequerida institucion;
     private String institucionNombre;
+    private RemanenteMensual remanenteMensual;
     private Integer mesInt;
     private Integer año;
     private String mesStr;
+    private String estado;
 
-    public ProrrogaRemanenteMensualDTO() {
+    public SolicitudCambioDTO() {
 
     }
 
-    public ProrrogaRemanenteMensualDTO(ProrrogaRemanenteMensual prorrogaRemanenteMensual, InstitucionRequerida institucion, String institucionNombre, Integer mesInt, Integer año) {
-        this.prorrogaRemanenteMensual = prorrogaRemanenteMensual;
+    public SolicitudCambioDTO(RemanenteMensual remanenteMensual) {
+        this.remanenteMensual = remanenteMensual;
+        this.institucionNombre = remanenteMensual.getRemanenteCuatrimestral().getRemanenteAnual().getInstitucionRequerida().getNombre();
+        this.mesInt = this.remanenteMensual.getMes();
+        this.año = this.remanenteMensual.getRemanenteCuatrimestral().getRemanenteAnual().getAnio();
+        this.mesStr = getMesStr(mesInt);
+        this.estado = this.remanenteMensual.getEstadoRemanenteMensualList().get(this.remanenteMensual.getEstadoRemanenteMensualList().size() - 1).getDescripcion();
+    }
+
+    public SolicitudCambioDTO(InstitucionRequerida institucion, String institucionNombre, RemanenteMensual remanenteMensual, Integer mesInt, Integer año) {
         this.institucion = institucion;
         this.institucionNombre = institucionNombre;
+        this.remanenteMensual = remanenteMensual;
         this.mesInt = mesInt;
         this.año = año;
         this.mesStr = getMesStr(mesInt);
@@ -80,14 +90,6 @@ public class ProrrogaRemanenteMensualDTO {
         return mesAux;
     }
 
-    public ProrrogaRemanenteMensual getProrrogaRemanenteMensual() {
-        return prorrogaRemanenteMensual;
-    }
-
-    public void setProrrogaRemanenteMensual(ProrrogaRemanenteMensual prorrogaRemanenteMensual) {
-        this.prorrogaRemanenteMensual = prorrogaRemanenteMensual;
-    }
-
     public InstitucionRequerida getInstitucion() {
         return institucion;
     }
@@ -126,6 +128,22 @@ public class ProrrogaRemanenteMensualDTO {
 
     public void setAño(Integer año) {
         this.año = año;
+    }
+
+    public RemanenteMensual getRemanenteMensual() {
+        return remanenteMensual;
+    }
+
+    public void setRemanenteMensual(RemanenteMensual remanenteMensual) {
+        this.remanenteMensual = remanenteMensual;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
 }

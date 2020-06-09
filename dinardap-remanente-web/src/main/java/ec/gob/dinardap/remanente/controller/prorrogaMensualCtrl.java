@@ -59,7 +59,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     private InstitucionRequeridaServicio institucionRequeridaServicio;
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
-    
+
     @PostConstruct
     protected void init() {
         reloadProrrogasActivas();
@@ -93,7 +93,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void onRowSelectProrrogaCheckbox() {
         disableCerrarProrrogas = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.TRUE : Boolean.FALSE;
-        renderCerrarProrroga = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
+//        renderCerrarProrroga = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
     }
 
     private void reloadProrrogasActivas() {
@@ -120,21 +120,37 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         onAbrirProrroga = Boolean.FALSE;
         onCerrarProrroga = Boolean.TRUE;
     }
-    
-    public void cancelarCerrarProrroga(){
-        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+
+    public void cancelarAbrirProrroga() {
+        prorrogaApertura = new ProrrogaRemanenteMensual();
+        registroMixto = new InstitucionRequerida();
+
         renderAbrirProrroga = Boolean.FALSE;
         renderCerrarProrroga = Boolean.FALSE;
-        
-        disableCerrarProrrogas = Boolean.TRUE;        
+
+        disableAbrirProrroga = Boolean.TRUE;
 
         onAbrirProrroga = Boolean.FALSE;
-        onCerrarProrroga = Boolean.FALSE;        
+        onCerrarProrroga = Boolean.FALSE;
+    }
+
+    public void cancelarCerrarProrroga() {
+        prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
+
+        renderAbrirProrroga = Boolean.FALSE;
+        renderCerrarProrroga = Boolean.FALSE;
+
+        disableCerrarProrrogas = Boolean.TRUE;
+
+        onAbrirProrroga = Boolean.FALSE;
+        onCerrarProrroga = Boolean.FALSE;
     }
 
     public void cerrarProrrogaTodas() {
         prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
         prorrogaRemanenteSelectedList = prorrogaRemanenteMensualActivasList;
+
+        onRowSelectProrrogaCheckbox();
 
         renderAbrirProrroga = Boolean.FALSE;
         renderCerrarProrroga = Boolean.TRUE;
@@ -187,6 +203,7 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
         prorrogaApertura = new ProrrogaRemanenteMensual();
         reloadProrrogasActivas();
         registroMixto = new InstitucionRequerida();
+        disableCerrarProrrogasBtn();
 
         disableAbrirProrroga = Boolean.TRUE;
         onAbrirProrroga = Boolean.FALSE;

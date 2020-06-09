@@ -7,46 +7,40 @@
       xmlns:p="http://primefaces.org/ui">    
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">              
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{etiquetas['nombre.prorrogaMensual']}</h1>
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{etiquetas['nombre.prorrogaGeneral']}</h1>
             <h:form id="formProrroga">                
                 <b:panel title="Listado de prórrogas">
                     <h:panelGrid columns="1" style="width: 100%;">
                         <p:dataTable id="prorrogaTbl"
-                                     value="#{prorrogaMensualCtrl.prorrogaRemanenteMensualActivasList}" 
+                                     value="#{prorrogaGeneralCtrl.prorrogaRemanenteGeneralActivasList}"                                      
                                      var="prorroga"
                                      rowKey="#{prorroga.prorrogaRemanenteMensual.prorrogaRemanenteMensualId}"
-                                     selection="#{prorrogaMensualCtrl.prorrogaRemanenteSelectedList}"
+                                     selection="#{prorrogaGeneralCtrl.prorrogaRemanenteSelectedList}"
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25,50"
                                      tableStyle="width:auto">
-                            <p:ajax event="rowSelectCheckbox" listener="#{prorrogaMensualCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
-                            <p:ajax event="rowUnselectCheckbox" listener="#{prorrogaMensualCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
-                            <p:ajax event="toggleSelect" listener="#{prorrogaMensualCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
-                            <p:ajax event="rowSelect" listener="#{prorrogaMensualCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
-                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
-                            <p:column headerText="Institución" 
-                                      sortBy="#{prorroga.institucionNombre}" 
-                                      filterBy="#{prorroga.institucionNombre}" filterMatchMode="contains" 
-                                      width="40%" style="text-align: center">
-                                <h:outputText value="#{prorroga.institucionNombre}" />
-                            </p:column>
+                            <p:ajax event="rowSelectCheckbox" listener="#{prorrogaGeneralCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
+                            <p:ajax event="rowUnselectCheckbox" listener="#{prorrogaGeneralCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
+                            <p:ajax event="toggleSelect" listener="#{prorrogaGeneralCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
+                            <p:ajax event="rowSelect" listener="#{prorrogaGeneralCtrl.onRowSelectProrrogaCheckbox}" update="formCerrarProrroga, formProrroga:btnCerrarProrrogas"/>
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>                            
                             <p:column headerText="Mes de Prórroga" 
-                                      sortBy="#{prorroga.mesStr} / #{prorroga.año}" 
-                                      filterBy="#{prorroga.mesStr} / #{prorroga.año}" filterMatchMode="contains" 
-                                      width="10%" style="text-align: right">
-                                <h:outputText value="#{prorroga.mesStr} / #{prorroga.año}" />
+                                      sortBy="#{prorroga.mesStr} / #{prorroga.prorrogaRemanenteMensual.anio}" 
+                                      filterBy="#{prorroga.mesStr} / #{prorroga.prorrogaRemanenteMensual.anio}" filterMatchMode="contains" 
+                                      width="30%" style="text-align: right">
+                                <h:outputText value="#{prorroga.mesStr} / #{prorroga.prorrogaRemanenteMensual.anio}" />
                             </p:column>
                             <p:column headerText="Comentario Apertura" 
                                       sortBy="#{prorroga.prorrogaRemanenteMensual.comentarioApertura}" 
                                       filterBy="#{prorroga.prorrogaRemanenteMensual.comentarioApertura}" filterMatchMode="contains" 
-                                      width="20%" style="text-align: left">
+                                      width="30%" style="text-align: left">
                                 <h:outputText value="#{prorroga.prorrogaRemanenteMensual.comentarioApertura}" />
                             </p:column>
                             <p:column headerText="Comentario Cierre" 
                                       sortBy="#{prorroga.prorrogaRemanenteMensual.comentarioCierre}" 
                                       filterBy="#{prorroga.prorrogaRemanenteMensual.comentarioCierre}" filterMatchMode="contains" 
-                                      width="20%" style="text-align: left">
+                                      width="30%" style="text-align: left">
                                 <h:outputText value="#{prorroga.prorrogaRemanenteMensual.comentarioCierre}" />
                             </p:column>
                             <p:column headerText="Estado" sortBy="#{prorroga.prorrogaRemanenteMensual.estado}" 
@@ -62,21 +56,21 @@
                                          icon="fa fa-fw fa-plus-square"
                                          id="btnNuevaProrroga"
                                          disabled="false"
-                                         action="#{prorrogaMensualCtrl.abrirProrroga}"
+                                         action="#{prorrogaGeneralCtrl.abrirProrroga}"
                                          update="formNuevaProrroga, formCerrarProrroga"/>
                         <p:commandButton value="#{etiquetas['nombreBtn.cerrarProrrogas']}"
                                          style="margin-right:20px; width: 100%"                                         
                                          icon="fa fa-fw fa-close"
                                          id="btnCerrarProrrogas"
-                                         disabled="#{prorrogaMensualCtrl.disableCerrarProrrogas}"
-                                         action="#{prorrogaMensualCtrl.cerrarProrroga}"
+                                         disabled="#{prorrogaGeneralCtrl.disableCerrarProrrogas}"
+                                         action="#{prorrogaGeneralCtrl.cerrarProrroga}"
                                          update="formCerrarProrroga, formNuevaProrroga"/> 
                         <p:commandButton value="#{etiquetas['nombreBtn.cerrarTodasProrrogas']}"
                                          style="margin-right:20px; width: 100%"
                                          icon="fa fa-fw fa-close"
                                          id="btnCerrarTodasProrrogas"
-                                         disabled="#{prorrogaMensualCtrl.disableCerrarProrrogasTodas}"
-                                         action="#{prorrogaMensualCtrl.cerrarProrrogaTodas}"
+                                         disabled="#{prorrogaGeneralCtrl.disableCerrarProrrogasTodas}"
+                                         action="#{prorrogaGeneralCtrl.cerrarProrrogaTodas}"
                                          update="formCerrarProrroga, formNuevaProrroga"/> 
                     </b:panelGrid>                    
                 </b:panel>                
@@ -84,32 +78,14 @@
 
             <h:form id="formNuevaProrroga" >                
                 <b:panel title="Apertura de Prórroga"
-                         style="width: 75%" rendered="#{prorrogaMensualCtrl.renderAbrirProrroga}">
+                         style="width: 75%" rendered="#{prorrogaGeneralCtrl.renderAbrirProrroga}">
                     <p:messages id="messages" showDetail="true" closable="true">
                         <p:autoUpdate />
                     </p:messages>                
-                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
-                        <p:outputLabel for="institucion" value="#{etiquetas['nombreLbl.institucion']}:" />
-                        <p:autoComplete id="institucion"
-                                        value="#{prorrogaMensualCtrl.registroMixto}"
-                                        completeMethod="#{prorrogaMensualCtrl.completeNombreRegistroMixto}"
-                                        converter="#{institucionConverter}"
-                                        var="institucion"
-                                        itemLabel="#{institucion.nombre}"
-                                        itemValue="#{institucion}"
-                                        style="width: 100%"
-                                        inputStyle="width: 100%"
-                                        maxResults="10"
-                                        required="true"
-                                        title="#{institucion.nombre}">
-                            <p:ajax event="itemSelect" listener="#{prorrogaMensualCtrl.onInstitucionSelect}" 
-                                    update="formNuevaProrroga:mesProrroga,
-                                    formNuevaProrroga:guardarBtn"/>
-                        </p:autoComplete>
-
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">                       
                         <p:outputLabel for="mesProrroga" value="#{etiquetas['nombreLbl.mesProrroga']}:" />
                         <p:datePicker id="mesProrroga"
-                                      value="#{prorrogaMensualCtrl.fechaApertura}"
+                                      value="#{prorrogaGeneralCtrl.fechaApertura}"
                                       view="month"
                                       pattern="MM/yyyy" 
                                       yearNavigator="true"
@@ -118,35 +94,38 @@
                                       locale="es"
                                       style="width: 100%"
                                       inputStyle="width: 40%">
-                            <p:ajax event="dateSelect" listener="#{prorrogaMensualCtrl.onDateSelect}" 
+                            <p:ajax event="dateSelect" listener="#{prorrogaGeneralCtrl.onDateSelect}" 
                                     update="formNuevaProrroga:guardarBtn"/>
                         </p:datePicker>
 
                         <p:outputLabel for="comentarioApertura" value="#{etiquetas['nombreLbl.comentarioApertura']}:" />
                         <p:inputTextarea
                             id="comentarioApertura"
-                            value="#{prorrogaMensualCtrl.prorrogaApertura.comentarioApertura}"
+                            value="#{prorrogaGeneralCtrl.prorrogaApertura.comentarioApertura}"
                             rows="6"
                             required="true"
                             style="width: 75%"
                             counter="display"
                             maxlength="500"
-                            counterTemplate="{0} caracteres restantes prueb."/>
+                            counterTemplate="{0} caracteres restantes"/>
                         <br />
                         <h:outputText id="display" />
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
                         <p:commandButton id="guardarBtn" value="Crear Prórroga" style="margin-right:20px;" icon="fa fa-fw fa-edit" 
-                                         action="#{prorrogaMensualCtrl.guardarProrroga}"
-                                         disabled="#{prorrogaMensualCtrl.disableAbrirProrroga}"
+                                         action="#{prorrogaGeneralCtrl.guardarProrroga}"
+                                         disabled="#{prorrogaGeneralCtrl.disableAbrirProrroga}"
                                          update="formNuevaProrroga, formProrroga, messages"/>
-                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" />
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" 
+                                         action="#{prorrogaGeneralCtrl.cancelarAbrirProrroga}"
+                                         process="@this"
+                                         update="formNuevaProrroga, formProrroga, messages"/>                        
                     </b:panelGrid>
                 </b:panel>
             </h:form>
 
             <h:form id="formCerrarProrroga" >                
-                <b:panel title="Cierre de Prórrogas" style="width: 75%" rendered="#{prorrogaMensualCtrl.renderCerrarProrroga}">
+                <b:panel title="Cierre de Prórrogas" style="width: 75%" rendered="#{prorrogaGeneralCtrl.renderCerrarProrroga}">
                     <p:messages id="messagesCerrar" showDetail="true" closable="true">
                         <p:autoUpdate />
                     </p:messages>                
@@ -155,22 +134,22 @@
                         <p:dataTable
                             id="prorrogaTblSeleccion"                            
                             var="prorroga" 
-                            value="#{prorrogaMensualCtrl.prorrogaRemanenteSelectedList}" 
+                            value="#{prorrogaGeneralCtrl.prorrogaRemanenteSelectedList}" 
                             scrollable="true" scrollHeight="300">
                             <p:column headerText="Institución"
                                       width="40%" style="text-align: center">
-                                <h:outputText value="#{prorroga.institucionNombre}" />
+                                <h:outputText value="Todas las Instituciones" />
                             </p:column>
                             <p:column headerText="Mes de Prórroga"
                                       width="10%" style="text-align: right">
-                                <h:outputText value="#{prorroga.mesStr} / #{prorroga.año}" />
+                                <h:outputText value="#{prorroga.mesStr} / #{prorroga.prorrogaRemanenteMensual.anio}" />
                             </p:column>                            
                         </p:dataTable>
 
                         <p:outputLabel for="comentarioCierre" value="#{etiquetas['nombreLbl.comentarioCierre']}:" />
                         <p:inputTextarea
                             id="comentarioCierre"
-                            value="#{prorrogaMensualCtrl.comentarioCierre}"
+                            value="#{prorrogaGeneralCtrl.comentarioCierre}"
                             rows="6"
                             required="true"
                             style="width: 75%"
@@ -181,9 +160,13 @@
                         <h:outputText id="display" />
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-                        <p:commandButton id="guardarBtn" value="Cerrar Prórrogas Seleccionadas" style="margin-right:20px;" icon="fa fa-fw fa-edit" action="#{prorrogaMensualCtrl.guardarCerrarProrroga}" update="formCerrarProrroga, formProrroga, messagesCerrar"/>
+                        <p:commandButton id="guardarBtn" value="Cerrar Prórrogas Seleccionadas" style="margin-right:20px;" 
+                                         icon="fa fa-fw fa-edit"
+                                         disabled="#{prorrogaGeneralCtrl.disableCerrarProrrogas}"
+                                         action="#{prorrogaGeneralCtrl.guardarCerrarProrroga}" 
+                                         update="formCerrarProrroga, formProrroga, messagesCerrar"/>
                         <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban"
-                                         action="#{prorrogaMensualCtrl.cancelarCerrarProrroga}"
+                                         action="#{prorrogaGeneralCtrl.cancelarCerrarProrroga}"
                                          process="@this"
                                          update="formCerrarProrroga, formProrroga, messagesCerrar"/>
                     </b:panelGrid>
