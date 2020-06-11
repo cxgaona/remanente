@@ -5,7 +5,7 @@
  */
 package ec.gob.dinardap.remanente.dto;
 
-import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
+import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 
 /**
  *
@@ -13,81 +13,52 @@ import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
  */
 public class RemanenteCuatrimestralDTO {
 
-    private RemanenteMensual remanenteMensual;
-    private String mesStr;
+    private RemanenteCuatrimestral remanenteCuatrimestral;
+    private String periodo;
     private String ultimoEstado;
-    private String descEstadoMesStr;
 
     public RemanenteCuatrimestralDTO() {
 
     }
 
-    public RemanenteCuatrimestralDTO(RemanenteMensual remanenteMensual) {
-        this.remanenteMensual = remanenteMensual;
-        String mesAux;
-        switch (this.remanenteMensual.getMes()) {
+    public RemanenteCuatrimestralDTO(RemanenteCuatrimestral remanenteCuatrimestral) {
+        this.remanenteCuatrimestral = remanenteCuatrimestral;
+        String periodoAux;
+        switch (this.remanenteCuatrimestral.getCuatrimestre()) {
             case 1:
-                mesAux = "ENERO";
+                periodoAux = "Enero-Abril";
                 break;
             case 2:
-                mesAux = "FEBRERO";
+                periodoAux = "Mayo-Agosto";
                 break;
             case 3:
-                mesAux = "MARZO";
-                break;
-            case 4:
-                mesAux = "ABRIL";
-                break;
-            case 5:
-                mesAux = "MAYO";
-                break;
-            case 6:
-                mesAux = "JUNIO";
-                break;
-            case 7:
-                mesAux = "JULIO";
-                break;
-            case 8:
-                mesAux = "AGOSTO";
-                break;
-            case 9:
-                mesAux = "SEPTIEMBRE";
-                break;
-            case 10:
-                mesAux = "OCTUBRE";
-                break;
-            case 11:
-                mesAux = "NOVIEMBRE";
-                break;
-            case 12:
-                mesAux = "DICIEMRE";
+                periodoAux = "Septiembre-Diciembre";
                 break;
             default:
-                mesAux = "Fecha sin Definir";
+                periodoAux = "Período sin Definir";
                 break;
         }
-        this.mesStr = mesAux;
-        this.descEstadoMesStr = this.mesStr;
-        if (this.remanenteMensual.getEstadoRemanenteMensualList().get(0).getDescripcion().equals("GeneradoNuevaVersion")) {
-            this.descEstadoMesStr = this.mesStr + " (NUEVA VERSIÓN)";
+        this.periodo = periodoAux;
+        if (!this.remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList().isEmpty()) {
+            this.ultimoEstado = this.remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList().get(
+                    this.remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion();
         }
-
     }
 
-    public RemanenteMensual getRemanenteMensual() {
-        return remanenteMensual;
+    public RemanenteCuatrimestral getRemanenteCuatrimestral() {
+        return remanenteCuatrimestral;
     }
 
-    public void setRemanenteMensual(RemanenteMensual remanenteMensual) {
-        this.remanenteMensual = remanenteMensual;
+    public void setRemanenteCuatrimestral(RemanenteCuatrimestral remanenteCuatrimestral) {
+        this.remanenteCuatrimestral = remanenteCuatrimestral;
     }
 
-    public String getMesStr() {
-        return mesStr;
+    public String getPeriodo() {
+        return periodo;
     }
 
-    public void setMesStr(String mesStr) {
-        this.mesStr = mesStr;
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
     }
 
     public String getUltimoEstado() {
@@ -96,14 +67,6 @@ public class RemanenteCuatrimestralDTO {
 
     public void setUltimoEstado(String ultimoEstado) {
         this.ultimoEstado = ultimoEstado;
-    }
-
-    public String getDescEstadoMesStr() {
-        return descEstadoMesStr;
-    }
-
-    public void setDescEstadoMesStr(String descEstadoMesStr) {
-        this.descEstadoMesStr = descEstadoMesStr;
     }
 
 }
