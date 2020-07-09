@@ -55,20 +55,22 @@
                                              icon="fa fa-fw fa-refresh"/>
                         </b:panelGrid>
                         <p:dataTable id="remanenteCuatrimestralTbl"
-                                     value="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralList}" 
-                                     rowKey="#{remanenteCuatrimestral.remanenteCuatrimestralPK.remanenteCuatrimestralId}"
+                                     value="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOList}" 
+                                     rowKey="#{remanenteCuatrimestral.remanenteCuatrimestral.remanenteCuatrimestralPK.remanenteCuatrimestralId}"
                                      var="remanenteCuatrimestral"                                     
                                      selectionMode="single"
-                                     selection="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected}"
-                                     style="width: 50%">
+                                     selection="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected}"
+                                     style="width: 60%"
+                                     tableStyle="width:auto">
                             <p:ajax event="rowSelect" listener="#{validarRemanenteCuatrimestralCtrl.onRowSelectRemanenteCuatrimestral}" update="formTransacciones, formRemanenteCuatrimestral, formRemanenteCuatrimestral:panelInforme"/>
                             <p:column headerText="Cuatrimestre" width="20%">
-                                <h:outputText value="#{remanenteCuatrimestral.cuatrimestre}" />
+                                <h:outputText value="#{remanenteCuatrimestral.remanenteCuatrimestral.cuatrimestre}" />
                             </p:column>
-                            <p:column headerText="Período" width="40%">
-                                <h:outputText value="#{remanenteCuatrimestral.cuatrimestre eq 1 ? 'Enero - Abril':
-                                                       remanenteCuatrimestral.cuatrimestre eq 2 ? 'Mayo - Agosto':
-                                                       remanenteCuatrimestral.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin definir'}"/>  
+                            <p:column headerText="Período" width="20%">
+                                <h:outputText value="#{remanenteCuatrimestral.periodo}"/>  
+                                <!--                                <h:outputText value="#{remanenteCuatrimestral.cuatrimestre eq 1 ? 'Enero - Abril':
+                                                                                           remanenteCuatrimestral.cuatrimestre eq 2 ? 'Mayo - Agosto':
+                                                                                           remanenteCuatrimestral.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin definir'}"/>  -->
                             </p:column>
                             <p:column headerText="Informe Cuatrimestral" width="20%">                                
                                 <center>
@@ -76,7 +78,7 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{validarRemanenteCuatrimestralCtrl.visualizarArchivoInfRemanenteCuatrimestral()}"
-                                                   style="visibility:#{empty remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}">
+                                                   style="visibility:#{empty remanenteCuatrimestral.remanenteCuatrimestral.informeRemanenteUrl ? 'hidden':'visible'}">
                                         <f:setPropertyActionListener
                                             target="#{validarRemanenteCuatrimestralCtrl.rutaArchivo}"
                                             value="#{remanenteCuatrimestral.informeRemanenteUrl}" /> 
@@ -89,12 +91,15 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{validarRemanenteCuatrimestralCtrl.visualizarArchivoInfTecRemanenteCuatrimestral()}"
-                                                   style="visibility:#{empty remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}">
+                                                   style="visibility:#{empty remanenteCuatrimestral.remanenteCuatrimestral.informeTecnicoUrl ? 'hidden':'visible'}">
                                         <f:setPropertyActionListener
                                             target="#{validarRemanenteCuatrimestralCtrl.rutaArchivo}"
-                                            value="#{remanenteCuatrimestral.informeTecnicoUrl}" /> 
+                                            value="#{remanenteCuatrimestral.remanenteCuatrimestral.informeTecnicoUrl}" /> 
                                     </h:commandLink>
                                 </center>
+                            </p:column>
+                            <p:column headerText="Estado Actual" width="20%">
+                                <h:outputText value="#{remanenteCuatrimestral.ultimoEstado}"/>  
                             </p:column>                            
                         </p:dataTable>
 
@@ -126,7 +131,7 @@
                                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
                                     </p:confirmDialog>
                                 </p:commandButton>
-                                        <p:commandButton id="btnCancelarInforme" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{validarRemanenteCuatrimestralCtrl.cancelarInformeTecnicoCuatrimestral}" update="formRemanenteCuatrimestral" disabled="#{validarRemanenteCuatrimestralCtrl.disabledBtnEnvCan}">
+                                <p:commandButton id="btnCancelarInforme" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{validarRemanenteCuatrimestralCtrl.cancelarInformeTecnicoCuatrimestral}" update="formRemanenteCuatrimestral" disabled="#{validarRemanenteCuatrimestralCtrl.disabledBtnEnvCan}">
                                     <p:confirm header="Confirmación" message="¿Está seguro que desea Cancelar el Informe Técnico Cuatrimestral suscrito? El archivo adjunto se eliminará." icon="fa fa-fw fa-warning" />
                                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                                         <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
@@ -141,9 +146,7 @@
             </h:form> 
 
             <h:form id="formTransacciones">
-                <b:panel title="Transacciones Período ( #{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ? 'Enero - Abril':
-                                                          validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ? 'Mayo - Agosto':
-                                                          validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre - Diciembre':'Sin Selección'})">
+                <b:panel title="Transacciones Período ( #{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.periodo})">
 
                     <h:panelGrid columns="1" style="width: 75%;">
 
@@ -165,30 +168,30 @@
                             <p:column headerText="Detalle" width="40%">
                                 <h:outputText value="#{row.nombre}" />
                             </p:column>
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Enero'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Mayo'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Enero'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Mayo'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes1" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Febrero'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Junio'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Febrero'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Junio'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes2" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Marzo'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Julio'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Marzo'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Julio'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes3" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Abril'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Agosto'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Abril'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Agosto'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes4" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
@@ -338,30 +341,30 @@
                             <p:column headerText="Detalle" width="40%">
                                 <h:outputText value="#{row.nombre}" />
                             </p:column>
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Enero'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Mayo'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Enero'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Mayo'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Septiembre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes1" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Febrero'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Junio'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Febrero'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Junio'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Octubre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes2" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Marzo'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Julio'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Marzo'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Julio'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Noviembre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes3" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>
                             </p:column>                                                        
-                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 1 ?'Abril'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 2 ?'Agosto'
-                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralSelected.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
+                            <p:column headerText="#{validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 1 ?'Abril'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 2 ?'Agosto'
+                                                    :validarRemanenteCuatrimestralCtrl.remanenteCuatrimestralDTOSelected.remanenteCuatrimestral.cuatrimestre eq 3 ? 'Diciembre':''}" width="12%" style="text-align: right">
                                 <h:outputText id="mes4" value="#{row}">
                                     <f:converter converterId="rowConverter"/>
                                 </h:outputText>

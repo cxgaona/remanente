@@ -47,9 +47,11 @@ public class Email {
             Logger.getLogger(Email.class.getName()).log(Level.SEVERE, null, ex);
         }
         prop = new Properties();
-        prop.put("mail.smtp.host", "smtpsrv.dinardap.gob.ec");
+//        prop.put("mail.smtp.host", "smtpsrv.dinardap.gob.ec");
+        prop.put("mail.smtp.host", "10.0.113.3");
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "false");
+//        prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.transport.protocol", "smtp");
     }
@@ -63,7 +65,7 @@ public class Email {
                 new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("notificaciones.remanentes@dinardap.gob.ec", "Password.1");
+                return new PasswordAuthentication("dinardap.capacitadora", "aV-Capacitacion-3007");
             }
         });
 
@@ -85,6 +87,7 @@ public class Email {
                 htmlPart.setContent(formulario, "text/html; charset=utf-8");
                 multipartes.addBodyPart(htmlPart);
                 message.setContent(multipartes);
+                System.out.println("Enviando correo");
                 Transport.send(message);
             }
         } catch (AuthenticationFailedException e) {
