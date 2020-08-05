@@ -130,13 +130,10 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         remanenteMensualSelected = remanenteMensualServicio.getUltimoRemanenteMensual(institucionId, año, mes);
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, año, mes, actividadRegistral, remanenteMensualSelected.getRemanenteMensualId());
         ultimoEstado = remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion();
-
-        if (ultimoEstado.equals("GeneradoAutomaticamente")
-                || ultimoEstado.equals("Verificado-Rechazado")
-                || ultimoEstado.equals("GeneradoNuevaVersion")) {
+        if (ultimoEstado.equals("GeneradoAutomaticamente") || ultimoEstado.equals("Verificado-Rechazado")) {
             disableNuevoTramite = Boolean.FALSE;
             disableDeleteTramite();
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes(), remanenteMensualSelected.getRemanenteMensualId())) {
                 disableNuevoTramite = Boolean.FALSE;
                 disableDeleteTramite();
             } else {
@@ -146,11 +143,36 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 disableNuevoTramite = Boolean.TRUE;
             }
         } else {
-            renderEdition = Boolean.FALSE;
-            disableDeleteTramite = Boolean.TRUE;
-            disableDeleteTramiteTodos = Boolean.TRUE;
-            disableNuevoTramite = Boolean.TRUE;
+            if (ultimoEstado.equals("GeneradoNuevaVersion")) {
+                System.out.println("Verificar la fecha y despues habilitar o no ");
+            } else {
+                renderEdition = Boolean.FALSE;
+                disableDeleteTramite = Boolean.TRUE;
+                disableDeleteTramiteTodos = Boolean.TRUE;
+                disableNuevoTramite = Boolean.TRUE;
+            }
         }
+
+//        if (ultimoEstado.equals("GeneradoAutomaticamente")
+//                || ultimoEstado.equals("Verificado-Rechazado")
+//                || ultimoEstado.equals("GeneradoNuevaVersion")) {
+//            disableNuevoTramite = Boolean.FALSE;
+//            disableDeleteTramite();
+//            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes(), remanenteMensualSelected.getRemanenteMensualId())) {
+//                disableNuevoTramite = Boolean.FALSE;
+//                disableDeleteTramite();
+//            } else {
+//                renderEdition = Boolean.FALSE;
+//                disableDeleteTramite = Boolean.TRUE;
+//                disableDeleteTramiteTodos = Boolean.TRUE;
+//                disableNuevoTramite = Boolean.TRUE;
+//            }
+//        } else {
+//            renderEdition = Boolean.FALSE;
+//            disableDeleteTramite = Boolean.TRUE;
+//            disableDeleteTramiteTodos = Boolean.TRUE;
+//            disableNuevoTramite = Boolean.TRUE;
+//        }
     }
 
     public void reloadTramite() {

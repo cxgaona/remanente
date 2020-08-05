@@ -208,7 +208,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 || ultimoEstadoMensual.equals("GeneradoNuevaVersion")) {
             btnActivated = Boolean.FALSE;
             displayUploadEdit = Boolean.TRUE;
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes())) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
                 btnActivated = Boolean.FALSE;
                 displayUploadEdit = Boolean.TRUE;
             } else {

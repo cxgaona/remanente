@@ -12,14 +12,10 @@ import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.dao.DiasNoLaborablesDao;
 import ec.gob.dinardap.remanente.modelo.DiasNoLaborables;
 import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import ec.gob.dinardap.remanente.servicio.ProrrogaRemanenteMensualServicio;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Stateless(name = "DiasNoLaborablesServicio")
 public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLaborables, Integer> implements DiasNoLaborablesServicio {
@@ -27,34 +23,37 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
     @EJB
     private DiasNoLaborablesDao diasNoLaborablesDao;
 
+    @EJB
+    private ProrrogaRemanenteMensualServicio prorrogaRemanenteMensualServicio;
+
     @Override
     public GenericDao<DiasNoLaborables, Integer> getDao() {
         return diasNoLaborablesDao;
     }
 
-    @Override
-    public List<Date> diasFestivosAtivos() {
-        try {
-            List<Date> diasFestivosList = new ArrayList<Date>();
-            List<DiasNoLaborables> fechaList = new ArrayList<DiasNoLaborables>();
-            String[] criteriaNombres = {"estado"};
-            CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS};
-            Object[] criteriaValores = {"A"};
-            String[] orderBy = {"diasNoLaborablesId"};
-            boolean[] asc = {true};
-            Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
-            fechaList = findByCriterias(criteria);
-            for (DiasNoLaborables dnl : fechaList) {
-                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dnl.getAnio() + "-" + dnl.getMes() + "-" + dnl.getDia());
-                diasFestivosList.add(date);
-            }
-            return diasFestivosList;
-        } catch (ParseException ex) {
-            Logger.getLogger(DiasNoLaborablesServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
+//    @Override
+//    public List<Date> diasFestivosAtivos() {
+//        try {
+//            List<Date> diasFestivosList = new ArrayList<Date>();
+//            List<DiasNoLaborables> fechaList = new ArrayList<DiasNoLaborables>();
+//            String[] criteriaNombres = {"estado"};
+//            CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS};
+//            Object[] criteriaValores = {"A"};
+//            String[] orderBy = {"diasNoLaborablesId"};
+//            boolean[] asc = {true};
+//            Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+//            fechaList = findByCriterias(criteria);
+//            for (DiasNoLaborables dnl : fechaList) {
+//                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dnl.getAnio() + "-" + dnl.getMes() + "-" + dnl.getDia());
+//                diasFestivosList.add(date);
+//            }
+//            return diasFestivosList;
+//        } catch (ParseException ex) {
+//            Logger.getLogger(DiasNoLaborablesServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+//            return null;
+//        }
+//    }
+//
     private List<DiasNoLaborables> diasFestivosMes(Integer mes, Integer año) {
         List<DiasNoLaborables> fechaList = new ArrayList<DiasNoLaborables>();
         String[] criteriaNombres = {"estado", "mes", "anio"};
@@ -74,7 +73,6 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         Integer añoActual = fechaActual.get(Calendar.YEAR);
         Integer mesActual = fechaActual.get(Calendar.MONTH);
         Integer diaActual = fechaActual.get(Calendar.DAY_OF_MONTH);
-        
 
         Calendar fechaSeleccionada = Calendar.getInstance();
         fechaSeleccionada.set(Calendar.YEAR, año);
@@ -82,7 +80,6 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         Integer añoSeleccionado = fechaSeleccionada.get(Calendar.YEAR);
         Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
         Integer diaSeleccionado = fechaSeleccionada.get(Calendar.DAY_OF_MONTH);
-        
 
         List<DiasNoLaborables> feriados = new ArrayList<DiasNoLaborables>();
         feriados = diasFestivosMes(mesActual + 1, añoActual);
@@ -99,7 +96,7 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
             habilitar = Boolean.TRUE;
         } else {
             if ((mesActual - 1 == mesSeleccionado && añoActual.equals(añoSeleccionado))
-                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {                
+                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {
                 for (int i = 1; i <= diaActual; i++) {
                     Boolean flagDiaFeriado = Boolean.FALSE;
                     diaAux.set(Calendar.DAY_OF_MONTH, i);
@@ -131,6 +128,140 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         //Cambio para desarrollo y pruebas
         Boolean flagCambios = Boolean.TRUE; //False para pro True para desarrollo y pruebas
         if (flagCambios) {
+            return Boolean.TRUE;
+        } else {
+            return habilitar;
+        }
+    }
+
+    @Override
+    public Boolean habilitarDiasAdicionales(Integer año, Integer mes, Integer remanenteMensualId) {
+        //Declaración        
+        Calendar fechaActual = Calendar.getInstance();
+        Integer añoActual = fechaActual.get(Calendar.YEAR);
+        Integer mesActual = fechaActual.get(Calendar.MONTH);
+        Integer diaActual = fechaActual.get(Calendar.DAY_OF_MONTH);
+
+        Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.set(Calendar.YEAR, año);
+        fechaSeleccionada.set(Calendar.MONTH, mes - 1);
+        Integer añoSeleccionado = fechaSeleccionada.get(Calendar.YEAR);
+        Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
+        Integer diaSeleccionado = fechaSeleccionada.get(Calendar.DAY_OF_MONTH);
+
+        List<DiasNoLaborables> feriados = new ArrayList<DiasNoLaborables>();
+        feriados = diasFestivosMes(mesActual + 1, añoActual);
+
+        Integer diasAdicionales = 2; // Obtener desde bdd     
+
+        Integer contadorDias = 0;
+        Boolean habilitar = Boolean.FALSE;
+
+        Calendar diaAux = Calendar.getInstance();
+
+        if (añoActual.equals(añoSeleccionado)
+                && mesActual.equals(mesSeleccionado)) {
+            habilitar = Boolean.TRUE;
+        } else {
+            if ((mesActual - 1 == mesSeleccionado && añoActual.equals(añoSeleccionado))
+                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {
+                for (int i = 1; i <= diaActual; i++) {
+                    Boolean flagDiaFeriado = Boolean.FALSE;
+                    diaAux.set(Calendar.DAY_OF_MONTH, i);
+                    String dayOfWeek = diaAux.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
+                    if (!dayOfWeek.equals("SUNDAY") && !dayOfWeek.equals("SATURDAY")) {
+                        for (DiasNoLaborables dnl : feriados) {
+                            if (dnl.getDia() == i) {
+                                flagDiaFeriado = Boolean.TRUE;
+                                break;
+                            }
+                        }
+                        if (!flagDiaFeriado) {
+                            contadorDias++;
+                        }
+                    } else {
+                        if (contadorDias == diasAdicionales) {
+                            contadorDias++;
+                        }
+                    }
+                    if (contadorDias <= diasAdicionales) {
+                        habilitar = Boolean.TRUE;
+                    } else {
+                        habilitar = Boolean.FALSE;
+                        break;
+                    }
+                }
+            }
+        }
+        //Sección para el manejo de prórrogas
+        if (prorrogaRemanenteMensualServicio.getProrrogaRemanenteMensual(remanenteMensualId) != null) {
+            return Boolean.TRUE;
+        } else {
+            return habilitar;
+        }
+    }
+
+    public Boolean habilitarDiasAdicionalesSC(Integer año, Integer mes, Integer dia, Integer remanenteMensualId) {
+        //Declaración        
+        Calendar fechaActual = Calendar.getInstance();
+        Integer añoActual = fechaActual.get(Calendar.YEAR);
+        Integer mesActual = fechaActual.get(Calendar.MONTH);
+        Integer diaActual = fechaActual.get(Calendar.DAY_OF_MONTH);
+
+        Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.set(Calendar.YEAR, año);
+        fechaSeleccionada.set(Calendar.MONTH, mes - 1);
+        fechaSeleccionada.set(Calendar.DAY_OF_MONTH, dia);
+        Integer añoSeleccionado = fechaSeleccionada.get(Calendar.YEAR);
+        Integer mesSeleccionado = fechaSeleccionada.get(Calendar.MONTH);
+        Integer diaSeleccionado = fechaSeleccionada.get(Calendar.DAY_OF_MONTH);
+
+        List<DiasNoLaborables> feriados = new ArrayList<DiasNoLaborables>();
+        feriados = diasFestivosMes(mesActual + 1, añoActual);
+
+        Integer diasAdicionales = 2; // Obtener desde bdd     
+
+        Integer contadorDias = 0;
+        Boolean habilitar = Boolean.FALSE;
+
+        Calendar diaAux = Calendar.getInstance();
+
+        if (añoActual.equals(añoSeleccionado)
+                && mesActual.equals(mesSeleccionado)) {
+            habilitar = Boolean.TRUE;
+        } else {
+            if ((mesActual - 1 == mesSeleccionado && añoActual.equals(añoSeleccionado))
+                    || ((mesActual == 0 && mesSeleccionado == 11) && (añoActual - 1 == añoSeleccionado))) {
+                for (int i = 1; i <= diaActual; i++) {
+                    Boolean flagDiaFeriado = Boolean.FALSE;
+                    diaAux.set(Calendar.DAY_OF_MONTH, i);
+                    String dayOfWeek = diaAux.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
+                    if (!dayOfWeek.equals("SUNDAY") && !dayOfWeek.equals("SATURDAY")) {
+                        for (DiasNoLaborables dnl : feriados) {
+                            if (dnl.getDia() == i) {
+                                flagDiaFeriado = Boolean.TRUE;
+                                break;
+                            }
+                        }
+                        if (!flagDiaFeriado) {
+                            contadorDias++;
+                        }
+                    } else {
+                        if (contadorDias == diasAdicionales) {
+                            contadorDias++;
+                        }
+                    }
+                    if (contadorDias <= diasAdicionales) {
+                        habilitar = Boolean.TRUE;
+                    } else {
+                        habilitar = Boolean.FALSE;
+                        break;
+                    }
+                }
+            }
+        }
+        //Sección para el manejo de prórrogas
+        if (prorrogaRemanenteMensualServicio.getProrrogaRemanenteMensual(remanenteMensualId) != null) {
             return Boolean.TRUE;
         } else {
             return habilitar;

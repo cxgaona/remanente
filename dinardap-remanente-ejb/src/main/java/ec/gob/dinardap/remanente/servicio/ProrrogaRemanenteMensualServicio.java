@@ -19,4 +19,6 @@ public interface ProrrogaRemanenteMensualServicio extends GenericService<Prorrog
     public List<ProrrogaRemanenteGeneralDTO> getProrrogaGeneralListEstado(String estado);
 
     public List<SolicitudCambioDTO> getRemanenteMensualSolicitudCambioAprobada(Integer institucionId);
+
+    public ProrrogaRemanenteMensual getProrrogaRemanenteMensual(Integer remanenteMensualId);
 }
