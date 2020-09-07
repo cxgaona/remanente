@@ -2,16 +2,17 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.mail.Email;
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.modelo.Pregunta;
-import ec.gob.dinardap.remanente.modelo.Respuesta;
-import ec.gob.dinardap.remanente.modelo.Usuario;
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
-import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
-import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
-import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.modelo.Pregunta;
+import ec.gob.dinardap.seguridad.modelo.Respuesta;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
+import ec.gob.dinardap.seguridad.servicio.PreguntaServicio;
+import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
+import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -52,7 +53,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     //Listas
     private List<Usuario> usuarioActivoList;
-    private List<InstitucionRequerida> institucionRequeridaList;
+    private List<Institucion> institucionList;
     private List<Pregunta> preguntaList;
     private Boolean restablecer;
     private String tituloPagina;
@@ -66,7 +67,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private UsuarioServicio usuarioServicio;
     
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
+    private InstitucionServicio institucionServicio;
     
     @EJB
     private PreguntaServicio preguntaServicio;
@@ -93,7 +94,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         btnGuardar = "";
         tipoInstitucion = "";
         
-        institucionRequeridaList = new ArrayList<InstitucionRequerida>();
+        institucionList = new ArrayList<Institucion>();
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioActivoList = usuarioServicio.getUsuariosActivos();
     }
@@ -109,9 +110,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledRestablecer = Boolean.TRUE;
         restablecer = Boolean.TRUE;
         
-        institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
+        institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.DINARDAP.getTipoInstitucion()));
         usuarioSelected = new Usuario();
-        usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
+        usuarioSelected.setInstitucionId(institucionList.get(institucionList.size() - 1));
         usuarioSelected.setAdministrador(Boolean.TRUE);
         usuarioSelected.setValidador(Boolean.FALSE);
         usuarioSelected.setRegistrador(Boolean.FALSE);
@@ -152,7 +153,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         restablecer = Boolean.FALSE;
         if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
-            institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
             disabledRegistrador = Boolean.FALSE;
             disabledVerificador = Boolean.FALSE;
             disabledValidador = Boolean.TRUE;
@@ -160,14 +162,14 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             
         } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
             tipoInstitucion = "GAD";
-            institucionRequeridaList = institucionRequeridaServicio.getGADList();
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.GAD.getTipoInstitucion()));
             disabledRegistrador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
             disabledAdministrador = Boolean.TRUE;
         } else if (usuarioSelected.getInstitucionId().getTipo().equals("REGIONAL")) {
             tipoInstitucion = "Dirección Regional";
-            institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.REGIONAL.getTipoInstitucion()));
             disabledRegistrador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
@@ -187,30 +189,30 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void guardar() {
         String contraseña = "";
         Usuario userExistente = new Usuario();
-        userExistente = usuarioServicio.getUsuarioByUsername(usuarioSelected.getUsuario());
-        if (usuarioSelected.getEmail() != null && !usuarioSelected.getEmail().isEmpty()) {
+        userExistente = usuarioServicio.obtenerUsuarioPorIdentificacion(usuarioSelected.getCedula());
+        if (usuarioSelected.getCorreoElectronico()!= null && !usuarioSelected.getCorreoElectronico().isEmpty()) {
             if (restablecer) {
                 contraseña = FacesUtils.generarContraseña();
                 usuarioSelected.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
             }
             if (onCreate) {
                 if (userExistente.getUsuarioId() == null) {
-                    usuarioSelected.setEstado("A");
+                    usuarioSelected.setEstado((short)1);
                     usuarioSelected.setSuperAdministrador(Boolean.FALSE);
                     usuarioServicio.createUsuario(usuarioSelected);
                     preguntaList = new ArrayList<Pregunta>();
                     preguntaList = preguntaServicio.getPreguntasActivas();
                     for (Pregunta p : preguntaList) {
                         Respuesta respuesta = new Respuesta();
-                        respuesta.setUsuarioId(usuarioSelected);
-                        respuesta.setPreguntaId(p);
+                        respuesta.setUsuario(usuarioSelected);
+                        respuesta.setPregunta(p);
                         respuesta.setRespuesta("");
-                        respuesta.setEstado("A");
+                        respuesta.setEstado((short)1);
                         respuestaServicio.create(respuesta);
                     }
                     if (restablecer) {
                         correoRestablecerContraseña(contraseña);
-                        this.addInfoMessage("El usuario se creó satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getEmail(), "");
+                        this.addInfoMessage("El usuario se creó satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getCorreoElectronico(), "");
                     }
                     usuarioActivoList = new ArrayList<Usuario>();
                     usuarioSelected = new Usuario();
@@ -228,7 +230,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     this.addInfoMessage("El usuario se actualizó satisfactoriamente.", "");
                     if (restablecer) {
                         correoRestablecerContraseña(contraseña);
-                        this.addInfoMessage("La contraseña actualizada se ha enviado a " + usuarioSelected.getEmail(), "");
+                        this.addInfoMessage("La contraseña actualizada se ha enviado a " + usuarioSelected.getCorreoElectronico(), "");
                     }
                     
                     usuarioActivoList = new ArrayList<Usuario>();
@@ -248,7 +250,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
     
     public void eliminarUsuario() {
-        usuarioSelected.setEstado("I");
+        usuarioSelected.setEstado((short)0);
         usuarioServicio.editUsuario(usuarioSelected);
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioSelected = new Usuario();
@@ -309,7 +311,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                         }
                         switch (cell.getColumnIndex()) {
                             case 0:
-                                InstitucionRequerida ir = new InstitucionRequerida();
+                                Institucion ir = new Institucion();
                                 if (dato == null) {
                                     ir.setInstitucionId(null);
                                 } else {
@@ -321,10 +323,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                                 usuarioNuevo.setNombre(dato);
                                 break;
                             case 2:
-                                usuarioNuevo.setEmail(dato);
+                                usuarioNuevo.setCorreoElectronico(dato);
                                 break;
                             case 3:
-                                usuarioNuevo.setUsuario(dato);
+                                usuarioNuevo.setCedula(dato);
                                 usuarioNuevo.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "R" + dato + "R"));
                                 break;
                             case 4:
@@ -349,11 +351,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                                 break;
                         }
                     }
-                    usuarioNuevo.setEstado("A");
+                    usuarioNuevo.setEstado((short)1);
                     usuarioNuevo.setSuperAdministrador(Boolean.FALSE);
                     Boolean flagUsuarioRepetido = Boolean.FALSE;
                     for (Usuario u : usuarioNuevoList) {
-                        if (usuarioNuevo.getUsuario().equals(u.getUsuario())) {
+                        if (usuarioNuevo.getCedula().equals(u.getCedula())) {
                             flagUsuarioRepetido = Boolean.TRUE;
                             break;
                         }
@@ -367,12 +369,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             String mensajeError = "";
             for (Usuario u : usuarioNuevoList) {
                 
-                if (usuarioServicio.getUsuarioByUsername(u.getUsuario()).getUsuarioId() != null) {
+                if (usuarioServicio.obtenerUsuarioPorIdentificacion(u.getCedula()).getUsuarioId() != null) {
                     errorUsuarios = Boolean.TRUE;
-                    mensajeError = "El usuario: " + u.getUsuario() + " ya se encuentra registrado, favor verificar su archivo de carga";
+                    mensajeError = "El usuario: " + u.getCedula()+ " ya se encuentra registrado, favor verificar su archivo de carga";
                     break;
                 }
-                if (u.getUsuario() == null || u.getUsuario().equals("")) {
+                if (u.getCedula()== null || u.getCedula().equals("")) {
                     errorUsuarios = Boolean.TRUE;
                     mensajeError = "Error:Favor verificar su archivo de carga. Usuario no definido.";
                     break;
@@ -383,7 +385,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     mensajeError = "Error: Favor verificar su archivo de carga. Institución no definida.";
                     break;
                 }
-                if (u.getEmail() == null || u.getEmail().equals("")) {
+                if (u.getCorreoElectronico()== null || u.getCorreoElectronico().equals("")) {
                     errorUsuarios = Boolean.TRUE;
                     mensajeError = "Error: Favor verificar su archivo de carga. Email no definido";
                     break;
@@ -411,9 +413,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private void correoRestablecerContraseña(String contraseña) {
         Email email = new Email();
         try {
-            String mensajeMail = "Su Usuario es: <b>" + usuarioSelected.getUsuario() + "</b><br/>"
+            String mensajeMail = "Su Usuario es: <b>" + usuarioSelected.getCedula()+ "</b><br/>"
                     + "Su Contraseña es: <b>" + contraseña + "</b>";
-            email.sendMail(usuarioSelected.getEmail(), "Plataforma REMANENTES", mensajeMail);
+            email.sendMail(usuarioSelected.getCorreoElectronico(), "Plataforma REMANENTES", mensajeMail);
             System.out.println("Correo Enviado");
         } catch (Exception ex) {
             Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
@@ -421,11 +423,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
     
     public void seleccionarTipoInstitucion() {
-        InstitucionRequerida ir = new InstitucionRequerida();
+        Institucion ir = new Institucion();
         usuarioSelected.setInstitucionId(ir);
         if (tipoInstitucion.equals("Registro Propiedad / Mercantil")) {
-            tipoInstitucion = "Registro Propiedad / Mercantil";
-            institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
+            tipoInstitucion = "Registro Propiedad / Mercantil";            
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
             usuarioSelected.setValidador(false);
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(false);
@@ -437,7 +440,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             disabledAdministrador = Boolean.TRUE;
         } else if (tipoInstitucion.equals("GAD")) {
             tipoInstitucion = "GAD";
-            institucionRequeridaList = institucionRequeridaServicio.getGADList();
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.GAD.getTipoInstitucion()));
             usuarioSelected.setValidador(false);
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(true);
@@ -449,7 +452,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             disabledAdministrador = Boolean.TRUE;
         } else if (tipoInstitucion.equals("Dirección Regional")) {
             tipoInstitucion = "Dirección Regional";
-            institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.REGIONAL.getTipoInstitucion()));
             usuarioSelected.setValidador(true);
             usuarioSelected.setAdministrador(false);
             usuarioSelected.setVerificador(false);
@@ -461,8 +464,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             disabledAdministrador = Boolean.TRUE;
         } else if (tipoInstitucion.equals("Dirección Nacional")) {
             tipoInstitucion = "Dirección Nacional";
-            institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
-            usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
+            institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.DINARDAP.getTipoInstitucion()));
+            usuarioSelected.setInstitucionId(institucionList.get(institucionList.size() - 1));
             usuarioSelected.setValidador(Boolean.FALSE);
             usuarioSelected.setAdministrador(Boolean.TRUE);
             usuarioSelected.setVerificador(Boolean.FALSE);
@@ -475,9 +478,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         }
     }
     
-    public List<InstitucionRequerida> completeNombreInstitucion(String query) {
-        List<InstitucionRequerida> filteredInstituciones = new ArrayList<InstitucionRequerida>();
-        for (InstitucionRequerida ir : institucionRequeridaList) {
+    public List<Institucion> completeNombreInstitucion(String query) {
+        List<Institucion> filteredInstituciones = new ArrayList<Institucion>();
+        for (Institucion ir : institucionList) {
             if (ir.getNombre().toLowerCase().contains(query)
                     || ir.getNombre().toUpperCase().contains(query)) {
                 filteredInstituciones.add(ir);
@@ -531,12 +534,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         this.tipoInstitucion = tipoInstitucion;
     }
     
-    public List<InstitucionRequerida> getInstitucionRequeridaList() {
-        return institucionRequeridaList;
+    public List<Institucion> getInstitucionList() {
+        return institucionList;
     }
     
-    public void setInstitucionRequeridaList(List<InstitucionRequerida> institucionRequeridaList) {
-        this.institucionRequeridaList = institucionRequeridaList;
+    public void setInstitucionList(List<Institucion> institucionList) {
+        this.institucionList = institucionList;
     }
     
     public String getNombre() {

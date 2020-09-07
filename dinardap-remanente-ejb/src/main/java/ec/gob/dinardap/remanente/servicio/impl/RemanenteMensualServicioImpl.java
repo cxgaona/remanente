@@ -70,11 +70,11 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             Collections.sort(rm.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList(), new Comparator<EstadoRemanenteCuatrimestral>() {
                 @Override
                 public int compare(EstadoRemanenteCuatrimestral erm1, EstadoRemanenteCuatrimestral erm2) {
-                    return new Integer(erm1.getEstadoRemanenteCuatrimestral()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestral()));
+                    return new Integer(erm1.getEstadoRemanenteCuatrimestralId()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestralId()));
                 }
             });
             for (EstadoRemanenteCuatrimestral erc : rm.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {
-                erc.getEstadoRemanenteCuatrimestral();
+                erc.getEstadoRemanenteCuatrimestralId();
             }
 
             rm.getRemanenteCuatrimestral();
@@ -145,7 +145,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         RemanenteMensual rmo = new RemanenteMensual(remanenteMensualOrigen.getRemanenteMensualId());
         RemanenteMensual rmn = new RemanenteMensual();
         rm = remanenteMensualOrigen;
-        rm.setRemanenteMensualOrigenId(rmo);
+        rm.setRemanenteMensualOrigen(rmo);
         rm.setRemanenteMensualId(null);
         rm.setComentarios(null);
         rm.setSolicitudCambioUrl(null);

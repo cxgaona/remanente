@@ -72,7 +72,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         transaccionList = transaccionServicio.getTransacciones(remanenteMensualId);
         for (Transaccion transaccion : transaccionList) {
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[0])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoNomina[0])) {
                 Double valor = 0.0;
                 for (FacturaPagada facturaPagada : this.getFacturaPagadaByTransaccion(transaccion.getTransaccionId())) {
                     valor += facturaPagada.getValor().doubleValue();
@@ -80,7 +80,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
                 transaccion.setValorTotal(new BigDecimal(valor));
                 transaccionServicio.update(transaccion);
             }
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[1])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoNomina[1])) {
                 Double valor = 0.0;
                 for (FacturaPagada facturaPagada : this.getFacturaPagadaByTransaccion(transaccion.getTransaccionId())) {
                     valor += facturaPagada.getValor().doubleValue();
@@ -88,7 +88,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
                 transaccion.setValorTotal(new BigDecimal(valor));
                 transaccionServicio.update(transaccion);
             }
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[2])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoNomina[2])) {
                 Double valor = 0.0;
                 for (FacturaPagada facturaPagada : this.getFacturaPagadaByTransaccion(transaccion.getTransaccionId())) {
                     valor += facturaPagada.getValor().doubleValue();

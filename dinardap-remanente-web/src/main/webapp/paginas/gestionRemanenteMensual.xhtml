@@ -63,8 +63,8 @@
                                    remanenteMensualCtrl.remanenteMensualDTOSelected.remanenteMensual.mes eq 11? 'Noviembre':
                                    remanenteMensualCtrl.remanenteMensualDTOSelected.remanenteMensual.mes eq 12? 'Diciembre':'Sin mes'}
                         </f:facet>
-                        <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterMatchMode="contains">
-                            <h:outputText value="#{estadoRemanenteMensual.usuarioId.nombre}" />
+                        <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuario.nombre}" filterBy="#{estadoRemanenteMensual.usuario.nombre}" filterMatchMode="contains">
+                            <h:outputText value="#{estadoRemanenteMensual.usuario.nombre}" />
                         </p:column>
                         <p:column headerText="Fecha" sortBy="#{estadoRemanenteMensual.fechaRegistro}" filterBy="#{estadoRemanenteMensual.fechaRegistro}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.fechaRegistro}">

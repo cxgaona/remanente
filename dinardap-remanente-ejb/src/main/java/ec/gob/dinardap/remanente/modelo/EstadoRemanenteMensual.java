@@ -5,6 +5,7 @@
  */
 package ec.gob.dinardap.remanente.modelo;
 
+import ec.gob.dinardap.seguridad.modelo.Usuario;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,11 +31,13 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "estado_remanente_mensual")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "EstadoRemanenteMensual.findAll", query = "SELECT e FROM EstadoRemanenteMensual e")
-    , @NamedQuery(name = "EstadoRemanenteMensual.findByEstadoRemanenteMensualId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.estadoRemanenteMensualId = :estadoRemanenteMensualId")
-    , @NamedQuery(name = "EstadoRemanenteMensual.findByFechaRegistro", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.fechaRegistro = :fechaRegistro")
-    , @NamedQuery(name = "EstadoRemanenteMensual.findByDescripcion", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.descripcion = :descripcion")})
+    @NamedQuery(name = "EstadoRemanenteMensual.findAll", query = "SELECT e FROM EstadoRemanenteMensual e"),
+    @NamedQuery(name = "EstadoRemanenteMensual.findByEstadoRemanenteMensualId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.estadoRemanenteMensualId = :estadoRemanenteMensualId"),
+    @NamedQuery(name = "EstadoRemanenteMensual.findByUsuarioId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.usuarioId = :usuarioId"),
+    @NamedQuery(name = "EstadoRemanenteMensual.findByFechaRegistro", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.fechaRegistro = :fechaRegistro"),
+    @NamedQuery(name = "EstadoRemanenteMensual.findByDescripcion", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.descripcion = :descripcion")})
 public class EstadoRemanenteMensual implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,12 +56,13 @@ public class EstadoRemanenteMensual implements Serializable {
     @Size(max = 50)
     @Column(name = "descripcion")
     private String descripcion;
+    
     @JoinColumn(name = "remanente_mensual_id", referencedColumnName = "remanente_mensual_id")
     @ManyToOne
-    private RemanenteMensual remanenteMensualId;
+    private RemanenteMensual remanenteMensual;
     @JoinColumn(name = "usuario_id", referencedColumnName = "usuario_id")
     @ManyToOne
-    private Usuario usuarioId;
+    private Usuario usuario;
 
     public EstadoRemanenteMensual() {
     }
@@ -90,45 +95,20 @@ public class EstadoRemanenteMensual implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public RemanenteMensual getRemanenteMensualId() {
-        return remanenteMensualId;
+    public RemanenteMensual getRemanenteMensual() {
+        return remanenteMensual;
     }
 
-    public void setRemanenteMensualId(RemanenteMensual remanenteMensualId) {
-        this.remanenteMensualId = remanenteMensualId;
+    public void setRemanenteMensual(RemanenteMensual remanenteMensual) {
+        this.remanenteMensual = remanenteMensual;
     }
 
-    public Usuario getUsuarioId() {
-        return usuarioId;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setUsuarioId(Usuario usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (estadoRemanenteMensualId != null ? estadoRemanenteMensualId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof EstadoRemanenteMensual)) {
-            return false;
-        }
-        EstadoRemanenteMensual other = (EstadoRemanenteMensual) object;
-        if ((this.estadoRemanenteMensualId == null && other.estadoRemanenteMensualId != null) || (this.estadoRemanenteMensualId != null && !this.estadoRemanenteMensualId.equals(other.estadoRemanenteMensualId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual[ estadoRemanenteMensualId=" + estadoRemanenteMensualId + " ]";
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
     
 }

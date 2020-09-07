@@ -347,7 +347,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, 9);
 
-        nominaSelected.setTransaccionId(t);
+        nominaSelected.setTransaccion(t);
         nominaSelected.setFechaRegistro(new Date());
 
         if (onCreateNomina) {
@@ -389,7 +389,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, catalogoTransaccion.getCatalogoTransaccionId());
 
-        facturaPagadaSelected.setTransaccionId(t);
+        facturaPagadaSelected.setTransaccion(t);
         facturaPagadaSelected.setFechaRegistro(new Date());
 
         if (onCreateFacturaPagada) {
@@ -476,7 +476,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                                         Transaccion t = new Transaccion();
                                         //9 CORRESPONDE A REMUNERACIONES(NOMINA) DEL CATALOGO DE TRANSACCIONES
                                         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, 9);
-                                        nominaNuevo.setTransaccionId(t);
+                                        nominaNuevo.setTransaccion(t);
                                         nominaNuevo.setNombre(datoVal);
                                     }
                                     break;
@@ -656,7 +656,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                                         catalogoTransaccion = catalogoTransaccionServicio.getCatalogoTransaccionEgresoNombre(facturaPagadaNueva.getTipo());
                                         Transaccion t = new Transaccion();
                                         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, catalogoTransaccion.getCatalogoTransaccionId());
-                                        facturaPagadaNueva.setTransaccionId(t);
+                                        facturaPagadaNueva.setTransaccion(t);
                                     }
                                     break;
                                 case 3:

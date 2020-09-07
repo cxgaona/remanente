@@ -1,7 +1,8 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,14 +26,14 @@ public class reporte1Ctrl extends BaseCtrl implements Serializable {
     private Boolean disabledBtnReloadMes;
 
     //Variables de negocio
-    private InstitucionRequerida direccionRegionalSelected;
+    private Institucion direccionRegionalSelected;
     private Date mesSelecionado;
 
     //Listas
-    private List<InstitucionRequerida> direccionRegionalList;
+    private List<Institucion> direccionRegionalList;
 
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
+    private InstitucionServicio institucionServicio;
 //
 //    private List<InstitucionRequerida> direccionRegionalList;
 //    private List<InstitucionRequerida> gadList;
@@ -41,9 +42,8 @@ public class reporte1Ctrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         tituloPagina = "Reporte: Cumplimiento e incumplimiento de Registro de Información";
-        direccionRegionalList = new ArrayList<InstitucionRequerida>();
-        direccionRegionalList = institucionRequeridaServicio.getDireccionRegionalList();
-
+        direccionRegionalList = new ArrayList<Institucion>();
+        direccionRegionalList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.REGIONAL.getTipoInstitucion()));
         disabledBtnReloadMes = Boolean.TRUE;
         mesSelecionado = new Date();
 //        direccionRegionalList = new ArrayList<InstitucionRequerida>();
@@ -106,19 +106,19 @@ public class reporte1Ctrl extends BaseCtrl implements Serializable {
         this.tituloPagina = tituloPagina;
     }
 
-    public List<InstitucionRequerida> getDireccionRegionalList() {
+    public List<Institucion> getDireccionRegionalList() {
         return direccionRegionalList;
     }
 
-    public void setDireccionRegionalList(List<InstitucionRequerida> direccionRegionalList) {
+    public void setDireccionRegionalList(List<Institucion> direccionRegionalList) {
         this.direccionRegionalList = direccionRegionalList;
     }
 
-    public InstitucionRequerida getDireccionRegionalSelected() {
+    public Institucion getDireccionRegionalSelected() {
         return direccionRegionalSelected;
     }
 
-    public void setDireccionRegionalSelected(InstitucionRequerida direccionRegionalSelected) {
+    public void setDireccionRegionalSelected(Institucion direccionRegionalSelected) {
         this.direccionRegionalSelected = direccionRegionalSelected;
     }
 

@@ -30,8 +30,8 @@ public class ValorConverter implements Converter {
         String valor = "";
         Transaccion t = new Transaccion();
         t = (Transaccion) object;
-        if (t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(4)
-                || t.getCatalogoTransaccionId().getCatalogoTransaccionId().equals(8)) {
+        if (t.getCatalogoTransaccion().getCatalogoTransaccionId().equals(4)
+                || t.getCatalogoTransaccion().getCatalogoTransaccionId().equals(8)) {
             DecimalFormat decimalFormat = new DecimalFormat("#");
             String format = decimalFormat.format(t.getValorTotal());
             valor = format;

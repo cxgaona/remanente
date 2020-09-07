@@ -4,20 +4,20 @@ import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
-import ec.gob.dinardap.remanente.modelo.Usuario;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
-import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import ec.gob.dinardap.util.TipoArchivo;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +72,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     private BigDecimal totalIngRMercantil;
     private BigDecimal totalEgresos;
     private Boolean btnInfDisabled;
-    private InstitucionRequerida institucionNotificacion;
+    private Institucion institucionNotificacion;
     private List<Usuario> usuarioListNotificacion;
 
     private List<RemanenteCuatrimestral> remanenteCuatrimestralList;
@@ -91,7 +91,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
     @EJB
     private EstadoRemanenteCuatrimestralServicio estadoRemanenteCuatrimestralServicio;
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
+    private InstitucionServicio institucionServicio;
     @EJB
     private RemanenteMensualServicio remanenteMensualServicio;
 
@@ -107,7 +107,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         //Session
         institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
         usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-        nombreInstitucion = institucionRequeridaServicio.getInstitucionById(institucionId).getNombre();
+        nombreInstitucion = institucionServicio.findByPk(institucionId).getNombre();
 
         //Inicializacion de variables
         remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
@@ -185,7 +185,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         for (Integer mes : mesesCuatrimestreList) {
             RemanenteMensual remanenteMensual = new RemanenteMensual();
             remanenteMensual = remanenteMensualServicio.getUltimoRemanenteMensual(
-                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida().getInstitucionId(),
+                    remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucion().getInstitucionId(),
                     remanenteCuatrimestralSelected.getRemanenteAnual().getAnio(),
                     mes);
             rms.add(remanenteMensual);
@@ -216,7 +216,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
             Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
                 @Override
                 public int compare(Transaccion o1, Transaccion o2) {
-                    return new Integer(o1.getCatalogoTransaccionId().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccionId().getCatalogoTransaccionId()));
+                    return new Integer(o1.getCatalogoTransaccion().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccion().getCatalogoTransaccionId()));
                 }
             });
         }
@@ -232,19 +232,19 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
                 switch (j) {
                     case 0:
                         rows.get(i).setValorMes1(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
                         break;
                     case 1:
                         rows.get(i).setValorMes2(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
                         break;
                     case 2:
                         rows.get(i).setValorMes3(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
                         break;
                     case 3:
                         rows.get(i).setValorMes4(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccionId().getTipo());
+                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
                         break;
                 }
                 i++;
@@ -301,7 +301,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         Usuario u = new Usuario();
         u.setUsuarioId(usuarioId);
         erc.setRemanenteCuatrimestral(remanenteCuatrimestralSelected);
-        erc.setUsuarioId(u);
+        erc.setUsuario(u);
         erc.setFechaRegistro(new Date());
         erc.setDescripcion("InformeSubido");
         estadoRemanenteCuatrimestralServicio.create(erc);
@@ -322,14 +322,14 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
                 break;
         }
         Integer numMensuales = remanenteCuatrimestralSelected.getRemanenteMensualList().size();
-        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
+        institucionNotificacion = institucionServicio.findByPk(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
                 "REM-Validador", "REM-Verificador", 1, remanenteCuatrimestralSelected);
         String mensajeNotificacion = "Se ha subido el informe del Remanente Cuatrimestral suscrito correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteCuatrimestralSelected.getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteCuatrimestralSelected.getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
-                remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucionRequerida(),
+                remanenteCuatrimestralSelected.getRemanenteAnual().getInstitucion(),
                 remanenteCuatrimestralSelected.getRemanenteMensualList().get(numMensuales - 1).getRemanenteMensualId(),
                 mensajeNotificacion, "RC");
         //FIN ENVIO//

@@ -7,7 +7,8 @@ package ec.gob.dinardap.remanente.dto;
 
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Usuario;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
+
 import java.util.Date;
 
 /**

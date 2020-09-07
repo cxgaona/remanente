@@ -71,7 +71,7 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         transaccionList = transaccionServicio.getTransacciones(remanenteMensualId);
         for (Transaccion transaccion : transaccionList) {
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoNomina[0])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoNomina[0])) {
                 Double valor = 0.0;
                 for (Nomina nomina : this.getNominaByTransaccion(transaccion.getTransaccionId())) {
                     valor += nomina.getRemuneracion().doubleValue()

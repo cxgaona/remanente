@@ -26,7 +26,7 @@ public class TransaccionDaoEjb extends RemanenteGenericDao<Transaccion, Integer>
         transaccionList = query.getResultList();
         List<Transaccion> transaccionListActiva = new ArrayList<Transaccion>();
         for (Transaccion transaccion : transaccionList) {
-            if (!transaccion.getRemanenteMensualId().getEstadoRemanenteMensualList().get(transaccion.getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioAprobado")) {
+            if (!transaccion.getRemanenteMensual().getEstadoRemanenteMensualList().get(transaccion.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioAprobado")) {
                 transaccionListActiva.add(transaccion);
             }
         }

@@ -81,7 +81,7 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
         Integer numeroCertificaciones = 0;
         Integer numeroInscripciones = 0;
         for (Transaccion transaccion : transaccionList) {
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoTransaccion[0])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoTransaccion[0])) {
                 Double valor = 0.0;
                 List<Tramite> certificaciones = new ArrayList<Tramite>();
                 certificaciones = this.getTramiteByTransaccion(transaccion.getTransaccionId());
@@ -92,7 +92,7 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
                 transaccion.setValorTotal(new BigDecimal(valor));
                 transaccionServicio.update(transaccion);
             }
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoTransaccion[1])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoTransaccion[1])) {
                 Double valor = 0.0;
                 List<Tramite> inscripciones = new ArrayList<Tramite>();
                 inscripciones = this.getTramiteByTransaccion(transaccion.getTransaccionId());
@@ -104,7 +104,7 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
                 transaccionServicio.update(transaccion);
             }
 
-            if (Objects.equals(transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId(), catalogoTransaccion[2])) {
+            if (Objects.equals(transaccion.getCatalogoTransaccion().getCatalogoTransaccionId(), catalogoTransaccion[2])) {
                 transaccion.setValorTotal(new BigDecimal(numeroInscripciones + numeroCertificaciones));
                 transaccionServicio.update(transaccion);
             }

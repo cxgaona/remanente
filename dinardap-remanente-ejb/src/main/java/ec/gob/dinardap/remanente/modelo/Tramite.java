@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,17 +30,19 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "tramite")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Tramite.findAll", query = "SELECT t FROM Tramite t")
-    , @NamedQuery(name = "Tramite.findByTramiteId", query = "SELECT t FROM Tramite t WHERE t.tramiteId = :tramiteId")
-    , @NamedQuery(name = "Tramite.findByNumero", query = "SELECT t FROM Tramite t WHERE t.numero = :numero")
-    , @NamedQuery(name = "Tramite.findByFecha", query = "SELECT t FROM Tramite t WHERE t.fecha = :fecha")
-    , @NamedQuery(name = "Tramite.findByFechaRegistro", query = "SELECT t FROM Tramite t WHERE t.fechaRegistro = :fechaRegistro")
-    , @NamedQuery(name = "Tramite.findByNumeroComprobantePago", query = "SELECT t FROM Tramite t WHERE t.numeroComprobantePago = :numeroComprobantePago")
-    , @NamedQuery(name = "Tramite.findByValor", query = "SELECT t FROM Tramite t WHERE t.valor = :valor")
-    , @NamedQuery(name = "Tramite.findByActividadRegistral", query = "SELECT t FROM Tramite t WHERE t.actividadRegistral = :actividadRegistral")
-    , @NamedQuery(name = "Tramite.findByTipo", query = "SELECT t FROM Tramite t WHERE t.tipo = :tipo")
-    , @NamedQuery(name = "Tramite.findByActo", query = "SELECT t FROM Tramite t WHERE t.acto = :acto")})
+    @NamedQuery(name = "Tramite.findAll", query = "SELECT t FROM Tramite t"),
+    @NamedQuery(name = "Tramite.findByTramiteId", query = "SELECT t FROM Tramite t WHERE t.tramiteId = :tramiteId"),
+    @NamedQuery(name = "Tramite.findByNumero", query = "SELECT t FROM Tramite t WHERE t.numero = :numero"),
+    @NamedQuery(name = "Tramite.findByFecha", query = "SELECT t FROM Tramite t WHERE t.fecha = :fecha"),
+    @NamedQuery(name = "Tramite.findByFechaRegistro", query = "SELECT t FROM Tramite t WHERE t.fechaRegistro = :fechaRegistro"),
+    @NamedQuery(name = "Tramite.findByNumeroComprobantePago", query = "SELECT t FROM Tramite t WHERE t.numeroComprobantePago = :numeroComprobantePago"),
+    @NamedQuery(name = "Tramite.findByValor", query = "SELECT t FROM Tramite t WHERE t.valor = :valor"),
+    @NamedQuery(name = "Tramite.findByActividadRegistral", query = "SELECT t FROM Tramite t WHERE t.actividadRegistral = :actividadRegistral"),
+    @NamedQuery(name = "Tramite.findByTipo", query = "SELECT t FROM Tramite t WHERE t.tipo = :tipo"),
+    @NamedQuery(name = "Tramite.findByActo", query = "SELECT t FROM Tramite t WHERE t.acto = :acto"),
+    @NamedQuery(name = "Tramite.findByNumeroRepertorio", query = "SELECT t FROM Tramite t WHERE t.numeroRepertorio = :numeroRepertorio")})
 public class Tramite implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -79,7 +82,7 @@ public class Tramite implements Serializable {
     private String acto;
     @JoinColumn(name = "transaccion_id", referencedColumnName = "transaccion_id")
     @ManyToOne
-    private Transaccion transaccionId;
+    private Transaccion transaccion;
 
     public Tramite() {
     }
@@ -160,14 +163,6 @@ public class Tramite implements Serializable {
         this.acto = acto;
     }
 
-    public Transaccion getTransaccionId() {
-        return transaccionId;
-    }
-
-    public void setTransaccionId(Transaccion transaccionId) {
-        this.transaccionId = transaccionId;
-    }
-
     public String getNumeroRepertorio() {
         return numeroRepertorio;
     }
@@ -176,29 +171,12 @@ public class Tramite implements Serializable {
         this.numeroRepertorio = numeroRepertorio;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (tramiteId != null ? tramiteId.hashCode() : 0);
-        return hash;
+    public Transaccion getTransaccion() {
+        return transaccion;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Tramite)) {
-            return false;
-        }
-        Tramite other = (Tramite) object;
-        if ((this.tramiteId == null && other.tramiteId != null) || (this.tramiteId != null && !this.tramiteId.equals(other.tramiteId))) {
-            return false;
-        }
-        return true;
+    public void setTransaccion(Transaccion transaccion) {
+        this.transaccion = transaccion;
     }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.Tramite[ tramiteId=" + tramiteId + " ]";
-    }
-
+        
 }

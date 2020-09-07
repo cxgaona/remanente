@@ -17,6 +17,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,14 +25,15 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "dias_no_laborables")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "DiasNoLaborables.findAll", query = "SELECT d FROM DiasNoLaborables d")
-    , @NamedQuery(name = "DiasNoLaborables.findByDiasNoLaborablesId", query = "SELECT d FROM DiasNoLaborables d WHERE d.diasNoLaborablesId = :diasNoLaborablesId")
-    , @NamedQuery(name = "DiasNoLaborables.findByAnio", query = "SELECT d FROM DiasNoLaborables d WHERE d.anio = :anio")
-    , @NamedQuery(name = "DiasNoLaborables.findByMes", query = "SELECT d FROM DiasNoLaborables d WHERE d.mes = :mes")
-    , @NamedQuery(name = "DiasNoLaborables.findByDia", query = "SELECT d FROM DiasNoLaborables d WHERE d.dia = :dia")
-    , @NamedQuery(name = "DiasNoLaborables.findByDescripcion", query = "SELECT d FROM DiasNoLaborables d WHERE d.descripcion = :descripcion")
-    , @NamedQuery(name = "DiasNoLaborables.findByEstado", query = "SELECT d FROM DiasNoLaborables d WHERE d.estado = :estado")})
+    @NamedQuery(name = "DiasNoLaborables.findAll", query = "SELECT d FROM DiasNoLaborables d"),
+    @NamedQuery(name = "DiasNoLaborables.findByDiasNoLaborablesId", query = "SELECT d FROM DiasNoLaborables d WHERE d.diasNoLaborablesId = :diasNoLaborablesId"),
+    @NamedQuery(name = "DiasNoLaborables.findByAnio", query = "SELECT d FROM DiasNoLaborables d WHERE d.anio = :anio"),
+    @NamedQuery(name = "DiasNoLaborables.findByMes", query = "SELECT d FROM DiasNoLaborables d WHERE d.mes = :mes"),
+    @NamedQuery(name = "DiasNoLaborables.findByDia", query = "SELECT d FROM DiasNoLaborables d WHERE d.dia = :dia"),
+    @NamedQuery(name = "DiasNoLaborables.findByDescripcion", query = "SELECT d FROM DiasNoLaborables d WHERE d.descripcion = :descripcion"),
+    @NamedQuery(name = "DiasNoLaborables.findByEstado", query = "SELECT d FROM DiasNoLaborables d WHERE d.estado = :estado")})
 public class DiasNoLaborables implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -113,31 +115,6 @@ public class DiasNoLaborables implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (diasNoLaborablesId != null ? diasNoLaborablesId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DiasNoLaborables)) {
-            return false;
-        }
-        DiasNoLaborables other = (DiasNoLaborables) object;
-        if ((this.diasNoLaborablesId == null && other.diasNoLaborablesId != null) || (this.diasNoLaborablesId != null && !this.diasNoLaborablesId.equals(other.diasNoLaborablesId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.DiasNoLaborables[ diasNoLaborablesId=" + diasNoLaborablesId + " ]";
     }
     
 }

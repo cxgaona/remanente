@@ -1,6 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -24,7 +24,7 @@ public class BaseCtrl implements Serializable {
     private static final long serialVersionUID = 1L;
     public static final Locale DEFAULT_LOCALE = new Locale("es", "EC");
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
+    private InstitucionServicio institucionServicio;
 
     /**
      * Returns Jsf actual instance
@@ -185,7 +185,7 @@ public class BaseCtrl implements Serializable {
         } else if (perfil.contains("REM-Verificador")) {
             institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
             if (getSessionVariable("institucionTipo").equals("GAD")) {
-                institucionID = institucionRequeridaServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
+                institucionID = institucionServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
             }
         } else if (perfil.contains("REM-Administrador")) {
         }

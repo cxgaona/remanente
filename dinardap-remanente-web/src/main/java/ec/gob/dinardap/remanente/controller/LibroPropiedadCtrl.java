@@ -212,7 +212,7 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, catalogoTransaccion.getCatalogoTransaccionId());
 
-        tramiteSelected.setTransaccionId(t);
+        tramiteSelected.setTransaccion(t);
         tramiteSelected.setFechaRegistro(new Date());
 
         if (onCreate) {

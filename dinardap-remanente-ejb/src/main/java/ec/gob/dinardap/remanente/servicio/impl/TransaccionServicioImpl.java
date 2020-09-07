@@ -100,7 +100,7 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
             for (FacturaPagada facturaPagada : transaccion.getFacturaPagadaList()) {
                 facturaPagada.getFacturaPagadaId();
             }
-            transaccion.getCatalogoTransaccionId().getCatalogoTransaccionId();            
+            transaccion.getCatalogoTransaccion().getCatalogoTransaccionId();            
         }
         return transaccionList;
     }
@@ -110,7 +110,7 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
         Transaccion transaccion = new Transaccion();
         transaccion = transaccionDao.getTransaccionByInstitucionFechaTipo(idInstitucion, anio, mes, tipo);
         transaccion.getTramiteList();
-        transaccion.getCatalogoTransaccionId();
+        transaccion.getCatalogoTransaccion();
         return transaccion;
     }
 
@@ -122,14 +122,14 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
         String[] criteriaNombres = {"remanenteMensualId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
-        Object[] criteriaValores = {transaccion.getRemanenteMensualId().getRemanenteMensualId()};
+        Object[] criteriaValores = {transaccion.getRemanenteMensual().getRemanenteMensualId()};
         String[] orderBy = {"transaccionId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);
         for (Transaccion tAux : transaccionList) {
             tAux.getTransaccionId();
-            tAux.getCatalogoTransaccionId();
+            tAux.getCatalogoTransaccion();
         }
         for (Transaccion tAux : transaccionList) {
             t = tAux;

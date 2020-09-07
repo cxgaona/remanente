@@ -162,12 +162,12 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
         for (RemanenteCuatrimestral remanenteCuatrimestral : remanenteCuatrimestralList) {
             remanenteCuatrimestral.getRemanenteCuatrimestralPK();
             for (EstadoRemanenteCuatrimestral estadoRemanenteCuatrimestral : remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList()) {
-                estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestral();
+                estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestralId();
             }
             Collections.sort(remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList(), new Comparator<EstadoRemanenteCuatrimestral>() {
                 @Override
                 public int compare(EstadoRemanenteCuatrimestral erm1, EstadoRemanenteCuatrimestral erm2) {
-                    return new Integer(erm1.getEstadoRemanenteCuatrimestral()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestral()));
+                    return new Integer(erm1.getEstadoRemanenteCuatrimestralId()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestralId()));
                 }
             });
             remanenteCuatrimestral.setRemanenteMensualList(new ArrayList<RemanenteMensual>());

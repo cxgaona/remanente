@@ -5,6 +5,7 @@
  */
 package ec.gob.dinardap.remanente.modelo;
 
+import ec.gob.dinardap.seguridad.modelo.Usuario;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,6 +31,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "bandeja")
+@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Bandeja.findAll", query = "SELECT b FROM Bandeja b")
     , @NamedQuery(name = "Bandeja.findByBandejaId", query = "SELECT b FROM Bandeja b WHERE b.bandejaId = :bandejaId")
@@ -61,20 +64,23 @@ public class Bandeja implements Serializable {
     private Date fechaLeido;
 
     @JoinColumns({
-        @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id")
-        , @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id")
-        , @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")})
+        @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id"),
+        @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id"),
+        @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")})
     @ManyToOne
     private RemanenteCuatrimestral remanenteCuatrimestral;
+    
     @JoinColumn(name = "remanente_mensual_id", referencedColumnName = "remanente_mensual_id")
     @ManyToOne
-    private RemanenteMensual remanenteMensualId;
+    private RemanenteMensual remanenteMensual;
+    
     @JoinColumn(name = "usuario_asignado_id", referencedColumnName = "usuario_id")
     @ManyToOne
-    private Usuario usuarioAsignadoId;
+    private Usuario usuarioAsignado;
+    
     @JoinColumn(name = "usuario_solicitante_id", referencedColumnName = "usuario_id")
     @ManyToOne
-    private Usuario usuarioSolicitanteId;
+    private Usuario usuarioSolicitante;
 
     public Bandeja() {
     }
@@ -107,38 +113,6 @@ public class Bandeja implements Serializable {
         this.tipo = tipo;
     }
 
-    public RemanenteCuatrimestral getRemanenteCuatrimestral() {
-        return remanenteCuatrimestral;
-    }
-
-    public void setRemanenteCuatrimestral(RemanenteCuatrimestral remanenteCuatrimestral) {
-        this.remanenteCuatrimestral = remanenteCuatrimestral;
-    }
-
-    public RemanenteMensual getRemanenteMensualId() {
-        return remanenteMensualId;
-    }
-
-    public void setRemanenteMensualId(RemanenteMensual remanenteMensualId) {
-        this.remanenteMensualId = remanenteMensualId;
-    }
-
-    public Usuario getUsuarioAsignadoId() {
-        return usuarioAsignadoId;
-    }
-
-    public void setUsuarioAsignadoId(Usuario usuarioAsignadoId) {
-        this.usuarioAsignadoId = usuarioAsignadoId;
-    }
-
-    public Usuario getUsuarioSolicitanteId() {
-        return usuarioSolicitanteId;
-    }
-
-    public void setUsuarioSolicitanteId(Usuario usuarioSolicitanteId) {
-        this.usuarioSolicitanteId = usuarioSolicitanteId;
-    }
-
     public Boolean getLeido() {
         return leido;
     }
@@ -163,29 +137,37 @@ public class Bandeja implements Serializable {
         this.fechaLeido = fechaLeido;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (bandejaId != null ? bandejaId.hashCode() : 0);
-        return hash;
+    public RemanenteCuatrimestral getRemanenteCuatrimestral() {
+        return remanenteCuatrimestral;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Bandeja)) {
-            return false;
-        }
-        Bandeja other = (Bandeja) object;
-        if ((this.bandejaId == null && other.bandejaId != null) || (this.bandejaId != null && !this.bandejaId.equals(other.bandejaId))) {
-            return false;
-        }
-        return true;
+    public void setRemanenteCuatrimestral(RemanenteCuatrimestral remanenteCuatrimestral) {
+        this.remanenteCuatrimestral = remanenteCuatrimestral;
     }
 
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.Bandeja[ bandejaId=" + bandejaId + " ]";
+    public RemanenteMensual getRemanenteMensual() {
+        return remanenteMensual;
     }
 
+    public void setRemanenteMensual(RemanenteMensual remanenteMensual) {
+        this.remanenteMensual = remanenteMensual;
+    }
+
+    public Usuario getUsuarioAsignado() {
+        return usuarioAsignado;
+    }
+
+    public void setUsuarioAsignado(Usuario usuarioAsignado) {
+        this.usuarioAsignado = usuarioAsignado;
+    }
+
+    public Usuario getUsuarioSolicitante() {
+        return usuarioSolicitante;
+    }
+
+    public void setUsuarioSolicitante(Usuario usuarioSolicitante) {
+        this.usuarioSolicitante = usuarioSolicitante;
+    }
+    
+    
 }

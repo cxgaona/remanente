@@ -5,8 +5,8 @@
  */
 package ec.gob.dinardap.remanente.controller.converters;
 
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import javax.annotation.ManagedBean;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -25,11 +25,11 @@ import javax.inject.Named;
 public class InstitucionConverter implements Converter {
 
     @EJB
-    private InstitucionRequeridaServicio service;
+    private InstitucionServicio service;
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        InstitucionRequerida ir = new InstitucionRequerida();
+        Institucion ir = new Institucion();
         if (value != null && value.trim().length() > 0) {
             try {
                 ir = service.findByPk(Integer.parseInt(value));
@@ -45,7 +45,7 @@ public class InstitucionConverter implements Converter {
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object object) {
         if (object != null) {
-            return String.valueOf(((InstitucionRequerida) object).getInstitucionId());
+            return String.valueOf(((Institucion) object).getInstitucionId());
         } else {
             return null;
         }

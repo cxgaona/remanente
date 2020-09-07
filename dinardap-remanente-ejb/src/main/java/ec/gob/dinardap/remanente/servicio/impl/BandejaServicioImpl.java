@@ -11,12 +11,14 @@ import ec.gob.dinardap.remanente.dao.BandejaDao;
 import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.modelo.Bandeja;
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
+
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Usuario;
+
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,10 +44,10 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         listBandeja = listBandeja == null ? new ArrayList<Bandeja>() : listBandeja;
         for (Bandeja b : listBandeja) {
             BandejaDTO bandejaDTO = new BandejaDTO();
-            bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignadoId());
+            bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignado());
             bandejaDTO.setAño(anio);
-            bandejaDTO.setUsuarioSolicitante(b.getUsuarioSolicitanteId());
-            bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignadoId());
+            bandejaDTO.setUsuarioSolicitante(b.getUsuarioSolicitante());
+            bandejaDTO.setUsuarioAsignado(b.getUsuarioAsignado());
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(b.getFechaRegistro());
             bandejaDTO.setAño(calendar.get(Calendar.YEAR));
@@ -58,7 +60,7 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             bandejaDTO.setFechaLeido(b.getFechaLeido());
             bandejaDTO.setFechaRegistro(b.getFechaRegistro());
             bandejaDTO.setRemanenteCuatrimestral(b.getRemanenteCuatrimestral());
-            bandejaDTO.setRemanenteMensual(b.getRemanenteMensualId());
+            bandejaDTO.setRemanenteMensual(b.getRemanenteMensual());
             listBandejaDTO.add(bandejaDTO);
         }
         return listBandejaDTO;
@@ -79,15 +81,15 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         bandeja.setFechaRegistro(bandejaDTO.getFechaRegistro());
         bandeja.setLeido(bandejaDTO.getLeido());
         bandeja.setRemanenteCuatrimestral(bandejaDTO.getRemanenteCuatrimestral());
-        bandeja.setRemanenteMensualId(bandejaDTO.getRemanenteMensual());
-        bandeja.setUsuarioSolicitanteId(bandejaDTO.getUsuarioSolicitante());
-        bandeja.setUsuarioAsignadoId(bandejaDTO.getUsuarioAsignado());
+        bandeja.setRemanenteMensual(bandejaDTO.getRemanenteMensual());
+        bandeja.setUsuarioSolicitante(bandejaDTO.getUsuarioSolicitante());
+        bandeja.setUsuarioAsignado(bandejaDTO.getUsuarioAsignado());
         this.update(bandeja);
     }
 
     @Override
     public void generarNotificacion(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
-            Integer remanenteCuatrimestralId, Integer remanenteAnualId, InstitucionRequerida institucion,
+            Integer remanenteCuatrimestralId, Integer remanenteAnualId, Institucion institucion,
             Integer remanenteMensualId, String descripcion, String tipo) {
         Email email = new Email();
         for (Usuario userAsignado : usuarioAsignadoList) {
@@ -98,23 +100,23 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
             rc.setRemanenteCuatrimestralPK(new RemanenteCuatrimestralPK(remanenteCuatrimestralId, remanenteAnualId, institucion.getInstitucionId()));
             RemanenteMensual rm = new RemanenteMensual();
             rm.setRemanenteMensualId(remanenteMensualId);
-            bandeja.setUsuarioSolicitanteId(us);
+            bandeja.setUsuarioSolicitante(us);
             bandeja.setRemanenteCuatrimestral(rc);
             if (remanenteMensualId == 0) {
-                bandeja.setRemanenteMensualId(null);
+                bandeja.setRemanenteMensual(null);
             } else {
-                bandeja.setRemanenteMensualId(rm);
+                bandeja.setRemanenteMensual(rm);
             }
 
             bandeja.setDescripcion(descripcion);
             bandeja.setTipo(tipo);
             bandeja.setLeido(Boolean.FALSE);
             bandeja.setFechaRegistro(new Date());
-            bandeja.setUsuarioAsignadoId(userAsignado);
+            bandeja.setUsuarioAsignado(userAsignado);
             create(bandeja);
             try {
                 String mensajeMail = descripcion;
-                email.sendMail(userAsignado.getEmail(), "Notificación Remanentes", mensajeMail);
+                email.sendMail(userAsignado.getCorreoElectronico(), "Notificación Remanentes", mensajeMail);
             } catch (Exception ex) {
                 Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
             }

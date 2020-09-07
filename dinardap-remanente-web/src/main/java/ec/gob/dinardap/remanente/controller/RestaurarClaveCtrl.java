@@ -4,14 +4,14 @@ import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.mail.Email;
-import ec.gob.dinardap.remanente.modelo.Pregunta;
-import ec.gob.dinardap.remanente.modelo.Respuesta;
-import ec.gob.dinardap.remanente.modelo.Usuario;
-import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
-import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
-import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.modelo.Pregunta;
+import ec.gob.dinardap.seguridad.modelo.Respuesta;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.seguridad.servicio.PreguntaServicio;
+import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
+import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
@@ -62,16 +62,16 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
     }
 
     public void recuperarContrasena() {
-        u = usuarioServicio.getUsuarioByUsername(usuario);
+        u = usuarioServicio.obtenerUsuarioPorIdentificacion(usuario);
         if (u.getUsuarioId() != null) {
             respuestaUser = respuestaServicio.getRespuestaByUsuario(u.getUsuarioId(), preguntaSeguridad.getPreguntaId());
             if (respuesta.equals(respuestaUser.getRespuesta())) {
-                if (u.getEmail() != null && !u.getEmail().isEmpty()) {
+                if (u.getCorreoElectronico()!= null && !u.getCorreoElectronico().isEmpty()) {
                     claveGenerada = FacesUtils.generarContraseña();
                     encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + claveGenerada);
                     u.setContrasena(encriptada);
-                    usuarioServicio.editUsuario(u);
-                    mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getEmail();
+                    usuarioServicio.update(u);
+                    mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getCorreoElectronico();
 //                    try {
 //                        ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
 //                        URI uri;
@@ -86,7 +86,7 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
                     Email email = new Email();
                     try {
                         String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
-                        email.sendMail(u.getEmail(), "Restaurar clave REMANENTES", mensajeMail);
+                        email.sendMail(u.getCorreoElectronico(), "Restaurar clave REMANENTES", mensajeMail);
                     } catch (Exception ex) {
                         Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
                     }

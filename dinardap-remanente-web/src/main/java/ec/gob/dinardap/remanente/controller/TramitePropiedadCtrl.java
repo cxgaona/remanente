@@ -240,7 +240,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         Transaccion t = new Transaccion();
         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, catalogoTransaccion.getCatalogoTransaccionId());
 
-        tramiteSelected.setTransaccionId(t);
+        tramiteSelected.setTransaccion(t);
         tramiteSelected.setFechaRegistro(new Date());
 
         if (onCreate) {
@@ -333,7 +333,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
                                         }
                                         Transaccion t = new Transaccion();
                                         t = transaccionServicio.getTransaccionByInstitucionFechaTipo(institucionId, año, mes, idCatalogoTransaccion);
-                                        tramiteNuevo.setTransaccionId(t);
+                                        tramiteNuevo.setTransaccion(t);
                                     }
                                     break;
                                 case 1:

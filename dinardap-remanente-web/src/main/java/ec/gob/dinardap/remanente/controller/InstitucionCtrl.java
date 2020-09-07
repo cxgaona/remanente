@@ -1,7 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +21,13 @@ public class InstitucionCtrl extends BaseCtrl implements Serializable {
     private Boolean renderEdition;
 
     //Variables de negocio
-    private InstitucionRequerida institucionSelected;
+    private Institucion institucionSelected;
 
     //Listas
-    private List<InstitucionRequerida> institucionList;
+    private List<Institucion> institucionList;
 
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
+    private InstitucionServicio institucionServicio;
 //
 //    private List<InstitucionRequerida> direccionRegionalList;
 //    private List<InstitucionRequerida> gadList;
@@ -37,8 +37,8 @@ public class InstitucionCtrl extends BaseCtrl implements Serializable {
     protected void init() {
         tituloPagina = "Institución";
         renderEdition = Boolean.FALSE;
-        institucionList = new ArrayList<InstitucionRequerida>();
-        institucionList = institucionRequeridaServicio.getInstitucion();
+        institucionList = new ArrayList<Institucion>();
+        institucionList = institucionServicio.getInstitucion();
 //        direccionRegionalList = new ArrayList<InstitucionRequerida>();
 //        direccionRegionalList = institucionRequeridaServicio.getDireccionRegionalList();
 //        gadList = new ArrayList<InstitucionRequerida>();
@@ -77,19 +77,19 @@ public class InstitucionCtrl extends BaseCtrl implements Serializable {
         this.tituloPagina = tituloPagina;
     }
 
-    public List<InstitucionRequerida> getInstitucionList() {
+    public List<Institucion> getInstitucionList() {
         return institucionList;
     }
 
-    public void setInstitucionList(List<InstitucionRequerida> institucionList) {
+    public void setInstitucionList(List<Institucion> institucionList) {
         this.institucionList = institucionList;
     }
 
-    public InstitucionRequerida getInstitucionSelected() {
+    public Institucion getInstitucionSelected() {
         return institucionSelected;
     }
 
-    public void setInstitucionSelected(InstitucionRequerida institucionSelected) {
+    public void setInstitucionSelected(Institucion institucionSelected) {
         this.institucionSelected = institucionSelected;
     }
 

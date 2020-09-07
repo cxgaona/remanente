@@ -2,10 +2,10 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
-import ec.gob.dinardap.remanente.modelo.Respuesta;
-import ec.gob.dinardap.remanente.modelo.Usuario;
-import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
-import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
+import ec.gob.dinardap.seguridad.modelo.Respuesta;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
+import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
+import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
                 if (updateContraseña) {
                     if (contraseñaNueva1.equals(contraseñaNueva2)) {
                         usuario.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaNueva1));
-                        usuarioServicio.editUsuario(usuario);
+                        usuarioServicio.update(usuario);
                         addInfoMessage("Información actualizada satisfactoriamente", "");
                         addInfoMessage("Contraseña Actualizada satisfactoriamente", "");
                     } else {
