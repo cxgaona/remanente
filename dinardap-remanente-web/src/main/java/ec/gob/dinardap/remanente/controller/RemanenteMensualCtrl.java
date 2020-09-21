@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.constante.PerfilEnum;
 import ec.gob.dinardap.remanente.dto.RemanenteMensualDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
@@ -13,11 +14,11 @@ import ec.gob.dinardap.remanente.servicio.DiasNoLaborablesServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
-import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import ec.gob.dinardap.util.TipoArchivo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -128,8 +129,8 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         displaySolicitud = Boolean.FALSE;
         disabledBtnEnvCan = Boolean.TRUE;
         transaccionSelected = new Transaccion();
-        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
-        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
+        institucionId = this.getInstitucionID(getSessionVariable("perfil"));
+        usuarioId = Integer.parseInt(getSessionVariable("usuarioId"));
         nombreInstitucion = institucionServicio.findByPk(institucionId).getNombre();
         remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
         remanenteMensualDTOList = remanenteMensualServicio.getRemanenteMensualByInstitucion(institucionId, año);
@@ -367,7 +368,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         //ENVIO DE NOTIFICACION//
         institucionNotificacion = institucionServicio.findByPk(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Registrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.VERIFICADOR.getPerfilId(), PerfilEnum.REGISTRADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         String mensajeNotificacion = "Se le asignó la Verificación del Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
@@ -427,7 +428,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         //ENVIO DE NOTIFICACION//
         institucionNotificacion = institucionServicio.findByPk(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Registrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.VERIFICADOR.getPerfilId(), PerfilEnum.REGISTRADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         String mensajeNotificacion = "Se ha realizado una solicitud de cambio para el Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre();
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
@@ -437,7 +438,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Validador", "REM-Registrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.VALIDADOR.getPerfilId(), PerfilEnum.REGISTRADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),
@@ -446,7 +447,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 mensajeNotificacion, "RM");
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Administrador", "REM-Registrador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.ADMINISTRADOR.getPerfilId(), PerfilEnum.REGISTRADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getRemanenteAnualPK().getRemanenteAnualId(),

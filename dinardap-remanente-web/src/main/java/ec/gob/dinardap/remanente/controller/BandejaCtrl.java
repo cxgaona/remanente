@@ -31,7 +31,7 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
         titulo = "Bandeja";
         linkRedireccion = "#";
         bandejaSelected = new BandejaDTO();
-        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
+        usuarioId = Integer.parseInt(getSessionVariable("usuarioId"));
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         anio = calendar.get(Calendar.YEAR);
@@ -40,23 +40,24 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
     }
 
     public void onRowSelectBandeja() throws IOException {
-        switch (this.getSessionVariable("perfil")) {
-            case "REM-Registrador, ":
+        //TO-DO: split en variable perfil
+        switch (getSessionVariable("perfil")) {
+            case "3":
                 linkRedireccion = "gestionRemanenteMensual.jsf";
                 break;
-            case "REM-Verificador, ":
+            case "4":
                 linkRedireccion = "verificarRemanenteMensual.jsf";
                 if (bandejaSelected.getTipo().equals("RC")) {
                     linkRedireccion = "gestionRemanenteCuatrimestral.jsf";
                 }
                 break;
-            case "REM-Validador, ":
+            case "5":
                 linkRedireccion = "validarRemanenteMensual.jsf";
                 if (bandejaSelected.getTipo().equals("RC")) {
                     linkRedireccion = "gestionValidacionRemanenteCuatrimestral.jsf";
                 }
                 break;
-            case "REM-Administrador, ":
+            case "2":
                 linkRedireccion = "administracion/adminRemanenteMensual.jsf";
                 break;
         }

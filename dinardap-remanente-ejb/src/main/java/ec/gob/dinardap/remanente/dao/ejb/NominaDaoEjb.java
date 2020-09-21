@@ -18,10 +18,10 @@ public class NominaDaoEjb extends RemanenteGenericDao<Nomina, Integer> implement
     @Override
     public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual) {
         Query query = em.createQuery("SELECT n FROM Nomina n WHERE "
-                + "n.transaccionId.remanenteMensualId.remanenteMensualId=:idRemanenteMensual AND "
-                + "n.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
-                + "n.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
-                + "n.transaccionId.remanenteMensualId.mes=:mes");
+                + "n.transaccion.remanenteMensual.remanenteMensualId=:idRemanenteMensual AND "
+                + "n.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucion.institucionId=:idInstitucion AND "
+                + "n.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
+                + "n.transaccion.remanenteMensual.mes=:mes");
         query.setParameter("idRemanenteMensual", idRemanenteMensual);
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);

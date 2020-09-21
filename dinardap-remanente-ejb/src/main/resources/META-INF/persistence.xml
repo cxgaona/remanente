@@ -2,18 +2,29 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
     <persistence-unit name="remanentePU">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <jta-data-source>java:/jboss/datasources/dinardapDS</jta-data-source>  
-<!--        <class>ec.gob.dinardap.seguridad.modelo.Asignacion</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Campo</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.CampoPaquete</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Fuente</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Institucion</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Opcion</class>        
-        <class>ec.gob.dinardap.seguridad.modelo.Paquete</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Parametro</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Perfil</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Permiso</class>      
-        <class>ec.gob.dinardap.seguridad.modelo.Sistema</class>      -->
+        <jta-data-source>java:/jboss/datasources/dinardapRI</jta-data-source>  
+        <class>ec.gob.dinardap.seguridad.modelo.Asignacion</class>
+        <class>ec.gob.dinardap.seguridad.modelo.AsignacionInstitucion</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Campo</class>
+        <class>ec.gob.dinardap.seguridad.modelo.CampoPaquete</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Fuente</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Institucion</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Notificacion</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Opcion</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Paquete</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Parametro</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Perfil</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Permiso</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Pregunta</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Respuesta</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Sistema</class>
+        <class>ec.gob.dinardap.seguridad.modelo.TipoInstitucion</class>
+        <class>ec.gob.dinardap.seguridad.modelo.Usuario</class>
+        <class>ec.gob.dinardap.seguridad.modelo.UsuarioPerfil</class>
+        <class>ec.gob.dinardap.geografico.modelo.Canton</class>
+        <class>ec.gob.dinardap.geografico.modelo.Parroquia</class>
+        <class>ec.gob.dinardap.geografico.modelo.Provincia</class>
+        <class>ec.gob.dinardap.geografico.modelo.Zona</class>    
         <properties>            
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.hbm2ddl.auto" value="validate" />

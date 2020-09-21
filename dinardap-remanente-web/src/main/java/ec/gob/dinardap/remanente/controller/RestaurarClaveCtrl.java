@@ -2,14 +2,12 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
-import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.dao.PreguntaDao;
 import ec.gob.dinardap.seguridad.modelo.Pregunta;
 import ec.gob.dinardap.seguridad.modelo.Respuesta;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
-import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
-import ec.gob.dinardap.seguridad.servicio.PreguntaServicio;
 import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
 import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.Serializable;
@@ -37,14 +35,14 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
     private Respuesta respuestaUser;
 
     @EJB
-    private UsuarioServicio usuarioServicio;
+    private PreguntaDao preguntaDao;
+            
     @EJB
-    private PreguntaServicio preguntaServicio;
+    private UsuarioServicio usuarioServicio;
+  
     @EJB
     private RespuestaServicio respuestaServicio;
 
-    @EJB
-    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
@@ -54,7 +52,7 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
         mensaje = "";
         desactivarBtnRestaurar = Boolean.FALSE;
         displaybtnLogin = Boolean.FALSE;
-        preguntasActivas = preguntaServicio.getPreguntasActivas();
+        preguntasActivas = preguntaDao.obtenerPreguntasActivas();
         Integer nume = (int) (Math.random() * preguntasActivas.size());
         preguntaSeguridad = preguntasActivas.get(nume);
         strPregunta = preguntaSeguridad.getPregunta();

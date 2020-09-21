@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "EstadoRemanenteCuatrimestral.findAll", query = "SELECT e FROM EstadoRemanenteCuatrimestral e"),
-    @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByEstadoRemanenteCuatrimestral", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.estadoRemanenteCuatrimestral = :estadoRemanenteCuatrimestral"),
-    @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByUsuarioId", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.usuarioId = :usuarioId"),
+    @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByEstadoRemanenteCuatrimestralId", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.estadoRemanenteCuatrimestralId = :estadoRemanenteCuatrimestralId"),
+    @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByUsuarioId", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.usuario = :usuario"),
     @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByFechaRegistro", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.fechaRegistro = :fechaRegistro"),
     @NamedQuery(name = "EstadoRemanenteCuatrimestral.findByDescripcion", query = "SELECT e FROM EstadoRemanenteCuatrimestral e WHERE e.descripcion = :descripcion")})
 public class EstadoRemanenteCuatrimestral implements Serializable {

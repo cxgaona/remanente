@@ -1,5 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.SistemaIdEnum;
+import ec.gob.dinardap.seguridad.dao.InstitucionDao;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import java.io.Serializable;
@@ -27,7 +29,8 @@ public class InstitucionCtrl extends BaseCtrl implements Serializable {
     private List<Institucion> institucionList;
 
     @EJB
-    private InstitucionServicio institucionServicio;
+    private InstitucionDao institucionDao;
+    
 //
 //    private List<InstitucionRequerida> direccionRegionalList;
 //    private List<InstitucionRequerida> gadList;
@@ -38,7 +41,7 @@ public class InstitucionCtrl extends BaseCtrl implements Serializable {
         tituloPagina = "Institución";
         renderEdition = Boolean.FALSE;
         institucionList = new ArrayList<Institucion>();
-        institucionList = institucionServicio.getInstitucion();
+        institucionList = institucionDao.obtenerInstitucionesActivasSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
 //        direccionRegionalList = new ArrayList<InstitucionRequerida>();
 //        direccionRegionalList = institucionRequeridaServicio.getDireccionRegionalList();
 //        gadList = new ArrayList<InstitucionRequerida>();

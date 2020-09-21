@@ -383,7 +383,7 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"
+                                     sortBy="#{transaccion.catalogoTransaccion.tipo}"
                                      editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" oncomplete="onCellEdit()"/>
@@ -400,7 +400,7 @@
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
-                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                                <h:outputText value="#{transaccion.catalogoTransaccion.nombre}" />
                             </p:column>                            
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
@@ -425,14 +425,14 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; margin: 1px">
+                                                   style="visibility: #{(transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; margin: 1px">
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
                                     </h:commandLink>                                    
                                     <p:commandButton icon="fa fa-fw fa-trash-o" 
                                                      title="Eliminar Archivo"                                                     
-                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto; margin: 1px"
+                                                     style="visibility: #{(transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto; margin: 1px"
                                                      action="#{remanenteMensualCtrl.eliminarArchivo}"
                                                      update="formTransacciones:transaccionRPropiedadTbl">
                                         <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
@@ -446,10 +446,10 @@
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
                                 <p:rowEditor 
-                                    rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros'? true:false}"/>
+                                    rendered="#{transaccion.catalogoTransaccion.nombre eq 'Otros'? true:false}"/>
                                 <p:commandButton icon="fa fa-fw fa-file-pdf-o" 
                                                  title="Subir" 
-                                                 rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" 
+                                                 rendered="#{transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros' ? true:false}" 
                                                  style="background: none;border: none;width: auto;"
                                                  onclick="PF('transaccionUploadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
@@ -474,7 +474,7 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"
+                                     sortBy="#{transaccion.catalogoTransaccion.tipo}"
                                      editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" oncomplete="onCellEdit()"/>
@@ -491,7 +491,7 @@
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
-                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                                <h:outputText value="#{transaccion.catalogoTransaccion.nombre}" />
                             </p:column>
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
@@ -515,14 +515,14 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{remanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'};margin: 1px">
+                                                   style="visibility: #{(transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'};margin: 1px">
                                         <f:setPropertyActionListener
                                             target="#{remanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
                                     </h:commandLink>                                        
                                     <p:commandButton icon="fa fa-fw fa-trash-o" 
                                                      title="Eliminar Archivo"                                                     
-                                                     style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;margin: 1px;"
+                                                     style="visibility: #{(transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}; background: none;border: none;width: auto;margin: 1px;"
                                                      action="#{remanenteMensualCtrl.eliminarArchivo}"
                                                      update="formTransacciones:transaccionRMercantilTbl">
                                         <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
@@ -535,10 +535,10 @@
                                 </center>
                             </p:column>
                             <p:column style="width:5%" rendered="#{remanenteMensualCtrl.displayUploadEdit}">
-                                <p:rowEditor rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}" />
+                                <p:rowEditor rendered="#{transaccion.catalogoTransaccion.nombre eq 'Otros' ? true:false}" />
                                 <p:commandButton icon="fa fa-fw fa-file-pdf-o" 
                                                  title="Subir" 
-                                                 rendered="#{transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros' ? true:false}"
+                                                 rendered="#{transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros' ? true:false}"
                                                  style="background: none;border: none;width: auto;"                                                 
                                                  onclick="PF('transaccionUploadDlg').show();">
                                     <f:setPropertyActionListener value="#{transaccion}" target="#{remanenteMensualCtrl.transaccionSelected}" />
@@ -563,7 +563,7 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"
+                                     sortBy="#{transaccion.catalogoTransaccion.tipo}"
                                      editable="#{!remanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{remanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" oncomplete="onCellEdit()"/>
@@ -580,7 +580,7 @@
                                 </p:column>
                             </p:headerRow>                           
                             <p:column headerText="Detalle" width="60%">
-                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                                <h:outputText value="#{transaccion.catalogoTransaccion.nombre}" />
                             </p:column>
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>

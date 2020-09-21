@@ -147,7 +147,7 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     public List<RemanenteCuatrimestral> getRemanenteCuatrimestralListByInstitucion(Integer institucionId, Integer año) {
         List<RemanenteCuatrimestral> remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         String[] criteriaNombres = {
-            "remanenteAnual.institucionRequerida.institucionId",
+            "remanenteAnual.institucion.institucionId",
             "remanenteAnual.anio"
         };
         CriteriaTypeEnum[] criteriaTipos = {

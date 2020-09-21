@@ -62,11 +62,11 @@ public class Transaccion implements Serializable {
     @Column(name = "fecha_registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
-    @OneToMany(mappedBy = "transaccionId")
+    @OneToMany(mappedBy = "transaccion")
     private List<FacturaPagada> facturaPagadaList;
-    @OneToMany(mappedBy = "transaccionId")
+    @OneToMany(mappedBy = "transaccion")
     private List<Nomina> nominaList;
-    @OneToMany(mappedBy = "transaccionId")
+    @OneToMany(mappedBy = "transaccion")
     private List<Tramite> tramiteList;
     @JoinColumn(name = "catalogo_transaccion_id", referencedColumnName = "catalogo_transaccion_id")
     @ManyToOne

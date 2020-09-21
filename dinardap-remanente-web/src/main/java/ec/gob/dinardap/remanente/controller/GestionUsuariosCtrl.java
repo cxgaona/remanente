@@ -2,9 +2,12 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.remanente.constante.SistemaIdEnum;
 import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.dao.PreguntaDao;
+import ec.gob.dinardap.seguridad.dao.UsuarioDao;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Pregunta;
 import ec.gob.dinardap.seguridad.modelo.Respuesta;
@@ -64,6 +67,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private String tipoInstitucion;
     
     @EJB
+    private UsuarioDao usuarioDao;
+    
+    @EJB
+    private PreguntaDao preguntaDao;
+    
+    @EJB
     private UsuarioServicio usuarioServicio;
     
     @EJB
@@ -96,7 +105,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         
         institucionList = new ArrayList<Institucion>();
         usuarioActivoList = new ArrayList<Usuario>();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+        usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
     }
     
     public void nuevoUsuario() {
@@ -112,11 +121,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         
         institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.DINARDAP.getTipoInstitucion()));
         usuarioSelected = new Usuario();
-        usuarioSelected.setInstitucionId(institucionList.get(institucionList.size() - 1));
-        usuarioSelected.setAdministrador(Boolean.TRUE);
-        usuarioSelected.setValidador(Boolean.FALSE);
-        usuarioSelected.setRegistrador(Boolean.FALSE);
-        usuarioSelected.setVerificador(Boolean.FALSE);
+//        usuarioSelected.setInstitucionId(institucionList.get(institucionList.size() - 1));
+//        usuarioSelected.setAdministrador(Boolean.TRUE);
+//        usuarioSelected.setValidador(Boolean.FALSE);
+//        usuarioSelected.setRegistrador(Boolean.FALSE);
+//        usuarioSelected.setVerificador(Boolean.FALSE);
         
         btnGuardar = "Guardar";
         tipoInstitucion = "Dirección Nacional";
@@ -124,20 +133,20 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
     
     public void cambioRolReg() {
-        if (usuarioSelected.getRegistrador()) {
-            usuarioSelected.setVerificador(Boolean.FALSE);
-        } else {
-            usuarioSelected.setVerificador(Boolean.TRUE);
-        }
+//        if (usuarioSelected.getRegistrador()) {
+//            usuarioSelected.setVerificador(Boolean.FALSE);
+//        } else {
+//            usuarioSelected.setVerificador(Boolean.TRUE);
+//        }
         
     }
     
     public void cambioRolVer() {
-        if (usuarioSelected.getVerificador()) {
-            usuarioSelected.setRegistrador(Boolean.FALSE);
-        } else {
-            usuarioSelected.setRegistrador(Boolean.TRUE);
-        }
+//        if (usuarioSelected.getVerificador()) {
+//            usuarioSelected.setRegistrador(Boolean.FALSE);
+//        } else {
+//            usuarioSelected.setRegistrador(Boolean.TRUE);
+//        }
     }
     
     public void onRowSelectUsuario() {
@@ -151,7 +160,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         disabledAdministrador = Boolean.TRUE;
         disabledRestablecer = Boolean.FALSE;
         restablecer = Boolean.FALSE;
-        if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
+//        if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
@@ -160,27 +169,27 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             disabledValidador = Boolean.TRUE;
             disabledAdministrador = Boolean.TRUE;
             
-        } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
+//        } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
             tipoInstitucion = "GAD";
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.GAD.getTipoInstitucion()));
             disabledRegistrador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
             disabledAdministrador = Boolean.TRUE;
-        } else if (usuarioSelected.getInstitucionId().getTipo().equals("REGIONAL")) {
+//        } else if (usuarioSelected.getInstitucionId().getTipo().equals("REGIONAL")) {
             tipoInstitucion = "Dirección Regional";
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.REGIONAL.getTipoInstitucion()));
             disabledRegistrador = Boolean.TRUE;
             disabledVerificador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
             disabledAdministrador = Boolean.TRUE;
-        }
+        //}
     }
     
     public void cancelar() {
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioSelected = new Usuario();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+        usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
         onEdit = Boolean.FALSE;
         onCreate = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
@@ -198,10 +207,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             if (onCreate) {
                 if (userExistente.getUsuarioId() == null) {
                     usuarioSelected.setEstado((short)1);
-                    usuarioSelected.setSuperAdministrador(Boolean.FALSE);
-                    usuarioServicio.createUsuario(usuarioSelected);
+//                    usuarioSelected.setSuperAdministrador(Boolean.FALSE);
+//                    usuarioServicio.createUsuario(usuarioSelected);
                     preguntaList = new ArrayList<Pregunta>();
-                    preguntaList = preguntaServicio.getPreguntasActivas();
+                    preguntaList = preguntaDao.obtenerPreguntasActivas();                  
                     for (Pregunta p : preguntaList) {
                         Respuesta respuesta = new Respuesta();
                         respuesta.setUsuario(usuarioSelected);
@@ -216,7 +225,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     }
                     usuarioActivoList = new ArrayList<Usuario>();
                     usuarioSelected = new Usuario();
-                    usuarioActivoList = usuarioServicio.getUsuariosActivos();
+                    usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
                     
                     onEdit = Boolean.FALSE;
                     onCreate = Boolean.FALSE;
@@ -226,7 +235,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 }
             } else if (onEdit) {
                 if (userExistente.getUsuarioId() == null || userExistente.getUsuarioId().equals(usuarioSelected.getUsuarioId())) {
-                    usuarioServicio.editUsuario(usuarioSelected);
+//                    usuarioServicio.editUsuario(usuarioSelected);
                     this.addInfoMessage("El usuario se actualizó satisfactoriamente.", "");
                     if (restablecer) {
                         correoRestablecerContraseña(contraseña);
@@ -235,7 +244,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     
                     usuarioActivoList = new ArrayList<Usuario>();
                     usuarioSelected = new Usuario();
-                    usuarioActivoList = usuarioServicio.getUsuariosActivos();
+                    usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
                     
                     onEdit = Boolean.FALSE;
                     onCreate = Boolean.FALSE;
@@ -251,10 +260,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     
     public void eliminarUsuario() {
         usuarioSelected.setEstado((short)0);
-        usuarioServicio.editUsuario(usuarioSelected);
+//        usuarioServicio.editUsuario(usuarioSelected);
         usuarioActivoList = new ArrayList<Usuario>();
         usuarioSelected = new Usuario();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+        usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
     }
     
     public void crearUsuariosBloque(FileUploadEvent event) {
@@ -317,7 +326,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                                 } else {
                                     ir.setInstitucionId(Integer.parseInt(dato));
                                 }
-                                usuarioNuevo.setInstitucionId(ir);
+//                                usuarioNuevo.setInstitucionId(ir);
                                 break;
                             case 1:
                                 usuarioNuevo.setNombre(dato);
@@ -330,29 +339,29 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                                 usuarioNuevo.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "R" + dato + "R"));
                                 break;
                             case 4:
-                                usuarioNuevo.setRegistrador(Boolean.FALSE);
-                                usuarioNuevo.setVerificador(Boolean.FALSE);
-                                usuarioNuevo.setValidador(Boolean.FALSE);
-                                usuarioNuevo.setAdministrador(Boolean.FALSE);
+//                                usuarioNuevo.setRegistrador(Boolean.FALSE);
+//                                usuarioNuevo.setVerificador(Boolean.FALSE);
+//                                usuarioNuevo.setValidador(Boolean.FALSE);
+//                                usuarioNuevo.setAdministrador(Boolean.FALSE);
                                 switch (dato) {
                                     case "REGISTRADOR":
-                                        usuarioNuevo.setRegistrador(Boolean.TRUE);
+//                                        usuarioNuevo.setRegistrador(Boolean.TRUE);
                                         break;
                                     case "VERIFICADOR":
-                                        usuarioNuevo.setVerificador(Boolean.TRUE);
+//                                        usuarioNuevo.setVerificador(Boolean.TRUE);
                                         break;
                                     case "VALIDADOR":
-                                        usuarioNuevo.setValidador(Boolean.TRUE);
+//                                        usuarioNuevo.setValidador(Boolean.TRUE);
                                         break;
                                     case "ADMINISTRADOR":
-                                        usuarioNuevo.setAdministrador(Boolean.TRUE);
+//                                        usuarioNuevo.setAdministrador(Boolean.TRUE);
                                         break;
                                 }
                                 break;
                         }
                     }
                     usuarioNuevo.setEstado((short)1);
-                    usuarioNuevo.setSuperAdministrador(Boolean.FALSE);
+//                    usuarioNuevo.setSuperAdministrador(Boolean.FALSE);
                     Boolean flagUsuarioRepetido = Boolean.FALSE;
                     for (Usuario u : usuarioNuevoList) {
                         if (usuarioNuevo.getCedula().equals(u.getCedula())) {
@@ -379,12 +388,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     mensajeError = "Error:Favor verificar su archivo de carga. Usuario no definido.";
                     break;
                 }
-                if (u.getInstitucionId().getInstitucionId() == null
-                        || u.getInstitucionId().getInstitucionId().toString().equals("")) {
-                    errorUsuarios = Boolean.TRUE;
-                    mensajeError = "Error: Favor verificar su archivo de carga. Institución no definida.";
-                    break;
-                }
+//                if (u.getInstitucionId().getInstitucionId() == null
+//                        || u.getInstitucionId().getInstitucionId().toString().equals("")) {
+//                    errorUsuarios = Boolean.TRUE;
+//                    mensajeError = "Error: Favor verificar su archivo de carga. Institución no definida.";
+//                    break;
+//                }
                 if (u.getCorreoElectronico()== null || u.getCorreoElectronico().equals("")) {
                     errorUsuarios = Boolean.TRUE;
                     mensajeError = "Error: Favor verificar su archivo de carga. Email no definido";
@@ -396,10 +405,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 this.addErrorMessage("0", mensajeError, "No funcionó");
             } else {
                 for (Usuario u : usuarioNuevoList) {
-                    usuarioServicio.createUsuario(u);
+//                    usuarioServicio.createUsuario(u);
                 }
                 usuarioActivoList = new ArrayList<Usuario>();
-                usuarioActivoList = usuarioServicio.getUsuariosActivos();
+                usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
                 this.addInfoMessage("Se ha creado el bloque de usuarios satisfactoriamente", "Info");
             }
             
@@ -424,15 +433,15 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     
     public void seleccionarTipoInstitucion() {
         Institucion ir = new Institucion();
-        usuarioSelected.setInstitucionId(ir);
+//        usuarioSelected.setInstitucionId(ir);
         if (tipoInstitucion.equals("Registro Propiedad / Mercantil")) {
             tipoInstitucion = "Registro Propiedad / Mercantil";            
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
-            usuarioSelected.setValidador(false);
-            usuarioSelected.setAdministrador(false);
-            usuarioSelected.setVerificador(false);
-            usuarioSelected.setRegistrador(true);
+//            usuarioSelected.setValidador(false);
+//            usuarioSelected.setAdministrador(false);
+//            usuarioSelected.setVerificador(false);
+//            usuarioSelected.setRegistrador(true);
             
             disabledRegistrador = Boolean.FALSE;
             disabledValidador = Boolean.TRUE;
@@ -441,10 +450,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         } else if (tipoInstitucion.equals("GAD")) {
             tipoInstitucion = "GAD";
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.GAD.getTipoInstitucion()));
-            usuarioSelected.setValidador(false);
-            usuarioSelected.setAdministrador(false);
-            usuarioSelected.setVerificador(true);
-            usuarioSelected.setRegistrador(false);
+//            usuarioSelected.setValidador(false);
+//            usuarioSelected.setAdministrador(false);
+//            usuarioSelected.setVerificador(true);
+//            usuarioSelected.setRegistrador(false);
             
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
@@ -453,10 +462,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         } else if (tipoInstitucion.equals("Dirección Regional")) {
             tipoInstitucion = "Dirección Regional";
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.REGIONAL.getTipoInstitucion()));
-            usuarioSelected.setValidador(true);
-            usuarioSelected.setAdministrador(false);
-            usuarioSelected.setVerificador(false);
-            usuarioSelected.setRegistrador(false);
+//            usuarioSelected.setValidador(true);
+//            usuarioSelected.setAdministrador(false);
+//            usuarioSelected.setVerificador(false);
+//            usuarioSelected.setRegistrador(false);
             
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;
@@ -465,11 +474,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         } else if (tipoInstitucion.equals("Dirección Nacional")) {
             tipoInstitucion = "Dirección Nacional";
             institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.DINARDAP.getTipoInstitucion()));
-            usuarioSelected.setInstitucionId(institucionList.get(institucionList.size() - 1));
-            usuarioSelected.setValidador(Boolean.FALSE);
-            usuarioSelected.setAdministrador(Boolean.TRUE);
-            usuarioSelected.setVerificador(Boolean.FALSE);
-            usuarioSelected.setRegistrador(Boolean.FALSE);
+//            usuarioSelected.setInstitucionId(institucionList.get(institucionList.size() - 1));
+//            usuarioSelected.setValidador(Boolean.FALSE);
+//            usuarioSelected.setAdministrador(Boolean.TRUE);
+//            usuarioSelected.setVerificador(Boolean.FALSE);
+//            usuarioSelected.setRegistrador(Boolean.FALSE);
             
             disabledRegistrador = Boolean.TRUE;
             disabledValidador = Boolean.TRUE;

@@ -40,8 +40,8 @@ public class RemanenteAnual implements Serializable {
     protected RemanenteAnualPK remanenteAnualPK;
     @Column(name = "anio")
     private Integer anio;
+    @ManyToOne
     @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
     private Institucion institucion;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "remanenteAnual")

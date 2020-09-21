@@ -53,16 +53,16 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
     @Override
     public List<Transaccion> getTransaccionByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes, Integer remanenteMensualID) {
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
-        String[] criteriaNombres = {"remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
-            "remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio",
-            "remanenteMensualId.mes",
-            "remanenteMensualId.remanenteMensualId"};
+        String[] criteriaNombres = {"remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucion.institucionId",
+            "remanenteMensual.remanenteCuatrimestral.remanenteAnual.anio",
+            "remanenteMensual.mes",
+            "remanenteMensual.remanenteMensualId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS,
             CriteriaTypeEnum.INTEGER_EQUALS,
             CriteriaTypeEnum.INTEGER_EQUALS,
             CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {institucionId, año, mes, remanenteMensualID};
-        String[] orderBy = {"catalogoTransaccionId.catalogoTransaccionId"};
+        String[] orderBy = {"catalogoTransaccion.catalogoTransaccionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);
@@ -83,10 +83,10 @@ public class TransaccionServicioImpl extends GenericServiceImpl<Transaccion, Int
     @Override
     public List<Transaccion> getTransacciones(Integer remanenteMensualID) {        
         List<Transaccion> transaccionList = new ArrayList<Transaccion>();
-        String[] criteriaNombres = {"remanenteMensualId.remanenteMensualId"};
+        String[] criteriaNombres = {"remanenteMensual.remanenteMensualId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {remanenteMensualID};
-        String[] orderBy = {"catalogoTransaccionId.catalogoTransaccionId"};
+        String[] orderBy = {"catalogoTransaccion.catalogoTransaccionId"};
         boolean[] asc = {true};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         transaccionList = findByCriterias(criteria);

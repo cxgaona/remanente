@@ -1,7 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
-import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
+import ec.gob.dinardap.remanente.constante.PerfilEnum;
 import ec.gob.dinardap.remanente.dto.RemanenteCuatrimestralDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
@@ -14,11 +14,11 @@ import ec.gob.dinardap.remanente.servicio.CatalogoTransaccionServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
-import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import ec.gob.dinardap.util.TipoArchivo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,6 +90,8 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     @EJB
     private InstitucionServicio institucionServicio;
     @EJB
+    private ec.gob.dinardap.remanente.servicio.InstitucionServicio institucionRemanenteServicio;
+    @EJB
     private BandejaServicio bandejaServicio;
     @EJB
     private UsuarioServicio usuarioServicio;
@@ -99,8 +101,8 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
     @PostConstruct
     protected void init() {
         //Session
-        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-        direccionRegionalId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        usuarioId = Integer.parseInt(getSessionVariable("usuarioId"));
+        direccionRegionalId = Integer.parseInt(getSessionVariable("institucionId"));
         nombreDireccionRegional = institucionServicio.findByPk(direccionRegionalId).getNombre();
 
         //Inicializacion de variables
@@ -125,10 +127,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         tituloPagina = "Gestión Remanente Cuatrimestral";
 
         //Proceso
-        institucionList = institucionServicio.getRegistroMixtoList(direccionRegionalId);
-        ////////institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
-        ////////institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
-//        remanenteCuatrimestralList = remanenteCuatrimestralServicio.getRemanenteCuatrimestralListByInstitucion(institucionId, año);
+        institucionList = institucionRemanenteServicio.getRegistroMixtoList(direccionRegionalId);
     }
 
     public void onRowSelectInstitucion() {
@@ -228,12 +227,16 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
 
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {
-            Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
-                @Override
-                public int compare(Transaccion o1, Transaccion o2) {
-                    return new Integer(o1.getCatalogoTransaccion().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccion().getCatalogoTransaccionId()));
+            if (remanenteMensual.getTransaccionList() != null) {
+                if (!remanenteMensual.getTransaccionList().isEmpty()) {
+                    Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
+                        @Override
+                        public int compare(Transaccion o1, Transaccion o2) {
+                            return new Integer(o1.getCatalogoTransaccion().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccion().getCatalogoTransaccionId()));
+                        }
+                    });
                 }
-            });
+            }
         }
         for (CatalogoTransaccion catalogoTransaccion : catalogoTransaccionServicio.getCatalogoTransaccionList()) {
             Row row = new Row();
@@ -242,29 +245,33 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         }
         int j = 0;
         for (RemanenteMensual remanenteMensual : rms) {
-            int i = 0;
-            for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
-                switch (j) {
-                    case 0:
-                        rows.get(i).setValorMes1(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
-                    case 1:
-                        rows.get(i).setValorMes2(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
-                    case 2:
-                        rows.get(i).setValorMes3(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
-                    case 3:
-                        rows.get(i).setValorMes4(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
+            if (remanenteMensual.getTransaccionList() != null) {
+                if (!remanenteMensual.getTransaccionList().isEmpty()) {
+                    int i = 0;
+                    for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+                        switch (j) {
+                            case 0:
+                                rows.get(i).setValorMes1(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                            case 1:
+                                rows.get(i).setValorMes2(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                            case 2:
+                                rows.get(i).setValorMes3(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                            case 3:
+                                rows.get(i).setValorMes4(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                        }
+                        i++;
+                    }
+                    j++;
                 }
-                i++;
             }
-            j++;
         }
         for (Row r : rows) {
             if (r.getTipo().equals("Ingreso-Propiedad") || r.getTipo().equals("Ingreso-Mercantil")) {
@@ -345,7 +352,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         Integer numMensuales = remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral().getRemanenteMensualList().size();
         institucionNotificacion = institucionServicio.findByPk(Integer.parseInt(this.getSessionVariable("institucionId")));
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Validador", 1, remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral());
+                PerfilEnum.VERIFICADOR.getPerfilId(), PerfilEnum.VALIDADOR.getPerfilId(), remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral());
         String mensajeNotificacion = "Se ha subido el informe técnico del Remanente Cuatrimestral correspondiente a los meses " + meses + " del año " + año + " del " + institucionNotificacion.getNombre();
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),

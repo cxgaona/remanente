@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "EstadoRemanenteMensual.findAll", query = "SELECT e FROM EstadoRemanenteMensual e"),
     @NamedQuery(name = "EstadoRemanenteMensual.findByEstadoRemanenteMensualId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.estadoRemanenteMensualId = :estadoRemanenteMensualId"),
-    @NamedQuery(name = "EstadoRemanenteMensual.findByUsuarioId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.usuarioId = :usuarioId"),
+    @NamedQuery(name = "EstadoRemanenteMensual.findByUsuarioId", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.usuario = :usuario"),
     @NamedQuery(name = "EstadoRemanenteMensual.findByFechaRegistro", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.fechaRegistro = :fechaRegistro"),
     @NamedQuery(name = "EstadoRemanenteMensual.findByDescripcion", query = "SELECT e FROM EstadoRemanenteMensual e WHERE e.descripcion = :descripcion")})
 public class EstadoRemanenteMensual implements Serializable {

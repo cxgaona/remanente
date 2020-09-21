@@ -190,16 +190,20 @@ public class AdminRemanenteCuatrimestralCtrl extends BaseCtrl implements Seriali
                     remanenteCuatrimestralSelected.getRemanenteAnual().getAnio(),
                     mes);
             rms.add(remanenteMensual);
-        }       
+        }
 
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {
-            Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
-                @Override
-                public int compare(Transaccion o1, Transaccion o2) {
-                    return new Integer(o1.getCatalogoTransaccion().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccion().getCatalogoTransaccionId()));
+            if (remanenteMensual.getTransaccionList() != null) {
+                if (!remanenteMensual.getTransaccionList().isEmpty()) {
+                    Collections.sort(remanenteMensual.getTransaccionList(), new Comparator<Transaccion>() {
+                        @Override
+                        public int compare(Transaccion o1, Transaccion o2) {
+                            return new Integer(o1.getCatalogoTransaccion().getCatalogoTransaccionId()).compareTo(new Integer(o2.getCatalogoTransaccion().getCatalogoTransaccionId()));
+                        }
+                    });
                 }
-            });
+            }
         }
         for (CatalogoTransaccion catalogoTransaccion : catalogoTransaccionServicio.getCatalogoTransaccionList()) {
             Row row = new Row();
@@ -208,29 +212,33 @@ public class AdminRemanenteCuatrimestralCtrl extends BaseCtrl implements Seriali
         }
         int j = 0;
         for (RemanenteMensual remanenteMensual : rms) {
-            int i = 0;
-            for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
-                switch (j) {
-                    case 0:
-                        rows.get(i).setValorMes1(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
-                    case 1:
-                        rows.get(i).setValorMes2(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
-                    case 2:
-                        rows.get(i).setValorMes3(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
-                    case 3:
-                        rows.get(i).setValorMes4(transaccion.getValorTotal());
-                        rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
-                        break;
+            if (remanenteMensual.getTransaccionList() != null) {
+                if (!remanenteMensual.getTransaccionList().isEmpty()) {
+                    int i = 0;
+                    for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+                        switch (j) {
+                            case 0:
+                                rows.get(i).setValorMes1(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                            case 1:
+                                rows.get(i).setValorMes2(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                            case 2:
+                                rows.get(i).setValorMes3(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                            case 3:
+                                rows.get(i).setValorMes4(transaccion.getValorTotal());
+                                rows.get(i).setTipo(transaccion.getCatalogoTransaccion().getTipo());
+                                break;
+                        }
+                        i++;
+                    }
+                    j++;
                 }
-                i++;
             }
-            j++;
         }
         for (Row r : rows) {
             if (r.getTipo().equals("Ingreso-Propiedad") || r.getTipo().equals("Ingreso-Mercantil")) {

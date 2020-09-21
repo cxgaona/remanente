@@ -43,8 +43,8 @@
                                    verificarRemanenteMensualCtrl.remanenteMensualDTOSelected.remanenteMensual.mes eq 11? 'Noviembre':
                                    verificarRemanenteMensualCtrl.remanenteMensualDTOSelected.remanenteMensual.mes eq 12? 'Diciembre':'Sin mes'}
                         </f:facet>
-                        <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterBy="#{estadoRemanenteMensual.usuarioId.nombre}" filterMatchMode="contains">
-                            <h:outputText value="#{estadoRemanenteMensual.usuarioId.nombre}" />
+                        <p:column headerText="Usuario" sortBy="#{estadoRemanenteMensual.usuario.nombre}" filterBy="#{estadoRemanenteMensual.usuario.nombre}" filterMatchMode="contains">
+                            <h:outputText value="#{estadoRemanenteMensual.usuario.nombre}" />
                         </p:column>
                         <p:column headerText="Fecha" sortBy="#{estadoRemanenteMensual.fechaRegistro}" filterBy="#{estadoRemanenteMensual.fechaRegistro}" filterMatchMode="contains">
                             <h:outputText value="#{estadoRemanenteMensual.fechaRegistro}">
@@ -328,7 +328,7 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"
+                                     sortBy="#{transaccion.catalogoTransaccion.tipo}"
                                      editable="#{!verificarRemanenteMensualCtrl.btnActivated}">  
                             <p:headerRow>
                                 <p:column colspan="2">
@@ -343,7 +343,7 @@
                                 </p:column>
                             </p:headerRow>                            
                             <p:column headerText="Detalle" width="60%">
-                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                                <h:outputText value="#{transaccion.catalogoTransaccion.nombre}" />
                             </p:column>                            
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
@@ -366,7 +366,7 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{verificarRemanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                                   style="visibility: #{(transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <f:setPropertyActionListener
                                             target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />  
@@ -392,7 +392,7 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"
+                                     sortBy="#{transaccion.catalogoTransaccion.tipo}"
                                      editable="#{!verificarRemanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>                            
@@ -409,7 +409,7 @@
                                 </p:column>
                             </p:headerRow>  
                             <p:column headerText="Detalle" width="60%">
-                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                                <h:outputText value="#{transaccion.catalogoTransaccion.nombre}" />
                             </p:column>
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>
@@ -432,7 +432,7 @@
                                                    immediate="true"
                                                    styleClass="fa fa-fw fa-download" 
                                                    action="#{verificarRemanenteMensualCtrl.visualizarArchivoTransaccion}"
-                                                   style="visibility: #{(transaccion.catalogoTransaccionId.nombre eq 'Certificaciones' or transaccion.catalogoTransaccionId.nombre eq 'Inscripciones' or transaccion.catalogoTransaccionId.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
+                                                   style="visibility: #{(transaccion.catalogoTransaccion.nombre eq 'Certificaciones' or transaccion.catalogoTransaccion.nombre eq 'Inscripciones' or transaccion.catalogoTransaccion.nombre eq 'Otros') and (not empty transaccion.respaldoUrl) ? 'visible':'hidden'}">
                                         <f:setPropertyActionListener
                                             target="#{verificarRemanenteMensualCtrl.rutaArchivo}"
                                             value="#{transaccion.respaldoUrl}" />                                        
@@ -458,7 +458,7 @@
                                      var="transaccion"
                                      rowKey="#{transaccion.transaccionId}"
                                      expandableRowGroups="true"  
-                                     sortBy="#{transaccion.catalogoTransaccionId.tipo}"
+                                     sortBy="#{transaccion.catalogoTransaccion.tipo}"
                                      editable="#{!verificarRemanenteMensualCtrl.btnActivated}">  
                             <p:ajax event="rowEdit" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEdit}" oncomplete="onCellEdit()"/>
                             <p:ajax event="rowEditCancel" listener="#{verificarRemanenteMensualCtrl.rowTransaccionEditCancel}" oncomplete="onCellEdit()"/>
@@ -475,7 +475,7 @@
                                 </p:column>
                             </p:headerRow>
                             <p:column headerText="Detalle" width="60%">
-                                <h:outputText value="#{transaccion.catalogoTransaccionId.nombre}" />
+                                <h:outputText value="#{transaccion.catalogoTransaccion.nombre}" />
                             </p:column>
                             <p:column headerText="Valor" width="20%" style="text-align: right">
                                 <p:cellEditor>

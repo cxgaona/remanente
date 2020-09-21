@@ -29,13 +29,13 @@
                                 <h:outputText value="#{institucion.nombre}" />
                             </p:column>
                             <p:column headerText="Provincia - Cantón" 
-                                      sortBy="#{institucion.provinciaCanton}" 
-                                      filterBy="#{institucion.provinciaCanton}" filterMatchMode="contains">
-                                <h:outputText value="#{institucion.provinciaCanton}" />
+                                      sortBy="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" 
+                                      filterBy="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" />
                             </p:column>                            
                             <p:column headerText="Tipo de Registro" 
-                                      sortBy="#{institucion.tipo}">
-                                <h:outputText value="#{institucion.tipo eq 'CON GAD'? 'Sin autonomía Financiera':'Con autonomía Financiera'}"/>
+                                      sortBy="#{institucion.tipoInstitucion.descripcion}">
+                                <h:outputText value="#{institucion.tipoInstitucion.descripcion}"/>
                             </p:column>                            
                         </p:dataTable>
                     </h:panelGrid>                    

@@ -50,7 +50,7 @@ public class CatalogoTransaccion implements Serializable {
     @Column(name = "nombre")
     private String nombre;
     
-    @OneToMany(mappedBy = "catalogoTransaccionId")
+    @OneToMany(mappedBy = "catalogoTransaccion")
     private List<Transaccion> transaccionList;
 
     public CatalogoTransaccion() {

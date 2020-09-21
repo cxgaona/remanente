@@ -48,7 +48,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     public List<RemanenteMensualDTO> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         List<RemanenteMensualDTO> remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
-        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucion.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {institucionID, año};
@@ -109,7 +109,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     @Override
     public RemanenteMensual getUltimoRemanenteMensual(Integer idInstitucion, Integer anio, Integer mes) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucion.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio",
             "mes"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};

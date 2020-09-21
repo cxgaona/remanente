@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
+import ec.gob.dinardap.remanente.constante.PerfilEnum;
 import ec.gob.dinardap.remanente.dto.RemanenteMensualDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
@@ -12,11 +13,11 @@ import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.EstadoRemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.remanente.servicio.TransaccionServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
-import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import ec.gob.dinardap.util.TipoArchivo;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -81,6 +82,9 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 
     @EJB
     private InstitucionServicio institucionServicio;
+    
+    @EJB
+    private ec.gob.dinardap.remanente.servicio.InstitucionServicio institucionRemanenteServicio;
 
     @EJB
     private TransaccionServicio transaccionServicio;
@@ -100,8 +104,8 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
     @PostConstruct
     protected void init() {
         //Session
-        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
-        direccionRegionalId = Integer.parseInt(this.getSessionVariable("institucionId"));
+        usuarioId = Integer.parseInt(getSessionVariable("usuarioId"));
+        direccionRegionalId = Integer.parseInt(getSessionVariable("institucionId"));
         nombreDireccionRegional = institucionServicio.findByPk(direccionRegionalId).getNombre();
 
         //Inicialiación de Variables
@@ -133,9 +137,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         totalIngRMercantil = new BigDecimal(0);
         totalEgresos = new BigDecimal(0);
 
-        institucionList = institucionServicio.getRegistroMixtoList(direccionRegionalId);
-        ////////institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
-        ////////institucionList.addAll(institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
+        institucionList = institucionRemanenteServicio.getRegistroMixtoList(direccionRegionalId);
     }
 
     public void loadRemanenteMensualByAño() {
@@ -290,7 +292,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
         //institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
         institucionNotificacion = remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucion();
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Registrador", "REM-Validador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.REGISTRADOR.getPerfilId(), PerfilEnum.VALIDADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         String mensajeNotificacion = "El Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido APROBADO.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
@@ -300,7 +302,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
                 mensajeNotificacion, "RM");
         /////        
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Validador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.VERIFICADOR.getPerfilId(), PerfilEnum.VALIDADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         mensajeNotificacion = "El Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() + " ha sido APROBADO.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
@@ -391,7 +393,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 //        institucionNotificacion = institucionRequeridaServicio.getInstitucionById(Integer.parseInt(this.getSessionVariable("institucionId")));
         institucionNotificacion = remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getInstitucion();
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Registrador", "REM-Validador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.REGISTRADOR.getPerfilId(), PerfilEnum.VALIDADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         String mensajeNotificacion = "El Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " ha sido RECHAZADO.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),
@@ -402,7 +404,7 @@ public class ValidarRemanenteMensualCtrl extends BaseCtrl implements Serializabl
 
         /////
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRol(institucionNotificacion,
-                "REM-Verificador", "REM-Validador", 1, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
+                PerfilEnum.VERIFICADOR.getPerfilId(), PerfilEnum.VALIDADOR.getPerfilId(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral());
         mensajeNotificacion = "El Remanente Mensual correspondiente al mes de " + mesSelected + " del año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADO.";
         bandejaServicio.generarNotificacion(usuarioListNotificacion, usuarioId,
                 remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId(),

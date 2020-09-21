@@ -106,7 +106,7 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
         fechaMin = fechasLimiteMin(año, mes);
         fechaMax = fechasLimiteMax(año, mes);
 
-        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
+        institucionId = this.getInstitucionID(getSessionVariable("perfil"));
 
         tramiteList = new ArrayList<Tramite>();
         obtenerRemanenteMensual();

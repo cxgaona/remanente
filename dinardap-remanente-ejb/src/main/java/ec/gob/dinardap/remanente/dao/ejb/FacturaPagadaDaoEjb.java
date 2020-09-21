@@ -18,10 +18,10 @@ public class FacturaPagadaDaoEjb extends RemanenteGenericDao<FacturaPagada, Inte
     @Override
     public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual) {
         Query query = em.createQuery("SELECT fp FROM FacturaPagada fp WHERE "
-                + "fp.transaccionId.remanenteMensualId.remanenteMensualId=:idRemanenteMensual AND "
-                + "fp.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
-                + "fp.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
-                + "fp.transaccionId.remanenteMensualId.mes=:mes");
+                + "fp.transaccion.remanenteMensual.remanenteMensualId=:idRemanenteMensual AND "
+                + "fp.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucion.institucionId=:idInstitucion AND "
+                + "fp.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
+                + "fp.transaccion.remanenteMensual.mes=:mes");
         query.setParameter("idRemanenteMensual", idRemanenteMensual);
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);

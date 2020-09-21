@@ -2,8 +2,10 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
-import ec.gob.dinardap.remanente.dto.UsuarioDTO;
+import ec.gob.dinardap.remanente.constante.PerfilEnum;
+import ec.gob.dinardap.seguridad.dao.UsuarioDao;
 import ec.gob.dinardap.seguridad.dto.ValidacionDto;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,15 +19,24 @@ import javax.inject.Named;
 @Named(value = "loginCtrl")
 @ViewScoped
 public class LoginCtrl extends BaseCtrl implements Serializable {
+    //Declaración de variables
+    //Variables de control visual
 
+    //Variables de negocio
     private String usuario;
     private String contraseña;
     private ValidacionDto validacionDto;
+
+    //Listas
     private Integer numero;
     private String str, claveGenerada, encriptada;
 
     @EJB
     private UsuarioServicio usuarioServicio;
+    @EJB
+    private UsuarioDao usuarioDao;
+    @EJB
+    private InstitucionServicio institucionServicio;
 
     @PostConstruct
     protected void init() {
@@ -38,38 +49,22 @@ public class LoginCtrl extends BaseCtrl implements Serializable {
     public void ingresar() throws IOException {
         validacionDto = new ValidacionDto();
         String cadena = SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña;
-        
-        validacionDto = usuarioServicio.validarUsuario(usuario, EncriptarCadenas.encriptarCadenaSha1(cadena), 2);
-        if (validacionDto != null) {
 
-//            if (u.getRegistrador()) {
-//                variableSesionPerfil += "REM-Registrador, ";
-//            }
-//            if (u.getVerificador()) {
-//                variableSesionPerfil += "REM-Verificador, ";
-//            }
-//            if (u.getValidador()) {
-//                variableSesionPerfil += "REM-Validador, ";
-//            }
-//            if (u.getAdministrador()) {
-//                variableSesionPerfil += "REM-Administrador, ";
-//            }
-//            if (u.getSuperAdministrador()) {
-//                variableSesionPerfil += "REM-SuperAdministrador, ";
-//            }
-            this.setSessionVariable("perfil", validacionDto.getPerfil());
-            this.setSessionVariable("usuarioId", validacionDto.getUsuarioId().toString());
-            this.setSessionVariable("institucionId", validacionDto.getInstitucionId().toString());
-            this.setSessionVariable("institucionTipo", u.getTipo());
-            this.setSessionVariable("gadId", u.getGadID().toString());
-            if (validacionDto.getPerfil().equals("REM-SeguridadAdministrador, ")) {
+        validacionDto = usuarioDao.validarUsuarioArreglo(usuario, EncriptarCadenas.encriptarCadenaSha1(cadena), 2);
+        if (validacionDto != null) {
+            setSessionVariable("perfil", validacionDto.getPerfil());
+            setSessionVariable("usuarioId", validacionDto.getUsuarioId().toString());
+            setSessionVariable("institucionId", validacionDto.getInstitucion());            
+            setSessionVariable("institucionTipo", institucionServicio.findByPk(Integer.parseInt(validacionDto.getInstitucion())).getTipoInstitucion().getTipoInstitucionId().toString());
+//            setSessionVariable("gadId", u.getGadID().toString());
+
+            if (validacionDto.getPerfil().contains(PerfilEnum.SEGURIDAD_ADMINISTRADOR.getPerfilId().toString())) {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/gestionUsuarios.jsf");
             } else {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("paginas/brand.jsf");
             }
-
         } else {
-            u = new UsuarioDTO();
+            validacionDto = new ValidacionDto();
             usuario = "";
             contraseña = "";
             this.addInfoMessage("Usuario o contraseña Incorrecta", "asd");

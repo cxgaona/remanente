@@ -73,7 +73,7 @@ public class RemanenteMensual implements Serializable {
     private String informeAprobacionUrl;
 
     //Bandeja//
-    @OneToMany(mappedBy = "remanenteMensualId")
+    @OneToMany(mappedBy = "remanenteMensual")
     private List<Bandeja> bandejaList;
 
     //RemanenteCuatrimestral//
@@ -85,7 +85,7 @@ public class RemanenteMensual implements Serializable {
     private RemanenteCuatrimestral remanenteCuatrimestral;
 
     //Remanente Origen//
-    @OneToMany(mappedBy = "remanenteMensualOrigenId")
+    @OneToMany(mappedBy = "remanenteMensualOrigen")
     private List<RemanenteMensual> remanenteMensualList;
 
     @ManyToOne
@@ -93,10 +93,10 @@ public class RemanenteMensual implements Serializable {
     private RemanenteMensual remanenteMensualOrigen;
     //Remanente Origen//
 
-    @OneToMany(mappedBy = "remanenteMensualId")
+    @OneToMany(mappedBy = "remanenteMensual")
     private List<EstadoRemanenteMensual> estadoRemanenteMensualList;
 
-    @OneToMany(mappedBy = "remanenteMensualId")
+    @OneToMany(mappedBy = "remanenteMensual")
     private List<Transaccion> transaccionList;
 
     public RemanenteMensual() {

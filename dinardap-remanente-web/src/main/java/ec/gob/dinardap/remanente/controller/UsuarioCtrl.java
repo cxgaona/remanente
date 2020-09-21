@@ -2,8 +2,10 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.seguridad.dto.UsuarioInstitucionDto;
 import ec.gob.dinardap.seguridad.modelo.Respuesta;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
+import ec.gob.dinardap.seguridad.servicio.AsignacionInstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
 import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.Serializable;
@@ -20,6 +22,7 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
 
     private Integer usuarioId;
     private Usuario usuario;
+    private UsuarioInstitucionDto usuarioInstitucionDto;
     private String tituloPagina;
 
     private String contraseñaActual;
@@ -32,6 +35,9 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private UsuarioServicio usuarioServicio;
+    
+    @EJB
+    private AsignacionInstitucionServicio asignacionInstitucionServicio;
 
     @EJB
     private RespuestaServicio respuestaServicio;
@@ -39,11 +45,16 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         updateContraseña = Boolean.FALSE;
-        usuarioId = Integer.parseInt(this.getSessionVariable("usuarioId"));
+        usuarioId = Integer.parseInt(getSessionVariable("usuarioId"));
         usuario = new Usuario();
         contraseñaActual = "";
         respuestaList = new ArrayList<Respuesta>();
         usuario = usuarioServicio.findByPk(usuarioId);
+        List<UsuarioInstitucionDto> usuarioInstitucionDtoList = new ArrayList<UsuarioInstitucionDto>();        
+        usuarioInstitucionDtoList=asignacionInstitucionServicio.buscarAsignacionesPorUsuario(usuarioId);
+        if(!usuarioInstitucionDtoList.isEmpty()){
+            usuarioInstitucionDto=usuarioInstitucionDtoList.get(usuarioInstitucionDtoList.size()-1);
+        }
         respuestaList = respuestaServicio.getRespuestasActivas(usuarioId);
         tituloPagina = "Usuario: " + usuario.getNombre();
     }
@@ -144,6 +155,14 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
 
     public void setRespuestaList(List<Respuesta> respuestaList) {
         this.respuestaList = respuestaList;
+    }
+
+    public UsuarioInstitucionDto getUsuarioInstitucionDto() {
+        return usuarioInstitucionDto;
+    }
+
+    public void setUsuarioInstitucionDto(UsuarioInstitucionDto usuarioInstitucionDto) {
+        this.usuarioInstitucionDto = usuarioInstitucionDto;
     }
 
 }
