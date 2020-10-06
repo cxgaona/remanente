@@ -204,10 +204,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         String ultimoEstadoCuatrimestral = remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().get(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList().size() - 1).getDescripcion();
 
         if (ultimoEstadoMensual.equals("GeneradoAutomaticamente")
-                || ultimoEstadoMensual.equals("Verificado-Rechazado")
-                || ultimoEstadoMensual.equals("GeneradoNuevaVersion")) {
-            btnActivated = Boolean.FALSE;
-            displayUploadEdit = Boolean.TRUE;
+                || ultimoEstadoMensual.equals("Verificado-Rechazado")) {
             if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
                 btnActivated = Boolean.FALSE;
                 displayUploadEdit = Boolean.TRUE;
@@ -216,8 +213,23 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
                 displayUploadEdit = Boolean.FALSE;
             }
         } else {
-            btnActivated = Boolean.TRUE;
-            displayUploadEdit = Boolean.FALSE;
+            if (ultimoEstadoMensual.equals("GeneradoNuevaVersion")) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(remanenteMensualDTOSelected.getRemanenteMensual().getFechaRegistro());
+                Integer añoSC = calendar.get(Calendar.YEAR);
+                Integer mesSC = calendar.get(Calendar.MONTH) + 1;
+                Integer diaSC = calendar.get(Calendar.DAY_OF_MONTH);
+                if (diasNoLaborablesServicio.habilitarDiasAdicionalesCS(añoSC, mesSC, diaSC, remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
+                    btnActivated = Boolean.FALSE;
+                    displayUploadEdit = Boolean.TRUE;
+                } else {
+                    btnActivated = Boolean.TRUE;
+                    displayUploadEdit = Boolean.FALSE;
+                }
+            } else {
+                btnActivated = Boolean.TRUE;
+                displayUploadEdit = Boolean.FALSE;
+            }
         }
 
         if ((ultimoEstadoMensual.equals("Verificado-Aprobado")

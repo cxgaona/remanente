@@ -55,6 +55,7 @@ public class EstadoRemanenteMensual implements Serializable {
     @JoinColumn(name = "remanente_mensual_id", referencedColumnName = "remanente_mensual_id")
     @ManyToOne
     private RemanenteMensual remanenteMensualId;
+    
     @JoinColumn(name = "usuario_id", referencedColumnName = "usuario_id")
     @ManyToOne
     private Usuario usuarioId;

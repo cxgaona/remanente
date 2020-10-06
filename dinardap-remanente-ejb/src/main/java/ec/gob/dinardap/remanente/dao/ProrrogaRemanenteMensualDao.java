@@ -20,5 +20,7 @@ public interface ProrrogaRemanenteMensualDao extends GenericDao<ProrrogaRemanent
     public List<RemanenteMensual> getRemanenteMensualListAñoMes(Integer año, Integer mes);
 
     public List<SolicitudCambioDTO> getRemanenteMensualSolicitudCambioAprobada(Integer institucionId);
+    
+    public ProrrogaRemanenteMensual getProrrogaRemanenteMensual(Integer remanenteMensualId);
 
 }

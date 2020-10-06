@@ -130,9 +130,9 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
         remanenteMensualSelected = remanenteMensualServicio.getUltimoRemanenteMensual(institucionId, año, mes);
         tramiteList = tramiteServicio.getTramiteByInstitucionFechaActividad(institucionId, año, mes, actividadRegistral, remanenteMensualSelected.getRemanenteMensualId());
         ultimoEstado = remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion();
-        if (ultimoEstado.equals("GeneradoAutomaticamente") || ultimoEstado.equals("Verificado-Rechazado")) {
-            disableNuevoTramite = Boolean.FALSE;
-            disableDeleteTramite();
+
+        if (ultimoEstado.equals("GeneradoAutomaticamente")
+                || ultimoEstado.equals("Verificado-Rechazado")) {
             if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes(), remanenteMensualSelected.getRemanenteMensualId())) {
                 disableNuevoTramite = Boolean.FALSE;
                 disableDeleteTramite();
@@ -144,7 +144,20 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
             }
         } else {
             if (ultimoEstado.equals("GeneradoNuevaVersion")) {
-                System.out.println("Verificar la fecha y despues habilitar o no ");
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(remanenteMensualSelected.getFechaRegistro());
+                Integer añoSC = calendar.get(Calendar.YEAR);
+                Integer mesSC = calendar.get(Calendar.MONTH) + 1;
+                Integer diaSC = calendar.get(Calendar.DAY_OF_MONTH);
+                if (diasNoLaborablesServicio.habilitarDiasAdicionalesCS(añoSC, mesSC, diaSC, remanenteMensualSelected.getRemanenteMensualId())) {
+                    disableNuevoTramite = Boolean.FALSE;
+                    disableDeleteTramite();
+                } else {
+                    renderEdition = Boolean.FALSE;
+                    disableDeleteTramite = Boolean.TRUE;
+                    disableDeleteTramiteTodos = Boolean.TRUE;
+                    disableNuevoTramite = Boolean.TRUE;
+                }
             } else {
                 renderEdition = Boolean.FALSE;
                 disableDeleteTramite = Boolean.TRUE;
@@ -152,27 +165,6 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                 disableNuevoTramite = Boolean.TRUE;
             }
         }
-
-//        if (ultimoEstado.equals("GeneradoAutomaticamente")
-//                || ultimoEstado.equals("Verificado-Rechazado")
-//                || ultimoEstado.equals("GeneradoNuevaVersion")) {
-//            disableNuevoTramite = Boolean.FALSE;
-//            disableDeleteTramite();
-//            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes(), remanenteMensualSelected.getRemanenteMensualId())) {
-//                disableNuevoTramite = Boolean.FALSE;
-//                disableDeleteTramite();
-//            } else {
-//                renderEdition = Boolean.FALSE;
-//                disableDeleteTramite = Boolean.TRUE;
-//                disableDeleteTramiteTodos = Boolean.TRUE;
-//                disableNuevoTramite = Boolean.TRUE;
-//            }
-//        } else {
-//            renderEdition = Boolean.FALSE;
-//            disableDeleteTramite = Boolean.TRUE;
-//            disableDeleteTramiteTodos = Boolean.TRUE;
-//            disableNuevoTramite = Boolean.TRUE;
-//        }
     }
 
     public void reloadTramite() {
@@ -537,7 +529,7 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
                     Calendar fecha = Calendar.getInstance();
                     fecha.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(data));
                     Calendar fechaActual = Calendar.getInstance();
-                    if (diasNoLaborablesServicio.habilitarDiasAdicionales(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH) + 1)) {
+                    if (diasNoLaborablesServicio.habilitarDiasAdicionales(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH) + 1, remanenteMensualSelected.getRemanenteMensualId())) {
                         datoValidado = data;
                     } else {
                         datoValidado = "INVALIDO";

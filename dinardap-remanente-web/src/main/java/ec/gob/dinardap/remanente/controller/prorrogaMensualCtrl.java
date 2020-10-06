@@ -44,6 +44,8 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     private String comentarioCierre;
 
+    private String rangoMes, rangoAño;
+
     //Listas
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteMensualActivasList;
     private List<ProrrogaRemanenteMensualDTO> prorrogaRemanenteSelectedList;
@@ -63,6 +65,11 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         reloadProrrogasActivas();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        rangoAño = "2020:" + calendar.get(Calendar.YEAR);
+        rangoMes = (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
 
         prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteMensualDTO>();
 
@@ -93,7 +100,6 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void onRowSelectProrrogaCheckbox() {
         disableCerrarProrrogas = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.TRUE : Boolean.FALSE;
-//        renderCerrarProrroga = prorrogaRemanenteSelectedList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
     }
 
     private void reloadProrrogasActivas() {
@@ -335,6 +341,22 @@ public class prorrogaMensualCtrl extends BaseCtrl implements Serializable {
 
     public void setComentarioCierre(String comentarioCierre) {
         this.comentarioCierre = comentarioCierre;
+    }
+
+    public String getRangoMes() {
+        return rangoMes;
+    }
+
+    public void setRangoMes(String rangoMes) {
+        this.rangoMes = rangoMes;
+    }
+
+    public String getRangoAño() {
+        return rangoAño;
+    }
+
+    public void setRangoAño(String rangoAño) {
+        this.rangoAño = rangoAño;
     }
 
 }

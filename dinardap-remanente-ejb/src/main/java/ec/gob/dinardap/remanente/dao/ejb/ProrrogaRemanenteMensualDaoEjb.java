@@ -98,6 +98,21 @@ public class ProrrogaRemanenteMensualDaoEjb extends RemanenteGenericDao<Prorroga
         return solicitudCambiolDTOList;
     }
 
+    @Override
+    public ProrrogaRemanenteMensual getProrrogaRemanenteMensual(Integer remanenteMensualId) {
+        ProrrogaRemanenteMensual prorrogaRemanenteMensual = new ProrrogaRemanenteMensual();
+        Query query = em.createQuery("SELECT prm FROM ProrrogaRemanenteMensual prm "
+                + "WHERE prm.remanenteMensualId.remanenteMensualId =:remanenteMensualId "
+                + "AND (prm.estado='A' OR prm.estado='AC')");
+        query.setParameter("remanenteMensualId", remanenteMensualId);
+        if (!query.getResultList().isEmpty()) {
+            prorrogaRemanenteMensual = (ProrrogaRemanenteMensual) query.getResultList().get(query.getResultList().size() - 1);
+        } else {
+            prorrogaRemanenteMensual = null;
+        }
+        return prorrogaRemanenteMensual;
+    }
+
     //DEPRECATED
 //    @Override
 //    public List<ProrrogaRemanenteGeneralDTO> getProrrogaGeneralListEstado(String estado) {

@@ -56,11 +56,16 @@ public class ProrrogaRemanenteMensualServicioImpl extends GenericServiceImpl<Pro
 
     @Override
     public ProrrogaRemanenteMensual getProrrogaRemanenteMensual(Integer remanenteMensualId) {
+        return prorrogaRemanenteMensualDao.getProrrogaRemanenteMensual(remanenteMensualId);
+    }
+
+    @Override
+    public ProrrogaRemanenteMensual getProrrogaGeneral(Integer año, Integer mes) {
         List<ProrrogaRemanenteMensual> prorrogaList;
         ProrrogaRemanenteMensual prorrogaRemanenteMensual;
-        String[] criteriaNombres = {"remanenteMensualId.remanenteMensualId", "estado"};
-        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
-        Object[] criteriaValores = {remanenteMensualId, "A"};
+        String[] criteriaNombres = {"anio", "mes", "estado"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {año, mes, "AG"};
         String[] orderBy = {"prorrogaRemanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
@@ -72,5 +77,4 @@ public class ProrrogaRemanenteMensualServicioImpl extends GenericServiceImpl<Pro
         }
         return prorrogaRemanenteMensual;
     }
-
 }

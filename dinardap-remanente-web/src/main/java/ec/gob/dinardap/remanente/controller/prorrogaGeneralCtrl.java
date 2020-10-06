@@ -44,6 +44,8 @@ public class prorrogaGeneralCtrl extends BaseCtrl implements Serializable {
 
     private String comentarioCierre;
 
+    private String rangoMes, rangoAño;
+
     //Listas
     private List<ProrrogaRemanenteGeneralDTO> prorrogaRemanenteGeneralActivasList;
     private List<ProrrogaRemanenteGeneralDTO> prorrogaRemanenteSelectedList;
@@ -64,9 +66,13 @@ public class prorrogaGeneralCtrl extends BaseCtrl implements Serializable {
     protected void init() {
         reloadProrrogasActivas();
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        rangoAño = "2020:" + calendar.get(Calendar.YEAR);
+        rangoMes = (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
+
         prorrogaRemanenteSelectedList = new ArrayList<ProrrogaRemanenteGeneralDTO>();
 
-//        prorrogaApertura = new ProrrogaRemanenteMensual();
         renderAbrirProrroga = Boolean.FALSE;
         renderCerrarProrroga = Boolean.FALSE;
 
@@ -327,6 +333,22 @@ public class prorrogaGeneralCtrl extends BaseCtrl implements Serializable {
 
     public void setComentarioCierre(String comentarioCierre) {
         this.comentarioCierre = comentarioCierre;
+    }
+
+    public String getRangoMes() {
+        return rangoMes;
+    }
+
+    public void setRangoMes(String rangoMes) {
+        this.rangoMes = rangoMes;
+    }
+
+    public String getRangoAño() {
+        return rangoAño;
+    }
+
+    public void setRangoAño(String rangoAño) {
+        this.rangoAño = rangoAño;
     }
 
 }
