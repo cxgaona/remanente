@@ -25,6 +25,9 @@
         <class>ec.gob.dinardap.geografico.modelo.Parroquia</class>
         <class>ec.gob.dinardap.geografico.modelo.Provincia</class>
         <class>ec.gob.dinardap.geografico.modelo.Zona</class>    
+        <class>ec.gob.dinardap.remanente.modelo.Libro</class>    
+        <class>ec.gob.dinardap.remanente.modelo.Tomo</class>    
+        <class>ec.gob.dinardap.remanente.modelo.TipoLibro</class>    
         <properties>            
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.hbm2ddl.auto" value="validate" />

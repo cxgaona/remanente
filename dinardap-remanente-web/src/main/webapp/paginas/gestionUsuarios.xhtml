@@ -13,58 +13,55 @@
                                  update="formUsuarioSelected"/>
                 <b:panel title="Usuarios">
                     <h:panelGrid columns="1" style="width: 100%;">
+                        <!--selection="#{gestionUsuariosCtrl.usuarioDtoSelected}"-->
                         <p:dataTable id="usuarioTbl"
-                                     value="#{gestionUsuariosCtrl.usuarioActivoList}" 
-                                     var="usuario"
-                                     rowKey="#{usuario.usuarioId}"
+                                     value="#{gestionUsuariosCtrl.usuarioDtoList}" 
+                                     var="usuarioDto"
+                                     rowKey="#{usuarioDto.usuario.usuarioId}"
                                      selectionMode="single"
-                                     selection="#{gestionUsuariosCtrl.usuarioSelected}"
+                                     
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25"
                                      tableStyle="width:auto"
                                      widgetVar="usuarioTblWidgetVar">
                             <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuario:usuarioPnl"/>                            
-                            <p:column headerText="Nombre" sortBy="#{usuario.nombre}" filterBy="#{usuario.nombre}" filterMatchMode="contains">
-                                <h:outputText value="#{usuario.nombre}" />
+                            <p:column headerText="Nombre" sortBy="#{usuarioDto.usuario.nombre}" filterBy="#{usuarioDto.usuario.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{usuarioDto.usuario.nombre}" />
                             </p:column>
-                            <p:column headerText="Login" sortBy="#{usuario.usuario}" filterBy="#{usuario.usuario}" filterMatchMode="contains">
-                                <h:outputText value="#{usuario.usuario}" />
+                            <p:column headerText="Cédula" sortBy="#{usuarioDto.usuario.cedula}" filterBy="#{usuarioDto.usuario.cedula}" filterMatchMode="contains">
+                                <h:outputText value="#{usuarioDto.usuario.cedula}" />
                             </p:column>
-                            <p:column headerText="Institución" sortBy="#{usuario.institucionId.nombre}" filterBy="#{usuario.institucionId.nombre}" filterMatchMode="contains" >
-                                <h:outputText value="#{usuario.institucionId.nombre}"/>
+                            <p:column headerText="Institución" sortBy="#{usuarioDto.institucion.nombre}" filterBy="#{usuarioDto.institucion.nombre}" filterMatchMode="contains" >
+                                <h:outputText value="#{usuarioDto.institucion.nombre}"/>
                             </p:column>
-                            <p:column headerText="Provincia - Cantón" sortBy="#{usuario.institucionId.provinciaCanton}" filterBy="#{usuario.institucionId.provinciaCanton}" filterMatchMode="contains" >
-                                <h:outputText value="#{usuario.institucionId.provinciaCanton}"/>
+                            <p:column headerText="Provincia - Cantón" sortBy="#{usuarioDto.institucion.canton.provincia.nombre} - #{usuarioDto.institucion.canton.nombre}" filterBy="#{usuarioDto.institucion.canton.provincia.nombre} - #{usuarioDto.institucion.canton.nombre}" filterMatchMode="contains" >
+                                <h:outputText value="#{usuarioDto.institucion.canton.provincia.nombre} - #{usuarioDto.institucion.canton.nombre}"/>
                             </p:column>
-                            <p:column headerText="Dirección Regional" sortBy="#{usuario.institucionId.direccionRegional.nombre}" 
-                                      filterBy="#{usuario.institucionId.provinciaCanton}" filterMatchMode="contains" >
-                                <h:outputText value="#{usuario.institucionId.direccionRegional.nombre}"/>
+                            <p:column headerText="Dirección Regional" sortBy="#{usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 4 or 
+                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
+                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
+                                                                                usuarioDto.institucion.institucion.institucion.nombre}" 
+                                                                    filterBy="#{usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 4 or 
+                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
+                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
+                                                                                usuarioDto.institucion.institucion.institucion.nombre}" filterMatchMode="contains" >
+                                <h:outputText value="#{usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 4 or 
+                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
+                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
+                                                                                usuarioDto.institucion.institucion.institucion.nombre}"/>
                             </p:column>
                             <p:column headerText="Tipo Institución" 
-                                      sortBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
-                                                usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
-                                                usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}" 
-                                      filterBy="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
-                                                  usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
-                                                  usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}" 
+                                      sortBy="#{usuarioDto.institucion.tipoInstitucion.descripcion}" 
+                                      filterBy="#{usuarioDto.institucion.tipoInstitucion.descripcion}" 
                                       filterMatchMode="contains">
-                                <h:outputText value="#{usuario.institucionId.tipo eq 'REGIONAL'?'Dirección Regional':
-                                                       usuario.institucionId.tipo eq 'GAD'?'Gobierno Autónomo Descentralizado':
-                                                       usuario.institucionId.tipo eq 'DINARDAP'?'Dirección Nacional':'Registro Propiedad / Mercantil'}"/>
+                                <h:outputText value="#{usuarioDto.institucion.tipoInstitucion.descripcion}"/>
                             </p:column>
-
-                            <p:column headerText="Registrador" sortBy="#{usuario.registrador}">
-                                <p:selectBooleanCheckbox value="#{usuario.registrador}" disabled="true" />
-                            </p:column>                            
-                            <p:column headerText="Validador" sortBy="#{usuario.validador}">
-                                <p:selectBooleanCheckbox value="#{usuario.validador}" disabled="true"/>
-                            </p:column>
-                            <p:column headerText="Verificador" sortBy="#{usuario.verificador}">
-                                <p:selectBooleanCheckbox value="#{usuario.verificador}" disabled="true" />
-                            </p:column>
-                            <p:column headerText="Administrador" sortBy="#{usuario.administrador}">
-                                <p:selectBooleanCheckbox value="#{usuario.administrador}" disabled="true" />
+                            <p:column headerText="Perfil" 
+                                      sortBy="#{usuarioDto.perfil.nombre}" 
+                                      filterBy="#{usuarioDto.perfil.nombre}" 
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{usuarioDto.perfil.nombre}"/>
                             </p:column>
                         </p:dataTable>                          
                     </h:panelGrid>
@@ -129,7 +126,7 @@
 
                         <p:outputLabel for="institucion" value="Institución:" />
                         <p:autoComplete id="institucion" 
-                                        value="#{gestionUsuariosCtrl.usuarioSelected.institucionId}" 
+                                        value="#{gestionUsuariosCtrl.usuarioDtoSelected.institucion}" 
                                         completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"                                        
                                         converter="#{institucionConverter}"
                                         var="institucion"
@@ -139,33 +136,33 @@
                                         inputStyle="width: 90%"
                                         maxResults="5"
                                         required="true"
-                                        title="#{usuario.institucionId.nombre}"/>                        
+                                        title="#{gestionUsuariosCtrl.usuarioDtoSelected.institucion.nombre}"/>                        
 
-                        <p:outputLabel for="usuario" value="Usuario:" />
-                        <p:inputText id="usuario" value="#{gestionUsuariosCtrl.usuarioSelected.usuario}" style="width: 90%" required="true" maxlength="10">
+                        <p:outputLabel for="cedula" value="Cédula:" />
+                        <p:inputText id="cedula" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.cedula}" style="width: 90%" required="true" maxlength="10">
                             <p:keyFilter regEx="/[\d]/"/>
                         </p:inputText>
 
                         <p:outputLabel for="nombre" value="Nombre:" />
-                        <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioSelected.nombre}" style="width: 90%" required="true"/>
+                        <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.nombre}" style="width: 90%" required="true"/>
 
                         <p:outputLabel for="mail" value="Mail:" />
-                        <p:inputText id="mail" value="#{gestionUsuariosCtrl.usuarioSelected.email}" style="width: 90%" required="true"> 
+                        <p:inputText id="mail" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.correoElectronico}" style="width: 90%" required="true"> 
                             <p:keyFilter regEx="/[a-z0-9_\.\-@]/i"/>
                         </p:inputText>                       
 
-                        <p:outputLabel value="Perfil:" />
+<!--                        <p:outputLabel value="Perfil:" />
                         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
-                            <p:selectBooleanCheckbox id="checkRegistrador" value="#{gestionUsuariosCtrl.usuarioSelected.registrador}" itemLabel="Registrador" disabled="#{gestionUsuariosCtrl.disabledRegistrador}">
+                            <p:selectBooleanCheckbox id="checkRegistrador" value="#{gestionUsuariosCtrl.usuarioDtoSelected.registrador}" itemLabel="Registrador" disabled="#{gestionUsuariosCtrl.disabledRegistrador}">
                                 <p:ajax update="formUsuarioSelected:checkRegistrador, formUsuarioSelected:checkVerificador" listener="#{gestionUsuariosCtrl.cambioRolReg}" />
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="checkVerificador" value="#{gestionUsuariosCtrl.usuarioSelected.verificador}" itemLabel="Verificador" disabled="#{gestionUsuariosCtrl.disabledVerificador}" >
+                            <p:selectBooleanCheckbox id="checkVerificador" value="#{gestionUsuariosCtrl.usuarioDtoSelected.verificador}" itemLabel="Verificador" disabled="#{gestionUsuariosCtrl.disabledVerificador}" >
                                 <p:ajax update="formUsuarioSelected:checkVerificador, formUsuarioSelected:checkRegistrador" listener="#{gestionUsuariosCtrl.cambioRolVer}" />
                             </p:selectBooleanCheckbox>
 
-                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.validador}" itemLabel="Validador" disabled="#{gestionUsuariosCtrl.disabledValidador}"/>                            
-                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioSelected.administrador}" itemLabel="Administrador" disabled="#{gestionUsuariosCtrl.disabledAdministrador}"/>
-                        </h:panelGrid>
+                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioDtoSelected.validador}" itemLabel="Validador" disabled="#{gestionUsuariosCtrl.disabledValidador}"/>                            
+                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioDtoSelected.administrador}" itemLabel="Administrador" disabled="#{gestionUsuariosCtrl.disabledAdministrador}"/>
+                        </h:panelGrid>-->
 
                         <p:outputLabel value="Restablecer contraseña" />
                         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">

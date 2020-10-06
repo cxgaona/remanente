@@ -4,13 +4,15 @@ import ec.gob.dinardap.remanente.constante.TipoLibroEnum;
 import ec.gob.dinardap.remanente.modelo.EstadoInventarioAnual;
 import ec.gob.dinardap.remanente.modelo.InventarioAnual;
 import ec.gob.dinardap.remanente.modelo.Libro;
-import ec.gob.dinardap.remanente.modelo.TipoLibro;
+import ec.gob.dinardap.remanente.modelo.Tomo;
 import ec.gob.dinardap.remanente.servicio.EstadoInventarioAnualServicio;
 import ec.gob.dinardap.remanente.servicio.InventarioAnualServicio;
 import ec.gob.dinardap.remanente.servicio.LibroServicio;
+import ec.gob.dinardap.remanente.servicio.TomoServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.util.constante.EstadoEnum;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -21,19 +23,18 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.apache.commons.lang3.SerializationUtils;
 
-@Named(value = "libroPropiedadCtrl")
+@Named(value = "tomoPropiedadCtrl")
 @ViewScoped
-public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
+public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
 
     //Declaración de variables
     //Variables de control visual
     private String tituloInventarioLibro;
     private String strBtnGuardar;
 
-    private Boolean disableNuevoLibro;
-    private Boolean disableDeleteLibro;
+    private Boolean disableNuevoTomo;
+    private Boolean disableDeleteTomo;
     private Boolean renderEdition;
     private Boolean onCreate;
     private Boolean onEdit;
@@ -41,47 +42,54 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
     //Variables de negocio
     private Integer institucionId;
     private Integer año;
-    private Libro libroSelected, libroAux;
+    private Libro libroSelected;    
     private Institucion institucion;
+    private Tomo tomoSelected;
     private InventarioAnual inventarioAnual;
-
+    
     //Listas
     private List<Libro> libroList;
+    private List<Tomo> tomoList;
 
     //
     @EJB
-    private LibroServicio libroServicio;
+    private LibroServicio libroServicio; 
+    @EJB
+    private TomoServicio tomoServicio;
     @EJB
     private InventarioAnualServicio inventarioAnualServicio;
     @EJB
     private EstadoInventarioAnualServicio estadoInventarioAnualServicio;
-
+    
     @PostConstruct
     protected void init() {
-        tituloInventarioLibro = "Inventario Libros Propiedad";
+        tituloInventarioLibro = "Inventario Libros y Tomos Propiedad";
 
-        disableNuevoLibro = Boolean.FALSE;
-        disableDeleteLibro = Boolean.TRUE;
+        disableNuevoTomo = Boolean.TRUE;
+        disableDeleteTomo = Boolean.TRUE;
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         año = calendar.get(Calendar.YEAR);
-
+        
         institucionId = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
         institucion = new Institucion();
         institucion.setInstitucionId(institucionId);
         obtenerLibro();
     }
-
-    public void reloadLibro() {
+    
+    public void reloadLibro() {               
         obtenerLibro();
         libroSelected = new Libro();
+        tomoSelected = new Tomo();
+        tomoList = new ArrayList<Tomo>();
         onCreate = Boolean.FALSE;
         onEdit = Boolean.FALSE;
-        disableDeleteLibro = Boolean.TRUE;
+        disableNuevoTomo = Boolean.TRUE;
+        disableDeleteTomo = Boolean.TRUE;
         renderEdition = Boolean.FALSE;
     }
-
+    
     public void obtenerLibro() {
         inventarioAnual = new InventarioAnual();
         inventarioAnual = inventarioAnualServicio.getInventarioPorInstitucionAño(institucionId, año);
@@ -89,7 +97,7 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             Integer añoActual = calendar.get(Calendar.YEAR);
-            Integer añoAnterior = calendar.get(Calendar.YEAR) - 1;
+            Integer añoAnterior = calendar.get(Calendar.YEAR)-1;
             if (añoActual.equals(año) || (añoAnterior).equals(año)) {
                 inventarioAnual.setAnio(año);
                 inventarioAnual.setInstitucion(institucion);
@@ -101,7 +109,7 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
                 estadoInventarioAnual.setFechaRegistro(new Date());
                 estadoInventarioAnual.setInventarioAnual(inventarioAnual);
                 estadoInventarioAnualServicio.create(estadoInventarioAnual);
-            } else {
+            }else{
                 año = calendar.get(Calendar.YEAR);
                 inventarioAnual = inventarioAnualServicio.getInventarioPorInstitucionAño(institucionId, año);
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Información", "Año no permitido."));
@@ -110,62 +118,83 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
         }
         libroList = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.PROPIEDAD.getTipoLibro());
     }
-
+    
+    public void obtenerTomo() {        
+        tomoList = new ArrayList<Tomo>();
+        tomoList=tomoServicio.getTomosActivosPorLibro(libroSelected.getLibroId());        
+    }
+    
     public void onRowSelectLibro() {
+        //strBtnGuardar = getBundleEtiquetas("btnActualizar", null);
+        obtenerTomo();
+        //onEdit = Boolean.TRUE;
+        //onCreate = Boolean.FALSE;
+        //disableDeleteTomo = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+        disableNuevoTomo = Boolean.FALSE;
+    }
+    
+    public void onRowSelectTomo() {
         strBtnGuardar = getBundleEtiquetas("btnActualizar", null);
-        libroAux = new Libro();
-        libroAux = (Libro) SerializationUtils.clone(libroSelected);
+
         onEdit = Boolean.TRUE;
         onCreate = Boolean.FALSE;
-        disableDeleteLibro = Boolean.FALSE;
+        disableDeleteTomo = Boolean.FALSE;        
         renderEdition = Boolean.TRUE;
     }
-
-    public void nuevoRegistroLibro() {
+    
+    public void nuevoRegistroTomo() {
         strBtnGuardar = getBundleEtiquetas("btnGuardar", null);;
 
         onCreate = Boolean.TRUE;
         onEdit = Boolean.FALSE;
-        disableDeleteLibro = Boolean.TRUE;
+        disableDeleteTomo = Boolean.TRUE;
         renderEdition = Boolean.TRUE;
 
-        libroSelected = new Libro();
+        tomoSelected = new Tomo();
     }
-
-    public void borrarLibroSeleccionado() {
-        libroSelected.setEstado(EstadoEnum.INACTIVO.getEstado());
-        libroSelected.setFechaModificacionRegistro(new Date());
-        libroServicio.update(libroSelected);
-        reloadLibro();
+    
+    public void borrarTomoSeleccionado() {
+        tomoSelected.setEstado(EstadoEnum.INACTIVO.getEstado());
+        tomoSelected.setFechaModificacionRegistro(new Date());
+        tomoServicio.update(tomoSelected);
+        //reloadLibro();
+        tomoSelected = new Tomo();
+        obtenerTomo();
+        disableDeleteTomo = Boolean.TRUE;
+        renderEdition = Boolean.FALSE;
     }
+    
+    public void guardarTomo() {
+        tomoSelected.setLibro(libroSelected);
 
-    public void guardarLibro() {
-        TipoLibro tipoLibro = new TipoLibro(TipoLibroEnum.PROPIEDAD.getTipoLibro());
-        libroSelected.setTipoLibro(tipoLibro);
-        if (libroSelected.getFechaApertura().after(libroSelected.getFechaCierre())) {
-            libroSelected=libroAux;
-            obtenerLibro();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "La Fecha de Apertura no puede ser posterior a la Fecha de Cierre."));
-        } else {
-            if (onCreate) {
-                libroSelected.setFechaRegistro(new Date());
-                libroSelected.setInventarioAnual(inventarioAnual);
-                libroSelected.setEstado(EstadoEnum.ACTIVO.getEstado());
-                libroServicio.create(libroSelected);
-            } else if (onEdit) {
-                libroSelected.setFechaModificacionRegistro(new Date());
-                libroServicio.update(libroSelected);
-            }
-            reloadLibro();
+        if (onCreate) {
+            tomoSelected.setFechaRegistro(new Date());
+            tomoSelected.setEstado(EstadoEnum.ACTIVO.getEstado());
+            tomoServicio.create(tomoSelected);
+        } else if (onEdit) {
+            tomoSelected.setFechaModificacionRegistro(new Date());
+            tomoServicio.update(tomoSelected);
         }
+
+        //reloadLibro();
+        tomoSelected = new Tomo();
+        renderEdition = Boolean.FALSE;
+        disableDeleteTomo = Boolean.TRUE;
+        obtenerTomo();
     }
 
-    public void cancelarLibro() {
-        libroSelected = new Libro();
-        reloadLibro();
+    public void cancelarTomo() {
+        //libroSelected = new Libro();
+        tomoSelected = new Tomo();
+        renderEdition = Boolean.FALSE;
+        disableDeleteTomo = Boolean.TRUE;
+        obtenerTomo();
+        //reloadLibro();        
     }
 
     //Getters & Setters
+
     public Libro getLibroSelected() {
         return libroSelected;
     }
@@ -214,21 +243,38 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
         this.strBtnGuardar = strBtnGuardar;
     }
 
-    public Boolean getDisableNuevoLibro() {
-        return disableNuevoLibro;
+    public Boolean getDisableNuevoTomo() {
+        return disableNuevoTomo;
     }
 
-    public void setDisableNuevoLibro(Boolean disableNuevoLibro) {
-        this.disableNuevoLibro = disableNuevoLibro;
+    public void setDisableNuevoTomo(Boolean disableNuevoTomo) {
+        this.disableNuevoTomo = disableNuevoTomo;
     }
 
-    public Boolean getDisableDeleteLibro() {
-        return disableDeleteLibro;
+    public Boolean getDisableDeleteTomo() {
+        return disableDeleteTomo;
     }
 
-    public void setDisableDeleteLibro(Boolean disableDeleteLibro) {
-        this.disableDeleteLibro = disableDeleteLibro;
+    public void setDisableDeleteTomo(Boolean disableDeleteTomo) {
+        this.disableDeleteTomo = disableDeleteTomo;
     }
+
+    public Tomo getTomoSelected() {
+        return tomoSelected;
+    }
+
+    public void setTomoSelected(Tomo tomoSelected) {
+        this.tomoSelected = tomoSelected;
+    }
+
+    public List<Tomo> getTomoList() {
+        return tomoList;
+    }
+
+    public void setTomoList(List<Tomo> tomoList) {
+        this.tomoList = tomoList;
+    }
+
 
     public Boolean getOnCreate() {
         return onCreate;
@@ -245,13 +291,5 @@ public class LibroPropiedadCtrl extends BaseCtrl implements Serializable {
     public void setOnEdit(Boolean onEdit) {
         this.onEdit = onEdit;
     }
-
-    public InventarioAnual getInventarioAnual() {
-        return inventarioAnual;
-    }
-
-    public void setInventarioAnual(InventarioAnual inventarioAnual) {
-        this.inventarioAnual = inventarioAnual;
-    }
-
+    
 }
