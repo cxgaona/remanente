@@ -8,24 +8,24 @@
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{gestionUsuariosCtrl.tituloPagina}</h1>
+
             <h:form id="formUsuario">
                 <p:remoteCommand name="onSelectRowUsuario" 
                                  update="formUsuarioSelected"/>
                 <b:panel title="Usuarios">
                     <h:panelGrid columns="1" style="width: 100%;">
-                        <!--selection="#{gestionUsuariosCtrl.usuarioDtoSelected}"-->
+
                         <p:dataTable id="usuarioTbl"
                                      value="#{gestionUsuariosCtrl.usuarioDtoList}" 
                                      var="usuarioDto"
-                                     rowKey="#{usuarioDto.usuario.usuarioId}"
+                                     rowKey="#{usuarioDto.usuario.usuarioId}"                                     
                                      selectionMode="single"
-                                     
-                                     reflow="true" rows="5" paginator="true"
+                                     selection="#{gestionUsuariosCtrl.usuarioDtoSelected}"
+                                     reflow="true" rows="5" paginator="true"                                     
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,25"
-                                     tableStyle="width:auto"
-                                     widgetVar="usuarioTblWidgetVar">
-                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuario:usuarioPnl"/>                            
+                                     rowsPerPageTemplate="5,10,25"                                     
+                                     tableStyle="width:auto">
+                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuarioSelected:tipoInstitucion, formUsuario:usuarioPnl"/>
                             <p:column headerText="Nombre" sortBy="#{usuarioDto.usuario.nombre}" filterBy="#{usuarioDto.usuario.nombre}" filterMatchMode="contains">
                                 <h:outputText value="#{usuarioDto.usuario.nombre}" />
                             </p:column>
@@ -42,14 +42,14 @@
                                                                                 usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
                                                                                 usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
                                                                                 usuarioDto.institucion.institucion.institucion.nombre}" 
-                                                                    filterBy="#{usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 4 or 
-                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
-                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
-                                                                                usuarioDto.institucion.institucion.institucion.nombre}" filterMatchMode="contains" >
+                                      filterBy="#{usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 4 or 
+                                                  usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
+                                                  usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
+                                                  usuarioDto.institucion.institucion.institucion.nombre}" filterMatchMode="contains" >
                                 <h:outputText value="#{usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 4 or 
-                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
-                                                                                usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
-                                                                                usuarioDto.institucion.institucion.institucion.nombre}"/>
+                                                       usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 3 ?usuarioDto.institucion.institucion.nombre: 
+                                                       usuarioDto.institucion.tipoInstitucion.tipoInstitucionId eq 2 ?usuarioDto.institucion.nombre:
+                                                       usuarioDto.institucion.institucion.institucion.nombre}"/>
                             </p:column>
                             <p:column headerText="Tipo Institución" 
                                       sortBy="#{usuarioDto.institucion.tipoInstitucion.descripcion}" 
@@ -58,10 +58,10 @@
                                 <h:outputText value="#{usuarioDto.institucion.tipoInstitucion.descripcion}"/>
                             </p:column>
                             <p:column headerText="Perfil" 
-                                      sortBy="#{usuarioDto.perfil.nombre}" 
-                                      filterBy="#{usuarioDto.perfil.nombre}" 
+                                      sortBy="#{usuarioDto.perfil}" 
+                                      filterBy="#{usuarioDto.perfil}" 
                                       filterMatchMode="contains">
-                                <h:outputText value="#{usuarioDto.perfil.nombre}"/>
+                                <h:outputText value="#{usuarioDto.perfil}"/>
                             </p:column>
                         </p:dataTable>                          
                     </h:panelGrid>
@@ -71,13 +71,12 @@
                                          style="margin-right:20px;" 
                                          action="#{gestionUsuariosCtrl.nuevoUsuario}"
                                          icon="fa fa-fw fa-plus-square"
-                                         update="formUsuarioSelected"></p:commandButton>
+                                         update="formUsuarioSelected"/>
                         <p:commandButton value="Eliminar Usuario" disabled="#{!gestionUsuariosCtrl.renderEdition}"
                                          style="margin-right:20px;" 
                                          action="#{gestionUsuariosCtrl.eliminarUsuario}"
                                          icon="fa fa-fw fa-remove"
-                                         update="formUsuario, msgMensajes, formUsuario:usuarioTbl"
-                                         oncomplete="PF('usuarioTblWidgetVar').filter()"> 
+                                         update="formUsuario, formUsuarioSelected, msgMensajes"                                         > 
                             <p:confirm header="Confirmación" message="¿Está seguro de eliminar al usuario Seleccionado" icon="fa fa-fw fa-warning" />
                         </p:commandButton>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
@@ -87,59 +86,57 @@
 
                     </b:panelGrid>
 
-                    <b:panelGrid id="cargaUsuarioPnl" colSpans="4,8" style="width: 40%; margin: 4px 5px;">
-                        <p:outputLabel value="Carga de usuarios: " />
-                        <p:fileUpload                                    
-                            id="cargaUsuarios"
-                            messageTemplate="Tipo de Archivo no Válido"
-                            style="width:100%"
-                            mode="advanced"
-                            dragDropSupport="true"
-                            sizeLimit="90000000"
-                            allowTypes="/(\.|\/)(xlsx)$/"
-                            label=""
-                            uploadLabel=""
-                            cancelLabel=""                                
-                            fileUploadListener="#{gestionUsuariosCtrl.crearUsuariosBloque}"
-                            update="formUsuario, msgMensajes"/>
-                        <p:outputLabel rendered="false"/>                        
-                    </b:panelGrid>                        
-
-
+                    <!--                    <b:panelGrid id="cargaUsuarioPnl" colSpans="4,8" style="width: 40%; margin: 4px 5px;">
+                                            <p:outputLabel value="Carga de usuarios: " />
+                                            <p:fileUpload                                    
+                                                id="cargaUsuarios"
+                                                messageTemplate="Tipo de Archivo no Válido"
+                                                style="width:100%"
+                                                mode="advanced"
+                                                dragDropSupport="true"
+                                                sizeLimit="90000000"
+                                                allowTypes="/(\.|\/)(xlsx)$/"
+                                                label=""
+                                                uploadLabel=""
+                                                cancelLabel=""                                
+                                                fileUploadListener="#{gestionUsuariosCtrl.crearUsuariosBloque}"
+                                                update="formUsuario, msgMensajes"/>
+                                            <p:outputLabel rendered="false"/>                        
+                                        </b:panelGrid>                        -->
 
                 </b:panel>
             </h:form>
+
             <h:form id="formUsuarioSelected" >
                 <b:panel style="width: 90%" rendered="#{gestionUsuariosCtrl.renderEdition}">
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
-                        <p:outputLabel for="tipoInstitucion" value="Tipo Institución:" />
-                        <p:selectOneMenu id="tipoInstitucion" 
-                                         value="#{gestionUsuariosCtrl.tipoInstitucion}"
-                                         style="width: 70%;"
+                        <p:outputLabel value="Tipo Institución:" />
+                        <p:selectOneMenu id="tipoInstitucion"
+                                         value="#{gestionUsuariosCtrl.tipoInstitucionSelected}"
+                                         style="width: 90%;"
+                                         converter="#{tipoInstitucionConverter}"
                                          required="true">
-                            <p:ajax listener="#{gestionUsuariosCtrl.seleccionarTipoInstitucion}" update="formUsuarioSelected"/>
-                            <f:selectItem itemLabel="Dirección Nacional" itemValue="Dirección Nacional" />
-                            <f:selectItem itemLabel="Dirección Regional" itemValue="Dirección Regional" />
-                            <f:selectItem itemLabel="GAD" itemValue="GAD" />
-                            <f:selectItem itemLabel="Registro Propiedad / Mercantil" itemValue="Registro Propiedad / Mercantil" />
+                            <p:ajax event="valueChange" listener="#{gestionUsuariosCtrl.onChangeTipoInstitucion}" update="formUsuarioSelected:institucion, formUsuarioSelected:perfiles"/>
+                            <f:selectItems value="#{gestionUsuariosCtrl.tipoInstitucionList}" var="c" itemValue="#{c}" itemLabel="#{c.descripcion}" />
                         </p:selectOneMenu>
 
                         <p:outputLabel for="institucion" value="Institución:" />
                         <p:autoComplete id="institucion" 
-                                        value="#{gestionUsuariosCtrl.usuarioDtoSelected.institucion}" 
-                                        completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"                                        
+                                        value="#{gestionUsuariosCtrl.institucionSelected}" 
+                                        completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"
                                         converter="#{institucionConverter}"
                                         var="institucion"
                                         itemLabel="#{institucion.nombre}"
                                         itemValue="#{institucion}"
-                                        style="width: 100%" 
+                                        style="width: 100%"
                                         inputStyle="width: 90%"
                                         maxResults="5"
                                         required="true"
-                                        title="#{gestionUsuariosCtrl.usuarioDtoSelected.institucion.nombre}"/>                        
+                                        title="#{gestionUsuariosCtrl.institucionSelected.nombre}"/>
 
                         <p:outputLabel for="cedula" value="Cédula:" />
-                        <p:inputText id="cedula" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.cedula}" style="width: 90%" required="true" maxlength="10">
+                        <p:inputText id="cedula" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.cedula}" style="width: 90%" required="true" maxlength="10"
+                                     disabled="#{gestionUsuariosCtrl.onEdit}">
                             <p:keyFilter regEx="/[\d]/"/>
                         </p:inputText>
 
@@ -149,35 +146,32 @@
                         <p:outputLabel for="mail" value="Mail:" />
                         <p:inputText id="mail" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.correoElectronico}" style="width: 90%" required="true"> 
                             <p:keyFilter regEx="/[a-z0-9_\.\-@]/i"/>
-                        </p:inputText>                       
+                        </p:inputText>
 
-<!--                        <p:outputLabel value="Perfil:" />
-                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
-                            <p:selectBooleanCheckbox id="checkRegistrador" value="#{gestionUsuariosCtrl.usuarioDtoSelected.registrador}" itemLabel="Registrador" disabled="#{gestionUsuariosCtrl.disabledRegistrador}">
-                                <p:ajax update="formUsuarioSelected:checkRegistrador, formUsuarioSelected:checkVerificador" listener="#{gestionUsuariosCtrl.cambioRolReg}" />
-                            </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="checkVerificador" value="#{gestionUsuariosCtrl.usuarioDtoSelected.verificador}" itemLabel="Verificador" disabled="#{gestionUsuariosCtrl.disabledVerificador}" >
-                                <p:ajax update="formUsuarioSelected:checkVerificador, formUsuarioSelected:checkRegistrador" listener="#{gestionUsuariosCtrl.cambioRolVer}" />
-                            </p:selectBooleanCheckbox>
-
-                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioDtoSelected.validador}" itemLabel="Validador" disabled="#{gestionUsuariosCtrl.disabledValidador}"/>                            
-                            <p:selectBooleanCheckbox value="#{gestionUsuariosCtrl.usuarioDtoSelected.administrador}" itemLabel="Administrador" disabled="#{gestionUsuariosCtrl.disabledAdministrador}"/>
-                        </h:panelGrid>-->
+                        <p:outputLabel value="Perfiles Asignados:" />
+                        <p:selectManyCheckbox id="perfiles" 
+                                              value="#{gestionUsuariosCtrl.perfilSelectedList}" 
+                                              layout="grid"
+                                              converter="#{perfilConverter}"
+                                              columns="3">                            
+                            <f:selectItems value="#{gestionUsuariosCtrl.perfilListActivos}" var="perfil" itemValue="#{perfil}" itemLabel="#{perfil.nombre}" />                            
+                        </p:selectManyCheckbox>
 
                         <p:outputLabel value="Restablecer contraseña" />
                         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
                             <p:selectBooleanCheckbox id="checkRestablecerClave" 
-                                                     value="#{gestionUsuariosCtrl.restablecer}"
-                                                     disabled="#{gestionUsuariosCtrl.disabledRestablecer}">                                
+                                                     value="#{gestionUsuariosCtrl.restablecerContraseña}"
+                                                     disabled="#{gestionUsuariosCtrl.disableRestablecerContraseñaBtn}">
                             </p:selectBooleanCheckbox>                            
                         </h:panelGrid>
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
                         <p:commandButton value="#{gestionUsuariosCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{gestionUsuariosCtrl.guardar}" update="formUsuarioSelected, formUsuario, msgMensajes"/>
-                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" action="#{gestionUsuariosCtrl.cancelar}" update="formUsuarioSelected, formUsuario"/>
+                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" process="@this" icon="fa fa-fw fa-ban" action="#{gestionUsuariosCtrl.cancelar}" update="formUsuarioSelected, formUsuario"/>
                     </b:panelGrid>
                 </b:panel>
             </h:form>
+
         </ui:define>
     </ui:composition>
 </html>
