@@ -211,6 +211,7 @@ public class RemanenteCuatrimestralCtrl extends BaseCtrl implements Serializable
         } else {
             displayUploadInformeCuatrimestral = Boolean.FALSE;
         }
+        System.out.println("Desde aqui");
 
         List<Row> rows = new ArrayList<Row>();
         for (RemanenteMensual remanenteMensual : rms) {

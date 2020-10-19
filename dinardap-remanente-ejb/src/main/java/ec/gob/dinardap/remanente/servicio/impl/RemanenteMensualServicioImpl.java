@@ -95,6 +95,22 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
+    public List<RemanenteMensual> getRemanenteMensualProrroga() {
+        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
+        String[] criteriaNombres = {"prorrogaRemanenteMensualId.prorrogaRemanenteMensualId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_IS_NOT_NULL};
+        Object[] criteriaValores = {};
+        String[] orderBy = {"remanenteMensualId"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        remanenteMensualList = findByCriterias(criteria);
+//        for (RemanenteMensual rm : remanenteMensualList) {
+//            rm.getProrrogaRemanenteMensualId();
+//        }
+        return remanenteMensualList;
+    }
+
+    @Override
     public void editRemanenteMensual(RemanenteMensual remanenteMensual) {
         this.update(remanenteMensual);
     }
@@ -141,9 +157,9 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
 
     @Override
     public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen) {
+        //revisar
         RemanenteMensual rm = new RemanenteMensual();
         RemanenteMensual rmo = new RemanenteMensual(remanenteMensualOrigen.getRemanenteMensualId());
-        RemanenteMensual rmn = new RemanenteMensual();
         rm = remanenteMensualOrigen;
         rm.setRemanenteMensualOrigen(rmo);
         rm.setRemanenteMensualId(null);
@@ -152,6 +168,8 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         rm.setInformeAprobacionUrl(null);
         rm.setFechaRegistro(new Date());
         create(rm);
+//        rmo.setProrrogaRemanenteMensualId(null);
+        update(rmo);
     }
 
     @Override

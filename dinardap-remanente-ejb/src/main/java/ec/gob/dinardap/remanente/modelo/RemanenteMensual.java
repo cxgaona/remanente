@@ -71,7 +71,7 @@ public class RemanenteMensual implements Serializable {
 
     @Column(name = "informe_aprobacion_url", length = 2147483647)
     private String informeAprobacionUrl;
-
+    
     //Bandeja//
     @OneToMany(mappedBy = "remanenteMensual")
     private List<Bandeja> bandejaList;
@@ -98,6 +98,10 @@ public class RemanenteMensual implements Serializable {
 
     @OneToMany(mappedBy = "remanenteMensual")
     private List<Transaccion> transaccionList;
+    
+    //Prórroga
+    @OneToMany(mappedBy = "remanenteMensualId")
+    private List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList;
 
     public RemanenteMensual() {
     }
@@ -214,4 +218,12 @@ public class RemanenteMensual implements Serializable {
         this.remanenteMensualOrigen = remanenteMensualOrigen;
     }    
     
+    public List<ProrrogaRemanenteMensual> getProrrogaRemanenteMensualList() {
+        return prorrogaRemanenteMensualList;
+    }
+
+    public void setProrrogaRemanenteMensualList(List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList) {
+        this.prorrogaRemanenteMensualList = prorrogaRemanenteMensualList;
+    }
+
 }

@@ -197,7 +197,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         });
         if (remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo")) {
             btnActivated = Boolean.FALSE;
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes())) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
                 btnActivated = Boolean.FALSE;
             } else {
                 btnActivated = Boolean.TRUE;
@@ -454,7 +454,6 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         this.remanenteMensualDTOList = remanenteMensualDTOList;
     }
 
-
     public String getNombreInstitucion() {
         return nombreInstitucion;
     }
@@ -470,8 +469,6 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     public void setRemanenteMensualDTOSelected(RemanenteMensualDTO remanenteMensualDTOSelected) {
         this.remanenteMensualDTOSelected = remanenteMensualDTOSelected;
     }
-
-    
 
     public String getMesSelected() {
         return mesSelected;
@@ -624,6 +621,5 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     public void setRutaArchivo(String rutaArchivo) {
         this.rutaArchivo = rutaArchivo;
     }
-    
 
 }

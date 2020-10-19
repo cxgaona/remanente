@@ -1,7 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 import ec.gob.dinardap.remanente.modelo.Nomina;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
@@ -155,39 +154,51 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         ultimoEstado = remanenteMensualSelected.getEstadoRemanenteMensualList().get(remanenteMensualSelected.getEstadoRemanenteMensualList().size() - 1).getDescripcion();
 
         if (ultimoEstado.equals("GeneradoAutomaticamente")
-                || ultimoEstado.equals("Verificado-Rechazado")
-                || ultimoEstado.equals("GeneradoNuevaVersion")) {
-            disableNuevoEgreso = Boolean.FALSE;
-            disableDeleteNomina();
-            disableDeleteFacturaPagada();
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes())) {
+                || ultimoEstado.equals("Verificado-Rechazado")) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualSelected.getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualSelected.getMes(), remanenteMensualSelected.getRemanenteMensualId())) {
                 disableNuevoEgreso = Boolean.FALSE;
                 disableDeleteNomina();
                 disableDeleteFacturaPagada();
             } else {
                 renderEditionNomina = Boolean.FALSE;
                 renderEditionFacturaPagada = Boolean.FALSE;
-
                 disabledDeleteNomina = Boolean.TRUE;
                 disabledDeleteNominaTodos = Boolean.TRUE;
-
                 disabledDeleteFacturaPagada = Boolean.TRUE;
                 disabledDeleteFacturaPagadaTodos = Boolean.TRUE;
-
                 disableNuevoEgreso = Boolean.TRUE;
             }
         } else {
-            renderEditionNomina = Boolean.FALSE;
-            renderEditionFacturaPagada = Boolean.FALSE;
-
-            disabledDeleteNomina = Boolean.TRUE;
-            disabledDeleteNominaTodos = Boolean.TRUE;
-
-            disabledDeleteFacturaPagada = Boolean.TRUE;
-            disabledDeleteFacturaPagadaTodos = Boolean.TRUE;
-
-            disableNuevoEgreso = Boolean.TRUE;
+            if (ultimoEstado.equals("GeneradoNuevaVersion")) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(remanenteMensualSelected.getFechaRegistro());
+                Integer añoSC = calendar.get(Calendar.YEAR);
+                Integer mesSC = calendar.get(Calendar.MONTH) + 1;
+                Integer diaSC = calendar.get(Calendar.DAY_OF_MONTH);
+                if (diasNoLaborablesServicio.habilitarDiasAdicionalesCS(añoSC, mesSC, diaSC, remanenteMensualSelected.getRemanenteMensualId())) {
+                    disableNuevoEgreso = Boolean.FALSE;
+                    disableDeleteNomina();
+                    disableDeleteFacturaPagada();
+                } else {
+                    renderEditionNomina = Boolean.FALSE;
+                    renderEditionFacturaPagada = Boolean.FALSE;
+                    disabledDeleteNomina = Boolean.TRUE;
+                    disabledDeleteNominaTodos = Boolean.TRUE;
+                    disabledDeleteFacturaPagada = Boolean.TRUE;
+                    disabledDeleteFacturaPagadaTodos = Boolean.TRUE;
+                    disableNuevoEgreso = Boolean.TRUE;
+                }
+            } else {
+                renderEditionNomina = Boolean.FALSE;
+                renderEditionFacturaPagada = Boolean.FALSE;
+                disabledDeleteNomina = Boolean.TRUE;
+                disabledDeleteNominaTodos = Boolean.TRUE;
+                disabledDeleteFacturaPagada = Boolean.TRUE;
+                disabledDeleteFacturaPagadaTodos = Boolean.TRUE;
+                disableNuevoEgreso = Boolean.TRUE;
+            }
         }
+        
     }
 
     public void reloadEgresos() {
@@ -798,7 +809,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
                     Calendar fecha = Calendar.getInstance();
                     fecha.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(data));
                     Calendar fechaActual = Calendar.getInstance();
-                    if (diasNoLaborablesServicio.habilitarDiasAdicionales(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH) + 1)) {
+                    if (diasNoLaborablesServicio.habilitarDiasAdicionales(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH) + 1, remanenteMensualSelected.getRemanenteMensualId())) {
                         datoValidado = data;
                     } else {
                         datoValidado = "INVALIDO";
