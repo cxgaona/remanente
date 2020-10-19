@@ -6,7 +6,6 @@
 package ec.gob.dinardap.remanente.dto;
 
 import ec.gob.dinardap.seguridad.modelo.Institucion;
-import ec.gob.dinardap.seguridad.modelo.Perfil;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 
 /**
@@ -17,16 +16,9 @@ public class UsuarioDTO {
 
     private Usuario usuario;
     private Institucion institucion;
-    private Perfil perfil;
+    private String perfil;
 
     public UsuarioDTO() {
-        
-    }
-
-    public UsuarioDTO(Usuario usuario) {
-        this.usuario = usuario;
-        this.institucion = usuario.getAsignacionInstitucions().get(0).getInstitucion();
-        this.perfil = usuario.getUsuarioPerfilList().get(0).getPerfil();
     }
 
     public Usuario getUsuario() {
@@ -41,18 +33,16 @@ public class UsuarioDTO {
         return institucion;
     }
 
-    public void setInstitucion() {
-        this.institucion = usuario.getAsignacionInstitucions().get(0).getInstitucion();
+    public void setInstitucion(Institucion institucion) {
+        this.institucion = institucion;
     }
 
-    public Perfil getPerfil() {
+    public String getPerfil() {
         return perfil;
     }
 
-    public void setPerfil() {
-        this.perfil = usuario.getUsuarioPerfilList().get(0).getPerfil();
+    public void setPerfil(String perfil) {
+        this.perfil = perfil;
     }
-    
-    
 
 }
