@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui">      
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">              
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tomoCtrl.tituloInventarioTomoPropiedad}</h1>
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tomoCtrl.tituloInventarioTomoMercantil}</h1>
             <h:form id="formLibro">                            
                 <p:messages id="messages" showDetail="true" closable="true">
                     <p:autoUpdate />
@@ -19,10 +19,10 @@
                     </p:inputText>
                     <p:commandButton action="#{tomoCtrl.reloadLibro}" update="formLibro, formTomo, formTomoSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panel title="Libros Propiedad">
+                <b:panel title="Libros Mercantil">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="libroTbl"
-                                     value="#{tomoCtrl.libroListPropiedad}" 
+                                     value="#{tomoCtrl.libroListMercantil}" 
                                      var="libro"                                     
                                      rowKey="#{libro.libroId}"
                                      selection="#{tomoCtrl.libroSelected}"
@@ -51,7 +51,7 @@
             </h:form>
 
             <h:form id="formTomo">                            
-                <b:panel title="Tomos Propiedad">                    
+                <b:panel title="Tomos Mercantil">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="tomoTbl"
                                      value="#{tomoCtrl.tomoList}" 

@@ -1,5 +1,6 @@
 package ec.gob.dinardap.remanente.controller;
 
+import ec.gob.dinardap.remanente.constante.EstadoInventarioAnualEnum;
 import ec.gob.dinardap.remanente.constante.TipoLibroEnum;
 import ec.gob.dinardap.remanente.modelo.EstadoInventarioAnual;
 import ec.gob.dinardap.remanente.modelo.InventarioAnual;
@@ -24,17 +25,20 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-@Named(value = "tomoPropiedadCtrl")
+@Named(value = "tomoCtrl")
 @ViewScoped
-public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
+public class TomoCtrl extends BaseCtrl implements Serializable {
 
     //Declaración de variables
     //Variables de control visual
-    private String tituloInventarioLibro;
+    private String tituloInventarioTomoPropiedad, tituloInventarioTomoMercantil;
+    private String tituloInventarioTomoRepertorioPropiedad, tituloInventarioTomoRepertorioMercantil;
+    private String tituloInventarioTomoIndiceGeneralPropiedad, tituloInventarioTomoIndiceGeneralMercantil;
     private String strBtnGuardar;
 
     private Boolean disableNuevoTomo;
     private Boolean disableDeleteTomo;
+    private Boolean disableActualizarTomo;
     private Boolean renderEdition;
     private Boolean onCreate;
     private Boolean onEdit;
@@ -48,7 +52,9 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
     private InventarioAnual inventarioAnual;
     
     //Listas
-    private List<Libro> libroList;
+    private List<Libro> libroListPropiedad, libroListMercantil;
+    private List<Libro> libroListRepertorioPropiedad, libroListRepertorioMercantil;
+    private List<Libro> libroListIndiceGeneralPropiedad, libroListIndiceGeneralMercantil;
     private List<Tomo> tomoList;
 
     //
@@ -63,10 +69,16 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
     
     @PostConstruct
     protected void init() {
-        tituloInventarioLibro = "Inventario Libros y Tomos Propiedad";
+        tituloInventarioTomoPropiedad = "Inventario Libros y Tomos Propiedad";
+        tituloInventarioTomoMercantil = "Inventario Libros y Tomos Mercantil";
+        tituloInventarioTomoRepertorioPropiedad = "Inventario Libros y Tomos Repertorio Propiedad";
+        tituloInventarioTomoRepertorioMercantil = "Inventario Libros y Tomos Repertorio Mercantil";
+        tituloInventarioTomoIndiceGeneralPropiedad = "Inventario Libros y Tomos Índice General Propiedad";
+        tituloInventarioTomoIndiceGeneralMercantil = "Inventario Libros y Tomos Índice General Mercantil";
 
         disableNuevoTomo = Boolean.TRUE;
         disableDeleteTomo = Boolean.TRUE;
+        disableActualizarTomo = Boolean.FALSE;
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -87,6 +99,7 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.FALSE;
         disableNuevoTomo = Boolean.TRUE;
         disableDeleteTomo = Boolean.TRUE;
+        disableActualizarTomo = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
     }
     
@@ -116,12 +129,27 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
             }
 
         }
-        libroList = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.PROPIEDAD.getTipoLibro());
+        libroListPropiedad = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.PROPIEDAD.getTipoLibro());
+        libroListMercantil = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.MERCANTIL.getTipoLibro());
+        libroListRepertorioPropiedad = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.REPERTORIO_PROPIEDAD.getTipoLibro());
+        libroListRepertorioMercantil = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.REPERTORIO_MERCANTIL.getTipoLibro());
+        libroListIndiceGeneralPropiedad = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.INDICE_GENERAL_PROPIEDAD.getTipoLibro());
+        libroListIndiceGeneralMercantil = libroServicio.getLibrosActivosPorInventarioTipo(inventarioAnual.getInventarioAnualId(), TipoLibroEnum.INDICE_GENERAL_MERCANTIL.getTipoLibro());
     }
     
     public void obtenerTomo() {        
         tomoList = new ArrayList<Tomo>();
         tomoList=tomoServicio.getTomosActivosPorLibro(libroSelected.getLibroId());        
+    }
+    
+    public void validarEstadoInventario() {
+        Short ultimoEstadoInventario = inventarioAnual.getEstadoInventarioAnualList().get(inventarioAnual.getEstadoInventarioAnualList().size() - 1).getEstado();
+        if (ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.APROBADO.getEstadoInventarioAnual()) ||
+            ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.COMPLETO.getEstadoInventarioAnual())) {
+            disableNuevoTomo = Boolean.TRUE;
+            disableDeleteTomo = Boolean.TRUE;
+            disableActualizarTomo = Boolean.TRUE;
+        }
     }
     
     public void onRowSelectLibro() {
@@ -132,6 +160,7 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
         //disableDeleteTomo = Boolean.FALSE;
         renderEdition = Boolean.FALSE;
         disableNuevoTomo = Boolean.FALSE;
+        validarEstadoInventario();
     }
     
     public void onRowSelectTomo() {
@@ -141,6 +170,7 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
         onCreate = Boolean.FALSE;
         disableDeleteTomo = Boolean.FALSE;        
         renderEdition = Boolean.TRUE;
+        validarEstadoInventario();
     }
     
     public void nuevoRegistroTomo() {
@@ -203,12 +233,52 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
         this.libroSelected = libroSelected;
     }
 
-    public String getTituloInventarioLibro() {
-        return tituloInventarioLibro;
+    public String getTituloInventarioTomoPropiedad() {
+        return tituloInventarioTomoPropiedad;
     }
 
-    public void setTituloInventarioLibro(String tituloInventarioLibro) {
-        this.tituloInventarioLibro = tituloInventarioLibro;
+    public void setTituloInventarioTomoPropiedad(String tituloInventarioTomoPropiedad) {
+        this.tituloInventarioTomoPropiedad = tituloInventarioTomoPropiedad;
+    }
+
+    public String getTituloInventarioTomoMercantil() {
+        return tituloInventarioTomoMercantil;
+    }
+
+    public void setTituloInventarioTomoMercantil(String tituloInventarioTomoMercantil) {
+        this.tituloInventarioTomoMercantil = tituloInventarioTomoMercantil;
+    }
+
+    public String getTituloInventarioTomoRepertorioPropiedad() {
+        return tituloInventarioTomoRepertorioPropiedad;
+    }
+
+    public void setTituloInventarioTomoRepertorioPropiedad(String tituloInventarioTomoRepertorioPropiedad) {
+        this.tituloInventarioTomoRepertorioPropiedad = tituloInventarioTomoRepertorioPropiedad;
+    }
+
+    public String getTituloInventarioTomoRepertorioMercantil() {
+        return tituloInventarioTomoRepertorioMercantil;
+    }
+
+    public void setTituloInventarioTomoRepertorioMercantil(String tituloInventarioTomoRepertorioMercantil) {
+        this.tituloInventarioTomoRepertorioMercantil = tituloInventarioTomoRepertorioMercantil;
+    }
+
+    public String getTituloInventarioTomoIndiceGeneralPropiedad() {
+        return tituloInventarioTomoIndiceGeneralPropiedad;
+    }
+
+    public void setTituloInventarioTomoIndiceGeneralPropiedad(String tituloInventarioTomoIndiceGeneralPropiedad) {
+        this.tituloInventarioTomoIndiceGeneralPropiedad = tituloInventarioTomoIndiceGeneralPropiedad;
+    }
+
+    public String getTituloInventarioTomoIndiceGeneralMercantil() {
+        return tituloInventarioTomoIndiceGeneralMercantil;
+    }
+
+    public void setTituloInventarioTomoIndiceGeneralMercantil(String tituloInventarioTomoIndiceGeneralMercantil) {
+        this.tituloInventarioTomoIndiceGeneralMercantil = tituloInventarioTomoIndiceGeneralMercantil;
     }
 
     public Integer getAño() {
@@ -219,12 +289,52 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
         this.año = año;
     }
 
-    public List<Libro> getLibroList() {
-        return libroList;
+    public List<Libro> getLibroListPropiedad() {
+        return libroListPropiedad;
     }
 
-    public void setLibroList(List<Libro> libroList) {
-        this.libroList = libroList;
+    public void setLibroListPropiedad(List<Libro> libroListPropiedad) {
+        this.libroListPropiedad = libroListPropiedad;
+    }
+
+    public List<Libro> getLibroListMercantil() {
+        return libroListMercantil;
+    }
+
+    public void setLibroListMercantil(List<Libro> libroListMercantil) {
+        this.libroListMercantil = libroListMercantil;
+    }
+
+    public List<Libro> getLibroListRepertorioPropiedad() {
+        return libroListRepertorioPropiedad;
+    }
+
+    public void setLibroListRepertorioPropiedad(List<Libro> libroListRepertorioPropiedad) {
+        this.libroListRepertorioPropiedad = libroListRepertorioPropiedad;
+    }
+
+    public List<Libro> getLibroListRepertorioMercantil() {
+        return libroListRepertorioMercantil;
+    }
+
+    public void setLibroListRepertorioMercantil(List<Libro> libroListRepertorioMercantil) {
+        this.libroListRepertorioMercantil = libroListRepertorioMercantil;
+    }
+
+    public List<Libro> getLibroListIndiceGeneralPropiedad() {
+        return libroListIndiceGeneralPropiedad;
+    }
+
+    public void setLibroListIndiceGeneralPropiedad(List<Libro> libroListIndiceGeneralPropiedad) {
+        this.libroListIndiceGeneralPropiedad = libroListIndiceGeneralPropiedad;
+    }
+
+    public List<Libro> getLibroListIndiceGeneralMercantil() {
+        return libroListIndiceGeneralMercantil;
+    }
+
+    public void setLibroListIndiceGeneralMercantil(List<Libro> libroListIndiceGeneralMercantil) {
+        this.libroListIndiceGeneralMercantil = libroListIndiceGeneralMercantil;
     }
 
     public Boolean getRenderEdition() {
@@ -275,7 +385,6 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
         this.tomoList = tomoList;
     }
 
-
     public Boolean getOnCreate() {
         return onCreate;
     }
@@ -290,6 +399,14 @@ public class TomoPropiedadCtrl extends BaseCtrl implements Serializable {
 
     public void setOnEdit(Boolean onEdit) {
         this.onEdit = onEdit;
+    }
+
+    public Boolean getDisableActualizarTomo() {
+        return disableActualizarTomo;
+    }
+
+    public void setDisableActualizarTomo(Boolean disableActualizarTomo) {
+        this.disableActualizarTomo = disableActualizarTomo;
     }
     
 }

@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui">      
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">              
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{libroCtrl.tituloInventarioLibroPropiedad}</h1>
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{libroCtrl.tituloInventarioLibroIndiceGeneralPropiedad}</h1>
             <h:form id="formLibro">                            
                 <p:messages id="messages" showDetail="true" closable="true">
                     <p:autoUpdate />
@@ -19,10 +19,10 @@
                     </p:inputText>
                     <p:commandButton action="#{libroCtrl.reloadLibro}" update="formLibro, formLibroSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panel title="Libros Propiedad">
+                <b:panel title="Libros Índice General Propiedad">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="libroTbl"
-                                     value="#{libroCtrl.libroListPropiedad}" 
+                                     value="#{libroCtrl.libroListIndiceGeneralPropiedad}" 
                                      var="libro"                                     
                                      rowKey="#{libro.libroId}"
                                      selection="#{libroCtrl.libroSelected}"
@@ -30,16 +30,15 @@
                                      reflow="true" rows="5" paginator="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25"
-                                     tableStyle="width:auto"
                                      styleClass="tableDialogs">
                             <p:ajax event="rowSelect" listener="#{libroCtrl.onRowSelectLibro}" update="formLibroSelected, formLibro:btnBorrarLibro, formLibro:btnNuevoLibro"/>
-                            <p:column headerText="#{etiquetas['denominacionLibro']}" sortBy="#{libro.denominacion}" filterBy="#{libro.denominacion}" filterMatchMode="contains" width="50%">
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" sortBy="#{libro.denominacion}" filterBy="#{libro.denominacion}" filterMatchMode="contains" width="75%">
                                 <h:outputText value="#{libro.denominacion}" />
                             </p:column>
-                            <p:column headerText="#{etiquetas['año']}" sortBy="#{libro.inventarioAnual.anio}" width="10%" style="text-align: center">
+                            <p:column headerText="#{etiquetas['año']}" sortBy="#{libro.inventarioAnual.anio}" width="25%" style="text-align: center">
                                 <h:outputText value="#{libro.inventarioAnual.anio}" />
                             </p:column>
-                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" sortBy="#{libro.fechaApertura}" width="15%" style="text-align: center">
+<!--                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" sortBy="#{libro.fechaApertura}" width="15%" style="text-align: center">
                                 <h:outputText value="#{libro.fechaApertura}" >
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
@@ -48,7 +47,7 @@
                                 <h:outputText value="#{libro.fechaCierre}" >
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
-                            </p:column>                            
+                            </p:column>                            -->
                         </p:dataTable>                          
                     </h:panelGrid>
 
@@ -81,7 +80,7 @@
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
                         <p:outputLabel for="denominacion" value="#{etiquetas['denominacionLibro']}:" />
                         <p:inputText id="denominacion" value="#{libroCtrl.libroSelected.denominacion}" maxlength="30" style="width: 80%" required="true" />                        
-                        <p:outputLabel for="fechaApertura" value="#{etiquetas['fechaAperturaLibro']}:" />
+<!--                        <p:outputLabel for="fechaApertura" value="#{etiquetas['fechaAperturaLibro']}:" />
                         <p:datePicker id="fechaApertura" 
                                       value="#{libroCtrl.libroSelected.fechaApertura}" 
                                       locale="es" 
@@ -98,10 +97,10 @@
                                       pattern="yyyy-MM-dd" 
                                       style="width: 90%" 
                                       readonlyInput="true"
-                                      required="true"/>                       
+                                      required="true"/>                       -->
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-                        <p:commandButton value="#{libroCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{libroCtrl.guardarLibroPropiedad}" update=":formLibroSelected, :formLibro" disabled="#{libroCtrl.disableActualizarLibro}"/>
+                        <p:commandButton value="#{libroCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{libroCtrl.guardarLibroIndiceGeneralPropiedad}" update=":formLibroSelected, :formLibro" disabled="#{libroCtrl.disableActualizarLibro}"/>
                         <p:commandButton value="#{etiquetas['btnCancelar']}" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" process="@this" action="#{libroCtrl.cancelarLibro}" update=":formLibroSelected, :formLibro"/>
                     </b:panelGrid>
                 </b:panel>

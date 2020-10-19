@@ -31,6 +31,7 @@ public class TomoDaoEjb extends RemanenteGenericDao<Tomo, Integer> implements To
         ResumenLibroDTO resumenLibroDTO = new ResumenLibroDTO();
         resumenLibroDTO.setTotalLibros(0);
         resumenLibroDTO.setTotalPaginasLibros(0);
+        resumenLibroDTO.setNombreRegistrador("");
 
         if (!libroList.isEmpty()) {
             Query query1 = em.createQuery("SELECT t FROM Tomo t WHERE t.libro IN (:libroList) AND t.estado=: estado");
@@ -38,7 +39,9 @@ public class TomoDaoEjb extends RemanenteGenericDao<Tomo, Integer> implements To
             query1.setParameter("estado", EstadoEnum.ACTIVO.getEstado());
             List<Tomo> tomoList = new ArrayList<Tomo>();
             tomoList = query1.getResultList();
-            resumenLibroDTO.setNombreRegistrador(libroList.get(0).getInventarioAnual().getNombreRegistrador());
+            if(libroList.get(0).getInventarioAnual().getNombreRegistrador()!=null){
+                resumenLibroDTO.setNombreRegistrador(libroList.get(0).getInventarioAnual().getNombreRegistrador());
+            }
             resumenLibroDTO.setTotalLibros(libroList.size());
             for (Tomo tomo : tomoList) {
                 resumenLibroDTO.setTotalPaginasLibros(resumenLibroDTO.getTotalPaginasLibros() + tomo.getNumeroTotalHojas());

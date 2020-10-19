@@ -50,6 +50,12 @@ public class InventarioAnual implements Serializable {
     
     @Column(name = "nombre_registrador")
     private String nombreRegistrador;
+    
+    @Column(name = "url_archivo")
+    private String urlArchivo;
+    
+    @Column(name = "comentarios")
+    private String comentarios;
 
     @OneToMany(mappedBy = "inventarioAnual")
     private List<Libro> libroList;
@@ -94,6 +100,22 @@ public class InventarioAnual implements Serializable {
 
     public void setNombreRegistrador(String nombreRegistrador) {
         this.nombreRegistrador = nombreRegistrador;
+    }
+
+    public String getUrlArchivo() {
+        return urlArchivo;
+    }
+
+    public void setUrlArchivo(String urlArchivo) {
+        this.urlArchivo = urlArchivo;
+    }
+
+    public String getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(String comentarios) {
+        this.comentarios = comentarios;
     }
 
     public List<Libro> getLibroList() {

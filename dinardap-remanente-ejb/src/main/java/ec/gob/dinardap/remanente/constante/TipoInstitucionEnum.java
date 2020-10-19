@@ -17,7 +17,9 @@ public enum TipoInstitucionEnum {
     REGIONAL((Integer)2),
     GAD((Integer)3),
     RMX_AUTONOMIA_FINANCIERA((Integer)4),
-    RMX_SIN_AUTONOMIA_FINANCIERA((Integer)5);
+    RMX_SIN_AUTONOMIA_FINANCIERA((Integer)5),
+    REGISTRO_MERCANTIL((Integer)6),
+    REGISTRO_PROPIEDAD((Integer)7);
     
     private final Integer tipoInstitucion;
 

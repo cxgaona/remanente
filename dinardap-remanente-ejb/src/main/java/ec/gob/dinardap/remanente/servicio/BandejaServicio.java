@@ -22,7 +22,10 @@ public interface BandejaServicio extends GenericService<Bandeja, Integer> {
     
     public void generarNotificacion(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
             Integer remanenteCuatrimestralId, Integer remanenteAnualId, Institucion institucion,
-            Integer remanenteMensualId, String descripcion, String estado);
+            Integer remanenteMensualId, String descripcion, String tipo);
+
+    public void generarNotificacionInventario(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
+            Institucion institucion, Integer inventarioAnualId, String descripcion, String tipo);
 
     public void editBandeja(BandejaDTO bandejaDTO);
 

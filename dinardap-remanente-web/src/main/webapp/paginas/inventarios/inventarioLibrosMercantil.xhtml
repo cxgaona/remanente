@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui">      
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">              
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{libroCtrl.tituloInventarioLibroPropiedad}</h1>
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{libroCtrl.tituloInventarioLibroMercantil}</h1>
             <h:form id="formLibro">                            
                 <p:messages id="messages" showDetail="true" closable="true">
                     <p:autoUpdate />
@@ -19,10 +19,10 @@
                     </p:inputText>
                     <p:commandButton action="#{libroCtrl.reloadLibro}" update="formLibro, formLibroSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panel title="Libros Propiedad">
+                <b:panel title="Libros Mercantil">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="libroTbl"
-                                     value="#{libroCtrl.libroListPropiedad}" 
+                                     value="#{libroCtrl.libroListMercantil}" 
                                      var="libro"                                     
                                      rowKey="#{libro.libroId}"
                                      selection="#{libroCtrl.libroSelected}"
@@ -101,7 +101,7 @@
                                       required="true"/>                       
                     </b:panelGrid>    
                     <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-                        <p:commandButton value="#{libroCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{libroCtrl.guardarLibroPropiedad}" update=":formLibroSelected, :formLibro" disabled="#{libroCtrl.disableActualizarLibro}"/>
+                        <p:commandButton value="#{libroCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{libroCtrl.guardarLibroMercantil}" update=":formLibroSelected, :formLibro" disabled="#{libroCtrl.disableActualizarLibro}"/>
                         <p:commandButton value="#{etiquetas['btnCancelar']}" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" process="@this" action="#{libroCtrl.cancelarLibro}" update=":formLibroSelected, :formLibro"/>
                     </b:panelGrid>
                 </b:panel>

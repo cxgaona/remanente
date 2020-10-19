@@ -22,10 +22,10 @@ public class InstitucionServicioImpl extends GenericServiceImpl<Institucion, Int
     }
 
     @Override
-    public List<Institucion> getRegistroMixtoList(Integer direccionRegionalID) {
+    public List<Institucion> getRegistroMixtoList(Integer direccionRegionalId) {
         List<Institucion> registrosMixtosList = new ArrayList<Institucion>();
         List<Integer> direccionRegionalIdList = new ArrayList<Integer>();
-        direccionRegionalIdList.add(direccionRegionalID);
+        direccionRegionalIdList.add(direccionRegionalId);
         registrosMixtosList = institucionDao.obtenerHijosPorInstitucion(direccionRegionalIdList, TipoInstitucionEnum.RMX_AUTONOMIA_FINANCIERA.getTipoInstitucion());
         List<Institucion> gadList = new ArrayList<Institucion>();
         gadList = institucionDao.obtenerHijosPorInstitucion(direccionRegionalIdList, TipoInstitucionEnum.GAD.getTipoInstitucion());
@@ -36,6 +36,24 @@ public class InstitucionServicioImpl extends GenericServiceImpl<Institucion, Int
         }
         registrosMixtosList.addAll(institucionDao.obtenerHijosPorInstitucion(gadIdList, TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()));
         return registrosMixtosList;
+    }
+
+    @Override
+    public List<Institucion> getRegistroMercantilList(Integer direccionRegionalId) {
+        List<Institucion> registrosMercantilesList = new ArrayList<Institucion>();
+        List<Integer> direccionRegionalIdList = new ArrayList<Integer>();
+        direccionRegionalIdList.add(direccionRegionalId);
+        registrosMercantilesList = institucionDao.obtenerHijosPorInstitucion(direccionRegionalIdList, TipoInstitucionEnum.REGISTRO_MERCANTIL.getTipoInstitucion());
+        return registrosMercantilesList;
+    }
+
+    @Override
+    public List<Institucion> getRegistroPropiedadList(Integer direccionRegionalId) {
+        List<Institucion> registrosPropiedadList = new ArrayList<Institucion>();
+        List<Integer> direccionRegionalIdList = new ArrayList<Integer>();
+        direccionRegionalIdList.add(direccionRegionalId);
+        registrosPropiedadList = institucionDao.obtenerHijosPorInstitucion(direccionRegionalIdList, TipoInstitucionEnum.REGISTRO_PROPIEDAD.getTipoInstitucion());
+        return registrosPropiedadList;
     }
     
 }

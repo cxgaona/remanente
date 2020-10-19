@@ -17,7 +17,11 @@ public enum PerfilEnum {
     ADMINISTRADOR((Integer)2),
     REGISTRADOR((Integer)3),
     VERIFICADOR((Integer)4),
-    VALIDADOR((Integer)5);
+    VALIDADOR((Integer)5),
+    INV_REGISTRADOR_PROPIEDAD((Integer)6),
+    INV_REGISTRADOR_MERCANTIL((Integer)7),
+    INV_VALIDADOR((Integer)8),
+    INV_ADMINISTRADOR((Integer)9);
     
     private final Integer perfilId;
 

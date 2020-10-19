@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui">      
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">              
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tomoCtrl.tituloInventarioTomoPropiedad}</h1>
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tomoCtrl.tituloInventarioTomoRepertorioMercantil}</h1>
             <h:form id="formLibro">                            
                 <p:messages id="messages" showDetail="true" closable="true">
                     <p:autoUpdate />
@@ -19,10 +19,10 @@
                     </p:inputText>
                     <p:commandButton action="#{tomoCtrl.reloadLibro}" update="formLibro, formTomo, formTomoSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panel title="Libros Propiedad">
+                <b:panel title="Libros Repertorio Mercantil">
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="libroTbl"
-                                     value="#{tomoCtrl.libroListPropiedad}" 
+                                     value="#{tomoCtrl.libroListRepertorioMercantil}" 
                                      var="libro"                                     
                                      rowKey="#{libro.libroId}"
                                      selection="#{tomoCtrl.libroSelected}"
@@ -51,7 +51,7 @@
             </h:form>
 
             <h:form id="formTomo">                            
-                <b:panel title="Tomos Propiedad">                    
+                <b:panel title="Tomos Repertorio Mercantil">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="tomoTbl"
                                      value="#{tomoCtrl.tomoList}" 
@@ -68,13 +68,13 @@
                             <p:column headerText="#{etiquetas['numeroTomo']}" sortBy="#{tomo.numero}" filterBy="#{tomo.numero}" filterMatchMode="contains" width="10%" style="text-align: center">
                                 <h:outputText value="#{tomo.numero}" />
                             </p:column>
-                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" sortBy="#{tomo.numeroInscripcionInicio}" filterBy="#{tomo.numeroInscripcionInicio}" filterMatchMode="contains" width="10%" style="text-align: center">
+<!--                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" sortBy="#{tomo.numeroInscripcionInicio}" filterBy="#{tomo.numeroInscripcionInicio}" filterMatchMode="contains" width="10%" style="text-align: center">
                                 <h:outputText value="#{tomo.numeroInscripcionInicio}" />
                             </p:column>
                             <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" sortBy="#{tomo.numeroInscripcionFin}" filterBy="#{tomo.numeroInscripcionFin}" filterMatchMode="contains" width="10%" style="text-align: center">
                                 <h:outputText value="#{tomo.numeroInscripcionFin}" />
-                            </p:column>
-                            <p:column headerText="#{etiquetas['totalInscripcionesContenidasTomo']}" sortBy="#{tomo.totalInscripcionesContenidas}" filterBy="#{tomo.totalInscripcionesContenidas}" filterMatchMode="contains" width="10%" style="text-align: center">
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['totalAnotacionesContenidasTomo']}" sortBy="#{tomo.totalInscripcionesContenidas}" filterBy="#{tomo.totalInscripcionesContenidas}" filterMatchMode="contains" width="10%" style="text-align: center">
                                 <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
                             </p:column>                            
                             <p:column headerText="#{etiquetas['fojaInicioTomo']}" sortBy="#{tomo.fojaInicio}" filterBy="#{tomo.fojaInicio}" filterMatchMode="contains" width="10%" style="text-align: center">
@@ -86,9 +86,9 @@
                             <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" sortBy="#{tomo.numeroTotalHojas}" filterBy="#{tomo.numeroTotalHojas}" filterMatchMode="contains" width="10%" style="text-align: center">
                                 <h:outputText value="#{tomo.numeroTotalHojas}" />
                             </p:column>
-                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" sortBy="#{tomo.numeroHojasOtroFormato}" filterBy="#{tomo.numeroHojasOtroFormato}" filterMatchMode="contains" width="10%" style="text-align: center">
+<!--                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" sortBy="#{tomo.numeroHojasOtroFormato}" filterBy="#{tomo.numeroHojasOtroFormato}" filterMatchMode="contains" width="10%" style="text-align: center">
                                 <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
-                            </p:column>                            
+                            </p:column>                            -->
                             <p:column headerText="#{etiquetas['observacionesTomo']}" sortBy="#{tomo.observaciones}" filterBy="#{tomo.observaciones}" filterMatchMode="contains" width="20%" style="text-align: center">
                                 <h:outputText value="#{tomo.observaciones}" />
                             </p:column>                            
@@ -127,15 +127,15 @@
                         <p:inputText id="numeroTomo" value="#{tomoCtrl.tomoSelected.numero}" maxlength="15" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
-                        <p:outputLabel for="numeroInscripcionInicioTomo" value="#{etiquetas['numeroInscripcionInicioTomo']}:"/>
+<!--                        <p:outputLabel for="numeroInscripcionInicioTomo" value="#{etiquetas['numeroInscripcionInicioTomo']}:"/>
                         <p:inputText id="numeroInscripcionInicioTomo" value="#{tomoCtrl.tomoSelected.numeroInscripcionInicio}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
                         <p:outputLabel for="numeroInscripcionFinTomo" value="#{etiquetas['numeroInscripcionFinTomo']}:"/>
                         <p:inputText id="numeroInscripcionFinTomo" value="#{tomoCtrl.tomoSelected.numeroInscripcionFin}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
-                        </p:inputText>                        
-                        <p:outputLabel for="totalInscripcionesContenidasTomo" value="#{etiquetas['totalInscripcionesContenidasTomo']}:"/>
+                        </p:inputText>                        -->
+                        <p:outputLabel for="totalInscripcionesContenidasTomo" value="#{etiquetas['totalAnotacionesContenidasTomo']}:"/>
                         <p:inputText id="totalInscripcionesContenidasTomo" value="#{tomoCtrl.tomoSelected.totalInscripcionesContenidas}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
@@ -151,10 +151,10 @@
                         <p:inputText id="numeroTotalHojasTomo" value="#{tomoCtrl.tomoSelected.numeroTotalHojas}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
                         </p:inputText>                        
-                        <p:outputLabel for="numeroHojasOtroFormatoTomo" value="#{etiquetas['numeroHojasOtroFormatoTomo']}:"/>
+<!--                        <p:outputLabel for="numeroHojasOtroFormatoTomo" value="#{etiquetas['numeroHojasOtroFormatoTomo']}:"/>
                         <p:inputText id="numeroHojasOtroFormatoTomo" value="#{tomoCtrl.tomoSelected.numeroHojasOtroFormato}" maxlength="20" style="width: 50%"  >
                             <p:keyFilter regEx="/[\d]/"/>  
-                        </p:inputText>                        
+                        </p:inputText>                        -->
                         <p:outputLabel for="observacionesTomo" value="#{etiquetas['observacionesTomo']}:" />
                         <p:inputTextarea id="observacionesTomo" value="#{tomoCtrl.tomoSelected.observaciones}" rows="3" cols="50" counter="display" maxlength="1500" counterTemplate="{0} caracteres restantes." autoResize="false" />
                         <br />

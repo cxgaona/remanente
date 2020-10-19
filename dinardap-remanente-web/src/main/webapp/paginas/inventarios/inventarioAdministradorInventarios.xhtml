@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui">      
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">              
-            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{resumenLibrosCtrl.tituloInventarioLibro}</h1>
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminResumenLibrosCtrl.tituloInventarioLibro}</h1>
             <p:dialog id="estadoInventarioAnualDlg"
                       header="Estados de Inventario" 
                       modal="true"
@@ -19,7 +19,7 @@
                       resizable="false">
                 <h:form id="formEstadoInventarioAnualDlg">
                     <p:dataTable id="estadoInventarioAnualTbl"
-                                 value="#{resumenLibrosCtrl.inventarioAnual.estadoInventarioAnualList}" 
+                                 value="#{adminResumenLibrosCtrl.inventarioAnual.estadoInventarioAnualList}" 
                                  var="estadoInventarioAnual"
                                  rowKey="#{estadoInventarioAnual.estadoInventarioAnualId}"
                                  reflow="true" rows="5" paginator="true"
@@ -28,7 +28,7 @@
                                  sortBy="#{estadoInventarioAnual.estadoInventarioAnualId}"
                                  sortOrder="descending">
                         <f:facet name="header">
-                            #{etiquetas['año']}: #{resumenLibrosCtrl.año}
+                            #{etiquetas['año']}: #{adminResumenLibrosCtrl.año}
                         </f:facet>
 <!--                        <p:column headerText="Usuario" sortBy="#{estadoInventarioAnual.usuario.nombre}" filterBy="#{estadoInventarioAnual.usuario.nombre}" filterMatchMode="contains">
                             <h:outputText value="#{estadoInventarioAnual.usuario.nombre}" />
@@ -47,26 +47,61 @@
                     </p:dataTable>
                 </h:form>
             </p:dialog>
+
+            <h:form id="formInstitucion">
+                <b:panel title="Instituciones">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="institucionTbl"
+                                     value="#{adminResumenLibrosCtrl.institucionList}" 
+                                     var="institucion"
+                                     rowKey="#{institucion.institucionId}"
+                                     selectionMode="single"
+                                     selection="#{adminResumenLibrosCtrl.institucionSelected}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15,25">
+                            <p:ajax event="rowSelect" listener="#{adminResumenLibrosCtrl.onRowSelectInstitucion}" 
+                                    update="
+                                    formResumen"/>                            
+                            <p:column headerText="Institución" 
+                                      sortBy="#{institucion.nombre}" 
+                                      filterBy="#{institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" 
+                                      sortBy="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" 
+                                      filterBy="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" />
+                            </p:column>                            
+                            <p:column headerText="Dirección Regional" 
+                                      sortBy="#{institucion.tipoInstitucion.tipoInstitucionId eq 5 ?institucion.institucion.institucion.nombre:institucion.institucion.nombre}" 
+                                      filterBy="#{institucion.tipoInstitucion.tipoInstitucionId eq 5 ?institucion.institucion.institucion.nombre:institucion.institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.tipoInstitucion.tipoInstitucionId eq 5 ?institucion.institucion.institucion.nombre:institucion.institucion.nombre}" />
+                            </p:column>                            
+                            <p:column headerText="Tipo de Registro" 
+                                      sortBy="#{institucion.tipoInstitucion.descripcion}">
+                                <h:outputText value="#{institucion.tipoInstitucion.descripcion}"/>
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
             <h:form id="formResumen">                            
                 <p:messages id="messages" showDetail="true" closable="true">
                     <p:autoUpdate />
                 </p:messages>
                 <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
                     <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
-                    <p:inputText id="anio" value="#{resumenLibrosCtrl.año}" maxlength="4" >
+                    <p:inputText id="anio" value="#{adminResumenLibrosCtrl.año}" maxlength="4" disabled="#{adminResumenLibrosCtrl.disabledBtnReload}" >
                         <p:keyFilter regEx="/[\d]/"/>
                     </p:inputText>
-                    <p:commandButton action="#{resumenLibrosCtrl.reloadLibro}" update="formResumen" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                    <p:commandButton action="#{adminResumenLibrosCtrl.reloadLibro}" update="formResumen" disabled="#{adminResumenLibrosCtrl.disabledBtnReload}" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panelGrid colSpans="3,6,3" style="width: 30%; margin: 4px 5px;">   
-                    <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
-                    <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="30" size="25" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
-                    <p:commandButton action="#{resumenLibrosCtrl.actualizarRegistrador}" update="formResumen" style="margin-right:20px;" value="#{etiquetas['btnActualizar']}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>
-                </b:panelGrid>                
-                <b:panel title="Resumen Libros Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
+                <h:outputLabel value="Institución: #{adminResumenLibrosCtrl.nombreInstitucion}" styleClass="form-label-izquierda-15" style="width: 100%"/>
+                <b:panel title="Resumen Libros Propiedad" rendered="#{adminResumenLibrosCtrl.renderPropiedad}">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="resumenTblPropiedad"
-                                     value="#{resumenLibrosCtrl.resumeLibroDTOListPropiedad}" 
+                                     value="#{adminResumenLibrosCtrl.resumeLibroDTOListPropiedad}" 
                                      var="resumenLibro"                                     
                                      tableStyle="width:100%">
                             <f:facet name="header">
@@ -84,7 +119,7 @@
                         </p:dataTable> 
                         <br /><br />
                         <p:dataTable id="tomoTblPropiedad"
-                                     value="#{resumenLibrosCtrl.tomoListPropiedad}" 
+                                     value="#{adminResumenLibrosCtrl.tomoListPropiedad}" 
                                      var="tomo"
                                      expandableRowGroups="true"
                                      sortBy="${tomo.libro.libroId}"
@@ -143,10 +178,10 @@
                     </h:panelGrid>                   
                 </b:panel>
 
-                <b:panel title="Resumen Libros Mercantil" rendered="#{resumenLibrosCtrl.renderMercantil}">                    
+                <b:panel title="Resumen Libros Mercantil" rendered="#{adminResumenLibrosCtrl.renderMercantil}">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="resumenTblMercantil"
-                                     value="#{resumenLibrosCtrl.resumeLibroDTOListMercantil}" 
+                                     value="#{adminResumenLibrosCtrl.resumeLibroDTOListMercantil}" 
                                      var="resumenLibro"                                     
                                      tableStyle="width:100%">
                             <f:facet name="header">
@@ -164,7 +199,7 @@
                         </p:dataTable> 
                         <br /><br />
                         <p:dataTable id="tomoTblMercantil"
-                                     value="#{resumenLibrosCtrl.tomoListMercantil}" 
+                                     value="#{adminResumenLibrosCtrl.tomoListMercantil}" 
                                      var="tomo"
                                      expandableRowGroups="true"
                                      sortBy="${tomo.libro.libroId}"
@@ -223,10 +258,10 @@
                     </h:panelGrid>                   
                 </b:panel>
 
-                <b:panel title="Resumen Libros Repertorio Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
+                <b:panel title="Resumen Libros Repertorio Propiedad" rendered="#{adminResumenLibrosCtrl.renderPropiedad}">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="resumenTblRepertorioPropiedad"
-                                     value="#{resumenLibrosCtrl.resumeLibroDTOListRepertorioPropiedad}" 
+                                     value="#{adminResumenLibrosCtrl.resumeLibroDTOListRepertorioPropiedad}" 
                                      var="resumenLibro"                                     
                                      tableStyle="width:100%">
                             <f:facet name="header">
@@ -244,7 +279,7 @@
                         </p:dataTable> 
                         <br /><br />
                         <p:dataTable id="tomoTblRepertorioPropiedad"
-                                     value="#{resumenLibrosCtrl.tomoListRepertorioPropiedad}" 
+                                     value="#{adminResumenLibrosCtrl.tomoListRepertorioPropiedad}" 
                                      var="tomo"
                                      expandableRowGroups="true"
                                      sortBy="${tomo.libro.libroId}"
@@ -303,10 +338,10 @@
                     </h:panelGrid>                   
                 </b:panel>
 
-                <b:panel title="Resumen Libros Repertorio Mercantil" rendered="#{resumenLibrosCtrl.renderMercantil}">                    
+                <b:panel title="Resumen Libros Repertorio Mercantil" rendered="#{adminResumenLibrosCtrl.renderMercantil}">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="resumenTblRepertorioMercantil"
-                                     value="#{resumenLibrosCtrl.resumeLibroDTOListRepertorioMercantil}" 
+                                     value="#{adminResumenLibrosCtrl.resumeLibroDTOListRepertorioMercantil}" 
                                      var="resumenLibro"                                     
                                      tableStyle="width:100%">
                             <f:facet name="header">
@@ -324,7 +359,7 @@
                         </p:dataTable> 
                         <br /><br />
                         <p:dataTable id="tomoTblRepertorioMercantil"
-                                     value="#{resumenLibrosCtrl.tomoListRepertorioMercantil}" 
+                                     value="#{adminResumenLibrosCtrl.tomoListRepertorioMercantil}" 
                                      var="tomo"
                                      expandableRowGroups="true"
                                      sortBy="${tomo.libro.libroId}"
@@ -383,10 +418,10 @@
                     </h:panelGrid>                   
                 </b:panel>
 
-                <b:panel title="Resumen Libros Índice General Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
+                <b:panel title="Resumen Libros Índice General Propiedad" rendered="#{adminResumenLibrosCtrl.renderPropiedad}">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="resumenTblIndiceGeneralPropiedad"
-                                     value="#{resumenLibrosCtrl.resumeLibroDTOListIndiceGeneralPropiedad}" 
+                                     value="#{adminResumenLibrosCtrl.resumeLibroDTOListIndiceGeneralPropiedad}" 
                                      var="resumenLibro"                                     
                                      tableStyle="width:100%">
                             <f:facet name="header">
@@ -404,7 +439,7 @@
                         </p:dataTable> 
                         <br /><br />
                         <p:dataTable id="tomoTblIndiceGeneralPropiedad"
-                                     value="#{resumenLibrosCtrl.tomoListIndiceGeneralPropiedad}" 
+                                     value="#{adminResumenLibrosCtrl.tomoListIndiceGeneralPropiedad}" 
                                      var="tomo"
                                      expandableRowGroups="true"
                                      sortBy="${tomo.libro.libroId}"
@@ -463,10 +498,10 @@
                     </h:panelGrid>                   
                 </b:panel>
 
-                <b:panel title="Resumen Libros Índice General Mercantil" rendered="#{resumenLibrosCtrl.renderMercantil}">                    
+                <b:panel title="Resumen Libros Índice General Mercantil" rendered="#{adminResumenLibrosCtrl.renderMercantil}">                    
                     <h:panelGrid columns="1" style="width: 100%;">                        
                         <p:dataTable id="resumenTblIndiceGeneralMercantil"
-                                     value="#{resumenLibrosCtrl.resumeLibroDTOListIndiceGeneralMercantil}" 
+                                     value="#{adminResumenLibrosCtrl.resumeLibroDTOListIndiceGeneralMercantil}" 
                                      var="resumenLibro"                                     
                                      tableStyle="width:100%">
                             <f:facet name="header">
@@ -484,7 +519,7 @@
                         </p:dataTable> 
                         <br /><br />
                         <p:dataTable id="tomoTblIndiceGeneralMercantil"
-                                     value="#{resumenLibrosCtrl.tomoListIndiceGeneralMercantil}" 
+                                     value="#{adminResumenLibrosCtrl.tomoListIndiceGeneralMercantil}" 
                                      var="tomo"
                                      expandableRowGroups="true"
                                      sortBy="${tomo.libro.libroId}"
@@ -542,30 +577,17 @@
                         </p:dataTable>
                     </h:panelGrid>                   
                 </b:panel>
-                <b:panelGrid colSpans="6,6" style="width: 40%; margin: 4px 5px;">   
+                <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 40%; margin: 4px 5px;">
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
-                        style="padding-bottom:5px;"
+                        disabled="#{adminResumenLibrosCtrl.disabledBtnReload}"
+                        style="margin-bottom:5px;"
                         update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
                         onclick="PF('estadoInventarioAnualDlg').show();">
-                        <f:setPropertyActionListener value="#{resumenLibrosCtrl.inventarioAnual}" target="#{resumenLibrosCtrl.inventarioAnual}" />
+                        <f:setPropertyActionListener value="#{adminResumenLibrosCtrl.inventarioAnual}" target="#{adminResumenLibrosCtrl.inventarioAnual}" />
                     </p:commandButton><br/>
-                    <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
-                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/><br/>                
-                    <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"
-                                     style="margin-right:20px; width: 100%"
-                                     action="#{resumenLibrosCtrl.solicitarRevisionInventario}"
-                                     icon="fa fa-fw fa-share"
-                                     id="btnSolicitarRevision"
-                                     disabled="#{resumenLibrosCtrl.disableSolicitarRevision}"
-                                     update="formResumen">
-                        <p:confirm header="Confirmación" message="#{mensajes['confirmacionRevisionInventario']}" icon="fa fa-fw fa-warning" />
-                    </p:commandButton>                        
-                </b:panelGrid>              
-
-                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
-                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
-                </p:confirmDialog>
+                    <p:outputLabel value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
+                    <h:outputText value="#{adminResumenLibrosCtrl.comentariosRechazo}" style="padding-bottom:5px;"/><br/>                  
+                </b:panelGrid>          
             </h:form>
         </ui:define>
     </ui:composition>

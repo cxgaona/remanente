@@ -4,6 +4,8 @@ import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -41,26 +43,44 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
 
     public void onRowSelectBandeja() throws IOException {
         //TO-DO: split en variable perfil
-        switch (getSessionVariable("perfil")) {
-            case "3":
-                linkRedireccion = "gestionRemanenteMensual.jsf";
-                break;
-            case "4":
-                linkRedireccion = "verificarRemanenteMensual.jsf";
-                if (bandejaSelected.getTipo().equals("RC")) {
-                    linkRedireccion = "gestionRemanenteCuatrimestral.jsf";
+        String[] perfilesArray=getSessionVariable("perfil").split(",");
+        List<String> perfilesList = Arrays.asList(perfilesArray);
+        switch(bandejaSelected.getTipo()){
+            case "RM":
+                for(String perfil:perfilesList ){                   
+                    if(perfil.equals("2")){
+                        linkRedireccion = "administracion/adminRemanenteMensual.jsf";
+                    }else if(perfil.equals("3")){
+                        linkRedireccion = "gestionRemanenteMensual.jsf";
+                    }else if(perfil.equals("4")){
+                        linkRedireccion = "verificarRemanenteMensual.jsf";
+                    }else if(perfil.equals("5")){
+                        linkRedireccion = "validarRemanenteMensual.jsf";
+                    }
                 }
                 break;
-            case "5":
-                linkRedireccion = "validarRemanenteMensual.jsf";
-                if (bandejaSelected.getTipo().equals("RC")) {
-                    linkRedireccion = "gestionValidacionRemanenteCuatrimestral.jsf";
+            case "RC":
+                for(String perfil:perfilesList ){                   
+                    if(perfil.equals("4")){
+                        linkRedireccion = "gestionRemanenteCuatrimestral.jsf";
+                    }else if(perfil.equals("5")){
+                        linkRedireccion = "gestionValidacionRemanenteCuatrimestral.jsf";
+                    }
                 }
                 break;
-            case "2":
-                linkRedireccion = "administracion/adminRemanenteMensual.jsf";
+            case "IA":
+                for(String perfil:perfilesList ){                   
+                    if(perfil.equals("6") || perfil.equals("7")){
+                        linkRedireccion = "inventarios/inventarioResumenLibros.jsf";
+                    }else if(perfil.equals("8")){
+                        linkRedireccion = "inventarios/inventarioRevisarResumenLibros.jsf";
+                    }else if(perfil.equals("9")){
+                        linkRedireccion = "inventarios/inventarioAdministradorInventarios.jsf";
+                    }
+                }
                 break;
         }
+                
         FacesContext.getCurrentInstance().getExternalContext().redirect(linkRedireccion);
 
         if (bandejaSelected.getLeido().equals(Boolean.FALSE)) {

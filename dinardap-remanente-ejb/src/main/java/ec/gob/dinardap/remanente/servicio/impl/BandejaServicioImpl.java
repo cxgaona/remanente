@@ -129,4 +129,30 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
         this.update(bandeja);
     }
 
+    @Override
+    public void generarNotificacionInventario(List<Usuario> usuarioAsignadoList, Integer usuarioSolicitanteId,
+            Institucion institucion, Integer inventarioAnualId, String descripcion, String tipo) {
+        Email email = new Email();
+        for (Usuario userAsignado : usuarioAsignadoList) {
+            Bandeja bandeja = new Bandeja();
+            Usuario us = new Usuario();
+            us.setUsuarioId(usuarioSolicitanteId);
+            bandeja.setUsuarioSolicitante(us);
+            bandeja.setRemanenteCuatrimestral(null);
+            bandeja.setRemanenteMensual(null); 
+            bandeja.setDescripcion(descripcion);
+            bandeja.setTipo(tipo);
+            bandeja.setLeido(Boolean.FALSE);
+            bandeja.setFechaRegistro(new Date());
+            bandeja.setUsuarioAsignado(userAsignado);
+            create(bandeja);
+            try {
+                String mensajeMail = descripcion;
+                email.sendMail(userAsignado.getCorreoElectronico(), "Notificación Inventarios", mensajeMail);
+            } catch (Exception ex) {
+                Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
 }
