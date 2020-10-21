@@ -28,9 +28,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "inventario_anual", schema = "ec_dinardap_inventario")
 @NamedQueries({
-    @NamedQuery(name = "InventarioAnual.findAll", query = "SELECT i FROM InventarioAnual i"),
-    @NamedQuery(name = "InventarioAnual.findByInventarioAnualId", query = "SELECT i FROM InventarioAnual i WHERE i.inventarioAnualId = :inventarioAnualId"),
-    @NamedQuery(name = "InventarioAnual.findByInstitucion", query = "SELECT i FROM InventarioAnual i WHERE i.institucion = :institucion"),
+    @NamedQuery(name = "InventarioAnual.findAll", query = "SELECT i FROM InventarioAnual i")
+    ,
+    @NamedQuery(name = "InventarioAnual.findByInventarioAnualId", query = "SELECT i FROM InventarioAnual i WHERE i.inventarioAnualId = :inventarioAnualId")
+    ,
+    @NamedQuery(name = "InventarioAnual.findByInstitucion", query = "SELECT i FROM InventarioAnual i WHERE i.institucion = :institucion")
+    ,
     @NamedQuery(name = "InventarioAnual.findByAnio", query = "SELECT i FROM InventarioAnual i WHERE i.anio = :anio")})
 public class InventarioAnual implements Serializable {
 
@@ -47,13 +50,13 @@ public class InventarioAnual implements Serializable {
 
     @Column(name = "anio")
     private Integer anio;
-    
+
     @Column(name = "nombre_registrador")
     private String nombreRegistrador;
-    
+
     @Column(name = "url_archivo")
     private String urlArchivo;
-    
+
     @Column(name = "comentarios")
     private String comentarios;
 
