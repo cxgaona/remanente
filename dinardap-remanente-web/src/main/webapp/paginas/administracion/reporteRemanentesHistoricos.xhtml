@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminRemanenteHistoricoCtrl.tituloPagina}</h1>
+            <h:form id="formRemanentes">
+                <b:panel title="Remanentes 2014 - 2019">
+                    <h:panelGrid columns="1" style="width: 100%;">   
+                        <h:commandLink>
+                            <p:graphicImage value="/resource/images/excel.png" alt="Exportar a Excel" width="30"/>
+                            <h:outputText value="Exportar a Excel"/>
+                            <p:dataExporter type="xls" target="remanenteTbl" fileName="reporteHistoricoRemanentes" />
+                        </h:commandLink>
+                        <p:dataTable id="remanenteTbl"
+                                     value="#{adminRemanenteHistoricoCtrl.remanenteHistoricoList}" 
+                                     var="remanente"
+                                     rowKey="#{remanente.remanenteHistoricoId}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     filteredValue="#{adminRemanenteHistoricoCtrl.remanenteHistoricoListFiltrada}">
+                            <p:column headerText="Registro Mixto" 
+                                      sortBy="#{remanente.institucion.nombre}" 
+                                      filterBy="#{remanente.institucion.nombre}" filterMatchMode="contains"
+                                      width="15%">
+                                <h:outputText value="#{remanente.institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" 
+                                      sortBy="#{remanente.institucion.canton.provincia.nombre} - #{remanente.institucion.canton.nombre}" 
+                                      filterBy="#{remanente.institucion.canton.provincia.nombre} - #{remanente.institucion.canton.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.institucion.canton.provincia.nombre} - #{remanente.institucion.canton.nombre}" />
+                            </p:column>                            
+                            <p:column headerText="Dirección Regional" 
+                                      sortBy="#{remanente.institucion.tipoInstitucion.tipoInstitucionId eq 4 ?remanente.institucion.institucion.nombre:remanente.institucion.institucion.institucion.nombre}" 
+                                      filterBy="#{remanente.institucion.tipoInstitucion.tipoInstitucionId eq 4 ?remanente.institucion.institucion.nombre:remanente.institucion.institucion.institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.institucion.tipoInstitucion.tipoInstitucionId eq 4 ?remanente.institucion.institucion.nombre:remanente.institucion.institucion.institucion.nombre}" />
+                            </p:column>                            
+                            <p:column headerText="Año" 
+                                      sortBy="#{remanente.anio}"
+                                      filterBy="#{remanente.anio}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.anio}"/>
+                            </p:column>                            
+                            <p:column headerText="Cuatrimestre" 
+                                      sortBy="#{remanente.cuatrimestre}"
+                                      filterBy="#{remanente.cuatrimestre eq 1 ?'Enero-Abril':
+                                                  remanente.cuatrimestre eq 2 ?'Mayo-Agosto':
+                                                  remanente.cuatrimestre eq 3 ?'Septiembre-Diciembre':'N/A' }" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.cuatrimestre eq 1 ?'Enero-Abril':
+                                                       remanente.cuatrimestre eq 2 ?'Mayo-Agosto':
+                                                       remanente.cuatrimestre eq 3 ?'Septiembre-Diciembre':'N/A' }"/>
+                            </p:column>                            
+                            <p:column headerText="Oficio GAD/Registro Mixto" 
+                                      sortBy="#{remanente.oficioGadRegistro}"
+                                      filterBy="#{remanente.oficioGadRegistro}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.oficioGadRegistro}"/>
+                            </p:column> 
+                            <p:column headerText="Fecha Oficio GAD/Registro Mixto" 
+                                      sortBy="#{remanente.fechaOficioGadRegistro}" 
+                                      filterBy="#{remanente.fechaOficioGadRegistro}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.fechaOficioGadRegistro}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Memorando Dirección Regional" 
+                                      sortBy="#{remanente.memorandoRegional}"
+                                      filterBy="#{remanente.memorandoRegional}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.memorandoRegional}"/>
+                            </p:column> 
+                            <p:column headerText="Fecha Memorando Dirección Regional" 
+                                      sortBy="#{remanente.fechaMemorandoRegional}" 
+                                      filterBy="#{remanente.fechaMemorandoRegional}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.fechaMemorandoRegional}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Memorando CGRS" 
+                                      sortBy="#{remanente.memorandoCgrs}"
+                                      filterBy="#{remanente.memorandoCgrs}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.memorandoCgrs}"/>
+                            </p:column> 
+                            <p:column headerText="Fecha Memorando CGRS" 
+                                      sortBy="#{remanente.fechaMemorandoCgrs}" 
+                                      filterBy="#{remanente.fechaMemorandoCgrs}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.fechaMemorandoCgrs}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Memorando Dirección Financiera" 
+                                      sortBy="#{remanente.memorandoFinanciero}"
+                                      filterBy="#{remanente.memorandoFinanciero}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.memorandoFinanciero}"/>
+                            </p:column> 
+                            <p:column headerText="Fecha Memorando Dirección Financiera" 
+                                      sortBy="#{remanente.fechaMemorandoFinanciero}" 
+                                      filterBy="#{remanente.fechaMemorandoFinanciero}" filterMatchMode="contains">
+                                <h:outputText value="#{remanente.fechaMemorandoFinanciero}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
