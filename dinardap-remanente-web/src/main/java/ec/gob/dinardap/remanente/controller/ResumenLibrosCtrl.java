@@ -1,11 +1,13 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.constante.EstadoInventarioAnualEnum;
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.constante.PerfilEnum;
 import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.constante.TipoLibroEnum;
 import ec.gob.dinardap.remanente.dao.TomoDao;
 import ec.gob.dinardap.remanente.dto.ResumenLibroDTO;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoInventarioAnual;
 import ec.gob.dinardap.remanente.modelo.InventarioAnual;
 import ec.gob.dinardap.remanente.modelo.Tomo;
@@ -17,11 +19,16 @@ import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -29,6 +36,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import org.apache.poi.util.IOUtils;
+import org.primefaces.PrimeFaces;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 @Named(value = "resumenLibrosCtrl")
 @ViewScoped
@@ -54,6 +65,7 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private ResumenLibroDTO resumenLibroDTOIndiceGeneralPropiedad, resumenLibroDTOIndiceGeneralMercantil;
     private String nombreRegistrador, comentariosRechazo;
     private Institucion institucionNotificacion;
+    private SftpDto sftpDto;
 
     //Listas
     private List<Tomo> tomoListPropiedad, tomoListMercantil;
@@ -79,9 +91,12 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private UsuarioServicio usuarioServicio;
     @EJB
     private BandejaServicio bandejaServicio;
+    @EJB
+    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
+        sftpDto = new SftpDto();
         tituloInventarioLibro = "Resumen Libros";
         disableSolicitarRevision = Boolean.FALSE;
         Calendar calendar = Calendar.getInstance();
@@ -229,6 +244,23 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
                 inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         //FIN ENVIO//
+    }
+    
+    public void uploadSolicitud(FileUploadEvent event) {
+        try {
+            UploadedFile file = event.getFile();
+            byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
+
+            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat(inventarioAnual.getInventarioAnualId().toString()).concat(".pdf");
+            sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INVENTARIO.name()).getValor().concat(realPath));
+            sftpDto.setArchivo(fileByte);
+            inventarioAnual.setUrlArchivo(realPath);
+//            inventarioAnualServicio.editTransaccion(transaccionSelected, sftpDto);
+            fileByte = null;
+            PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
+        } catch (IOException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     //Getters & Setters

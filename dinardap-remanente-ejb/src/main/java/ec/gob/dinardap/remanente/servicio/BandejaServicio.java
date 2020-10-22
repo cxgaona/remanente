@@ -1,5 +1,6 @@
 package ec.gob.dinardap.remanente.servicio;
 
+import ec.gob.dinardap.correo.util.MailMessage;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -28,5 +29,6 @@ public interface BandejaServicio extends GenericService<Bandeja, Integer> {
             Institucion institucion, Integer inventarioAnualId, String descripcion, String tipo);
 
     public void editBandeja(BandejaDTO bandejaDTO);
-
+    
+    public MailMessage credencialesCorreo();
 }

@@ -40,9 +40,9 @@
                         </p:column>
                         <p:column headerText="Estado" sortBy="#{estadoInventarioAnual.estado}" filterBy="#{estadoInventarioAnual.estado}" filterMatchMode="contains" style="text-align: center">
                             <h:outputText value="#{estadoInventarioAnual.estado eq 1? 'Generado':
-                                   estadoInventarioAnual.estado eq 2? 'Completo':                                   
-                                   estadoInventarioAnual.estado eq 3? 'Rechazado':
-                                   estadoInventarioAnual.estado eq 4? 'Aprobado':'Sin Estado'}"/>
+                                                   estadoInventarioAnual.estado eq 2? 'Completo':                                   
+                                                   estadoInventarioAnual.estado eq 3? 'Rechazado':
+                                                   estadoInventarioAnual.estado eq 4? 'Aprobado':'Sin Estado'}"/>
                         </p:column>
                     </p:dataTable>
                 </h:form>
@@ -542,13 +542,63 @@
                         </p:dataTable>
                     </h:panelGrid>                   
                 </b:panel>
+                <b:panelGrid id="panelSolicitud" colSpans="4,8" style="width: 48%; margin: 4px 5px;" rendered="#{remanenteMensualCtrl.displaySolicitud}">
+                    <p:outputLabel value="Solicitud de cambio: " />
+                    <p:fileUpload                                
+                        id="solicitudCambio"
+                        messageTemplate="Tipo de Archivo no Válido"
+                        style="width:100%"
+                        mode="advanced"
+                        dragDropSupport="true"
+                        sizeLimit="9000000"
+                        allowTypes="/(\.|\/)(pdf)$/"
+                        label=""
+                        uploadLabel=""
+                        cancelLabel=""                                
+                        oncomplete="onCellEdit();"
+                        fileUploadListener="#{remanenteMensualCtrl.uploadSolicitud}"
+                        update="formRemanenteMensual, estadoRemanenteMensualDlg"/>
+                    <p:outputLabel rendered="false"/>
+                    <b:panelGrid colSpans="6,6" style="width: 70%; margin: 4px 5px;">
+                        <p:commandButton id="btnEnviarSolicitud" value="Enviar"  style="margin-right:20px;" icon="fa fa-fw fa-check" action="#{remanenteMensualCtrl.enviarSolicitudCambio}" update="formRemanenteMensual, estadoRemanenteMensualDlg" disabled="#{remanenteMensualCtrl.disabledBtnEnvCan}">
+                            <p:confirm header="Confirmación" message="¿Está seguro que desea enviar la Solicitud de Cambio? El archivo adjunto no podrá ser modificado." icon="fa fa-fw fa-warning" />
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                            </p:confirmDialog>
+                        </p:commandButton>
+
+                        <p:commandButton id="btnCancelarSolicitud" value="Cancelar" style="margin-right:20px;" icon="fa fa-fw fa-remove" action="#{remanenteMensualCtrl.cancelarSolicitudCambio}" update="formRemanenteMensual, estadoRemanenteMensualDlg" disabled="#{remanenteMensualCtrl.disabledBtnEnvCan}">
+                            <p:confirm header="Confirmación" message="¿Está seguro que desea Cancelar la Solicitud de Cambio? El archivo adjunto se eliminará." icon="fa fa-fw fa-warning" />
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                            </p:confirmDialog>
+                        </p:commandButton>
+                    </b:panelGrid>
+                </b:panelGrid>
                 <b:panelGrid colSpans="6,6" style="width: 40%; margin: 4px 5px;">   
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
-                        style="padding-bottom:5px;"
-                        update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
-                        onclick="PF('estadoInventarioAnualDlg').show();">
+                                     style="padding-bottom:5px;"
+                                     update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
+                                     onclick="PF('estadoInventarioAnualDlg').show();">
                         <f:setPropertyActionListener value="#{resumenLibrosCtrl.inventarioAnual}" target="#{resumenLibrosCtrl.inventarioAnual}" />
                     </p:commandButton><br/>
+<!--                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " />
+                    <p:fileUpload                                
+                        id="archivoRespaldo"
+                        messageTemplate="Tipo de Archivo no Válido"
+                        style="width:100%"
+                        mode="advanced"
+                        dragDropSupport="true"
+                        sizeLimit="9000000"
+                        allowTypes="/(\.|\/)(pdf)$/"
+                        label=""
+                        uploadLabel=""
+                        cancelLabel=""                                
+                        oncomplete="onCellEdit();"
+                        fileUploadListener="#{resumenLibrosCtrl.uploadSolicitud}"
+                        update="formResumen, estadoInventarioAnualDlg"/>-->
                     <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
                     <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/><br/>                
                     <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"

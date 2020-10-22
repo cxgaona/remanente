@@ -2,7 +2,10 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
-import ec.gob.dinardap.remanente.mail.Email;
+import ec.gob.dinardap.correo.mdb.cliente.ClienteQueueMailServicio;
+import ec.gob.dinardap.correo.util.MailMessage;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import ec.gob.dinardap.remanente.servicio.impl.BandejaServicioImpl;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import ec.gob.dinardap.seguridad.dao.PreguntaDao;
 import ec.gob.dinardap.seguridad.modelo.Pregunta;
@@ -11,12 +14,17 @@ import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
 import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -36,13 +44,18 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private PreguntaDao preguntaDao;
-            
+
     @EJB
     private UsuarioServicio usuarioServicio;
-  
+
     @EJB
     private RespuestaServicio respuestaServicio;
-
+    
+    @EJB
+    private BandejaServicio bandejaServicio;
+    
+    @EJB
+    private ClienteQueueMailServicio clienteQueueMailServicio;
 
     @PostConstruct
     protected void init() {
@@ -64,29 +77,40 @@ public class RestaurarClaveCtrl extends BaseCtrl implements Serializable {
         if (u.getUsuarioId() != null) {
             respuestaUser = respuestaServicio.getRespuestaByUsuario(u.getUsuarioId(), preguntaSeguridad.getPreguntaId());
             if (respuesta.equals(respuestaUser.getRespuesta())) {
-                if (u.getCorreoElectronico()!= null && !u.getCorreoElectronico().isEmpty()) {
+                if (u.getCorreoElectronico() != null && !u.getCorreoElectronico().isEmpty()) {
                     claveGenerada = FacesUtils.generarContraseña();
                     encriptada = EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + claveGenerada);
                     u.setContrasena(encriptada);
                     usuarioServicio.update(u);
                     mensaje = "Su nueva contraseña ha sido enviada al correo: " + u.getCorreoElectronico();
-//                    try {
-//                        ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
-//                        URI uri;
-//                        uri = new URI(ext.getRequestScheme(),
-//                                null, ext.getRequestServerName(), ext.getRequestServerPort(),
-//                                ext.getRequestContextPath(), null, null);
-//                        uri.toASCIIString();
-//                    } catch (URISyntaxException ex) {
-//                        Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-
-                    Email email = new Email();
+                    MailMessage mailMessage = new MailMessage();
+                    String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
                     try {
-                        String mensajeMail = "Su nueva contraseña es: <b>" + claveGenerada + "</b>";
-                        email.sendMail(u.getCorreoElectronico(), "Restaurar clave REMANENTES", mensajeMail);
-                    } catch (Exception ex) {
-                        Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                        ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+                        URI uri = new URI(ext.getRequestScheme(),
+                                null, ext.getRequestServerName(), ext.getRequestServerPort(),
+                                ext.getRequestContextPath(), null, null);
+                        
+                        StringBuilder html = new StringBuilder(
+                                "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
+                        html.append("Estimado(a) " + u.getNombre() + ", <br /><br />");
+                        html.append(mensajeMail + "<br/ ><br />");
+                        html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+                        html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
+                        html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
+                        html.append("Dirección Nacional de Registros de Datos Públicos");
+                        html.append("</B></FONT>");
+                        List<String> to = new ArrayList<String>();
+                        StringBuilder asunto = new StringBuilder(200);
+                        to.add(u.getCorreoElectronico());
+                        asunto.append("Sistema de Remanentes e Inventario de Libros - Restaurar Contraseña");
+                        mailMessage = bandejaServicio.credencialesCorreo();
+                        mailMessage.setTo(to);
+                        mailMessage.setSubject(asunto.toString());
+                        mailMessage.setText(html.toString());
+                        clienteQueueMailServicio.encolarMail(mailMessage);
+                    } catch (URISyntaxException ex) {
+                        Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
                     mensaje = "Su usuario no tiene registrado un correo electrónico. <br/>"
