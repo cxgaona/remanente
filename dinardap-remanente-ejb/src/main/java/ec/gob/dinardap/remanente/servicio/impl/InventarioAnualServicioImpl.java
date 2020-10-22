@@ -65,7 +65,7 @@ public class InventarioAnualServicioImpl extends GenericServiceImpl<InventarioAn
             sftpDto.setCredencialesSFTP(setCredencialesSftp(sftpDto.getCredencialesSFTP()));
             return GestionSFTP.descargarArchivo(sftpDto.getCredencialesSFTP());
         } catch (FtpException ex) {
-            Logger.getLogger(TransaccionServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(InventarioAnualServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -74,7 +74,7 @@ public class InventarioAnualServicioImpl extends GenericServiceImpl<InventarioAn
         try {
             GestionSFTP.subirArchivo(sftpDto.getArchivo(), sftpDto.getCredencialesSFTP());
         } catch (FtpException ex) {
-            Logger.getLogger(TransaccionServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(InventarioAnualServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -304,7 +304,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
         UploadedFile file = event.getFile();
         try {
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("itrc_" + remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId()).concat(".pdf");
+            String realPath = (año + "/").concat("itrc_" + remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral().getRemanenteCuatrimestralPK().getRemanenteCuatrimestralId()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
             remanenteCuatrimestralDTOSelected.getRemanenteCuatrimestral().setInformeTecnicoUrl(realPath);

@@ -585,6 +585,14 @@
                         onclick="PF('estadoInventarioAnualDlg').show();">
                         <f:setPropertyActionListener value="#{adminResumenLibrosCtrl.inventarioAnual}" target="#{adminResumenLibrosCtrl.inventarioAnual}" />
                     </p:commandButton><br/>
+                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " /><br/>
+                    <p:commandButton id="downloadArchivo"                                         
+                                         value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
+                                         ajax="false"
+                                         process="@this"
+                                         action="#{adminResumenLibrosCtrl.visualizarArchivoRespaldo}"
+                                         disabled="#{adminResumenLibrosCtrl.disableBtnDescargarArchivo}"
+                                         icon="fa fa-fw fa-download"/><br/>
                     <p:outputLabel value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
                     <h:outputText value="#{adminResumenLibrosCtrl.comentariosRechazo}" style="padding-bottom:5px;"/><br/>                  
                 </b:panelGrid>          
