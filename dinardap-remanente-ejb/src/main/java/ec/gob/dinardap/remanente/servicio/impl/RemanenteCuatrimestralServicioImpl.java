@@ -184,8 +184,8 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     private CredencialesSFTP setCredencialesSftp(CredencialesSFTP credencialesSFTP) {
         credencialesSFTP.setHost(parametroServicio.findByPk(ParametroEnum.SERVIDOR_SFTP.name()).getValor());
         credencialesSFTP.setPuerto(Integer.parseInt(parametroServicio.findByPk(ParametroEnum.PUERTO_SFTP.name()).getValor()));
-        credencialesSFTP.setUsuario(parametroServicio.findByPk(ParametroEnum.USUARIO_REMANENTE_SFTP.name()).getValor());
-        credencialesSFTP.setContrasena(parametroServicio.findByPk(ParametroEnum.CONTRASENA_REMANENTE_SFTP.name()).getValor());
+        credencialesSFTP.setUsuario(parametroServicio.findByPk(ParametroEnum.SFTP_USUARIO_REMANENTE.name()).getValor());
+        credencialesSFTP.setContrasena(parametroServicio.findByPk(ParametroEnum.SFTP_CONTRASENA_REMANENTE.name()).getValor());
         return credencialesSFTP;
     }
 

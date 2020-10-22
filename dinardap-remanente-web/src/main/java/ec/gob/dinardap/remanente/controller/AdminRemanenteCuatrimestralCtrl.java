@@ -478,7 +478,7 @@ public class AdminRemanenteCuatrimestralCtrl extends BaseCtrl implements Seriali
     public void visualizarArchivoInfRemanenteCuatrimestral() {
         TipoArchivo tipoArchivo = new TipoArchivo();
         if (rutaArchivo != null || rutaArchivo != "") {
-            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
             byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
@@ -491,7 +491,7 @@ public class AdminRemanenteCuatrimestralCtrl extends BaseCtrl implements Seriali
     public void visualizarArchivoInfTecRemanenteCuatrimestral() {
         TipoArchivo tipoArchivo = new TipoArchivo();
         if (rutaArchivo != null || rutaArchivo != "") {
-            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_TECNICO_REMANENTE_CUATRIMESTRAL.name()).getValor().concat(rutaArchivo));
             byte[] contenido = remanenteCuatrimestralServicio.descargarArchivo(sftpDto);
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));

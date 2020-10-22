@@ -2,15 +2,18 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
+import ec.gob.dinardap.correo.mdb.cliente.ClienteQueueMailServicio;
+import ec.gob.dinardap.correo.util.MailMessage;
 import ec.gob.dinardap.remanente.constante.SistemaIdEnum;
 import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.dao.UsuarioDao;
 import ec.gob.dinardap.remanente.dao.UsuarioPerfilDao;
 import ec.gob.dinardap.remanente.dataModel.UsuarioDataModel;
 import ec.gob.dinardap.remanente.dto.UsuarioDTO;
-import ec.gob.dinardap.remanente.mail.Email;
 import ec.gob.dinardap.remanente.servicio.AsignacionInstitucionServicio;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioPerfilServicio;
+import ec.gob.dinardap.remanente.servicio.impl.BandejaServicioImpl;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import ec.gob.dinardap.seguridad.modelo.AsignacionInstitucion;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
@@ -32,6 +35,8 @@ import ec.gob.dinardap.util.constante.EstadoEnum;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +45,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -119,6 +125,12 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     @EJB
     private PerfilServicio perfilServicio;
+
+    @EJB
+    private BandejaServicio bandejaServicio;
+
+    @EJB
+    private ClienteQueueMailServicio clienteQueueMailServicio;
 
     @PostConstruct
     protected void init() {
@@ -230,9 +242,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         if (onCreate) {
             if (usuarioExistente == null) {
                 //Creación de nueva contraseña
+                String contraseña = FacesUtils.generarContraseña();
                 usuarioDtoSelected.getUsuario().setContrasena(
                         EncriptarCadenas.encriptarCadenaSha1(
-                                SemillaEnum.SEMILLA_REMANENTE.getSemilla() + FacesUtils.generarContraseña()));
+                                SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
                 Usuario usuarioAux = new Usuario();
                 usuarioAux = usuarioServicio.crearUsuario(usuarioDtoSelected.getUsuario());
                 usuarioDtoSelected.setUsuario(usuarioAux);
@@ -261,16 +274,19 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     usuarioPerfil.setEstado(EstadoEnum.ACTIVO.getEstado());
                     usuarioPerfilServicio.create(usuarioPerfil);
                 }
+                correoRestablecerContraseña(contraseña, "Creación de Usuario");
                 cargarDatosUsuario();
                 restablecerVista();
             } else {
                 this.addErrorMessage("1", "El usuario ingresado ya existe", "");
             }
         } else if (onEdit) {
+            String contraseña = "";
             if (restablecerContraseña) {
+                contraseña = FacesUtils.generarContraseña();
                 usuarioDtoSelected.getUsuario().setContrasena(
                         EncriptarCadenas.encriptarCadenaSha1(
-                                SemillaEnum.SEMILLA_REMANENTE.getSemilla() + FacesUtils.generarContraseña()));
+                                SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
             }
             usuarioDtoSelected.getUsuario().setFechaModificacion(new Date());
             usuarioServicio.update(usuarioDtoSelected.getUsuario());
@@ -342,6 +358,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 strPerfilList.add(perfil.getNombre());
             }
             usuarioDtoSelected.setPerfil(StringUtils.join(strPerfilList, " / "));
+            if (restablecerContraseña) {
+                correoRestablecerContraseña(contraseña, "Restaurar Contraseña");
+            }
             cargarDatosUsuario();
             restablecerVista();
         }
@@ -564,16 +583,38 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         }
     }
 
-    private void correoRestablecerContraseña(String contraseña) {
-        Email email = new Email();
+    private void correoRestablecerContraseña(String contraseña, String asuntoUser) {
+        MailMessage mailMessage = new MailMessage();
+        String mensajeMail = "Su Usuario es: <b>" + usuarioDtoSelected.getUsuario().getCedula() + "</b><br/>"
+                + "Su Contraseña es: <b>" + contraseña + "</b>";
         try {
-//            String mensajeMail = "Su Usuario es: <b>" + usuarioDtoSelected.getCedula() + "</b><br/>"
-//                    + "Su Contraseña es: <b>" + contraseña + "</b>";
-//            email.sendMail(usuarioDtoSelected.getCorreoElectronico(), "Plataforma REMANENTES", mensajeMail);
-            System.out.println("Correo Enviado");
-        } catch (Exception ex) {
-            Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+            URI uri = new URI(ext.getRequestScheme(),
+                    null, ext.getRequestServerName(), ext.getRequestServerPort(),
+                    ext.getRequestContextPath(), null, null);
+
+            StringBuilder html = new StringBuilder(
+                    "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
+            html.append("Estimado(a) " + usuarioDtoSelected.getUsuario().getNombre() + ", <br /><br />");
+            html.append(mensajeMail + "<br/ ><br />");
+            html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+            html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
+            html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
+            html.append("Dirección Nacional de Registros de Datos Públicos");
+            html.append("</B></FONT>");
+            List<String> to = new ArrayList<String>();
+            StringBuilder asunto = new StringBuilder(200);
+            to.add(usuarioDtoSelected.getUsuario().getCorreoElectronico());
+            asunto.append("Sistema de Remanentes e Inventario de Libros - " + asuntoUser);
+            mailMessage = bandejaServicio.credencialesCorreo();
+            mailMessage.setTo(to);
+            mailMessage.setSubject(asunto.toString());
+            mailMessage.setText(html.toString());
+            clienteQueueMailServicio.encolarMail(mailMessage);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     public List<Institucion> completeNombreInstitucion(String query) {

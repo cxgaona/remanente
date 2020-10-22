@@ -401,7 +401,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     public void visualizarArchivoTransaccion() {
         TipoArchivo tipoArchivo = new TipoArchivo();
         if (rutaArchivo != null || rutaArchivo != "") {
-            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(rutaArchivo));
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(rutaArchivo));
             byte[] contenido = transaccionServicio.descargarArchivo(sftpDto);
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
@@ -414,7 +414,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     public void visualizarArchivoSolicitudCambio() {
         TipoArchivo tipoArchivo = new TipoArchivo();
         if (rutaArchivo != null || rutaArchivo != "") {
-            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
             byte[] contenido = remanenteMensualServicio.descargarArchivo(sftpDto);
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
@@ -427,7 +427,7 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
     public void visualizarArchivoInformeSolicitudCambio() {
         TipoArchivo tipoArchivo = new TipoArchivo();
         if (rutaArchivo != null || rutaArchivo != "") {
-            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_INFORME_SOLICITUD_CAMBIO.name()).getValor().concat(rutaArchivo));
             byte[] contenido = remanenteMensualServicio.descargarArchivo(sftpDto);
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
