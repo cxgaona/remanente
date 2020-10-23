@@ -112,13 +112,12 @@ public class LibroCtrl extends BaseCtrl implements Serializable {
                 inventarioAnual.setAnio(año);
                 inventarioAnual.setInstitucion(institucion);
                 inventarioAnualServicio.create(inventarioAnual);
-                inventarioAnual = inventarioAnualServicio.getInventarioPorInstitucionAño(institucionId, año);
                 EstadoInventarioAnual estadoInventarioAnual = new EstadoInventarioAnual();
-                //agregar enum
                 estadoInventarioAnual.setEstado(EstadoInventarioAnualEnum.GENERADO.getEstadoInventarioAnual());
                 estadoInventarioAnual.setFechaRegistro(new Date());
                 estadoInventarioAnual.setInventarioAnual(inventarioAnual);
                 estadoInventarioAnualServicio.create(estadoInventarioAnual);
+                inventarioAnual = inventarioAnualServicio.getInventarioPorInstitucionAño(institucionId, año);
             } else {
                 año = calendar.get(Calendar.YEAR);
                 inventarioAnual = inventarioAnualServicio.getInventarioPorInstitucionAño(institucionId, año);
@@ -136,8 +135,8 @@ public class LibroCtrl extends BaseCtrl implements Serializable {
 
     public void validarEstadoInventario() {
         Short ultimoEstadoInventario = inventarioAnual.getEstadoInventarioAnualList().get(inventarioAnual.getEstadoInventarioAnualList().size() - 1).getEstado();
-        if (ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.APROBADO.getEstadoInventarioAnual()) ||
-            ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.COMPLETO.getEstadoInventarioAnual())) {
+        if (ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.APROBADO.getEstadoInventarioAnual())
+                || ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.COMPLETO.getEstadoInventarioAnual())) {
             disableNuevoLibro = Boolean.TRUE;
             disableDeleteLibro = Boolean.TRUE;
             disableActualizarLibro = Boolean.TRUE;
@@ -200,13 +199,31 @@ public class LibroCtrl extends BaseCtrl implements Serializable {
     public void guardarLibroIndiceGeneralPropiedad() {
         TipoLibro tipoLibro = new TipoLibro(TipoLibroEnum.INDICE_GENERAL_PROPIEDAD.getTipoLibro());
         libroSelected.setTipoLibro(tipoLibro);
-        guardarLibro();
+        if (onCreate) {
+            libroSelected.setFechaRegistro(new Date());
+            libroSelected.setInventarioAnual(inventarioAnual);
+            libroSelected.setEstado(EstadoEnum.ACTIVO.getEstado());
+            libroServicio.create(libroSelected);
+        } else if (onEdit) {
+            libroSelected.setFechaModificacionRegistro(new Date());
+            libroServicio.update(libroSelected);
+        }
+        reloadLibro();
     }
 
     public void guardarLibroIndiceGeneralMercantil() {
         TipoLibro tipoLibro = new TipoLibro(TipoLibroEnum.INDICE_GENERAL_MERCANTIL.getTipoLibro());
         libroSelected.setTipoLibro(tipoLibro);
-        guardarLibro();
+        if (onCreate) {
+            libroSelected.setFechaRegistro(new Date());
+            libroSelected.setInventarioAnual(inventarioAnual);
+            libroSelected.setEstado(EstadoEnum.ACTIVO.getEstado());
+            libroServicio.create(libroSelected);
+        } else if (onEdit) {
+            libroSelected.setFechaModificacionRegistro(new Date());
+            libroServicio.update(libroSelected);
+        }
+        reloadLibro();
     }
 
     public void guardarLibro() {

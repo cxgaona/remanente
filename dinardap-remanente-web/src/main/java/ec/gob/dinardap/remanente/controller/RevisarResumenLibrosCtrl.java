@@ -303,11 +303,11 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
         bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
                 inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         /////
-        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRolInventario(institucionNotificacion,
-                PerfilEnum.INV_ADMINISTRADOR.getPerfilId(), PerfilEnum.INV_VALIDADOR.getPerfilId(), inventarioAnual);
-        mensajeNotificacion = "El Inventario Anual correspondiente al año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADO.";
-        bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
-                inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
+//        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRolInventario(institucionNotificacion,
+//                PerfilEnum.INV_ADMINISTRADOR.getPerfilId(), PerfilEnum.INV_VALIDADOR.getPerfilId(), inventarioAnual);
+//        mensajeNotificacion = "El Inventario Anual correspondiente al año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADO.";
+//        bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
+//                inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         //FIN ENVIO//
     }  
     
