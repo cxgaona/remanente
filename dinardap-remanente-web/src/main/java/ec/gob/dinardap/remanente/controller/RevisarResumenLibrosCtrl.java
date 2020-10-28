@@ -1,11 +1,13 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.constante.EstadoInventarioAnualEnum;
+import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.constante.PerfilEnum;
 import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.constante.TipoLibroEnum;
 import ec.gob.dinardap.remanente.dao.TomoDao;
 import ec.gob.dinardap.remanente.dto.ResumenLibroDTO;
+import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoInventarioAnual;
 import ec.gob.dinardap.remanente.modelo.InventarioAnual;
 import ec.gob.dinardap.remanente.modelo.Tomo;
@@ -17,6 +19,8 @@ import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
+import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,9 +61,11 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private Boolean btnActivated;
     private Boolean displayComment;
     private Boolean disabledBtnReload;
+    private Boolean disableBtnDescargarArchivo;
     private String comentariosRechazo;
     private Institucion institucionSelected;
     private Institucion institucionNotificacion;
+    private SftpDto sftpDto;
 
     //Listas
     private List<Institucion> institucionList;
@@ -88,6 +94,8 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private UsuarioServicio usuarioServicio;
     @EJB
     private BandejaServicio bandejaServicio;
+    @EJB
+    private ParametroServicio parametroServicio;
 
     @PostConstruct
     protected void init() {
@@ -99,6 +107,7 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
         //Inicialiación de Variables        
         nombreInstitucion = "Sin selección";
         institucionId = null;
+        sftpDto = new SftpDto();
 
         comentariosRechazo = "";
         btnActivated = Boolean.TRUE;
@@ -106,6 +115,7 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
         disabledBtnReload = Boolean.TRUE;
         renderMercantil = Boolean.TRUE;
         renderPropiedad = Boolean.TRUE;
+        disableBtnDescargarArchivo = Boolean.TRUE;
 
         institucionSelected = new Institucion();
         institucionList = new ArrayList<Institucion>();
@@ -221,6 +231,11 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
             //displayUploadEdit = Boolean.FALSE;
         }
         comentariosRechazo=inventarioAnual.getComentarios();
+        if(inventarioAnual.getUrlArchivo()==null || inventarioAnual.getUrlArchivo().isEmpty()){
+            disableBtnDescargarArchivo = Boolean.TRUE;
+        }else{
+            disableBtnDescargarArchivo = Boolean.FALSE;
+        }
     }
 
     public void aprobarInventarioAnual() {
@@ -288,13 +303,27 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
         bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
                 inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         /////
-        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRolInventario(institucionNotificacion,
-                PerfilEnum.INV_ADMINISTRADOR.getPerfilId(), PerfilEnum.INV_VALIDADOR.getPerfilId(), inventarioAnual);
-        mensajeNotificacion = "El Inventario Anual correspondiente al año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADO.";
-        bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
-                inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
+//        usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRolInventario(institucionNotificacion,
+//                PerfilEnum.INV_ADMINISTRADOR.getPerfilId(), PerfilEnum.INV_VALIDADOR.getPerfilId(), inventarioAnual);
+//        mensajeNotificacion = "El Inventario Anual correspondiente al año " + año + " del " + institucionNotificacion.getNombre() + " ha sido RECHAZADO.";
+//        bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
+//                inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         //FIN ENVIO//
-    }   
+    }  
+    
+    public void visualizarArchivoRespaldo() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        String rutaArchivo = inventarioAnual.getUrlArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INVENTARIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = inventarioAnualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+            }
+        }
+    }
 
     //Getters & Setters
     public String getTituloInventarioLibro() {
@@ -567,6 +596,14 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
 
     public void setInventarioAnual(InventarioAnual inventarioAnual) {
         this.inventarioAnual = inventarioAnual;
+    }
+
+    public Boolean getDisableBtnDescargarArchivo() {
+        return disableBtnDescargarArchivo;
+    }
+
+    public void setDisableBtnDescargarArchivo(Boolean disableBtnDescargarArchivo) {
+        this.disableBtnDescargarArchivo = disableBtnDescargarArchivo;
     }
 
 }

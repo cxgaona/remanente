@@ -251,11 +251,11 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
 
-            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat(inventarioAnual.getInventarioAnualId().toString()).concat(".pdf");
+            String realPath = (año + "/").concat(inventarioAnual.getInventarioAnualId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INVENTARIO.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
             inventarioAnual.setUrlArchivo(realPath);
-//            inventarioAnualServicio.editTransaccion(transaccionSelected, sftpDto);
+            inventarioAnualServicio.editInventarioAnual(inventarioAnual, sftpDto);
             fileByte = null;
             PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
         } catch (IOException ex) {

@@ -40,14 +40,14 @@
                         </p:column>
                         <p:column headerText="Estado" sortBy="#{estadoInventarioAnual.estado}" filterBy="#{estadoInventarioAnual.estado}" filterMatchMode="contains" style="text-align: center">
                             <h:outputText value="#{estadoInventarioAnual.estado eq 1? 'Generado':
-                                   estadoInventarioAnual.estado eq 2? 'Completo':                                   
-                                   estadoInventarioAnual.estado eq 3? 'Rechazado':
-                                   estadoInventarioAnual.estado eq 4? 'Aprobado':'Sin Estado'}"/>
+                                                   estadoInventarioAnual.estado eq 2? 'Completo':                                   
+                                                   estadoInventarioAnual.estado eq 3? 'Rechazado':
+                                                   estadoInventarioAnual.estado eq 4? 'Aprobado':'Sin Estado'}"/>
                         </p:column>
                     </p:dataTable>
                 </h:form>
             </p:dialog>
-            
+
             <h:form id="formInstitucion">
                 <b:panel title="Instituciones - #{revisarResumenLibrosCtrl.nombreDireccionRegional}">
                     <h:panelGrid columns="1" style="width: 100%;">                        
@@ -574,12 +574,20 @@
                 </b:panel>
                 <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 40%; margin: 4px 5px;">
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
-                        disabled="#{revisarResumenLibrosCtrl.disabledBtnReload}"
-                        style="margin-bottom:5px;"
-                        update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
-                        onclick="PF('estadoInventarioAnualDlg').show();">
+                                     disabled="#{revisarResumenLibrosCtrl.disabledBtnReload}"
+                                     style="margin-bottom:5px;"
+                                     update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
+                                     onclick="PF('estadoInventarioAnualDlg').show();">
                         <f:setPropertyActionListener value="#{revisarResumenLibrosCtrl.inventarioAnual}" target="#{revisarResumenLibrosCtrl.inventarioAnual}" />
                     </p:commandButton><br/>
+                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " /><br/>
+                    <p:commandButton id="downloadArchivo"                                         
+                                         value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
+                                         ajax="false"
+                                         process="@this"
+                                         action="#{revisarResumenLibrosCtrl.visualizarArchivoRespaldo}"
+                                         disabled="#{revisarResumenLibrosCtrl.disableBtnDescargarArchivo}"
+                                         icon="fa fa-fw fa-download"/><br/>
                     <p:outputLabel value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
                     <h:outputText value="#{revisarResumenLibrosCtrl.comentariosRechazo}" style="padding-bottom:5px;" /><br/>
                     <p:commandButton value="#{etiquetas['btnAprobarInventarioAnual']}"

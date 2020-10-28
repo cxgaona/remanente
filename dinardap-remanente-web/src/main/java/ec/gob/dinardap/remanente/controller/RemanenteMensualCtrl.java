@@ -396,7 +396,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
 
-            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat(transaccionSelected.getTransaccionId().toString()).concat(".pdf");
+            String realPath = (año + "/").concat(transaccionSelected.getTransaccionId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_TRANSACCION.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
             transaccionSelected.setRespaldoUrl(realPath);
@@ -412,7 +412,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
         try {
             UploadedFile file = event.getFile();
             byte[] fileByte = IOUtils.toByteArray(file.getInputstream());
-            String realPath = (Calendar.getInstance().get(Calendar.YEAR) + "/").concat("sc_" + remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId().toString()).concat(".pdf");
+            String realPath = (año + "/").concat("sc_" + remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId().toString()).concat(".pdf");
             sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.REMANENTE_SOLICITUD_CAMBIO.name()).getValor().concat(realPath));
             sftpDto.setArchivo(fileByte);
             remanenteMensualDTOSelected.getRemanenteMensual().setSolicitudCambioUrl(realPath);

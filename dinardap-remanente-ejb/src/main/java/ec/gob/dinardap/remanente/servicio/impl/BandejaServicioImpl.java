@@ -129,12 +129,14 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
                 URI uri = new URI(ext.getRequestScheme(),
                         null, ext.getRequestServerName(), ext.getRequestServerPort(),
                         ext.getRequestContextPath(), null, null);
+                //String uri = "https://remanentesrm.dinardap.gob.ec/remanente";
                 String mensajeMail = descripcion;
                 StringBuilder html = new StringBuilder(
                         "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes</B></h1></center><br/><br/>");
                 html.append("Estimado(a) " + userAsignado.getNombre() + ", <br /><br />");
                 html.append(mensajeMail + "<br/ ><br />");
                 html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes</a><br/ >");
+                //html.append("<a href='" + uri + "'>Sistema de Remanentes</a><br/ >");
                 html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
                 html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
                 html.append("Dirección Nacional de Registros de Datos Públicos");
@@ -181,12 +183,14 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
                 URI uri = new URI(ext.getRequestScheme(),
                         null, ext.getRequestServerName(), ext.getRequestServerPort(),
                         ext.getRequestContextPath(), null, null);
+                //String uri = "https://remanentesrm.dinardap.gob.ec/remanente";
                 String mensajeMail = descripcion;
                 StringBuilder html = new StringBuilder(
                         "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
                 html.append("Estimado(a) " + userAsignado.getNombre() + ", <br /><br />");
                 html.append(mensajeMail + "<br/ ><br />");
                 html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+                //html.append("<a href='" + uri + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
                 html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
                 html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
                 html.append("Dirección Nacional de Registros de Datos Públicos");
