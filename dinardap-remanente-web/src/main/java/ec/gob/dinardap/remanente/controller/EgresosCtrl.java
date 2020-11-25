@@ -136,8 +136,7 @@ public class EgresosCtrl extends BaseCtrl implements Serializable {
         fechaMin = fechasLimiteMin(año, mes);
         fechaMax = fechasLimiteMax(año, mes);
 
-        institucionId = this.getInstitucionID(this.getSessionVariable("perfil"));
-
+        institucionId = this.getInstitucionID(getSessionVariable("perfil"));
         nominaList = new ArrayList<Nomina>();
         facturaPagadaList = new ArrayList<FacturaPagada>();
 

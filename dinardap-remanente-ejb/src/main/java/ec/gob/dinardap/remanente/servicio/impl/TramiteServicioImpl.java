@@ -55,7 +55,7 @@ public class TramiteServicioImpl extends GenericServiceImpl<Tramite, Integer> im
     @Override
     public List<Tramite> getTramiteByTransaccion(Integer transaccionId) {
         List<Tramite> tramiteList = new ArrayList<Tramite>();
-        String[] criteriaNombres = {"transaccionId.transaccionId"};
+        String[] criteriaNombres = {"transaccion.transaccionId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {transaccionId};
         String[] orderBy = {"tramiteId"};

@@ -20,6 +20,7 @@ import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -53,7 +54,8 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private Boolean renderPropiedad;
     private Boolean renderMercantil;
     private Boolean disableEditRegistrador;
-    
+    private Boolean disableBtnDescargarArchivo;
+
     //Variables de negocio
     private Integer institucionId;
     private Integer usuarioId;
@@ -102,19 +104,20 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         año = calendar.get(Calendar.YEAR);
-        
+
         usuarioId = Integer.parseInt(getSessionVariable("usuarioId"));
         institucionId = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
         institucion = new Institucion();
         institucion.setInstitucionId(institucionId);
-        disableEditRegistrador=Boolean.FALSE;
-        renderMercantil=Boolean.TRUE;
-        renderPropiedad=Boolean.TRUE;
+        disableEditRegistrador = Boolean.FALSE;
+        renderMercantil = Boolean.TRUE;
+        renderPropiedad = Boolean.TRUE;
+        disableBtnDescargarArchivo = Boolean.TRUE;
         comentariosRechazo = "";
-        if(BaseCtrl.getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.REGISTRO_MERCANTIL.getTipoInstitucion().toString())){
-            renderPropiedad=Boolean.FALSE;
-        }else if(BaseCtrl.getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.REGISTRO_PROPIEDAD.getTipoInstitucion().toString())){
-            renderMercantil=Boolean.FALSE;
+        if (BaseCtrl.getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.REGISTRO_MERCANTIL.getTipoInstitucion().toString())) {
+            renderPropiedad = Boolean.FALSE;
+        } else if (BaseCtrl.getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.REGISTRO_PROPIEDAD.getTipoInstitucion().toString())) {
+            renderMercantil = Boolean.FALSE;
         }
         reloadLibro();
     }
@@ -141,7 +144,7 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             if (añoActual.equals(año) || (añoAnterior).equals(año)) {
                 inventarioAnual.setAnio(año);
                 inventarioAnual.setInstitucion(institucion);
-                inventarioAnualServicio.create(inventarioAnual);                
+                inventarioAnualServicio.create(inventarioAnual);
                 EstadoInventarioAnual estadoInventarioAnual = new EstadoInventarioAnual();
                 estadoInventarioAnual.setEstado(EstadoInventarioAnualEnum.GENERADO.getEstadoInventarioAnual());
                 estadoInventarioAnual.setFechaRegistro(new Date());
@@ -200,10 +203,11 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         resumeLibroDTOListIndiceGeneralMercantil = new ArrayList<>();
         resumeLibroDTOListIndiceGeneralMercantil.add(resumenLibroDTOIndiceGeneralMercantil);
 
-        nombreRegistrador = resumenLibroDTOPropiedad.getNombreRegistrador();
+//        nombreRegistrador = resumenLibroDTOPropiedad.getNombreRegistrador();
+        nombreRegistrador = inventarioAnual.getNombreRegistrador() == null ? "" : inventarioAnual.getNombreRegistrador();
         if (nombreRegistrador.isEmpty()) {
             disableSolicitarRevision = Boolean.TRUE;
-            disableEditRegistrador=Boolean.FALSE;
+            disableEditRegistrador = Boolean.FALSE;
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Información", "Recuerde actualizar el Nombre del Registrador para Solicitar Revisión."));
 
         } else {
@@ -211,16 +215,21 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             if (ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.GENERADO.getEstadoInventarioAnual())
                     || ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.RECHAZADO.getEstadoInventarioAnual())) {
                 disableSolicitarRevision = Boolean.FALSE;
-                disableEditRegistrador=Boolean.FALSE;
+                disableEditRegistrador = Boolean.FALSE;
                 //displayUploadEdit = Boolean.TRUE;
 
             } else {
                 disableSolicitarRevision = Boolean.TRUE;
-                disableEditRegistrador=Boolean.TRUE;
+                disableEditRegistrador = Boolean.TRUE;
                 //displayUploadEdit = Boolean.FALSE;
             }
         }
-        comentariosRechazo=inventarioAnual.getComentarios();       
+        comentariosRechazo = inventarioAnual.getComentarios();
+        if (inventarioAnual.getUrlArchivo() == null || inventarioAnual.getUrlArchivo().isEmpty()) {
+            disableBtnDescargarArchivo = Boolean.TRUE;
+        } else {
+            disableBtnDescargarArchivo = Boolean.FALSE;
+        }
     }
 
     public void solicitarRevisionInventario() {
@@ -241,11 +250,11 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         usuarioListNotificacion = usuarioServicio.getUsuarioByIstitucionRolInventario(institucionNotificacion,
                 PerfilEnum.INV_VALIDADOR.getPerfilId(), PerfilEnum.INV_REGISTRADOR_PROPIEDAD.getPerfilId(), inventarioAnual);
         String mensajeNotificacion = "Se le asignó la Revisión del Inventario Anual correspondiente al año " + año + " del " + institucionNotificacion.getNombre();
-        bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(), 
+        bandejaServicio.generarNotificacionInventario(usuarioListNotificacion, usuarioId, inventarioAnual.getInstitucion(),
                 inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         //FIN ENVIO//
     }
-    
+
     public void uploadSolicitud(FileUploadEvent event) {
         try {
             UploadedFile file = event.getFile();
@@ -257,9 +266,25 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             inventarioAnual.setUrlArchivo(realPath);
             inventarioAnualServicio.editInventarioAnual(inventarioAnual, sftpDto);
             fileByte = null;
-            PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
+            //PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
+            disableBtnDescargarArchivo = Boolean.FALSE;
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Archivo de respaldo cargado exitosamente."));
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void visualizarArchivoRespaldo() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        String rutaArchivo = inventarioAnual.getUrlArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INVENTARIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = inventarioAnualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
+            }
         }
     }
 
@@ -470,7 +495,7 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
 
     public void setDisableEditRegistrador(Boolean disableEditRegistrador) {
         this.disableEditRegistrador = disableEditRegistrador;
-    }   
+    }
 
     public String getComentariosRechazo() {
         return comentariosRechazo;
@@ -486,6 +511,14 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
 
     public void setInventarioAnual(InventarioAnual inventarioAnual) {
         this.inventarioAnual = inventarioAnual;
+    }
+
+    public Boolean getDisableBtnDescargarArchivo() {
+        return disableBtnDescargarArchivo;
+    }
+
+    public void setDisableBtnDescargarArchivo(Boolean disableBtnDescargarArchivo) {
+        this.disableBtnDescargarArchivo = disableBtnDescargarArchivo;
     }
 
 }

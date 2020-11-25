@@ -18,7 +18,6 @@ public class TransaccionDaoEjb extends RemanenteGenericDao<Transaccion, Integer>
     @Override
     public Transaccion getTransaccionByInstitucionFechaTipo(Integer idInstitucion, Integer anio, Integer mes, Integer tipo) {
         Query query = em.createQuery("SELECT t FROM Transaccion t WHERE t.remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucion.institucionId=:idInstitucion AND t.remanenteMensual.remanenteCuatrimestral.remanenteAnual.anio=:anio AND t.remanenteMensual.mes=:mes AND t.catalogoTransaccion.catalogoTransaccionId=:tipo ORDER BY t.transaccionId ASC");
-        Query query1 = em.createQuery("SELECT t FROM Transaccion t WHERE t.catalogoTransaccion");
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);
         query.setParameter("mes", mes);

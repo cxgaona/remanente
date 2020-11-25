@@ -542,18 +542,18 @@
                         </p:dataTable>
                     </h:panelGrid>                   
                 </b:panel>                
-                <b:panelGrid colSpans="6,6" style="width: 40%; margin: 4px 5px;">   
+                <b:panelGrid colSpans="12" style="width: 50%; margin-bottom: 10px;">   
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
                                      style="padding-bottom:5px;"
                                      update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
                                      onclick="PF('estadoInventarioAnualDlg').show();">
                         <f:setPropertyActionListener value="#{resumenLibrosCtrl.inventarioAnual}" target="#{resumenLibrosCtrl.inventarioAnual}" />
-                    </p:commandButton><br/>
-                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " /><br/>
+                    </p:commandButton>
+                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " />
                     <p:fileUpload                                
                         id="archivoRespaldo"
                         messageTemplate="Tipo de Archivo no Válido"
-                        style="width:100%"
+                        style="width:75%"
                         mode="advanced"
                         dragDropSupport="true"
                         sizeLimit="9000000"
@@ -564,11 +564,18 @@
                         disabled="#{resumenLibrosCtrl.disableEditRegistrador}"
                         oncomplete="onCellEdit();"
                         fileUploadListener="#{resumenLibrosCtrl.uploadSolicitud}"
-                        update="formResumen, estadoInventarioAnualDlg"/><br/>
-                    <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
-                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/><br/>                
+                        update="formResumen:archivoRespaldo, msgMensajes"
+                        />
+                    <p:commandButton id="downloadArchivo"                                         
+                                         value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
+                                         ajax="false"
+                                         process="@this"
+                                         action="#{resumenLibrosCtrl.visualizarArchivoRespaldo}"
+                                         disabled="#{resumenLibrosCtrl.disableBtnDescargarArchivo}"
+                                         icon="fa fa-fw fa-download"/>
+                    <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" />
+                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/>              
                     <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"
-                                     style="margin-right:20px; width: 100%"
                                      action="#{resumenLibrosCtrl.solicitarRevisionInventario}"
                                      icon="fa fa-fw fa-share"
                                      id="btnSolicitarRevision"

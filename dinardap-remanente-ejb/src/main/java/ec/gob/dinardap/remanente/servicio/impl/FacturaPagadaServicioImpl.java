@@ -42,7 +42,7 @@ public class FacturaPagadaServicioImpl extends GenericServiceImpl<FacturaPagada,
     @Override
     public List<FacturaPagada> getFacturaPagadaByTransaccion(Integer transaccionId) {
         List<FacturaPagada> facturaPagadaList = new ArrayList<FacturaPagada>();
-        String[] criteriaNombres = {"transaccionId.transaccionId"};
+        String[] criteriaNombres = {"transaccion.transaccionId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {transaccionId};
         String[] orderBy = {"facturaPagadaId"};
