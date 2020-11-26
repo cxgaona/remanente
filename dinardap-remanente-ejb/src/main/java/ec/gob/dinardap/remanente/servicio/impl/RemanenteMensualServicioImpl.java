@@ -168,13 +168,15 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         remanenteMensualNuevaVersion.setInformeAprobacionUrl(null);
         remanenteMensualNuevaVersion.setFechaRegistro(new Date());
         create(remanenteMensualNuevaVersion);
+
         //        rmo.setProrrogaRemanenteMensualId(null);
+
     }
 
     @Override
     public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteMensualOrigenId"};
+        String[] criteriaNombres = {"remanenteMensualOrigen"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {remanenteMensualOrigen};
         String[] orderBy = {"remanenteMensualId"};
