@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.SerializationUtils;
 
 @Stateless(name = "RemanenteMensualServicio")
 public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMensual, Integer> implements RemanenteMensualServicio {
@@ -157,25 +158,21 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
 
     @Override
     public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen) {
-        //revisar
-        RemanenteMensual rm = new RemanenteMensual();
-        RemanenteMensual rmo = new RemanenteMensual(remanenteMensualOrigen.getRemanenteMensualId());
-        rm = remanenteMensualOrigen;
-        rm.setRemanenteMensualOrigen(rmo);
-        rm.setRemanenteMensualId(null);
-        rm.setComentarios(null);
-        rm.setSolicitudCambioUrl(null);
-        rm.setInformeAprobacionUrl(null);
-        rm.setFechaRegistro(new Date());
-        create(rm);
-//        rmo.setProrrogaRemanenteMensualId(null);
-        update(rmo);
+        RemanenteMensual remanenteMensualNuevaVersion = new RemanenteMensual();        
+        remanenteMensualNuevaVersion = (RemanenteMensual) SerializationUtils.clone(remanenteMensualOrigen);      
+        remanenteMensualNuevaVersion.setRemanenteMensualOrigen(remanenteMensualOrigen);
+        remanenteMensualNuevaVersion.setRemanenteMensualId(null);
+        remanenteMensualNuevaVersion.setComentarios(null);
+        remanenteMensualNuevaVersion.setSolicitudCambioUrl(null);
+        remanenteMensualNuevaVersion.setInformeAprobacionUrl(null);
+        remanenteMensualNuevaVersion.setFechaRegistro(new Date());
+        create(remanenteMensualNuevaVersion);
     }
 
     @Override
     public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteMensualOrigenId"};
+        String[] criteriaNombres = {"remanenteMensualOrigen"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {remanenteMensualOrigen};
         String[] orderBy = {"remanenteMensualId"};
