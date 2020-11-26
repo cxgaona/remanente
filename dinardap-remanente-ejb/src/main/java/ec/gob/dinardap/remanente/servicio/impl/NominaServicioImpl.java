@@ -41,7 +41,7 @@ public class NominaServicioImpl extends GenericServiceImpl<Nomina, Integer> impl
     @Override
     public List<Nomina> getNominaByTransaccion(Integer transaccionId) {
         List<Nomina> nominaList = new ArrayList<Nomina>();
-        String[] criteriaNombres = {"transaccionId.transaccionId"};
+        String[] criteriaNombres = {"transaccion.transaccionId"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {transaccionId};
         String[] orderBy = {"nominaId"};

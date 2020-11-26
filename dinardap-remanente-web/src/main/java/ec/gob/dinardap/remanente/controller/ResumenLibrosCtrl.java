@@ -20,6 +20,7 @@ import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
+import ec.gob.dinardap.util.TipoArchivo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -53,6 +54,9 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private Boolean renderPropiedad;
     private Boolean renderMercantil;
     private Boolean disableEditRegistrador;
+
+    private Boolean disableBtnDescargarArchivo;
+
 
     //Variables de negocio
     private Integer institucionId;
@@ -110,6 +114,9 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         disableEditRegistrador = Boolean.FALSE;
         renderMercantil = Boolean.TRUE;
         renderPropiedad = Boolean.TRUE;
+
+        disableBtnDescargarArchivo = Boolean.TRUE;
+
         comentariosRechazo = "";
         if (BaseCtrl.getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.REGISTRO_MERCANTIL.getTipoInstitucion().toString())) {
             renderPropiedad = Boolean.FALSE;
@@ -200,7 +207,8 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         resumeLibroDTOListIndiceGeneralMercantil = new ArrayList<>();
         resumeLibroDTOListIndiceGeneralMercantil.add(resumenLibroDTOIndiceGeneralMercantil);
 
-        nombreRegistrador = resumenLibroDTOPropiedad.getNombreRegistrador();
+//        nombreRegistrador = resumenLibroDTOPropiedad.getNombreRegistrador();
+        nombreRegistrador = inventarioAnual.getNombreRegistrador() == null ? "" : inventarioAnual.getNombreRegistrador();
         if (nombreRegistrador.isEmpty()) {
             disableSolicitarRevision = Boolean.TRUE;
             disableEditRegistrador = Boolean.FALSE;
@@ -221,6 +229,13 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             }
         }
         comentariosRechazo = inventarioAnual.getComentarios();
+
+        if (inventarioAnual.getUrlArchivo() == null || inventarioAnual.getUrlArchivo().isEmpty()) {
+            disableBtnDescargarArchivo = Boolean.TRUE;
+        } else {
+            disableBtnDescargarArchivo = Boolean.FALSE;
+        }
+
     }
 
     public void solicitarRevisionInventario() {
@@ -245,7 +260,7 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
                 inventarioAnual.getInventarioAnualId(), mensajeNotificacion, "IA");
         //FIN ENVIO//
     }
-    
+
     public void uploadSolicitud(FileUploadEvent event) {
         try {
             UploadedFile file = event.getFile();
@@ -257,9 +272,25 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             inventarioAnual.setUrlArchivo(realPath);
             inventarioAnualServicio.editInventarioAnual(inventarioAnual, sftpDto);
             fileByte = null;
-            PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
+            //PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
+            disableBtnDescargarArchivo = Boolean.FALSE;
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Archivo de respaldo cargado exitosamente."));
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void visualizarArchivoRespaldo() {
+        TipoArchivo tipoArchivo = new TipoArchivo();
+        String rutaArchivo = inventarioAnual.getUrlArchivo();
+        if (rutaArchivo != null || rutaArchivo != "") {
+            sftpDto.getCredencialesSFTP().setDirOrigen(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INVENTARIO.name()).getValor().concat(rutaArchivo));
+            byte[] contenido = inventarioAnualServicio.descargarArchivo(sftpDto);
+            if (contenido != null) {
+                downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
+            } else {
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
+            }
         }
     }
 
@@ -486,6 +517,14 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
 
     public void setInventarioAnual(InventarioAnual inventarioAnual) {
         this.inventarioAnual = inventarioAnual;
+    }
+
+    public Boolean getDisableBtnDescargarArchivo() {
+        return disableBtnDescargarArchivo;
+    }
+
+    public void setDisableBtnDescargarArchivo(Boolean disableBtnDescargarArchivo) {
+        this.disableBtnDescargarArchivo = disableBtnDescargarArchivo;
     }
 
 }

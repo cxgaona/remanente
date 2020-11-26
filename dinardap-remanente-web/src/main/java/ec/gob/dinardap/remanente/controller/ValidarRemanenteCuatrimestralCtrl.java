@@ -585,7 +585,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
             } else {
-                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
             }
         }
     }
@@ -598,7 +598,7 @@ public class ValidarRemanenteCuatrimestralCtrl extends BaseCtrl implements Seria
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
             } else {
-                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
             }
         }
     }

@@ -47,6 +47,10 @@
                                               filterBy="#{remanente.cuatrimestre eq 1 ?'Enero-Abril':
                                                           remanente.cuatrimestre eq 2 ?'Mayo-Agosto':
                                                           remanente.cuatrimestre eq 3 ?'Septiembre-Diciembre':'N/A' }" filterMatchMode="contains"/>
+                                    <p:column rowspan="2" headerText="Valor"
+                                              sortBy="#{remanente.valor}"
+                                              filterBy="#{remanente.valor}" filterMatchMode="contains"
+                                              width="4.5%"/>
                                     <p:column colspan="2" headerText="GAD/Registro Mixto" />
                                     <p:column colspan="2" headerText="Dirección Regional" />
                                     <p:column colspan="2" headerText="CGRS" />
@@ -57,26 +61,26 @@
                                               sortBy="#{remanente.oficioGadRegistro}"
                                               filterBy="#{remanente.oficioGadRegistro}" filterMatchMode="contains"/>
                                     <p:column headerText="Fecha"
-                                              sortBy="#{remanente.fechaOficioGadRegistro}" 
-                                              filterBy="#{remanente.fechaOficioGadRegistro}" filterMatchMode="contains"/>
+                                              sortBy="#{remanente.oficioGadRegistro eq 'N/A' ?'N/A':remanente.fechaOficioGadRegistro}" 
+                                              filterBy="#{remanente.oficioGadRegistro eq 'N/A' ?'N/A':remanente.fechaOficioGadRegistro}" filterMatchMode="contains"/>
                                     <p:column headerText="Memorando"
                                               sortBy="#{remanente.memorandoRegional}"
                                               filterBy="#{remanente.memorandoRegional}" filterMatchMode="contains"/>
                                     <p:column headerText="Fecha" 
-                                              sortBy="#{remanente.fechaMemorandoRegional}" 
-                                              filterBy="#{remanente.fechaMemorandoRegional}" filterMatchMode="contains"/>
+                                              sortBy="#{remanente.memorandoRegional eq 'N/A' ?'N/A':remanente.fechaMemorandoRegional}" 
+                                              filterBy="#{remanente.memorandoRegional eq 'N/A' ?'N/A':remanente.fechaMemorandoRegional}" filterMatchMode="contains"/>
                                     <p:column headerText="Memorando" 
                                               sortBy="#{remanente.memorandoCgrs}"
                                               filterBy="#{remanente.memorandoCgrs}" filterMatchMode="contains"/>
                                     <p:column headerText="Fecha" 
-                                              sortBy="#{remanente.fechaMemorandoCgrs}" 
-                                              filterBy="#{remanente.fechaMemorandoCgrs}" filterMatchMode="contains"/>
+                                              sortBy="#{remanente.memorandoCgrs eq 'N/A' ?'N/A':remanente.fechaMemorandoCgrs}" 
+                                              filterBy="#{remanente.memorandoCgrs eq 'N/A' ?'N/A':remanente.fechaMemorandoCgrs}" filterMatchMode="contains"/>
                                     <p:column headerText="Memorando"
                                               sortBy="#{remanente.memorandoFinanciero}"
                                               filterBy="#{remanente.memorandoFinanciero}" filterMatchMode="contains"/>
                                     <p:column headerText="Fecha" 
-                                              sortBy="#{remanente.fechaMemorandoFinanciero}" 
-                                              filterBy="#{remanente.fechaMemorandoFinanciero}" filterMatchMode="contains"/>
+                                              sortBy="#{remanente.memorandoFinanciero eq 'N/A' ?'N/A':remanente.fechaMemorandoFinanciero}" 
+                                              filterBy="#{remanente.memorandoFinanciero eq 'N/A' ?'N/A':remanente.fechaMemorandoFinanciero}" filterMatchMode="contains"/>
                                 </p:row>                                
                             </p:columnGroup>
                             <p:column>
@@ -97,10 +101,13 @@
                                                        remanente.cuatrimestre eq 3 ?'Septiembre-Diciembre':'N/A' }"/>
                             </p:column>                            
                             <p:column>
+                                <h:outputText value="#{remanente.valor}"/>
+                            </p:column>
+                            <p:column>
                                 <h:outputText value="#{remanente.oficioGadRegistro}"/>
                             </p:column> 
                             <p:column>
-                                <h:outputText value="#{remanente.fechaOficioGadRegistro}">
+                                <h:outputText value="#{remanente.oficioGadRegistro eq 'N/A' ?'N/A':remanente.fechaOficioGadRegistro}">
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
                             </p:column>
@@ -108,7 +115,7 @@
                                 <h:outputText value="#{remanente.memorandoRegional}"/>
                             </p:column> 
                             <p:column>
-                                <h:outputText value="#{remanente.fechaMemorandoRegional}">
+                                <h:outputText value="#{remanente.memorandoRegional eq 'N/A' ?'N/A':remanente.fechaMemorandoRegional}">
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
                             </p:column>
@@ -116,7 +123,7 @@
                                 <h:outputText value="#{remanente.memorandoCgrs}"/>
                             </p:column> 
                             <p:column>
-                                <h:outputText value="#{remanente.fechaMemorandoCgrs}">
+                                <h:outputText value="#{remanente.memorandoCgrs eq 'N/A' ?'N/A':remanente.fechaMemorandoCgrs}">
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
                             </p:column>
@@ -124,7 +131,7 @@
                                 <h:outputText value="#{remanente.memorandoFinanciero}"/>
                             </p:column> 
                             <p:column>
-                                <h:outputText value="#{remanente.fechaMemorandoFinanciero}">
+                                <h:outputText value="#{remanente.memorandoFinanciero eq 'N/A' ?'N/A':remanente.fechaMemorandoFinanciero}">
                                     <f:convertDateTime pattern="yyyy/MM/dd" />
                                 </h:outputText>
                             </p:column>

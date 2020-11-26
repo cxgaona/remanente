@@ -74,13 +74,13 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
                     if (contraseñaNueva1.equals(contraseñaNueva2)) {
                         usuario.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseñaNueva1));
                         usuarioServicio.update(usuario);
-                        addInfoMessage("Información actualizada satisfactoriamente", "");
-                        addInfoMessage("Contraseña Actualizada satisfactoriamente", "");
+                        addInfoMessage("Información","Información actualizada satisfactoriamente");
+                        addInfoMessage("Información","Contraseña Actualizada satisfactoriamente");
                     } else {
-                        addErrorMessage("1", "La nueva contraseña no coincide", "");
+                        addErrorMessage("1", "Error", "La nueva contraseña no coincide");
                     }
                 } else {
-                    addInfoMessage("Información actualizada satisfactoriamente", "");
+                    addInfoMessage("Información", "Información actualizada satisfactoriamente");
                 }
                 usuario = new Usuario();
                 respuestaList = new ArrayList<Respuesta>();
@@ -88,10 +88,10 @@ public class UsuarioCtrl extends BaseCtrl implements Serializable {
                 respuestaList = respuestaServicio.getRespuestasActivas(usuarioId);
                 contraseñaActual = "";
             } else {
-                addErrorMessage("1", "Es necesario responder todas las preguntas de seguridad", "");
+                addErrorMessage("1", "Error", "Es necesario responder todas las preguntas de seguridad");
             }
         } else {
-            addErrorMessage("2", "Contraseña actual incorrecta", "");
+            addErrorMessage("2", "Error", "Contraseña actual incorrecta");
         }
     }
 

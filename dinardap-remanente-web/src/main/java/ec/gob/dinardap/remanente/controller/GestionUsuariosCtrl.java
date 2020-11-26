@@ -278,7 +278,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 cargarDatosUsuario();
                 restablecerVista();
             } else {
-                this.addErrorMessage("1", "El usuario ingresado ya existe", "");
+                this.addErrorMessage("1", "Error", "El usuario ingresado ya existe");
             }
         } else if (onEdit) {
             String contraseña = "";
@@ -566,20 +566,20 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             }
 
             if (errorUsuarios) {
-                this.addErrorMessage("0", mensajeError, "No funcionó");
+                this.addErrorMessage("0", "Error", mensajeError);
             } else {
                 for (Usuario u : usuarioNuevoList) {
 //                    usuarioServicio.createUsuario(u);
                 }
                 usuarioActivoList = new ArrayList<Usuario>();
 //                usuarioActivoList = usuarioDao.obtenerUsuariosActivosSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
-                this.addInfoMessage("Se ha creado el bloque de usuarios satisfactoriamente", "Info");
+                this.addInfoMessage("Información", "Se ha creado el bloque de usuarios satisfactoriamente");
             }
 
         } catch (IOException ex) {
             Logger.getLogger(GestionUsuariosCtrl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
+            this.addErrorMessage("0", "Error", "El Excel que se pretende subir tiene errores, favor verificar su archivo de carga");
         }
     }
 

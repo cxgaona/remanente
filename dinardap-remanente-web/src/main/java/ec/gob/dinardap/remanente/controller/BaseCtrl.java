@@ -191,11 +191,11 @@ public class BaseCtrl implements Serializable {
             institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
         } else if (perfil.contains(PerfilEnum.VERIFICADOR.getPerfilId().toString())) {
             institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
-            if (getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.GAD.getTipoInstitucion())) {
+            if (getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.GAD.getTipoInstitucion().toString())) {
                 List<Institucion> institucionList = new ArrayList<Institucion>();
                 List<Integer> institucionIdList = new ArrayList<Integer>();
                 institucionIdList.add(institucionID);
-                institucionList=institucionDao.obtenerHijosPorInstitucion(institucionIdList, TipoInstitucionEnum.GAD.getTipoInstitucion());
+                institucionList=institucionDao.obtenerHijosPorInstitucion(institucionIdList, TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion());
                 if(!institucionList.isEmpty()){
                     institucionID=institucionList.get(institucionList.size()-1).getInstitucionId();
                 }

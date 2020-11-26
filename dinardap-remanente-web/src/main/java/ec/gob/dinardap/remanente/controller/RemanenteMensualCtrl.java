@@ -327,7 +327,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
             } else {
-                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
             }
         }
     }
@@ -345,7 +345,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
             } else {
-                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
             }
         }
     }
@@ -358,7 +358,7 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
             } else {
-                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
             }
         }
     }

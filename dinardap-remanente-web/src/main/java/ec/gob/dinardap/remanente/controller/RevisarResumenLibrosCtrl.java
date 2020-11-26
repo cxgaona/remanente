@@ -220,7 +220,8 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
         resumeLibroDTOListIndiceGeneralMercantil = new ArrayList<>();
         resumeLibroDTOListIndiceGeneralMercantil.add(resumenLibroDTOIndiceGeneralMercantil);
 
-        nombreRegistrador = resumenLibroDTOPropiedad.getNombreRegistrador();
+//        nombreRegistrador = resumenLibroDTOPropiedad.getNombreRegistrador();
+        nombreRegistrador = inventarioAnual.getNombreRegistrador()==null?"":inventarioAnual.getNombreRegistrador();
         Short ultimoEstadoInventario = inventarioAnual.getEstadoInventarioAnualList().get(inventarioAnual.getEstadoInventarioAnualList().size() - 1).getEstado();
         if (ultimoEstadoInventario.equals(EstadoInventarioAnualEnum.COMPLETO.getEstadoInventarioAnual())) {
             btnActivated = Boolean.FALSE;
@@ -320,7 +321,7 @@ public class RevisarResumenLibrosCtrl extends BaseCtrl implements Serializable {
             if (contenido != null) {
                 downloadFile(contenido, tipoArchivo.obtenerTipoArchivo(rutaArchivo), rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1));
             } else {
-                this.addErrorMessage("1", "Error: Archivo no disponible", "");
+                this.addErrorMessage("1", "Error", "Archivo no disponible");
             }
         }
     }
