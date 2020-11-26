@@ -49,6 +49,7 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     public List<RemanenteMensualDTO> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         List<RemanenteMensualDTO> remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
+
         String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucion.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
