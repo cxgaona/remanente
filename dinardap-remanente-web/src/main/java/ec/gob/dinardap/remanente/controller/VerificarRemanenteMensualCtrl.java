@@ -197,10 +197,31 @@ public class VerificarRemanenteMensualCtrl extends BaseCtrl implements Serializa
         });
         if (remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo")) {
             btnActivated = Boolean.FALSE;
-            if (diasNoLaborablesServicio.habilitarDiasAdicionales(remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(), remanenteMensualDTOSelected.getRemanenteMensual().getMes(), remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
+            if (diasNoLaborablesServicio.habilitarDiasAdicionales(
+                    remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteCuatrimestral().getRemanenteAnual().getAnio(),
+                    remanenteMensualDTOSelected.getRemanenteMensual().getMes(),
+                    remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
                 btnActivated = Boolean.FALSE;
             } else {
-                btnActivated = Boolean.TRUE;
+//                if(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("Completo"))
+                if (remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList().get(0).getDescripcion().equals("GeneradoNuevaVersion")) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(remanenteMensualDTOSelected.getRemanenteMensual().getFechaRegistro());
+                    Integer añoSC = calendar.get(Calendar.YEAR);
+                    Integer mesSC = calendar.get(Calendar.MONTH) + 1;
+                    Integer diaSC = calendar.get(Calendar.DAY_OF_MONTH);
+                    if (diasNoLaborablesServicio.habilitarDiasAdicionalesCS(
+                            añoSC,
+                            mesSC,
+                            diaSC,
+                            remanenteMensualDTOSelected.getRemanenteMensual().getRemanenteMensualId())) {
+                        btnActivated = Boolean.FALSE;
+                    } else {
+                        btnActivated = Boolean.TRUE;
+                    }
+                } else {
+                    btnActivated = Boolean.TRUE;
+                }
             }
         } else {
             btnActivated = Boolean.TRUE;

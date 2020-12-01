@@ -606,7 +606,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             StringBuilder asunto = new StringBuilder(200);
             to.add(usuarioDtoSelected.getUsuario().getCorreoElectronico());
             asunto.append("Sistema de Remanentes e Inventario de Libros - " + asuntoUser);
-            mailMessage = bandejaServicio.credencialesCorreo();
+            mailMessage = bandejaServicio.credencialesCorreo();            
             mailMessage.setTo(to);
             mailMessage.setSubject(asunto.toString());
             mailMessage.setText(html.toString());

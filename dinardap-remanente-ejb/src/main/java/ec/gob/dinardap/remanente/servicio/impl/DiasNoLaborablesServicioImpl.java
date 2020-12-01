@@ -196,7 +196,7 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         Integer diasAdicionales = 2; //SP7
         Integer contadorDias = 0;
         Boolean habilitar = Boolean.TRUE;
-        while (fechaActual.after(fechaSeleccionada)) {
+        while (fechaActual.after(fechaSeleccionada)) {            
             Boolean flagDiaFeriado = Boolean.FALSE;
             fechaActual.add(Calendar.DAY_OF_YEAR, -1);
             String dayOfWeek = fechaActual.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
