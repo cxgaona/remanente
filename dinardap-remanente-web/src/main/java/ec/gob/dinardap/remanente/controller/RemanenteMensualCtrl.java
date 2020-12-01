@@ -191,7 +191,13 @@ public class RemanenteMensualCtrl extends BaseCtrl implements Serializable {
             case 12:
                 mesSelected = "Diciembre";
                 break;
-        }
+        }        
+        Collections.sort(remanenteMensualDTOSelected.getRemanenteMensual().getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+            @Override
+            public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
+                return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+            }
+        });
         btnActivated = Boolean.FALSE;
         displayUploadEdit = Boolean.TRUE;
         transaccionRPropiedadList = new ArrayList<Transaccion>();

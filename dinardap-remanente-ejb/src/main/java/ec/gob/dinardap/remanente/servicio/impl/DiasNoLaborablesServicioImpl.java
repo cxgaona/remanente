@@ -188,7 +188,6 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         //Declaración        
         Calendar fechaSeleccionada = Calendar.getInstance();
         Calendar fechaActual = (Calendar) SerializationUtils.clone(fechaSeleccionada);
-
         fechaSeleccionada.set(Calendar.YEAR, año);
         fechaSeleccionada.set(Calendar.MONTH, mes - 1);
         fechaSeleccionada.set(Calendar.DAY_OF_MONTH, dia);
@@ -196,7 +195,7 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
         Integer diasAdicionales = 2; //SP7
         Integer contadorDias = 0;
         Boolean habilitar = Boolean.TRUE;
-        while (fechaActual.after(fechaSeleccionada)) {            
+        while (fechaActual.after(fechaSeleccionada)) {
             Boolean flagDiaFeriado = Boolean.FALSE;
             fechaActual.add(Calendar.DAY_OF_YEAR, -1);
             String dayOfWeek = fechaActual.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).toUpperCase();
@@ -230,5 +229,4 @@ public class DiasNoLaborablesServicioImpl extends GenericServiceImpl<DiasNoLabor
             return habilitar;
         }
     }
-
 }

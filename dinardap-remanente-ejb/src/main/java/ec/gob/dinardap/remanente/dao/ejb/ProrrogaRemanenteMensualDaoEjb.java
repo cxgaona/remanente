@@ -58,10 +58,7 @@ public class ProrrogaRemanenteMensualDaoEjb extends RemanenteGenericDao<Prorroga
     public List<RemanenteMensual> getRemanenteMensualListAñoMes(Integer año, Integer mes) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         List<Integer> remanenteIdList = new ArrayList<Integer>();
-        Query query = em.createQuery("SELECT MAX(rm.remanenteMensualId) FROM RemanenteMensual rm WHERE rm.mes=:mes AND rm.remanenteCuatrimestral.remanenteAnual.anio=:año GROUP BY rm.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId");
-//                + "SELECT rm FROM RemanenteMensual rm WHERE rm.remanenteMensualId IN (SELECT MAX(obj.remanenteMensualId) FROM RemanenteMensual obj GROUP BY obj.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId) ");
-//                + "AND rm.mes=:mes "
-//                + "AND rm.remanenteCuatrimestral.remanenteAnual.anio=:año");
+        Query query = em.createQuery("SELECT MAX(rm.remanenteMensualId) FROM RemanenteMensual rm WHERE rm.mes=:mes AND rm.remanenteCuatrimestral.remanenteAnual.anio=:año GROUP BY rm.remanenteCuatrimestral.remanenteAnual.institucion.institucionId");
         query.setParameter("mes", mes);
         query.setParameter("año", año);
         if (!query.getResultList().isEmpty()) {
@@ -80,14 +77,7 @@ public class ProrrogaRemanenteMensualDaoEjb extends RemanenteGenericDao<Prorroga
     public List<SolicitudCambioDTO> getRemanenteMensualSolicitudCambioAprobada(Integer institucionId) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
         List<SolicitudCambioDTO> solicitudCambiolDTOList = new ArrayList<SolicitudCambioDTO>();
-        Query query = em.createQuery("SELECT rm FROM RemanenteMensual rm INNER JOIN rm.estadoRemanenteMensualList erml "
-                + "WHERE rm.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:institucion "
-                + "AND erml.descripcion='GeneradoNuevaVersion' "
-                + "AND erml.estadoRemanenteMensualId IN ( "
-                + "SELECT MAX(erm.estadoRemanenteMensualId) "
-                + "FROM EstadoRemanenteMensual erm "
-                + "WHERE erm.remanenteMensualId IS NOT NULL "
-                + "GROUP BY erm.remanenteMensualId) ");
+        Query query = em.createQuery("SELECT rm FROM RemanenteMensual rm INNER JOIN rm.estadoRemanenteMensualList erml WHERE rm.remanenteCuatrimestral.remanenteAnual.institucion.institucionId=:institucion AND erml.descripcion='GeneradoNuevaVersion' AND erml.estadoRemanenteMensualId IN ( SELECT MAX(erm.estadoRemanenteMensualId) FROM EstadoRemanenteMensual erm WHERE erm.remanenteMensual IS NOT NULL GROUP BY erm.remanenteMensual) ");
         query.setParameter("institucion", institucionId);
         if (!query.getResultList().isEmpty()) {
             remanenteMensualList = query.getResultList();

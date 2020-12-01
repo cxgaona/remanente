@@ -62,7 +62,7 @@ public class ProrrogaRemanenteGeneralDTO {
                 mesAux = "NOVIEMBRE";
                 break;
             case 12:
-                mesAux = "DICIEMRE";
+                mesAux = "DICIEMBRE";
                 break;
             default:
                 mesAux = "Fecha sin Definir";
