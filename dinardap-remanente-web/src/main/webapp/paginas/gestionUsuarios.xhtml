@@ -8,24 +8,19 @@
     <ui:composition template="/template/general.xhtml">
         <ui:define name="content">        
             <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{gestionUsuariosCtrl.tituloPagina}</h1>
-
-            <h:form id="formUsuario">
-                <p:remoteCommand name="onSelectRowUsuario" 
-                                 update="formUsuarioSelected"/>
-                <b:panel title="Usuarios">
+            
+            <h:form id="formUsuario">                
+                <b:panel title="Usuarios Activos">
                     <h:panelGrid columns="1" style="width: 100%;">
 
                         <p:dataTable id="usuarioTbl"
                                      value="#{gestionUsuariosCtrl.usuarioDtoList}" 
                                      var="usuarioDto"
                                      rowKey="#{usuarioDto.usuario.usuarioId}"                                     
-                                     selectionMode="single"
-                                     selection="#{gestionUsuariosCtrl.usuarioDtoSelected}"
                                      reflow="true" rows="5" paginator="true"                                     
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,25"                                     
-                                     tableStyle="width:auto">
-                            <p:ajax event="rowSelect" listener="#{gestionUsuariosCtrl.onRowSelectUsuario}" update="formUsuarioSelected, formUsuarioSelected:tipoInstitucion, formUsuario:usuarioPnl"/>
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:auto">                            
                             <p:column headerText="Nombre" sortBy="#{usuarioDto.usuario.nombre}" filterBy="#{usuarioDto.usuario.nombre}" filterMatchMode="contains">
                                 <h:outputText value="#{usuarioDto.usuario.nombre}" />
                             </p:column>
@@ -67,111 +62,13 @@
                     </h:panelGrid>
 
                     <b:panelGrid id="usuarioPnl" colSpans="6,6" style="width: 40%; margin: 4px 5px;">
-                        <p:commandButton value="Nuevo Usuario"
+                        <p:commandButton value="Actualizar"
                                          style="margin-right:20px;" 
                                          action="#{gestionUsuariosCtrl.nuevoUsuario}"
-                                         icon="fa fa-fw fa-plus-square"
-                                         update="formUsuarioSelected"/>
-                        <p:commandButton value="Eliminar Usuario" disabled="#{!gestionUsuariosCtrl.renderEdition}"
-                                         style="margin-right:20px;" 
-                                         action="#{gestionUsuariosCtrl.eliminarUsuario}"
-                                         icon="fa fa-fw fa-remove"
-                                         update="formUsuario, formUsuarioSelected, msgMensajes"                                         > 
-                            <p:confirm header="Confirmación" message="¿Está seguro de eliminar al usuario Seleccionado" icon="fa fa-fw fa-warning" />
-                        </p:commandButton>
-                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
-                        </p:confirmDialog>
-
-                    </b:panelGrid>
-
-                    <!--                    <b:panelGrid id="cargaUsuarioPnl" colSpans="4,8" style="width: 40%; margin: 4px 5px;">
-                                            <p:outputLabel value="Carga de usuarios: " />
-                                            <p:fileUpload                                    
-                                                id="cargaUsuarios"
-                                                messageTemplate="Tipo de Archivo no Válido"
-                                                style="width:100%"
-                                                mode="advanced"
-                                                dragDropSupport="true"
-                                                sizeLimit="90000000"
-                                                allowTypes="/(\.|\/)(xlsx)$/"
-                                                label=""
-                                                uploadLabel=""
-                                                cancelLabel=""                                
-                                                fileUploadListener="#{gestionUsuariosCtrl.crearUsuariosBloque}"
-                                                update="formUsuario, msgMensajes"/>
-                                            <p:outputLabel rendered="false"/>                        
-                                        </b:panelGrid>                        -->
-
-                </b:panel>
-            </h:form>
-
-            <h:form id="formUsuarioSelected" >
-                <b:panel style="width: 90%" rendered="#{gestionUsuariosCtrl.renderEdition}">
-                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
-                        <p:outputLabel value="Tipo Institución:" />
-                        <p:selectOneMenu id="tipoInstitucion"
-                                         value="#{gestionUsuariosCtrl.tipoInstitucionSelected}"
-                                         style="width: 90%;"
-                                         converter="#{tipoInstitucionConverter}"
-                                         required="true">
-                            <p:ajax event="valueChange" listener="#{gestionUsuariosCtrl.onChangeTipoInstitucion}" update="formUsuarioSelected:institucion, formUsuarioSelected:perfiles"/>
-                            <f:selectItems value="#{gestionUsuariosCtrl.tipoInstitucionList}" var="c" itemValue="#{c}" itemLabel="#{c.descripcion}" />
-                        </p:selectOneMenu>
-
-                        <p:outputLabel for="institucion" value="Institución:" />
-                        <p:autoComplete id="institucion" 
-                                        value="#{gestionUsuariosCtrl.institucionSelected}" 
-                                        completeMethod="#{gestionUsuariosCtrl.completeNombreInstitucion}"
-                                        converter="#{institucionConverter}"
-                                        var="institucion"
-                                        itemLabel="#{institucion.nombre}"
-                                        itemValue="#{institucion}"
-                                        style="width: 100%"
-                                        inputStyle="width: 90%"
-                                        maxResults="5"
-                                        required="true"
-                                        title="#{gestionUsuariosCtrl.institucionSelected.nombre}"/>
-
-                        <p:outputLabel for="cedula" value="Cédula:" />
-                        <p:inputText id="cedula" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.cedula}" style="width: 90%" required="true" maxlength="10"
-                                     disabled="#{gestionUsuariosCtrl.onEdit}">
-                            <p:keyFilter regEx="/[\d]/"/>
-                        </p:inputText>
-
-                        <p:outputLabel for="nombre" value="Nombre:" />
-                        <p:inputText id="nombre" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.nombre}" style="width: 90%" required="true"/>
-
-                        <p:outputLabel for="mail" value="Mail:" />
-                        <p:inputText id="mail" value="#{gestionUsuariosCtrl.usuarioDtoSelected.usuario.correoElectronico}" style="width: 90%" required="true"> 
-                            <p:keyFilter regEx="/[a-z0-9_\.\-@]/i"/>
-                        </p:inputText>
-
-                        <p:outputLabel value="Perfiles Asignados:" />
-                        <p:selectManyCheckbox id="perfiles" 
-                                              value="#{gestionUsuariosCtrl.perfilSelectedList}" 
-                                              layout="grid"
-                                              converter="#{perfilConverter}"
-                                              columns="3">                            
-                            <f:selectItems value="#{gestionUsuariosCtrl.perfilListActivos}" var="perfil" itemValue="#{perfil}" itemLabel="#{perfil.nombre}" />                            
-                        </p:selectManyCheckbox>
-
-                        <p:outputLabel value="Restablecer contraseña" />
-                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
-                            <p:selectBooleanCheckbox id="checkRestablecerClave" 
-                                                     value="#{gestionUsuariosCtrl.restablecerContraseña}"
-                                                     disabled="#{gestionUsuariosCtrl.disableRestablecerContraseñaBtn}">
-                            </p:selectBooleanCheckbox>                            
-                        </h:panelGrid>
-                    </b:panelGrid>    
-                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
-                        <p:commandButton value="#{gestionUsuariosCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{gestionUsuariosCtrl.guardar}" update="formUsuarioSelected, formUsuario, msgMensajes"/>
-                        <p:commandButton value="Cancelar" id="cancelarBtn" style="margin-right:20px;" process="@this" icon="fa fa-fw fa-ban" action="#{gestionUsuariosCtrl.cancelar}" update="formUsuarioSelected, formUsuario"/>
+                                         icon="fa fa-fw fa-refresh"/>
                     </b:panelGrid>
                 </b:panel>
             </h:form>
-
         </ui:define>
     </ui:composition>
 </html>
