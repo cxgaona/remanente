@@ -88,13 +88,14 @@ public class GestionUsuariosCtrl_old extends BaseCtrl implements Serializable {
     private List<TipoInstitucion> tipoInstitucionList;
     private List<Institucion> institucionList;
     private List<Perfil> perfilListActivos;
+    private List<Pregunta> preguntaList;
 
     private List<Usuario> usuarioActivoList;
     private List<UsuarioDTO> usuarioDtoList;
 
     private List<Perfil> perfilSelectedList;
 
-    private List<Pregunta> preguntaList;
+    
 
     @EJB
     private UsuarioDao usuarioDao;

@@ -1,6 +1,5 @@
 package ec.gob.dinardap.remanente.servicio;
 
-
 import javax.ejb.Local;
 
 import ec.gob.dinardap.persistence.servicio.GenericService;
@@ -12,6 +11,9 @@ import java.util.List;
 
 @Local
 public interface UsuarioServicio extends GenericService<Usuario, Integer> {
-   public List<Usuario> getUsuarioByIstitucionRol(Institucion institucion, Integer rolAsignado, Integer rolSolicitante, RemanenteCuatrimestral remanenteCuatrimestral);   
-   public List<Usuario> getUsuarioByIstitucionRolInventario(Institucion institucion, Integer rolAsignado, Integer rolSolicitante, InventarioAnual inventarioAnual);   
+
+    public List<Usuario> getUsuarioByIstitucionRol(Institucion institucion, Integer rolAsignado, Integer rolSolicitante, RemanenteCuatrimestral remanenteCuatrimestral);
+
+    public List<Usuario> getUsuarioByIstitucionRolInventario(Institucion institucion, Integer rolAsignado, Integer rolSolicitante, InventarioAnual inventarioAnual);
+
 }
