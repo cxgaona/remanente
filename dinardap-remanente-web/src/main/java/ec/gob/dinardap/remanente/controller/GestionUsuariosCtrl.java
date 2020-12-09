@@ -246,8 +246,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         usuarioDtoGestion.getUsuario().setFechaModificacion(new Date());
         usuarioDtoGestion.getUsuario().setEstado(EstadoEnum.INACTIVO.getEstado());
         usuarioServicio.update(usuarioDtoGestion.getUsuario());
-        cargarDatosUsuario();
-        PrimeFaces.current().ajax().update("formUsuario");
+//        cargarDatosUsuario();
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Usuario eliminado exitosamente"));
+//        PrimeFaces.current().ajax().update("formUsuario");        
         restablecerVista();
     }
 
@@ -295,8 +296,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     usuarioPerfilServicio.create(usuarioPerfil);
                 }
                 correoRestablecerContraseña(contraseña, "Creación de Usuario");
-                cargarDatosUsuario();
-                PrimeFaces.current().ajax().update("formUsuario");
+//                cargarDatosUsuario();
+//                PrimeFaces.current().ajax().update("formUsuario");
                 restablecerVista();
             } else {
                 this.addErrorMessage("1", "Error", "El usuario ingresado ya existe");
@@ -382,7 +383,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             if (restablecerContraseña) {
                 correoRestablecerContraseña(contraseña, "Restaurar Contraseña");
             }
-            cargarDatosUsuario();
+//            cargarDatosUsuario();
             restablecerVista();
         }
     }
