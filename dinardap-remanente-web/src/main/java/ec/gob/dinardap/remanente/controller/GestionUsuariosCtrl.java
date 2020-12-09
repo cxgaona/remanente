@@ -3,6 +3,7 @@ package ec.gob.dinardap.remanente.controller;
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
 import ec.gob.dinardap.correo.mdb.cliente.ClienteQueueMailServicio;
+import ec.gob.dinardap.correo.util.MailMessage;
 import ec.gob.dinardap.remanente.constante.SistemaIdEnum;
 import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.dao.UsuarioDao;
@@ -11,6 +12,7 @@ import ec.gob.dinardap.remanente.dto.UsuarioDTO;
 import ec.gob.dinardap.remanente.servicio.AsignacionInstitucionServicio;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import ec.gob.dinardap.remanente.servicio.UsuarioPerfilServicio;
+import ec.gob.dinardap.remanente.servicio.impl.BandejaServicioImpl;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
 import ec.gob.dinardap.seguridad.modelo.AsignacionInstitucion;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
@@ -31,13 +33,18 @@ import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
 import ec.gob.dinardap.util.constante.EstadoEnum;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -145,13 +152,13 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         for (Usuario usuario : usuarioActivoList) {
             UsuarioDTO usuarioDTO = new UsuarioDTO();
             usuarioDTO.setUsuario(usuario);
-            
+
             if (!usuario.getAsignacionInstitucions().isEmpty()) {
                 usuarioDTO.setInstitucion(usuario.getAsignacionInstitucions().get(usuario.getAsignacionInstitucions().size() - 1).getInstitucion());
             } else {
                 usuarioDTO.setInstitucion(null);
             }
-            
+
             List<String> strPerfilList = new ArrayList<String>();
             for (UsuarioPerfil up : usuario.getUsuarioPerfilList()) {
                 strPerfilList.add(up.getPerfil().getNombre());
@@ -161,8 +168,9 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         }
     }
 
-    public void actualizar() {
-        cargarDatosUsuario();
+    public void actualizar() throws IOException {
+//        cargarDatosUsuario();
+        FacesContext.getCurrentInstance().getExternalContext().redirect("gestionUsuarios.jsf");
     }
 
     public void onRowSelectUsuario() {
@@ -193,8 +201,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     // Nueva manera de manejar la gestión de usuarios
     public void buscarUsuario() {
         renderEdition = Boolean.FALSE;
-        
-        restablecerVista();       
+
+        restablecerVista();
 
         tipoInstitucionSelected = new TipoInstitucion();
         institucionSelected = new Institucion();
@@ -211,7 +219,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
             tipoInstitucionSelected = usuarioDtoGestion.getInstitucion().getTipoInstitucion();
             institucionSelected = usuarioDtoGestion.getInstitucion();
-            
+
             institucionList = institucionServicio.buscarInstitucionPorTipo(tipoInstitucionSelected.getTipoInstitucionId());
             perfilListActivos = getPerfilesPorTipoInstitucion(tipoInstitucionSelected.getTipoInstitucionId());
 
@@ -258,6 +266,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         //Definición de usuario
         usuarioDtoGestion.setInstitucion(institucionSelected);
         usuarioDtoGestion.getUsuario().setFechaCreacion(new Date());
+        usuarioDtoGestion.getUsuario().setNombre(usuarioDtoGestion.getUsuario().getNombre().toUpperCase());
         usuarioDtoGestion.getUsuario().setEstado(EstadoEnum.ACTIVO.getEstado());
 
         if (onCreate) {
@@ -296,8 +305,10 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                     usuarioPerfilServicio.create(usuarioPerfil);
                 }
                 correoRestablecerContraseña(contraseña, "Creación de Usuario");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Se ha creado un nuevo usuario con Cédula: " + usuarioDtoGestion.getUsuario().getCedula()));
 //                cargarDatosUsuario();
 //                PrimeFaces.current().ajax().update("formUsuario");
+                usuarioDtoGestion = new UsuarioDTO();
                 restablecerVista();
             } else {
                 this.addErrorMessage("1", "Error", "El usuario ingresado ya existe");
@@ -384,14 +395,17 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
                 correoRestablecerContraseña(contraseña, "Restaurar Contraseña");
             }
 //            cargarDatosUsuario();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Se ha actualizado el usuario con Cédula: " + usuarioDtoGestion.getUsuario().getCedula()));
+            usuarioDtoGestion = new UsuarioDTO();
             restablecerVista();
         }
     }
 
     public void cancelar() {
-        usuarioDtoGestion = new UsuarioDTO();
+        tipoInstitucionSelected = new TipoInstitucion();
+        institucionSelected = new Institucion();
         perfilSelectedList = new ArrayList<Perfil>();
-
+        usuarioDtoGestion = new UsuarioDTO();
         restablecerVista();
     }
 
@@ -463,37 +477,37 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     }
 
     private void correoRestablecerContraseña(String contraseña, String asuntoUser) {
-        System.out.println("se esta enviando el correo XD");
-//        MailMessage mailMessage = new MailMessage();
-//        String mensajeMail = "Su Usuario es: <b>" + usuarioDtoGestion.getUsuario().getCedula() + "</b><br/>"
-//                + "Su Contraseña es: <b>" + contraseña + "</b>";
-//        try {
-//            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
-//            URI uri = new URI(ext.getRequestScheme(),
-//                    null, ext.getRequestServerName(), ext.getRequestServerPort(),
-//                    ext.getRequestContextPath(), null, null);
-//
-//            StringBuilder html = new StringBuilder(
-//                    "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
-//            html.append("Estimado(a) " + usuarioDtoGestion.getUsuario().getNombre() + ", <br /><br />");
-//            html.append(mensajeMail + "<br/ ><br />");
-//            html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
-//            html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
-//            html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
-//            html.append("Dirección Nacional de Registros de Datos Públicos");
-//            html.append("</B></FONT>");
-//            List<String> to = new ArrayList<String>();
-//            StringBuilder asunto = new StringBuilder(200);
-//            to.add(usuarioDtoGestion.getUsuario().getCorreoElectronico());
-//            asunto.append("Sistema de Remanentes e Inventario de Libros - " + asuntoUser);
-//            mailMessage = bandejaServicio.credencialesCorreo();            
-//            mailMessage.setTo(to);
-//            mailMessage.setSubject(asunto.toString());
-//            mailMessage.setText(html.toString());
-//            clienteQueueMailServicio.encolarMail(mailMessage);
-//        } catch (URISyntaxException ex) {
-//            Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+//        System.out.println("se esta enviando el correo XD");
+        MailMessage mailMessage = new MailMessage();
+        String mensajeMail = "Su Usuario es: <b>" + usuarioDtoGestion.getUsuario().getCedula() + "</b><br/>"
+                + "Su Contraseña es: <b>" + contraseña + "</b>";
+        try {
+            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+            URI uri = new URI(ext.getRequestScheme(),
+                    null, ext.getRequestServerName(), ext.getRequestServerPort(),
+                    ext.getRequestContextPath(), null, null);
+
+            StringBuilder html = new StringBuilder(
+                    "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
+            html.append("Estimado(a) " + usuarioDtoGestion.getUsuario().getNombre() + ", <br /><br />");
+            html.append(mensajeMail + "<br/ ><br />");
+            html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+            html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
+            html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
+            html.append("Dirección Nacional de Registros de Datos Públicos");
+            html.append("</B></FONT>");
+            List<String> to = new ArrayList<String>();
+            StringBuilder asunto = new StringBuilder(200);
+            to.add(usuarioDtoGestion.getUsuario().getCorreoElectronico());
+            asunto.append("Sistema de Remanentes e Inventario de Libros - " + asuntoUser);
+            mailMessage = bandejaServicio.credencialesCorreo();            
+            mailMessage.setTo(to);
+            mailMessage.setSubject(asunto.toString());
+            mailMessage.setText(html.toString());
+            clienteQueueMailServicio.encolarMail(mailMessage);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
