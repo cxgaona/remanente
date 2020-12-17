@@ -97,13 +97,13 @@
                                          action="#{gestionUsuariosCtrl.nuevoUsuario}"
                                          immediate="true"
                                          update="formGestionUsuario"/>
-                        <p:commandButton value="Eliminar Usuario"
+<!--                        <p:commandButton value="Eliminar Usuario"
                                          disabled="#{!gestionUsuariosCtrl.onEdit}"                                         
                                          icon="fa fa-fw fa-remove"
                                          action="#{gestionUsuariosCtrl.eliminarUsuario}"
                                          update="formGestionUsuario">
                             <p:confirm header="Confirmación" message="¿Está seguro que desea eliminar el usuario Seleccionado" icon="fa fa-fw fa-warning" />
-                        </p:commandButton>
+                        </p:commandButton>-->
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
                             <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
@@ -166,6 +166,13 @@
                                                          disabled="#{gestionUsuariosCtrl.disableRestablecerContraseñaBtn}">
                                 </p:selectBooleanCheckbox>                            
                             </h:panelGrid>
+                            
+                            <p:outputLabel for="estado" value="Estado:" />
+                            <!--<p:toggleSwitch id="estado" value="#{gestionUsuariosCtrl.estadoAI}"/>-->
+                            <p:inputSwitch id="estado" value="#{gestionUsuariosCtrl.estadoAI}" onLabel="Activo" offLabel="Inactivo"/>
+                            <!--<p:selectBooleanButton id="estado" value="#{gestionUsuariosCtrl.estadoAI}" onLabel="Activo" offLabel="Inactivo" style="width:auto"  />-->
+                            
+                                
                         </b:panelGrid>
                         <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
                             <p:commandButton value="#{gestionUsuariosCtrl.btnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{gestionUsuariosCtrl.guardar}" update="formGestionUsuario, msgMensajes"/>

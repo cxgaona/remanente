@@ -72,6 +72,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     private Institucion institucionSelected;
     private Boolean restablecerContraseña;
     private String cedulaBusqueda;
+    private Boolean estadoAI;
 
     //Listas
     private List<UsuarioDTO> usuarioDtoList;
@@ -123,6 +124,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     protected void init() {
         tituloPagina = "Listado de Usuarios Activos";
         renderEdition = Boolean.FALSE;
+        estadoAI= Boolean.TRUE;
 
         //Carga del tipo de instituciones activas para seleccionar
         tipoInstitucionList = new ArrayList<TipoInstitucion>();
@@ -208,6 +210,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         institucionSelected = new Institucion();
         perfilSelectedList = new ArrayList<Perfil>();
         usuarioDtoGestion = new UsuarioDTO();
+        
+        estadoAI= Boolean.FALSE;
 
         usuarioDtoGestion = usuarioDao.getUsuarioByCedula(cedulaBusqueda);
         if (usuarioDtoGestion.getUsuario() != null) {
@@ -219,6 +223,11 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
             tipoInstitucionSelected = usuarioDtoGestion.getInstitucion().getTipoInstitucion();
             institucionSelected = usuarioDtoGestion.getInstitucion();
+            if(usuarioDtoGestion.getUsuario().getEstado()==1){
+                estadoAI= Boolean.TRUE;
+            }else if(usuarioDtoGestion.getUsuario().getEstado()==0){
+                estadoAI= Boolean.FALSE;
+            }
 
             institucionList = institucionServicio.buscarInstitucionPorTipo(tipoInstitucionSelected.getTipoInstitucionId());
             perfilListActivos = getPerfilesPorTipoInstitucion(tipoInstitucionSelected.getTipoInstitucionId());
@@ -237,6 +246,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.FALSE;
         disableRestablecerContraseñaBtn = Boolean.TRUE;
         restablecerContraseña = Boolean.TRUE;
+        estadoAI= Boolean.TRUE;
 
         usuarioDtoGestion = new UsuarioDTO();
         usuarioDtoGestion.setUsuario(new Usuario());
@@ -267,7 +277,7 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         usuarioDtoGestion.setInstitucion(institucionSelected);
         usuarioDtoGestion.getUsuario().setFechaCreacion(new Date());
         usuarioDtoGestion.getUsuario().setNombre(usuarioDtoGestion.getUsuario().getNombre().toUpperCase());
-        usuarioDtoGestion.getUsuario().setEstado(EstadoEnum.ACTIVO.getEstado());
+        usuarioDtoGestion.getUsuario().setEstado(estadoAI?EstadoEnum.ACTIVO.getEstado():EstadoEnum.INACTIVO.getEstado());
 
         if (onCreate) {
             if (usuarioExistente == null) {
@@ -508,7 +518,6 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         } catch (URISyntaxException ex) {
             Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     //Getters & Setters
@@ -631,5 +640,17 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void setPerfilListActivos(List<Perfil> perfilListActivos) {
         this.perfilListActivos = perfilListActivos;
     }
+
+    public Boolean getEstadoAI() {
+        return estadoAI;
+    }
+
+    public void setEstadoAI(Boolean estadoAI) {
+        this.estadoAI = estadoAI;
+    }
+    
+    
+    
+    
 
 }

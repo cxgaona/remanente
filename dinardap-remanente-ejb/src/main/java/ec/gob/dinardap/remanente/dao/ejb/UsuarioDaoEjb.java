@@ -8,6 +8,8 @@ import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.modelo.UsuarioPerfil;
 import ec.gob.dinardap.util.constante.EstadoEnum;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -34,14 +36,38 @@ public class UsuarioDaoEjb extends RemanenteGenericDao<Usuario, Integer> impleme
         query.setParameter("estado", EstadoEnum.ACTIVO.getEstado());
 
         usuarioList = query.getResultList();
+
         for (Usuario u : usuarioList) {
+            List<AsignacionInstitucion> asignacionInstitucionList = new ArrayList<AsignacionInstitucion>();
             for (AsignacionInstitucion ai : u.getAsignacionInstitucions()) {
-                ai.getAsignacionInstitucionId();
+                if (ai.getEstado().equals(EstadoEnum.ACTIVO.getEstado())) {
+                    asignacionInstitucionList.add(ai);
+                }
             }
+            Collections.sort(asignacionInstitucionList, new Comparator<AsignacionInstitucion>() {
+                @Override
+                public int compare(AsignacionInstitucion ai1, AsignacionInstitucion ai2) {
+                    return new Integer(ai1.getAsignacionInstitucionId()).compareTo(new Integer(ai2.getAsignacionInstitucionId()));
+                }
+            });
+            u.setAsignacionInstitucions(asignacionInstitucionList);
+            
+            
+            List<UsuarioPerfil> usuarioPerfilList = new ArrayList<UsuarioPerfil>();
             for (UsuarioPerfil up : u.getUsuarioPerfilList()) {
-                up.getUsuarioPerfilId();
+                if (up.getEstado().equals(EstadoEnum.ACTIVO.getEstado())) {
+                    usuarioPerfilList.add(up);
+                }
             }
+            Collections.sort(usuarioPerfilList, new Comparator<UsuarioPerfil>() {
+                @Override
+                public int compare(UsuarioPerfil up1, UsuarioPerfil up2) {
+                    return new Integer(up1.getUsuarioPerfilId()).compareTo(new Integer(up2.getUsuarioPerfilId()));
+                }
+            });
+            u.setUsuarioPerfilList(usuarioPerfilList);
         }
+
         return usuarioList;
     }
 
@@ -54,19 +80,41 @@ public class UsuarioDaoEjb extends RemanenteGenericDao<Usuario, Integer> impleme
         usuarioList = query.getResultList();
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         for (Usuario u : usuarioList) {
+            List<AsignacionInstitucion> asignacionInstitucionList = new ArrayList<AsignacionInstitucion>();
             for (AsignacionInstitucion ai : u.getAsignacionInstitucions()) {
-                ai.getAsignacionInstitucionId();
+                if (ai.getEstado().equals(EstadoEnum.ACTIVO.getEstado())) {
+                    asignacionInstitucionList.add(ai);
+                }
             }
+            Collections.sort(asignacionInstitucionList, new Comparator<AsignacionInstitucion>() {
+                @Override
+                public int compare(AsignacionInstitucion ai1, AsignacionInstitucion ai2) {
+                    return new Integer(ai1.getAsignacionInstitucionId()).compareTo(new Integer(ai2.getAsignacionInstitucionId()));
+                }
+            });
+            u.setAsignacionInstitucions(asignacionInstitucionList);
+            
+            
+            List<UsuarioPerfil> usuarioPerfilList = new ArrayList<UsuarioPerfil>();
             for (UsuarioPerfil up : u.getUsuarioPerfilList()) {
-                up.getUsuarioPerfilId();
+                if (up.getEstado().equals(EstadoEnum.ACTIVO.getEstado())) {
+                    usuarioPerfilList.add(up);
+                }
             }
+            Collections.sort(usuarioPerfilList, new Comparator<UsuarioPerfil>() {
+                @Override
+                public int compare(UsuarioPerfil up1, UsuarioPerfil up2) {
+                    return new Integer(up1.getUsuarioPerfilId()).compareTo(new Integer(up2.getUsuarioPerfilId()));
+                }
+            });
+            u.setUsuarioPerfilList(usuarioPerfilList);
         }
         if (!usuarioList.isEmpty()) {
             Usuario u = new Usuario();
             u = usuarioList.get(usuarioList.size() - 1);
             usuarioDTO.setUsuario(u);
             usuarioDTO.setInstitucion(u.getAsignacionInstitucions().get(u.getAsignacionInstitucions().size() - 1).getInstitucion());
-            List<String> strPerfilList = new ArrayList<String>();
+            List<String> strPerfilList = new ArrayList<String>();            
             for (UsuarioPerfil up : u.getUsuarioPerfilList()) {
                 strPerfilList.add(up.getPerfil().getNombre());
             }
