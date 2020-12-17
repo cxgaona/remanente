@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.modelo.CatalogoTransaccion;
+import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.Tramite;
 import ec.gob.dinardap.remanente.modelo.Transaccion;
@@ -186,13 +187,13 @@ public class TramiteMercantilCtrl extends BaseCtrl implements Serializable {
 
     public void onRowSelectTramite() {
         strBtnGuardar = "Actualizar";
-
         onEdit = Boolean.TRUE;
         onCreate = Boolean.FALSE;
         disableDeleteTramite = Boolean.FALSE;
         renderEdition = Boolean.TRUE;
 
         tramiteSelected = tramiteSelectedList.get(0);
+
         obtenerRemanenteMensual();
     }
 
