@@ -10,13 +10,14 @@ import ec.gob.dinardap.remanente.modelo.FacturaPagada;
 @Local
 public interface FacturaPagadaServicio extends GenericService<FacturaPagada, Integer> {
 
-    public void crearFacturaPagada(FacturaPagada facturaPagada);
-    
-    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
-    
-    public void editFacturaPagada(FacturaPagada facturaPagada);
-    
-    public void borrarFacturaPagada(FacturaPagada facturaPagada);
-    
-    public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes, Integer tipo);
+    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual);
+
+    public List<FacturaPagada> getFacturaPagadaByTransaccion(Integer transaccionId);
+
+    public void crearFacturaPagadas(List<FacturaPagada> facturaPagadas);
+
+    public void borrarFacturasPagadas(List<FacturaPagada> facturasPagadas);
+
+    public void actualizarTransaccionValor(Integer remanenteMensualId);
+
 }

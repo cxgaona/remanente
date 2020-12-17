@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{tomoCtrl.tituloInventarioTomoMercantil}</h1>
+            <h:form id="formLibro">                            
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                    <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                    <p:inputText id="anio" value="#{tomoCtrl.año}" maxlength="4" >
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                    <p:commandButton action="#{tomoCtrl.reloadLibro}" update="formLibro, formTomo, formTomoSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panelGrid>
+                <b:panel title="Libros Mercantil">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="libroTbl"
+                                     value="#{tomoCtrl.libroListMercantil}" 
+                                     var="libro"                                     
+                                     rowKey="#{libro.libroId}"
+                                     selection="#{tomoCtrl.libroSelected}"
+                                     selectionMode="single"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25"
+                                     tableStyle="width:auto"
+                                     styleClass="tableDialogs">
+                            <p:ajax event="rowSelect" listener="#{tomoCtrl.onRowSelectLibro}" update="formLibro, formTomo, formTomoSelected"/>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" sortBy="#{libro.denominacion}" filterBy="#{libro.denominacion}" filterMatchMode="contains" width="50%">
+                                <h:outputText value="#{libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" sortBy="#{libro.inventarioAnual.anio}" width="10%" style="text-align: center">
+                                <h:outputText value="#{libro.inventarioAnual.anio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" sortBy="#{libro.fechaApertura}" width="15%" style="text-align: center">
+                                <h:outputText value="#{libro.fechaApertura}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" sortBy="#{libro.fechaCierre}" width="15%" style="text-align: center">
+                                <h:outputText value="#{libro.fechaCierre}" />
+                            </p:column>                            
+                        </p:dataTable>                          
+                    </h:panelGrid>
+                </b:panel>
+            </h:form>
+
+            <h:form id="formTomo">                            
+                <b:panel title="Tomos Mercantil">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="tomoTbl"
+                                     value="#{tomoCtrl.tomoList}" 
+                                     var="tomo"                                     
+                                     rowKey="#{tomo.tomoId}"
+                                     selection="#{tomoCtrl.tomoSelected}"
+                                     selectionMode="single"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:auto"
+                                     styleClass="tableDialogs">
+                            <p:ajax event="rowSelect" listener="#{tomoCtrl.onRowSelectTomo}" update="formTomoSelected, formTomo:btnBorrarTomo, formTomo:btnNuevoTomo"/>
+                            <p:column headerText="#{etiquetas['numeroTomo']}" sortBy="#{tomo.numero}" filterBy="#{tomo.numero}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" sortBy="#{tomo.numeroInscripcionInicio}" filterBy="#{tomo.numeroInscripcionInicio}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" sortBy="#{tomo.numeroInscripcionFin}" filterBy="#{tomo.numeroInscripcionFin}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['totalInscripcionesContenidasTomo']}" sortBy="#{tomo.totalInscripcionesContenidas}" filterBy="#{tomo.totalInscripcionesContenidas}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" sortBy="#{tomo.fojaInicio}" filterBy="#{tomo.fojaInicio}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" sortBy="#{tomo.fojaFin}" filterBy="#{tomo.fojaFin}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" sortBy="#{tomo.numeroTotalHojas}" filterBy="#{tomo.numeroTotalHojas}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" sortBy="#{tomo.numeroHojasOtroFormato}" filterBy="#{tomo.numeroHojasOtroFormato}" filterMatchMode="contains" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" sortBy="#{tomo.observaciones}" filterBy="#{tomo.observaciones}" filterMatchMode="contains" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>                          
+                    </h:panelGrid>
+
+                    <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
+                        <p:commandButton value="#{etiquetas['btnNuevoTomo']}"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{tomoCtrl.nuevoRegistroTomo}"
+                                         icon="fa fa-fw fa-plus-square"
+                                         id="btnNuevoTomo"
+                                         disabled="#{tomoCtrl.disableNuevoTomo}"
+                                         update="formTomoSelected, formTomo:btnBorrarTomo, formTomo:btnNuevoTomo"/>
+                        <p:commandButton value="#{etiquetas['btnBorrarTomo']}"
+                                         style="margin-right:20px; width: 100%"
+                                         action="#{tomoCtrl.borrarTomoSeleccionado}"
+                                         icon="fa fa-fw fa-trash"
+                                         id="btnBorrarTomo"
+                                         disabled="#{tomoCtrl.disableDeleteTomo}"
+                                         update="formTomoSelected, formTomo, formLibro">
+                            <p:confirm header="Confirmación" message="#{mensajes['confirmacionBorrarTomo']}" icon="fa fa-fw fa-warning" />
+                        </p:commandButton>                        
+                    </b:panelGrid>                    
+                </b:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                </p:confirmDialog>
+            </h:form>
+
+            <h:form id="formTomoSelected" >
+                <b:panel style="width: 50%" rendered="#{tomoCtrl.renderEdition}">                    
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="numeroTomo" value="#{etiquetas['numeroTomo']}:" style="width: 40%"/>
+                        <p:inputText id="numeroTomo" value="#{tomoCtrl.tomoSelected.numero}" maxlength="15" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="numeroInscripcionInicioTomo" value="#{etiquetas['numeroInscripcionInicioTomo']}:"/>
+                        <p:inputText id="numeroInscripcionInicioTomo" value="#{tomoCtrl.tomoSelected.numeroInscripcionInicio}" maxlength="20" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="numeroInscripcionFinTomo" value="#{etiquetas['numeroInscripcionFinTomo']}:"/>
+                        <p:inputText id="numeroInscripcionFinTomo" value="#{tomoCtrl.tomoSelected.numeroInscripcionFin}" maxlength="20" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="totalInscripcionesContenidasTomo" value="#{etiquetas['totalInscripcionesContenidasTomo']}:"/>
+                        <p:inputText id="totalInscripcionesContenidasTomo" value="#{tomoCtrl.tomoSelected.totalInscripcionesContenidas}" maxlength="20" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="fojaInicioTomo" value="#{etiquetas['fojaInicioTomo']}:"/>
+                        <p:inputText id="fojaInicioTomo" value="#{tomoCtrl.tomoSelected.fojaInicio}" maxlength="20" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="fojaFinTomo" value="#{etiquetas['fojaFinTomo']}:"/>
+                        <p:inputText id="fojaFinTomo" value="#{tomoCtrl.tomoSelected.fojaFin}" maxlength="20" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="numeroTotalHojasTomo" value="#{etiquetas['numeroTotalHojasTomo']}:"/>
+                        <p:inputText id="numeroTotalHojasTomo" value="#{tomoCtrl.tomoSelected.numeroTotalHojas}" maxlength="20" style="width: 50%" required="true" >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="numeroHojasOtroFormatoTomo" value="#{etiquetas['numeroHojasOtroFormatoTomo']}:"/>
+                        <p:inputText id="numeroHojasOtroFormatoTomo" value="#{tomoCtrl.tomoSelected.numeroHojasOtroFormato}" maxlength="20" style="width: 50%"  >
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>                        
+                        <p:outputLabel for="observacionesTomo" value="#{etiquetas['observacionesTomo']}:" />
+                        <p:inputTextarea id="observacionesTomo" value="#{tomoCtrl.tomoSelected.observaciones}" rows="3" cols="50" counter="display" maxlength="1500" counterTemplate="{0} caracteres restantes." autoResize="false" />
+                        <br />
+                        <h:outputText id="display" />
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton value="#{tomoCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{tomoCtrl.guardarTomo}" update=":formTomoSelected, :formTomo, :formLibro" disabled="#{tomoCtrl.disableActualizarTomo}"/>
+                        <p:commandButton value="#{etiquetas['btnCancelar']}" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" process="@this" action="#{tomoCtrl.cancelarTomo}" update=":formTomoSelected, :formTomo, :formLibro"/>
+                    </b:panelGrid>
+                </b:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

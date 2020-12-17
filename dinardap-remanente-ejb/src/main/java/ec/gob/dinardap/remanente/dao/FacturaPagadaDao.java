@@ -9,5 +9,5 @@ import java.util.List;
 @Local
 public interface FacturaPagadaDao extends GenericDao<FacturaPagada, Integer> {
 
-    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
+    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual);
 }

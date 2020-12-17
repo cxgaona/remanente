@@ -107,7 +107,7 @@
         <dependency>
             <groupId>ec.gob.dinardap.sftp</groupId>
             <artifactId>dinardap-sftp</artifactId>
-            <version>1.0-SNAPSHOT</version>            
+            <version>1.1-SNAPSHOT</version>            
         </dependency>
 
         <!-- EJB's -->
@@ -116,14 +116,15 @@
         en el repositorio maven -->
         <dependency> 
             <groupId>ec.gob.dinardap.seguridad</groupId> 
-            <artifactId>dinardap-seguridad-ejb</artifactId> 
+            <artifactId>dinardap-seguridad-ejb</artifactId>
+            <version>2.0-SNAPSHOT</version>
             <type>ejb</type> 
             <scope>provided</scope> 
         </dependency> 
         <dependency> 
             <groupId>ec.gob.dinardap.autorizacion</groupId> 
             <artifactId>dinardap-autorizacion</artifactId> 
-            <version>1.0.1-SNAPSHOT</version> 
+            <version>2.1-SNAPSHOT</version> 
         </dependency>
         <dependency>
             <groupId>ec.gob.dinardap.remanente</groupId>
@@ -134,6 +135,11 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>1.6.2</version>
+        </dependency>       
+        <dependency>
+            <groupId>ec.gob.dinardap.correo</groupId>
+            <artifactId>dinardap-correo</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>       
     </dependencies>
 

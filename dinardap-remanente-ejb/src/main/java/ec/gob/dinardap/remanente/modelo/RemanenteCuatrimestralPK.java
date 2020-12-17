@@ -61,39 +61,6 @@ public class RemanenteCuatrimestralPK implements Serializable {
 
     public void setInstitucionId(int institucionId) {
         this.institucionId = institucionId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (int) remanenteCuatrimestralId;
-        hash += (int) remanenteAnualId;
-        hash += (int) institucionId;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof RemanenteCuatrimestralPK)) {
-            return false;
-        }
-        RemanenteCuatrimestralPK other = (RemanenteCuatrimestralPK) object;
-        if (this.remanenteCuatrimestralId != other.remanenteCuatrimestralId) {
-            return false;
-        }
-        if (this.remanenteAnualId != other.remanenteAnualId) {
-            return false;
-        }
-        if (this.institucionId != other.institucionId) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK[ remanenteCuatrimestralId=" + remanenteCuatrimestralId + ", remanenteAnualId=" + remanenteAnualId + ", institucionId=" + institucionId + " ]";
-    }
+    }    
     
 }

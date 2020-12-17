@@ -1,9 +1,15 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
+import ec.gob.dinardap.remanente.constante.PerfilEnum;
+import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
+import ec.gob.dinardap.seguridad.dao.InstitucionDao;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -24,8 +30,9 @@ public class BaseCtrl implements Serializable {
     private static final long serialVersionUID = 1L;
     public static final Locale DEFAULT_LOCALE = new Locale("es", "EC");
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
-
+    private InstitucionServicio institucionServicio;
+    @EJB
+    private InstitucionDao institucionDao;
     /**
      * Returns Jsf actual instance
      *
@@ -180,14 +187,19 @@ public class BaseCtrl implements Serializable {
 
     protected Integer getInstitucionID(String perfil) {
         Integer institucionID = 0;
-        if (perfil.contains("REM-Registrador")) {
+        if (perfil.contains(PerfilEnum.REGISTRADOR.getPerfilId().toString())) {
             institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
-        } else if (perfil.contains("REM-Verificador")) {
+        } else if (perfil.contains(PerfilEnum.VERIFICADOR.getPerfilId().toString())) {
             institucionID = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
-            if (getSessionVariable("institucionTipo").equals("GAD")) {
-                institucionID = institucionRequeridaServicio.getRegistroMixtoByGad(Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"))).getInstitucionId();
+            if (getSessionVariable("institucionTipo").equals(TipoInstitucionEnum.GAD.getTipoInstitucion().toString())) {
+                List<Institucion> institucionList = new ArrayList<Institucion>();
+                List<Integer> institucionIdList = new ArrayList<Integer>();
+                institucionIdList.add(institucionID);
+                institucionList=institucionDao.obtenerHijosPorInstitucion(institucionIdList, TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion());
+                if(!institucionList.isEmpty()){
+                    institucionID=institucionList.get(institucionList.size()-1).getInstitucionId();
+                }
             }
-        } else if (perfil.contains("REM-Administrador")) {
         }
         return institucionID;
     }

@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -25,15 +26,15 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "catalogo_transaccion")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "CatalogoTransaccion.findAll", query = "SELECT c FROM CatalogoTransaccion c")
-    , @NamedQuery(name = "CatalogoTransaccion.findByCatalogoTransaccionId", query = "SELECT c FROM CatalogoTransaccion c WHERE c.catalogoTransaccionId = :catalogoTransaccionId")
-    , @NamedQuery(name = "CatalogoTransaccion.findByTipo", query = "SELECT c FROM CatalogoTransaccion c WHERE c.tipo = :tipo")
-    , @NamedQuery(name = "CatalogoTransaccion.findByNombre", query = "SELECT c FROM CatalogoTransaccion c WHERE c.nombre = :nombre")})
+    @NamedQuery(name = "CatalogoTransaccion.findAll", query = "SELECT c FROM CatalogoTransaccion c"),
+    @NamedQuery(name = "CatalogoTransaccion.findByCatalogoTransaccionId", query = "SELECT c FROM CatalogoTransaccion c WHERE c.catalogoTransaccionId = :catalogoTransaccionId"),
+    @NamedQuery(name = "CatalogoTransaccion.findByTipo", query = "SELECT c FROM CatalogoTransaccion c WHERE c.tipo = :tipo"),
+    @NamedQuery(name = "CatalogoTransaccion.findByNombre", query = "SELECT c FROM CatalogoTransaccion c WHERE c.nombre = :nombre")})
 public class CatalogoTransaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
     
     @Id
     @SequenceGenerator(name = "CATALOGO_TRANSACCION_GENERATOR", sequenceName = "catalogo_transaccion_catalogo_transaccion_id_seq", allocationSize = 1)
@@ -44,10 +45,12 @@ public class CatalogoTransaccion implements Serializable {
     @Size(max = 20)
     @Column(name = "tipo")
     private String tipo;
+    
     @Size(max = 100)
     @Column(name = "nombre")
     private String nombre;
-    @OneToMany(mappedBy = "catalogoTransaccionId")
+    
+    @OneToMany(mappedBy = "catalogoTransaccion")
     private List<Transaccion> transaccionList;
 
     public CatalogoTransaccion() {
@@ -89,29 +92,5 @@ public class CatalogoTransaccion implements Serializable {
         this.transaccionList = transaccionList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (catalogoTransaccionId != null ? catalogoTransaccionId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CatalogoTransaccion)) {
-            return false;
-        }
-        CatalogoTransaccion other = (CatalogoTransaccion) object;
-        if ((this.catalogoTransaccionId == null && other.catalogoTransaccionId != null) || (this.catalogoTransaccionId != null && !this.catalogoTransaccionId.equals(other.catalogoTransaccionId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.CatalogoTransaccion[ catalogoTransaccionId=" + catalogoTransaccionId + " ]";
-    }
-    
+        
 }

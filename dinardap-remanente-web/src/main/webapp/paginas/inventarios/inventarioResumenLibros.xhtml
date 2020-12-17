@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{resumenLibrosCtrl.tituloInventarioLibro}</h1>
+            <p:dialog id="estadoInventarioAnualDlg"
+                      header="Estados de Inventario" 
+                      modal="true"
+                      widgetVar="estadoInventarioAnualDlg"                      
+                      width="60%"
+                      position="top"
+                      height="400"
+                      blockScroll="true"
+                      resizable="false">
+                <h:form id="formEstadoInventarioAnualDlg">
+                    <p:dataTable id="estadoInventarioAnualTbl"
+                                 value="#{resumenLibrosCtrl.inventarioAnual.estadoInventarioAnualList}" 
+                                 var="estadoInventarioAnual"
+                                 rowKey="#{estadoInventarioAnual.estadoInventarioAnualId}"
+                                 reflow="true" rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15"
+                                 sortBy="#{estadoInventarioAnual.estadoInventarioAnualId}"
+                                 sortOrder="descending">
+                        <f:facet name="header">
+                            #{etiquetas['año']}: #{resumenLibrosCtrl.año}
+                        </f:facet>
+<!--                        <p:column headerText="Usuario" sortBy="#{estadoInventarioAnual.usuario.nombre}" filterBy="#{estadoInventarioAnual.usuario.nombre}" filterMatchMode="contains">
+                            <h:outputText value="#{estadoInventarioAnual.usuario.nombre}" />
+                        </p:column>-->
+                        <p:column headerText="Fecha" sortBy="#{estadoInventarioAnual.fechaRegistro}" filterBy="#{estadoInventarioAnual.fechaRegistro}" filterMatchMode="contains" style="text-align: center">
+                            <h:outputText value="#{estadoInventarioAnual.fechaRegistro}">
+                                <f:convertDateTime pattern="yyyy/MM/dd HH:mm:ss"  />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Estado" sortBy="#{estadoInventarioAnual.estado}" filterBy="#{estadoInventarioAnual.estado}" filterMatchMode="contains" style="text-align: center">
+                            <h:outputText value="#{estadoInventarioAnual.estado eq 1? 'Generado':
+                                                   estadoInventarioAnual.estado eq 2? 'Completo':                                   
+                                                   estadoInventarioAnual.estado eq 3? 'Rechazado':
+                                                   estadoInventarioAnual.estado eq 4? 'Aprobado':'Sin Estado'}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+            <h:form id="formResumen">                            
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                    <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                    <p:inputText id="anio" value="#{resumenLibrosCtrl.año}" maxlength="4" >
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                    <p:commandButton action="#{resumenLibrosCtrl.reloadLibro}" update="formResumen" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panelGrid>
+                <b:panelGrid colSpans="3,6,3" style="width: 30%; margin: 4px 5px;">   
+                    <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
+                    <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="30" size="25" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
+                    <p:commandButton action="#{resumenLibrosCtrl.actualizarRegistrador}" update="formResumen" style="margin-right:20px;" value="#{etiquetas['btnActualizar']}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>
+                </b:panelGrid>                
+                <b:panel title="Resumen Libros Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="resumenTblPropiedad"
+                                     value="#{resumenLibrosCtrl.resumeLibroDTOListPropiedad}" 
+                                     var="resumenLibro"                                     
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenGenerarLibrosPropiedad']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['nombreRegistrador']}" width="60%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.nombreRegistrador}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalLibros}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalPaginasLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalPaginasLibros}" />
+                            </p:column>
+                        </p:dataTable> 
+                        <br /><br />
+                        <p:dataTable id="tomoTblPropiedad"
+                                     value="#{resumenLibrosCtrl.tomoListPropiedad}" 
+                                     var="tomo"
+                                     expandableRowGroups="true"
+                                     sortBy="${tomo.libro.libroId}"
+                                     sortOrder="ascending"
+                                     rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenEspecificoLibrosPropiedad']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" width="20%">
+                                <h:outputText value="#{tomo.libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.inventarioAnual.anio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['totalInscripcionesContenidasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                   
+                </b:panel>
+
+                <b:panel title="Resumen Libros Mercantil" rendered="#{resumenLibrosCtrl.renderMercantil}">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="resumenTblMercantil"
+                                     value="#{resumenLibrosCtrl.resumeLibroDTOListMercantil}" 
+                                     var="resumenLibro"                                     
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenGenerarLibrosMercantil']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['nombreRegistrador']}" width="60%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.nombreRegistrador}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalLibros}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalPaginasLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalPaginasLibros}" />
+                            </p:column>
+                        </p:dataTable> 
+                        <br /><br />
+                        <p:dataTable id="tomoTblMercantil"
+                                     value="#{resumenLibrosCtrl.tomoListMercantil}" 
+                                     var="tomo"
+                                     expandableRowGroups="true"
+                                     sortBy="${tomo.libro.libroId}"
+                                     sortOrder="ascending"
+                                     rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenEspecificoLibrosMercantil']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" width="20%">
+                                <h:outputText value="#{tomo.libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.inventarioAnual.anio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['totalInscripcionesContenidasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                   
+                </b:panel>
+
+                <b:panel title="Resumen Libros Repertorio Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="resumenTblRepertorioPropiedad"
+                                     value="#{resumenLibrosCtrl.resumeLibroDTOListRepertorioPropiedad}" 
+                                     var="resumenLibro"                                     
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenGenerarLibrosRepertorioPropiedad']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['nombreRegistrador']}" width="60%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.nombreRegistrador}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalLibros}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalPaginasLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalPaginasLibros}" />
+                            </p:column>
+                        </p:dataTable> 
+                        <br /><br />
+                        <p:dataTable id="tomoTblRepertorioPropiedad"
+                                     value="#{resumenLibrosCtrl.tomoListRepertorioPropiedad}" 
+                                     var="tomo"
+                                     expandableRowGroups="true"
+                                     sortBy="${tomo.libro.libroId}"
+                                     sortOrder="ascending"
+                                     rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenEspecificoLibrosRepertorioPropiedad']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" width="20%">
+                                <h:outputText value="#{tomo.libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.inventarioAnual.anio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['totalAnotacionesContenidasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            -->
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                   
+                </b:panel>
+
+                <b:panel title="Resumen Libros Repertorio Mercantil" rendered="#{resumenLibrosCtrl.renderMercantil}">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="resumenTblRepertorioMercantil"
+                                     value="#{resumenLibrosCtrl.resumeLibroDTOListRepertorioMercantil}" 
+                                     var="resumenLibro"                                     
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenGenerarLibrosRepertorioMercantil']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['nombreRegistrador']}" width="60%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.nombreRegistrador}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalLibros}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalPaginasLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalPaginasLibros}" />
+                            </p:column>
+                        </p:dataTable> 
+                        <br /><br />
+                        <p:dataTable id="tomoTblRepertorioMercantil"
+                                     value="#{resumenLibrosCtrl.tomoListRepertorioMercantil}" 
+                                     var="tomo"
+                                     expandableRowGroups="true"
+                                     sortBy="${tomo.libro.libroId}"
+                                     sortOrder="ascending"
+                                     rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenEspecificoLibrosRepertorioMercantil']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" width="20%">
+                                <h:outputText value="#{tomo.libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.inventarioAnual.anio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['totalAnotacionesContenidasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            -->
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                   
+                </b:panel>
+
+                <b:panel title="Resumen Libros Índice General Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="resumenTblIndiceGeneralPropiedad"
+                                     value="#{resumenLibrosCtrl.resumeLibroDTOListIndiceGeneralPropiedad}" 
+                                     var="resumenLibro"                                     
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenGenerarLibrosIndiceGeneralPropiedad']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['nombreRegistrador']}" width="60%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.nombreRegistrador}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalLibros}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalPaginasLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalPaginasLibros}" />
+                            </p:column>
+                        </p:dataTable> 
+                        <br /><br />
+                        <p:dataTable id="tomoTblIndiceGeneralPropiedad"
+                                     value="#{resumenLibrosCtrl.tomoListIndiceGeneralPropiedad}" 
+                                     var="tomo"
+                                     expandableRowGroups="true"
+                                     sortBy="${tomo.libro.libroId}"
+                                     sortOrder="ascending"
+                                     rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenEspecificoLibrosIndiceGeneralPropiedad']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" width="20%">
+                                <h:outputText value="#{tomo.libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.inventarioAnual.anio}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['numeroTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['totalAnotacionesContenidasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            -->
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                   
+                </b:panel>
+
+                <b:panel title="Resumen Libros Índice General Mercantil" rendered="#{resumenLibrosCtrl.renderMercantil}">                    
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="resumenTblIndiceGeneralMercantil"
+                                     value="#{resumenLibrosCtrl.resumeLibroDTOListIndiceGeneralMercantil}" 
+                                     var="resumenLibro"                                     
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenGenerarLibrosIndiceGeneralMercantil']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['nombreRegistrador']}" width="60%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.nombreRegistrador}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalLibros}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalPaginasLibros']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{resumenLibro.totalPaginasLibros}" />
+                            </p:column>
+                        </p:dataTable> 
+                        <br /><br />
+                        <p:dataTable id="tomoTblIndiceGeneralMercantil"
+                                     value="#{resumenLibrosCtrl.tomoListIndiceGeneralMercantil}" 
+                                     var="tomo"
+                                     expandableRowGroups="true"
+                                     sortBy="${tomo.libro.libroId}"
+                                     sortOrder="ascending"
+                                     rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     tableStyle="width:100%">
+                            <f:facet name="header">
+                                #{etiquetas['resumenEspecificoLibrosIndiceGeneralMercantil']}
+                            </f:facet>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" width="20%">
+                                <h:outputText value="#{tomo.libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.inventarioAnual.anio}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" width="15%" style="text-align: center">
+                                <h:outputText value="#{tomo.libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['numeroTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numero}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroInscripcionInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroInscripcionFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroInscripcionFin}" />
+                            </p:column>-->
+                            <p:column headerText="#{etiquetas['totalAnotacionesContenidasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.totalInscripcionesContenidas}" />
+                            </p:column>                            
+                            <p:column headerText="#{etiquetas['fojaInicioTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaInicio}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fojaFinTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.fojaFin}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['numeroTotalHojasTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroTotalHojas}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['numeroHojasOtroFormatoTomo']}" width="10%" style="text-align: center">
+                                <h:outputText value="#{tomo.numeroHojasOtroFormato}" />
+                            </p:column>                            -->
+                            <p:column headerText="#{etiquetas['observacionesTomo']}" width="20%" style="text-align: center">
+                                <h:outputText value="#{tomo.observaciones}" />
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                   
+                </b:panel>                
+                <b:panelGrid colSpans="12" style="width: 50%; margin-bottom: 10px;">   
+                    <p:commandButton value="#{etiquetas['btnVerEstados']}"
+                                     style="padding-bottom:5px;"
+                                     update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
+                                     onclick="PF('estadoInventarioAnualDlg').show();">
+                        <f:setPropertyActionListener value="#{resumenLibrosCtrl.inventarioAnual}" target="#{resumenLibrosCtrl.inventarioAnual}" />
+                    </p:commandButton>
+                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " />
+                    <p:fileUpload                                
+                        id="archivoRespaldo"
+                        messageTemplate="Tipo de Archivo no Válido"
+                        style="width:75%"
+                        mode="advanced"
+                        dragDropSupport="true"
+                        sizeLimit="9000000"
+                        allowTypes="/(\.|\/)(pdf)$/"
+                        label=""
+                        uploadLabel=""
+                        cancelLabel=""
+                        disabled="#{resumenLibrosCtrl.disableEditRegistrador}"
+                        oncomplete="onCellEdit();"
+                        fileUploadListener="#{resumenLibrosCtrl.uploadSolicitud}"
+                        update="formResumen:archivoRespaldo, msgMensajes"
+                        />
+                    <p:commandButton id="downloadArchivo"                                         
+                                         value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
+                                         ajax="false"
+                                         process="@this"
+                                         action="#{resumenLibrosCtrl.visualizarArchivoRespaldo}"
+                                         disabled="#{resumenLibrosCtrl.disableBtnDescargarArchivo}"
+                                         icon="fa fa-fw fa-download"/>
+                    <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" />
+                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/>              
+                    <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"
+                                     action="#{resumenLibrosCtrl.solicitarRevisionInventario}"
+                                     icon="fa fa-fw fa-share"
+                                     id="btnSolicitarRevision"
+                                     disabled="#{resumenLibrosCtrl.disableSolicitarRevision}"
+                                     update="formResumen">
+                        <p:confirm header="Confirmación" message="#{mensajes['confirmacionRevisionInventario']}" icon="fa fa-fw fa-warning" />
+                    </p:commandButton>                        
+                </b:panelGrid>              
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                </p:confirmDialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

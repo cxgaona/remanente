@@ -49,7 +49,7 @@ public class BandejaDaoEjb extends RemanenteGenericDao<Bandeja, Integer> impleme
             Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Query query = em.createQuery("SELECT b FROM Bandeja b WHERE b.usuarioAsignadoId.usuarioId=:usuarioId "
+        Query query = em.createQuery("SELECT b FROM Bandeja b WHERE b.usuarioAsignado.usuarioId=:usuarioId "
                 + "AND b.fechaRegistro BETWEEN '" + strfechaDesde + "' AND '" + sdf.format(fechaHasta) + "' ORDER BY b.fechaRegistro desc");
         query.setParameter("usuarioId", usuarioId);
         List<Bandeja> b = new ArrayList<Bandeja>();

@@ -17,11 +17,11 @@ public class TramiteDaoEjb extends RemanenteGenericDao<Tramite, Integer> impleme
 
     @Override
     public List<Tramite> getTramiteByInstitucionFechaActividad(Integer idInstitucion, Integer anio, Integer mes, String actividad, Integer idRemanenteMensual) {
-        Query query = em.createQuery("SELECT t FROM Tramite t WHERE t.transaccionId.remanenteMensualId.remanenteMensualId=:idRemanenteMensual AND "
-                + "t.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
-                + "t.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
-                + "t.transaccionId.remanenteMensualId.mes=:mes AND "
-                + "t.actividadRegistral=:actividad");        
+        Query query = em.createQuery("SELECT t FROM Tramite t WHERE t.transaccion.remanenteMensual.remanenteMensualId=:idRemanenteMensual AND "
+                + "t.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucion.institucionId=:idInstitucion AND "
+                + "t.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
+                + "t.transaccion.remanenteMensual.mes=:mes AND "
+                + "t.actividadRegistral=:actividad");
         query.setParameter("idRemanenteMensual", idRemanenteMensual);
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);

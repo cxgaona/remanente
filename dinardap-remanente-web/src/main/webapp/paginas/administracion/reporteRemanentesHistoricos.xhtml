@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminRemanenteHistoricoCtrl.tituloPagina}</h1>
+            <h:form id="formRemanentes">
+                <b:panel title="Remanentes 2014 - 2019">
+                    <h:panelGrid columns="1" style="width: 100%;">   
+                        <h:commandLink>
+                            <p:graphicImage value="/resource/images/excel.png" alt="Exportar a Excel" width="30"/>
+                            <h:outputText value="Exportar a Excel"/>
+                            <pe:exporter type="xlsx" target="remanenteTbl" fileName="reporteHistoricoRemanentes" />
+                        </h:commandLink>
+                        <p:dataTable id="remanenteTbl"
+                                     value="#{adminRemanenteHistoricoCtrl.remanenteHistoricoList}" 
+                                     var="remanente"
+                                     rowKey="#{remanente.remanenteHistoricoId}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     filteredValue="#{adminRemanenteHistoricoCtrl.remanenteHistoricoListFiltrada}"
+                                     tableStyle="font-size: 9pt">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column rowspan="2" headerText="Registro Mixto" 
+                                              sortBy="#{remanente.institucion.nombre}" 
+                                              filterBy="#{remanente.institucion.nombre}" filterMatchMode="contains"
+                                              width="15%"/>
+                                    <p:column rowspan="2" headerText="Provincia - Cantón"
+                                              sortBy="#{remanente.institucion.canton.provincia.nombre} - #{remanente.institucion.canton.nombre}" 
+                                              filterBy="#{remanente.institucion.canton.provincia.nombre} - #{remanente.institucion.canton.nombre}" filterMatchMode="contains"/>
+                                    <p:column rowspan="2" headerText="Dirección Regional"
+                                              sortBy="#{remanente.institucion.tipoInstitucion.tipoInstitucionId eq 4 ?remanente.institucion.institucion.nombre:remanente.institucion.institucion.institucion.nombre}" 
+                                              filterBy="#{remanente.institucion.tipoInstitucion.tipoInstitucionId eq 4 ?remanente.institucion.institucion.nombre:remanente.institucion.institucion.institucion.nombre}" filterMatchMode="contains"/>
+                                    <p:column rowspan="2" headerText="Año"
+                                              sortBy="#{remanente.anio}"
+                                              filterBy="#{remanente.anio}" filterMatchMode="contains"
+                                              width="4.5%"/>
+                                    <p:column rowspan="2" headerText="Cuatrimestre"
+                                              sortBy="#{remanente.cuatrimestre}"
+                                              filterBy="#{remanente.cuatrimestre eq 1 ?'Enero-Abril':
+                                                          remanente.cuatrimestre eq 2 ?'Mayo-Agosto':
+                                                          remanente.cuatrimestre eq 3 ?'Septiembre-Diciembre':'N/A' }" filterMatchMode="contains"/>
+                                    <p:column rowspan="2" headerText="Valor"
+                                              sortBy="#{remanente.valor}"
+                                              filterBy="#{remanente.valor}" filterMatchMode="contains"
+                                              width="4.5%"/>
+                                    <p:column colspan="2" headerText="GAD/Registro Mixto" />
+                                    <p:column colspan="2" headerText="Dirección Regional" />
+                                    <p:column colspan="2" headerText="CGRS" />
+                                    <p:column colspan="2" headerText="Dirección Financiera" />
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="Oficio" 
+                                              sortBy="#{remanente.oficioGadRegistro}"
+                                              filterBy="#{remanente.oficioGadRegistro}" filterMatchMode="contains"/>
+                                    <p:column headerText="Fecha"
+                                              sortBy="#{remanente.oficioGadRegistro eq 'N/A' ?'N/A':remanente.fechaOficioGadRegistro}" 
+                                              filterBy="#{remanente.oficioGadRegistro eq 'N/A' ?'N/A':remanente.fechaOficioGadRegistro}" filterMatchMode="contains"/>
+                                    <p:column headerText="Memorando"
+                                              sortBy="#{remanente.memorandoRegional}"
+                                              filterBy="#{remanente.memorandoRegional}" filterMatchMode="contains"/>
+                                    <p:column headerText="Fecha" 
+                                              sortBy="#{remanente.memorandoRegional eq 'N/A' ?'N/A':remanente.fechaMemorandoRegional}" 
+                                              filterBy="#{remanente.memorandoRegional eq 'N/A' ?'N/A':remanente.fechaMemorandoRegional}" filterMatchMode="contains"/>
+                                    <p:column headerText="Memorando" 
+                                              sortBy="#{remanente.memorandoCgrs}"
+                                              filterBy="#{remanente.memorandoCgrs}" filterMatchMode="contains"/>
+                                    <p:column headerText="Fecha" 
+                                              sortBy="#{remanente.memorandoCgrs eq 'N/A' ?'N/A':remanente.fechaMemorandoCgrs}" 
+                                              filterBy="#{remanente.memorandoCgrs eq 'N/A' ?'N/A':remanente.fechaMemorandoCgrs}" filterMatchMode="contains"/>
+                                    <p:column headerText="Memorando"
+                                              sortBy="#{remanente.memorandoFinanciero}"
+                                              filterBy="#{remanente.memorandoFinanciero}" filterMatchMode="contains"/>
+                                    <p:column headerText="Fecha" 
+                                              sortBy="#{remanente.memorandoFinanciero eq 'N/A' ?'N/A':remanente.fechaMemorandoFinanciero}" 
+                                              filterBy="#{remanente.memorandoFinanciero eq 'N/A' ?'N/A':remanente.fechaMemorandoFinanciero}" filterMatchMode="contains"/>
+                                </p:row>                                
+                            </p:columnGroup>
+                            <p:column>
+                                <h:outputText value="#{remanente.institucion.nombre}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{remanente.institucion.canton.provincia.nombre} - #{remanente.institucion.canton.nombre}" />
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="#{remanente.institucion.tipoInstitucion.tipoInstitucionId eq 4 ?remanente.institucion.institucion.nombre:remanente.institucion.institucion.institucion.nombre}" />
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="#{remanente.anio}"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="#{remanente.cuatrimestre eq 1 ?'Enero-Abril':
+                                                       remanente.cuatrimestre eq 2 ?'Mayo-Agosto':
+                                                       remanente.cuatrimestre eq 3 ?'Septiembre-Diciembre':'N/A' }"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="#{remanente.valor}"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{remanente.oficioGadRegistro}"/>
+                            </p:column> 
+                            <p:column>
+                                <h:outputText value="#{remanente.oficioGadRegistro eq 'N/A' ?'N/A':remanente.fechaOficioGadRegistro}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{remanente.memorandoRegional}"/>
+                            </p:column> 
+                            <p:column>
+                                <h:outputText value="#{remanente.memorandoRegional eq 'N/A' ?'N/A':remanente.fechaMemorandoRegional}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{remanente.memorandoCgrs}"/>
+                            </p:column> 
+                            <p:column>
+                                <h:outputText value="#{remanente.memorandoCgrs eq 'N/A' ?'N/A':remanente.fechaMemorandoCgrs}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{remanente.memorandoFinanciero}"/>
+                            </p:column> 
+                            <p:column>
+                                <h:outputText value="#{remanente.memorandoFinanciero eq 'N/A' ?'N/A':remanente.fechaMemorandoFinanciero}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -16,23 +16,18 @@ public class FacturaPagadaDaoEjb extends RemanenteGenericDao<FacturaPagada, Inte
     }
 
     @Override
-    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes) {
+    public List<FacturaPagada> getFacturaPagadaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual) {
         Query query = em.createQuery("SELECT fp FROM FacturaPagada fp WHERE "
-                + "fp.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId=:idInstitucion AND "
-                + "fp.transaccionId.remanenteMensualId.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
-                + "fp.transaccionId.remanenteMensualId.mes=:mes");
+                + "fp.transaccion.remanenteMensual.remanenteMensualId=:idRemanenteMensual AND "
+                + "fp.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.institucion.institucionId=:idInstitucion AND "
+                + "fp.transaccion.remanenteMensual.remanenteCuatrimestral.remanenteAnual.anio=:anio AND "
+                + "fp.transaccion.remanenteMensual.mes=:mes");
+        query.setParameter("idRemanenteMensual", idRemanenteMensual);
         query.setParameter("idInstitucion", idInstitucion);
         query.setParameter("anio", anio);
         query.setParameter("mes", mes);
         List<FacturaPagada> facturaPagadaList = new ArrayList<FacturaPagada>();
         facturaPagadaList = query.getResultList();
-        List<FacturaPagada> facturaPagadaListActiva = new ArrayList<FacturaPagada>();
-        for (FacturaPagada facturaPagada : facturaPagadaList) {
-            if (!facturaPagada.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().get(facturaPagada.getTransaccionId().getRemanenteMensualId().getEstadoRemanenteMensualList().size() - 1).getDescripcion().equals("CambioAprobado")) {
-                facturaPagadaListActiva.add(facturaPagada);
-            }
-        }
-        return facturaPagadaListActiva;
+        return facturaPagadaList;
     }
-
 }

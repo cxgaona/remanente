@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{libroCtrl.tituloInventarioLibroIndiceGeneralMercantil}</h1>
+            <h:form id="formLibro">                            
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                    <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                    <p:inputText id="anio" value="#{libroCtrl.año}" maxlength="4" >
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                    <p:commandButton action="#{libroCtrl.reloadLibro}" update="formLibro, formLibroSelected" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panelGrid>
+                <b:panel title="Libros Índice General Mercantil">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="libroTbl"
+                                     value="#{libroCtrl.libroListIndiceGeneralMercantil}" 
+                                     var="libro"                                     
+                                     rowKey="#{libro.libroId}"
+                                     selection="#{libroCtrl.libroSelected}"
+                                     selectionMode="single"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,25"
+                                     styleClass="tableDialogs">
+                            <p:ajax event="rowSelect" listener="#{libroCtrl.onRowSelectLibro}" update="formLibroSelected, formLibro:btnBorrarLibro, formLibro:btnNuevoLibro"/>
+                            <p:column headerText="#{etiquetas['denominacionLibro']}" sortBy="#{libro.denominacion}" filterBy="#{libro.denominacion}" filterMatchMode="contains" width="75%">
+                                <h:outputText value="#{libro.denominacion}" />
+                            </p:column>
+                            <p:column headerText="#{etiquetas['año']}" sortBy="#{libro.inventarioAnual.anio}" width="25%" style="text-align: center">
+                                <h:outputText value="#{libro.inventarioAnual.anio}" />
+                            </p:column>
+<!--                            <p:column headerText="#{etiquetas['fechaAperturaLibro']}" sortBy="#{libro.fechaApertura}" width="15%" style="text-align: center">
+                                <h:outputText value="#{libro.fechaApertura}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{etiquetas['fechaCierreLibro']}" sortBy="#{libro.fechaCierre}" width="15%" style="text-align: center">
+                                <h:outputText value="#{libro.fechaCierre}" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>                            -->
+                        </p:dataTable>                          
+                    </h:panelGrid>
+
+                    <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
+                        <p:commandButton value="#{etiquetas['btnNuevoLibro']}"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{libroCtrl.nuevoRegistroLibro}"
+                                         icon="fa fa-fw fa-plus-square"
+                                         id="btnNuevoLibro"
+                                         disabled="#{libroCtrl.disableNuevoLibro}"
+                                         update="formLibroSelected, formLibro:btnBorrarLibro, formLibro:btnNuevoLibro"/>
+                        <p:commandButton value="#{etiquetas['btnBorrarLibro']}"
+                                         style="margin-right:20px; width: 100%"
+                                         action="#{libroCtrl.borrarLibroSeleccionado}"
+                                         icon="fa fa-fw fa-trash"
+                                         id="btnBorrarLibro"
+                                         disabled="#{libroCtrl.disableDeleteLibro}"
+                                         update="formLibroSelected, formLibro">
+                            <p:confirm header="Confirmación" message="#{mensajes['confirmacionBorrarLibro']}" icon="fa fa-fw fa-warning" />
+                        </p:commandButton>                        
+                    </b:panelGrid>                    
+                </b:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                </p:confirmDialog>
+            </h:form>
+            <h:form id="formLibroSelected" >
+                <b:panel style="width: 50%" rendered="#{libroCtrl.renderEdition}">                    
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="denominacion" value="#{etiquetas['denominacionLibro']}:" />
+                        <p:inputText id="denominacion" value="#{libroCtrl.libroSelected.denominacion}" maxlength="30" style="width: 80%" required="true" />                        
+<!--                        <p:outputLabel for="fechaApertura" value="#{etiquetas['fechaAperturaLibro']}:" />
+                        <p:datePicker id="fechaApertura" 
+                                      value="#{libroCtrl.libroSelected.fechaApertura}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%"                                       
+                                      readonlyInput="true"
+                                      required="true"/>                       
+                        <p:outputLabel for="fechaCierre" value="#{etiquetas['fechaCierreLibro']}:" />
+                        <p:datePicker id="fechaCierre" 
+                                      value="#{libroCtrl.libroSelected.fechaCierre}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%" 
+                                      readonlyInput="true"
+                                      required="true"/>                       -->
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="6,6" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton value="#{libroCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{libroCtrl.guardarLibroIndiceGeneralMercantil}" update=":formLibroSelected, :formLibro"  disabled="#{libroCtrl.disableActualizarLibro}"/>
+                        <p:commandButton value="#{etiquetas['btnCancelar']}" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" process="@this" action="#{libroCtrl.cancelarLibro}" update=":formLibroSelected, :formLibro"/>
+                    </b:panelGrid>
+                </b:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

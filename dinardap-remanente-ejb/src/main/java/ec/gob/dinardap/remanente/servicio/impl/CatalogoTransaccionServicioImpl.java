@@ -44,4 +44,30 @@ public class CatalogoTransaccionServicioImpl extends GenericServiceImpl<Catalogo
         catalogoTransaccionList = findByCriterias(criteria);
         return catalogoTransaccionList;
     }
+
+    @Override
+    public CatalogoTransaccion getCatalogoTransaccionEgresoNombre(String nombre) {
+        List<CatalogoTransaccion> catalogoTransaccionList = new ArrayList<CatalogoTransaccion>();
+        String[] criteriaNombres = {"tipo", "nombre"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {"Egreso", nombre};
+        String[] orderBy = {"catalogoTransaccionId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        catalogoTransaccionList = findByCriterias(criteria);
+        return catalogoTransaccionList.isEmpty() ? null : catalogoTransaccionList.get(0);
+    }
+
+    @Override
+    public CatalogoTransaccion getCatalogoTransaccionIngresoTipoNombre(String tipo, String nombre) {
+        List<CatalogoTransaccion> catalogoTransaccionList = new ArrayList<CatalogoTransaccion>();
+        String[] criteriaNombres = {"tipo", "nombre"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_EQUALS, CriteriaTypeEnum.STRING_EQUALS};
+        Object[] criteriaValores = {"Ingreso-" + tipo, nombre};
+        String[] orderBy = {"catalogoTransaccionId"};
+        boolean[] asc = {false};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        catalogoTransaccionList = findByCriterias(criteria);
+        return catalogoTransaccionList.isEmpty() ? null : catalogoTransaccionList.get(0);
+    }
 }

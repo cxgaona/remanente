@@ -25,6 +25,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -32,12 +34,13 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "transaccion")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Transaccion.findAll", query = "SELECT t FROM Transaccion t")
-    , @NamedQuery(name = "Transaccion.findByTransaccionId", query = "SELECT t FROM Transaccion t WHERE t.transaccionId = :transaccionId")
-    , @NamedQuery(name = "Transaccion.findByValorTotal", query = "SELECT t FROM Transaccion t WHERE t.valorTotal = :valorTotal")
-    , @NamedQuery(name = "Transaccion.findByRespaldoUrl", query = "SELECT t FROM Transaccion t WHERE t.respaldoUrl = :respaldoUrl")
-    , @NamedQuery(name = "Transaccion.findByFechaRegistro", query = "SELECT t FROM Transaccion t WHERE t.fechaRegistro = :fechaRegistro")})
+    @NamedQuery(name = "Transaccion.findAll", query = "SELECT t FROM Transaccion t"),
+    @NamedQuery(name = "Transaccion.findByTransaccionId", query = "SELECT t FROM Transaccion t WHERE t.transaccionId = :transaccionId"),
+    @NamedQuery(name = "Transaccion.findByValorTotal", query = "SELECT t FROM Transaccion t WHERE t.valorTotal = :valorTotal"),
+    @NamedQuery(name = "Transaccion.findByRespaldoUrl", query = "SELECT t FROM Transaccion t WHERE t.respaldoUrl = :respaldoUrl"),
+    @NamedQuery(name = "Transaccion.findByFechaRegistro", query = "SELECT t FROM Transaccion t WHERE t.fechaRegistro = :fechaRegistro")})
 public class Transaccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,18 +62,18 @@ public class Transaccion implements Serializable {
     @Column(name = "fecha_registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
-    @OneToMany(mappedBy = "transaccionId")
+    @OneToMany(mappedBy = "transaccion")
     private List<FacturaPagada> facturaPagadaList;
-    @OneToMany(mappedBy = "transaccionId")
+    @OneToMany(mappedBy = "transaccion")
     private List<Nomina> nominaList;
-    @OneToMany(mappedBy = "transaccionId")
+    @OneToMany(mappedBy = "transaccion")
     private List<Tramite> tramiteList;
     @JoinColumn(name = "catalogo_transaccion_id", referencedColumnName = "catalogo_transaccion_id")
     @ManyToOne
-    private CatalogoTransaccion catalogoTransaccionId;
+    private CatalogoTransaccion catalogoTransaccion;
     @JoinColumn(name = "remanente_mensual_id", referencedColumnName = "remanente_mensual_id")
     @ManyToOne
-    private RemanenteMensual remanenteMensualId;
+    private RemanenteMensual remanenteMensual;
 
     public Transaccion() {
     }
@@ -111,14 +114,7 @@ public class Transaccion implements Serializable {
         this.fechaRegistro = fechaRegistro;
     }
 
-    public List<FacturaPagada> getFacturaPagadaList() {
-        return facturaPagadaList;
-    }
-
-    public void setFacturaPagadaList(List<FacturaPagada> facturaPagadaList) {
-        this.facturaPagadaList = facturaPagadaList;
-    }
-
+    @XmlTransient
     public List<Nomina> getNominaList() {
         return nominaList;
     }
@@ -127,6 +123,7 @@ public class Transaccion implements Serializable {
         this.nominaList = nominaList;
     }
 
+    @XmlTransient
     public List<Tramite> getTramiteList() {
         return tramiteList;
     }
@@ -135,45 +132,29 @@ public class Transaccion implements Serializable {
         this.tramiteList = tramiteList;
     }
 
-    public CatalogoTransaccion getCatalogoTransaccionId() {
-        return catalogoTransaccionId;
+    @XmlTransient
+    public List<FacturaPagada> getFacturaPagadaList() {
+        return facturaPagadaList;
     }
 
-    public void setCatalogoTransaccionId(CatalogoTransaccion catalogoTransaccionId) {
-        this.catalogoTransaccionId = catalogoTransaccionId;
+    public void setFacturaPagadaList(List<FacturaPagada> facturaPagadaList) {
+        this.facturaPagadaList = facturaPagadaList;
     }
 
-    public RemanenteMensual getRemanenteMensualId() {
-        return remanenteMensualId;
+    public CatalogoTransaccion getCatalogoTransaccion() {
+        return catalogoTransaccion;
     }
 
-    public void setRemanenteMensualId(RemanenteMensual remanenteMensualId) {
-        this.remanenteMensualId = remanenteMensualId;
+    public void setCatalogoTransaccion(CatalogoTransaccion catalogoTransaccion) {
+        this.catalogoTransaccion = catalogoTransaccion;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (transaccionId != null ? transaccionId.hashCode() : 0);
-        return hash;
+    public RemanenteMensual getRemanenteMensual() {
+        return remanenteMensual;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Transaccion)) {
-            return false;
-        }
-        Transaccion other = (Transaccion) object;
-        if ((this.transaccionId == null && other.transaccionId != null) || (this.transaccionId != null && !this.transaccionId.equals(other.transaccionId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.Transaccion[ transaccionId=" + transaccionId + " ]";
-    }
+    public void setRemanenteMensual(RemanenteMensual remanenteMensual) {
+        this.remanenteMensual = remanenteMensual;
+    }    
     
 }

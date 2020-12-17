@@ -10,13 +10,13 @@ import ec.gob.dinardap.remanente.modelo.Nomina;
 @Local
 public interface NominaServicio extends GenericService<Nomina, Integer> {
 
-    public void crearNomina(Nomina nomina);
-    
-    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes);
-    
-    public void editNomina(Nomina nomina);
-    
-    public void borrarNomina(Nomina nomina);
-    
-    public void actualizarTransaccionValor(Integer idInstitucion, Integer anio, Integer mes);
+    public List<Nomina> getNominaByInstitucionFecha(Integer idInstitucion, Integer anio, Integer mes, Integer idRemanenteMensual);
+
+    public List<Nomina> getNominaByTransaccion(Integer transaccionId);
+
+    public void crearNominas(List<Nomina> nominas);
+
+    public void borrarNominas(List<Nomina> nominas);
+
+    public void actualizarTransaccionValor(Integer remanenteMensualId);
 }

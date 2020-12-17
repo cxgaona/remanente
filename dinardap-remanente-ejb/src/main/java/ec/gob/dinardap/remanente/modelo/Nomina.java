@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -29,31 +30,20 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "nomina")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Nomina.findAll", query = "SELECT n FROM Nomina n")
-    ,
-    @NamedQuery(name = "Nomina.findByNominaId", query = "SELECT n FROM Nomina n WHERE n.nominaId = :nominaId")
-    ,
-    @NamedQuery(name = "Nomina.findByNombre", query = "SELECT n FROM Nomina n WHERE n.nombre = :nombre")
-    ,
-    @NamedQuery(name = "Nomina.findByCargo", query = "SELECT n FROM Nomina n WHERE n.cargo = :cargo")
-    ,
-    @NamedQuery(name = "Nomina.findByRemuneracion", query = "SELECT n FROM Nomina n WHERE n.remuneracion = :remuneracion")
-    ,
-    @NamedQuery(name = "Nomina.findByAportePatronal", query = "SELECT n FROM Nomina n WHERE n.aportePatronal = :aportePatronal")
-    ,
-    @NamedQuery(name = "Nomina.findByImpuestoRenta", query = "SELECT n FROM Nomina n WHERE n.impuestoRenta = :impuestoRenta")
-    ,
-    @NamedQuery(name = "Nomina.findByFondosReserva", query = "SELECT n FROM Nomina n WHERE n.fondosReserva = :fondosReserva")
-    ,
-    @NamedQuery(name = "Nomina.findByDecimoTercero", query = "SELECT n FROM Nomina n WHERE n.decimoTercero = :decimoTercero")
-    ,
-    @NamedQuery(name = "Nomina.findByDecimoCuarto", query = "SELECT n FROM Nomina n WHERE n.decimoCuarto = :decimoCuarto")
-    ,
-    @NamedQuery(name = "Nomina.findByTotalDesc", query = "SELECT n FROM Nomina n WHERE n.totalDesc = :totalDesc")
-    ,
-    @NamedQuery(name = "Nomina.findByLiquidoRecibir", query = "SELECT n FROM Nomina n WHERE n.liquidoRecibir = :liquidoRecibir")
-    ,
+    @NamedQuery(name = "Nomina.findAll", query = "SELECT n FROM Nomina n"),
+    @NamedQuery(name = "Nomina.findByNominaId", query = "SELECT n FROM Nomina n WHERE n.nominaId = :nominaId"),
+    @NamedQuery(name = "Nomina.findByNombre", query = "SELECT n FROM Nomina n WHERE n.nombre = :nombre"),
+    @NamedQuery(name = "Nomina.findByCargo", query = "SELECT n FROM Nomina n WHERE n.cargo = :cargo"),
+    @NamedQuery(name = "Nomina.findByRemuneracion", query = "SELECT n FROM Nomina n WHERE n.remuneracion = :remuneracion"),
+    @NamedQuery(name = "Nomina.findByAportePatronal", query = "SELECT n FROM Nomina n WHERE n.aportePatronal = :aportePatronal"),
+    @NamedQuery(name = "Nomina.findByImpuestoRenta", query = "SELECT n FROM Nomina n WHERE n.impuestoRenta = :impuestoRenta"),
+    @NamedQuery(name = "Nomina.findByFondosReserva", query = "SELECT n FROM Nomina n WHERE n.fondosReserva = :fondosReserva"),
+    @NamedQuery(name = "Nomina.findByDecimoTercero", query = "SELECT n FROM Nomina n WHERE n.decimoTercero = :decimoTercero"),
+    @NamedQuery(name = "Nomina.findByDecimoCuarto", query = "SELECT n FROM Nomina n WHERE n.decimoCuarto = :decimoCuarto"),
+    @NamedQuery(name = "Nomina.findByTotalDesc", query = "SELECT n FROM Nomina n WHERE n.totalDesc = :totalDesc"),
+    @NamedQuery(name = "Nomina.findByLiquidoRecibir", query = "SELECT n FROM Nomina n WHERE n.liquidoRecibir = :liquidoRecibir"),
     @NamedQuery(name = "Nomina.findByFechaRegistro", query = "SELECT n FROM Nomina n WHERE n.fechaRegistro = :fechaRegistro")})
 public class Nomina implements Serializable {
 
@@ -71,7 +61,7 @@ public class Nomina implements Serializable {
     @Size(max = 300)
     @Column(name = "cargo")
     private String cargo;
-
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "remuneracion")
     private BigDecimal remuneracion;
 
@@ -102,7 +92,7 @@ public class Nomina implements Serializable {
 
     @JoinColumn(name = "transaccion_id", referencedColumnName = "transaccion_id")
     @ManyToOne
-    private Transaccion transaccionId;
+    private Transaccion transaccion;
 
     public Nomina() {
     }
@@ -207,37 +197,12 @@ public class Nomina implements Serializable {
         this.fechaRegistro = fechaRegistro;
     }
 
-    public Transaccion getTransaccionId() {
-        return transaccionId;
+    public Transaccion getTransaccion() {
+        return transaccion;
     }
 
-    public void setTransaccionId(Transaccion transaccionId) {
-        this.transaccionId = transaccionId;
+    public void setTransaccion(Transaccion transaccion) {
+        this.transaccion = transaccion;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (nominaId != null ? nominaId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Nomina)) {
-            return false;
-        }
-        Nomina other = (Nomina) object;
-        if ((this.nominaId == null && other.nominaId != null) || (this.nominaId != null && !this.nominaId.equals(other.nominaId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "Nomina{" + "nominaId=" + nominaId + ", nombre=" + nombre + ", cargo=" + cargo + ", remuneracion=" + remuneracion + ", aportePatronal=" + aportePatronal + ", impuestoRenta=" + impuestoRenta + ", fondosReserva=" + fondosReserva + ", decimoTercero=" + decimoTercero + ", decimoCuarto=" + decimoCuarto + ", totalDesc=" + totalDesc + ", liquidoRecibir=" + liquidoRecibir + ", fechaRegistro=" + fechaRegistro + ", transaccionId=" + transaccionId + '}';
-    }
-
+    
 }

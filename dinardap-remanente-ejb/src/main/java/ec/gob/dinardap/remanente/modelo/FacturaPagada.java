@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -30,15 +31,16 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "factura_pagada")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "FacturaPagada.findAll", query = "SELECT f FROM FacturaPagada f")
-    , @NamedQuery(name = "FacturaPagada.findByFacturaPagadaId", query = "SELECT f FROM FacturaPagada f WHERE f.facturaPagadaId = :facturaPagadaId")
-    , @NamedQuery(name = "FacturaPagada.findByFecha", query = "SELECT f FROM FacturaPagada f WHERE f.fecha = :fecha")
-    , @NamedQuery(name = "FacturaPagada.findByNumero", query = "SELECT f FROM FacturaPagada f WHERE f.numero = :numero")
-    , @NamedQuery(name = "FacturaPagada.findByTipo", query = "SELECT f FROM FacturaPagada f WHERE f.tipo = :tipo")
-    , @NamedQuery(name = "FacturaPagada.findByDetalle", query = "SELECT f FROM FacturaPagada f WHERE f.detalle = :detalle")
-    , @NamedQuery(name = "FacturaPagada.findByValor", query = "SELECT f FROM FacturaPagada f WHERE f.valor = :valor")
-    , @NamedQuery(name = "FacturaPagada.findByFechaRegistro", query = "SELECT f FROM FacturaPagada f WHERE f.fechaRegistro = :fechaRegistro")})
+    @NamedQuery(name = "FacturaPagada.findAll", query = "SELECT f FROM FacturaPagada f"),
+    @NamedQuery(name = "FacturaPagada.findByFacturaPagadaId", query = "SELECT f FROM FacturaPagada f WHERE f.facturaPagadaId = :facturaPagadaId"),
+    @NamedQuery(name = "FacturaPagada.findByFecha", query = "SELECT f FROM FacturaPagada f WHERE f.fecha = :fecha"),
+    @NamedQuery(name = "FacturaPagada.findByNumero", query = "SELECT f FROM FacturaPagada f WHERE f.numero = :numero"),
+    @NamedQuery(name = "FacturaPagada.findByTipo", query = "SELECT f FROM FacturaPagada f WHERE f.tipo = :tipo"),
+    @NamedQuery(name = "FacturaPagada.findByDetalle", query = "SELECT f FROM FacturaPagada f WHERE f.detalle = :detalle"),
+    @NamedQuery(name = "FacturaPagada.findByValor", query = "SELECT f FROM FacturaPagada f WHERE f.valor = :valor"),
+    @NamedQuery(name = "FacturaPagada.findByFechaRegistro", query = "SELECT f FROM FacturaPagada f WHERE f.fechaRegistro = :fechaRegistro")})
 public class FacturaPagada implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -70,7 +72,7 @@ public class FacturaPagada implements Serializable {
     private Date fechaRegistro;
     @JoinColumn(name = "transaccion_id", referencedColumnName = "transaccion_id")
     @ManyToOne
-    private Transaccion transaccionId;
+    private Transaccion transaccion;
 
     public FacturaPagada() {
     }
@@ -135,37 +137,12 @@ public class FacturaPagada implements Serializable {
         this.fechaRegistro = fechaRegistro;
     }
 
-    public Transaccion getTransaccionId() {
-        return transaccionId;
+    public Transaccion getTransaccion() {
+        return transaccion;
     }
 
-    public void setTransaccionId(Transaccion transaccionId) {
-        this.transaccionId = transaccionId;
+    public void setTransaccion(Transaccion transaccion) {
+        this.transaccion = transaccion;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (facturaPagadaId != null ? facturaPagadaId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FacturaPagada)) {
-            return false;
-        }
-        FacturaPagada other = (FacturaPagada) object;
-        if ((this.facturaPagadaId == null && other.facturaPagadaId != null) || (this.facturaPagadaId != null && !this.facturaPagadaId.equals(other.facturaPagadaId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.FacturaPagada[ facturaPagadaId=" + facturaPagadaId + " ]";
-    }
-
+   
 }

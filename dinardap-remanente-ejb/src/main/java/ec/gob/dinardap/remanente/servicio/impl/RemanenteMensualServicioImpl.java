@@ -10,8 +10,8 @@ import ec.gob.dinardap.persistence.dao.GenericDao;
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.persistence.util.Criteria;
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
-import ec.gob.dinardap.remanente.dao.InstitucionRequeridaDao;
 import ec.gob.dinardap.remanente.dao.RemanenteMensualDao;
+import ec.gob.dinardap.remanente.dto.RemanenteMensualDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
@@ -29,15 +29,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.SerializationUtils;
+
 
 @Stateless(name = "RemanenteMensualServicio")
 public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMensual, Integer> implements RemanenteMensualServicio {
 
     @EJB
     private RemanenteMensualDao remanenteMensualDao;
-
-    @EJB
-    private InstitucionRequeridaDao institucionRequeridaDao;
 
     @EJB
     private ParametroServicio parametroServicio;
@@ -48,9 +47,11 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
+    public List<RemanenteMensualDTO> getRemanenteMensualByInstitucion(Integer institucionID, Integer año) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
+        List<RemanenteMensualDTO> remanenteMensualDTOList = new ArrayList<RemanenteMensualDTO>();
+
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucion.institucionId",
             "remanenteCuatrimestral.remanenteAnual.anio"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {institucionID, año};
@@ -59,23 +60,56 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
         for (RemanenteMensual rm : remanenteMensualList) {
+            Collections.sort(rm.getEstadoRemanenteMensualList(), new Comparator<EstadoRemanenteMensual>() {
+                @Override
+                public int compare(EstadoRemanenteMensual erm1, EstadoRemanenteMensual erm2) {
+                    return new Integer(erm1.getEstadoRemanenteMensualId()).compareTo(new Integer(erm2.getEstadoRemanenteMensualId()));
+                }
+            });
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
             }
+
+            Collections.sort(rm.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList(), new Comparator<EstadoRemanenteCuatrimestral>() {
+                @Override
+                public int compare(EstadoRemanenteCuatrimestral erm1, EstadoRemanenteCuatrimestral erm2) {
+                    return new Integer(erm1.getEstadoRemanenteCuatrimestralId()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestralId()));
+                }
+            });
+            for (EstadoRemanenteCuatrimestral erc : rm.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {
+                erc.getEstadoRemanenteCuatrimestralId();
+            }
+
             rm.getRemanenteCuatrimestral();
             rm.getRemanenteCuatrimestral().getRemanenteAnual();
-        }
-        for (RemanenteMensual remanenteMensual : remanenteMensualList) {
-            for (EstadoRemanenteCuatrimestral erc : remanenteMensual.getRemanenteCuatrimestral().getEstadoRemanenteCuatrimestralList()) {
-                erc.getEstadoRemanenteCuatrimestral();
-            }
-            for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
+
+            for (Transaccion transaccion : rm.getTransaccionList()) {
                 transaccion.getTransaccionId();
                 for (Tramite tramite : transaccion.getTramiteList()) {
                     tramite.getTramiteId();
                 }
             }
+
         }
+        for (RemanenteMensual rm : remanenteMensualList) {
+            remanenteMensualDTOList.add(new RemanenteMensualDTO(rm));
+        }
+        return remanenteMensualDTOList;
+    }
+
+    @Override
+    public List<RemanenteMensual> getRemanenteMensualProrroga() {
+        List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
+        String[] criteriaNombres = {"prorrogaRemanenteMensualId.prorrogaRemanenteMensualId"};
+        CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.STRING_IS_NOT_NULL};
+        Object[] criteriaValores = {};
+        String[] orderBy = {"remanenteMensualId"};
+        boolean[] asc = {true};
+        Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
+        remanenteMensualList = findByCriterias(criteria);
+//        for (RemanenteMensual rm : remanenteMensualList) {
+//            rm.getProrrogaRemanenteMensualId();
+//        }
         return remanenteMensualList;
     }
 
@@ -92,13 +126,14 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     }
 
     @Override
-    public List<RemanenteMensual> getRemanenteMensualByInstitucionAñoMes(Integer idInstitucion, Integer anio, Integer mes) {
+    public RemanenteMensual getUltimoRemanenteMensual(Integer idInstitucion, Integer anio, Integer mes) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucionRequerida.institucionId",
-            "remanenteCuatrimestral.remanenteAnual.anio", "mes"};
+        String[] criteriaNombres = {"remanenteCuatrimestral.remanenteAnual.institucion.institucionId",
+            "remanenteCuatrimestral.remanenteAnual.anio",
+            "mes"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS, CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {idInstitucion, anio, mes};
-        String[] orderBy = {"mes"};
+        String[] orderBy = {"remanenteMensualId"};
         boolean[] asc = {false};
         Criteria criteria = new Criteria(criteriaNombres, criteriaTipos, criteriaValores, orderBy, asc);
         remanenteMensualList = findByCriterias(criteria);
@@ -112,29 +147,37 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
             for (EstadoRemanenteMensual erm : rm.getEstadoRemanenteMensualList()) {
                 erm.getEstadoRemanenteMensualId();
             }
+            for (Transaccion transaccion : rm.getTransaccionList()) {
+                transaccion.getTransaccionId();
+            }
         }
-        return remanenteMensualList;
+        RemanenteMensual remanenteMensual = new RemanenteMensual();
+        if (!remanenteMensualList.isEmpty()) {
+            remanenteMensual = remanenteMensualList.get(0);
+        }
+        return remanenteMensual;
     }
 
     @Override
     public void crearVersionRemanenteMensual(RemanenteMensual remanenteMensualOrigen) {
-        RemanenteMensual rm = new RemanenteMensual();
-        RemanenteMensual rmo = new RemanenteMensual(remanenteMensualOrigen.getRemanenteMensualId());
-        RemanenteMensual rmn = new RemanenteMensual();
-        rm = remanenteMensualOrigen;
-        rm.setRemanenteMensualOrigenId(rmo);
-        rm.setRemanenteMensualId(null);
-        rm.setComentarios(null);
-        rm.setSolicitudCambioUrl(null);
-        rm.setInformeAprobacionUrl(null);
-        rm.setFechaRegistro(new Date());
-        create(rm);
+        RemanenteMensual remanenteMensualNuevaVersion = new RemanenteMensual();        
+        remanenteMensualNuevaVersion = (RemanenteMensual) SerializationUtils.clone(remanenteMensualOrigen);      
+        remanenteMensualNuevaVersion.setRemanenteMensualOrigen(remanenteMensualOrigen);
+        remanenteMensualNuevaVersion.setRemanenteMensualId(null);
+        remanenteMensualNuevaVersion.setComentarios(null);
+        remanenteMensualNuevaVersion.setSolicitudCambioUrl(null);
+        remanenteMensualNuevaVersion.setInformeAprobacionUrl(null);
+        remanenteMensualNuevaVersion.setFechaRegistro(new Date());
+        create(remanenteMensualNuevaVersion);
+
+        //        rmo.setProrrogaRemanenteMensualId(null);
+
     }
 
     @Override
     public RemanenteMensual obtenerVersionRemanenteMensual(Integer remanenteMensualOrigen) {
         List<RemanenteMensual> remanenteMensualList = new ArrayList<RemanenteMensual>();
-        String[] criteriaNombres = {"remanenteMensualOrigenId"};
+        String[] criteriaNombres = {"remanenteMensualOrigen"};
         CriteriaTypeEnum[] criteriaTipos = {CriteriaTypeEnum.INTEGER_EQUALS};
         Object[] criteriaValores = {remanenteMensualOrigen};
         String[] orderBy = {"remanenteMensualId"};
@@ -156,8 +199,8 @@ public class RemanenteMensualServicioImpl extends GenericServiceImpl<RemanenteMe
     private CredencialesSFTP setCredencialesSftp(CredencialesSFTP credencialesSFTP) {
         credencialesSFTP.setHost(parametroServicio.findByPk(ParametroEnum.SERVIDOR_SFTP.name()).getValor());
         credencialesSFTP.setPuerto(Integer.parseInt(parametroServicio.findByPk(ParametroEnum.PUERTO_SFTP.name()).getValor()));
-        credencialesSFTP.setUsuario(parametroServicio.findByPk(ParametroEnum.USUARIO_REMANENTE_SFTP.name()).getValor());
-        credencialesSFTP.setContrasena(parametroServicio.findByPk(ParametroEnum.CONTRASENA_REMANENTE_SFTP.name()).getValor());
+        credencialesSFTP.setUsuario(parametroServicio.findByPk(ParametroEnum.SFTP_USUARIO_REMANENTE.name()).getValor());
+        credencialesSFTP.setContrasena(parametroServicio.findByPk(ParametroEnum.SFTP_CONTRASENA_REMANENTE.name()).getValor());
         return credencialesSFTP;
     }
 

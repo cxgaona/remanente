@@ -20,6 +20,8 @@ public interface TransaccionServicio extends GenericService<Transaccion, Integer
 
     public List<Transaccion> getTransaccionByInstitucionAñoMes(Integer institucionId, Integer año, Integer mes, Integer remanenteMensualID);
 
+    public List<Transaccion> getTransacciones(Integer remanenteMensualID);
+
     public byte[] descargarArchivo(SftpDto sftpDto);
 
 }

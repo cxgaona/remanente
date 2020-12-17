@@ -2,71 +2,96 @@ package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.autorizacion.constante.SemillaEnum;
 import ec.gob.dinardap.autorizacion.util.EncriptarCadenas;
-import ec.gob.dinardap.remanente.mail.Email;
-import ec.gob.dinardap.remanente.modelo.InstitucionRequerida;
-import ec.gob.dinardap.remanente.modelo.Pregunta;
-import ec.gob.dinardap.remanente.modelo.Respuesta;
-import ec.gob.dinardap.remanente.modelo.Usuario;
-import ec.gob.dinardap.remanente.servicio.InstitucionRequeridaServicio;
-import ec.gob.dinardap.remanente.servicio.PreguntaServicio;
-import ec.gob.dinardap.remanente.servicio.RespuestaServicio;
-import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
+import ec.gob.dinardap.correo.mdb.cliente.ClienteQueueMailServicio;
+import ec.gob.dinardap.correo.util.MailMessage;
+import ec.gob.dinardap.remanente.constante.SistemaIdEnum;
+import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
+import ec.gob.dinardap.remanente.dao.UsuarioDao;
+import ec.gob.dinardap.remanente.dao.UsuarioPerfilDao;
+import ec.gob.dinardap.remanente.dto.UsuarioDTO;
+import ec.gob.dinardap.remanente.servicio.AsignacionInstitucionServicio;
+import ec.gob.dinardap.remanente.servicio.BandejaServicio;
+import ec.gob.dinardap.remanente.servicio.UsuarioPerfilServicio;
+import ec.gob.dinardap.remanente.servicio.impl.BandejaServicioImpl;
 import ec.gob.dinardap.remanente.utils.FacesUtils;
+import ec.gob.dinardap.seguridad.modelo.AsignacionInstitucion;
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.modelo.Perfil;
+import ec.gob.dinardap.seguridad.modelo.Pregunta;
+import ec.gob.dinardap.seguridad.modelo.Respuesta;
+import ec.gob.dinardap.seguridad.modelo.TipoInstitucion;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
+import ec.gob.dinardap.seguridad.modelo.UsuarioPerfil;
+
+import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
+import ec.gob.dinardap.seguridad.servicio.PerfilServicio;
+import ec.gob.dinardap.seguridad.servicio.PreguntaServicio;
+import ec.gob.dinardap.seguridad.servicio.RespuestaServicio;
+import ec.gob.dinardap.seguridad.servicio.TipoInstitucionServicio;
+
+import ec.gob.dinardap.seguridad.servicio.UsuarioServicio;
+import ec.gob.dinardap.util.constante.EstadoEnum;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
+import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
 
 @Named(value = "gestionUsuariosCtrl")
 @ViewScoped
 public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     //****Declaración de variables****//
-    //Variables de control visual
+    //Variables de control visual    
+    private Boolean renderEdition;
     private Boolean onEdit;
     private Boolean onCreate;
-    private Boolean renderEdition;
+    private String btnGuardar;
 
-    private Boolean disabledRegistrador;
-    private Boolean disabledVerificador;
-    private Boolean disabledValidador;
-    private Boolean disabledAdministrador;
-    private Boolean disabledRestablecer;
+    private String tituloPagina;
+    private Boolean disableRestablecerContraseñaBtn;
+
+    //Variables de Negocio
+    private UsuarioDTO usuarioDtoGestion;
+
+    private TipoInstitucion tipoInstitucionSelected;
+    private Institucion institucionSelected;
+    private Boolean restablecerContraseña;
+    private String cedulaBusqueda;
+    private Boolean estadoAI;
 
     //Listas
-    private List<Usuario> usuarioActivoList;
-    private List<InstitucionRequerida> institucionRequeridaList;
-    private List<Pregunta> preguntaList;
-    private Boolean restablecer;
-    private String tituloPagina;
-    private Usuario usuarioSelected;
+    private List<UsuarioDTO> usuarioDtoList;
 
-    private String nombre;
-    private String btnGuardar;
-    private String tipoInstitucion;
+    private List<TipoInstitucion> tipoInstitucionList;
+    private List<Institucion> institucionList;
+    private List<Perfil> perfilListActivos;
+
+    private List<Pregunta> preguntaList;
+    private List<Perfil> perfilSelectedList;
+
+    @EJB
+    private UsuarioDao usuarioDao;
 
     @EJB
     private UsuarioServicio usuarioServicio;
 
     @EJB
-    private InstitucionRequeridaServicio institucionRequeridaServicio;
+    private InstitucionServicio institucionServicio;
 
     @EJB
     private PreguntaServicio preguntaServicio;
@@ -74,408 +99,329 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     @EJB
     private RespuestaServicio respuestaServicio;
 
+    @EJB
+    private AsignacionInstitucionServicio asignacionInstitucionServicio;
+
+    @EJB
+    private UsuarioPerfilServicio usuarioPerfilServicio;
+
+    @EJB
+    private UsuarioPerfilDao usuarioPerfilDao;
+
+    @EJB
+    private TipoInstitucionServicio tipoInstitucionServicio;
+
+    @EJB
+    private PerfilServicio perfilServicio;
+
+    @EJB
+    private BandejaServicio bandejaServicio;
+
+    @EJB
+    private ClienteQueueMailServicio clienteQueueMailServicio;
+
     @PostConstruct
     protected void init() {
-        onCreate = Boolean.FALSE;
-        onEdit = Boolean.FALSE;
+        tituloPagina = "Listado de Usuarios Activos";
+        renderEdition = Boolean.FALSE;
+        estadoAI= Boolean.TRUE;
+
+        //Carga del tipo de instituciones activas para seleccionar
+        tipoInstitucionList = new ArrayList<TipoInstitucion>();
+        tipoInstitucionList = tipoInstitucionServicio.tipoInstitucionActivas();
+
+        //Carga de las instituciones activas de acuerdo al tipo (tipo DINARDAP)
+        institucionList = new ArrayList<Institucion>();
+        institucionList = institucionServicio.buscarInstitucionPorTipo(TipoInstitucionEnum.DINARDAP.getTipoInstitucion());
+
+        //Carga de los perfiles de acuerdo al tipo de institición (tipo DINARDAP)
+        perfilListActivos = new ArrayList<Perfil>();
+        perfilListActivos = getPerfilesPorTipoInstitucion(TipoInstitucionEnum.DINARDAP.getTipoInstitucion());
+
+        //Carga de todas las preguntas
+        preguntaList = new ArrayList<Pregunta>();
+        preguntaList = preguntaServicio.getPreguntasActivas();
+
+        cargarDatosUsuario();
+    }
+
+    private void cargarDatosUsuario() {
+        List<Usuario> usuarioActivoList = new ArrayList<Usuario>();
+        usuarioActivoList = usuarioDao.getUsuarioActivos(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
+
+        usuarioDtoList = new ArrayList<UsuarioDTO>();
+
+        for (Usuario usuario : usuarioActivoList) {
+            UsuarioDTO usuarioDTO = new UsuarioDTO();
+            usuarioDTO.setUsuario(usuario);
+
+            if (!usuario.getAsignacionInstitucions().isEmpty()) {
+                usuarioDTO.setInstitucion(usuario.getAsignacionInstitucions().get(usuario.getAsignacionInstitucions().size() - 1).getInstitucion());
+            } else {
+                usuarioDTO.setInstitucion(null);
+            }
+
+            List<String> strPerfilList = new ArrayList<String>();
+            for (UsuarioPerfil up : usuario.getUsuarioPerfilList()) {
+                strPerfilList.add(up.getPerfil().getNombre());
+            }
+            usuarioDTO.setPerfil(StringUtils.join(strPerfilList, " / "));
+            usuarioDtoList.add(usuarioDTO);
+        }
+    }
+
+    public void actualizar() throws IOException {
+//        cargarDatosUsuario();
+        FacesContext.getCurrentInstance().getExternalContext().redirect("gestionUsuarios.jsf");
+    }
+
+    public void onRowSelectUsuario() {
+//        renderEdition = Boolean.TRUE;
+//        onCreate = Boolean.FALSE;
+//        onEdit = Boolean.TRUE;
+//        disableRestablecerContraseñaBtn = Boolean.FALSE;
+//        restablecerContraseña = Boolean.FALSE;
+//
+//        btnGuardar = "Actualizar";
+//
+//        perfilSelectedList = new ArrayList<Perfil>();
+//
+//        tipoInstitucionSelected = new TipoInstitucion();
+//        tipoInstitucionSelected = usuarioDtoSelected.getInstitucion().getTipoInstitucion();
+//
+//        institucionList = institucionServicio.buscarInstitucionPorTipo(tipoInstitucionSelected.getTipoInstitucionId());
+//
+//        institucionSelected = usuarioDtoSelected.getInstitucion();
+//
+//        perfilListActivos = getPerfilesPorTipoInstitucion(tipoInstitucionSelected.getTipoInstitucionId());
+//
+//        for (UsuarioPerfil up : usuarioDtoSelected.getUsuario().getUsuarioPerfilList()) {
+//            perfilSelectedList.add(up.getPerfil());
+//        }
+    }
+
+    // Nueva manera de manejar la gestión de usuarios
+    public void buscarUsuario() {
         renderEdition = Boolean.FALSE;
 
-        disabledRegistrador = Boolean.TRUE;
-        disabledVerificador = Boolean.TRUE;
-        disabledValidador = Boolean.TRUE;
-        disabledAdministrador = Boolean.TRUE;
-        disabledRestablecer = Boolean.TRUE;
+        restablecerVista();
 
-        restablecer = Boolean.FALSE;
+        tipoInstitucionSelected = new TipoInstitucion();
+        institucionSelected = new Institucion();
+        perfilSelectedList = new ArrayList<Perfil>();
+        usuarioDtoGestion = new UsuarioDTO();
+        
+        estadoAI= Boolean.FALSE;
 
-        tituloPagina = "Gestión de Usuarios";
-        nombre = "";
-        btnGuardar = "";
-        tipoInstitucion = "";
+        usuarioDtoGestion = usuarioDao.getUsuarioByCedula(cedulaBusqueda);
+        if (usuarioDtoGestion.getUsuario() != null) {
+            renderEdition = Boolean.TRUE;
+            onEdit = Boolean.TRUE;
+            disableRestablecerContraseñaBtn = Boolean.FALSE;
+            restablecerContraseña = Boolean.FALSE;
+            btnGuardar = "Actualizar";
 
-        institucionRequeridaList = new ArrayList<InstitucionRequerida>();
-        usuarioActivoList = new ArrayList<Usuario>();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
+            tipoInstitucionSelected = usuarioDtoGestion.getInstitucion().getTipoInstitucion();
+            institucionSelected = usuarioDtoGestion.getInstitucion();
+            if(usuarioDtoGestion.getUsuario().getEstado()==1){
+                estadoAI= Boolean.TRUE;
+            }else if(usuarioDtoGestion.getUsuario().getEstado()==0){
+                estadoAI= Boolean.FALSE;
+            }
+
+            institucionList = institucionServicio.buscarInstitucionPorTipo(tipoInstitucionSelected.getTipoInstitucionId());
+            perfilListActivos = getPerfilesPorTipoInstitucion(tipoInstitucionSelected.getTipoInstitucionId());
+
+            for (UsuarioPerfil up : usuarioDtoGestion.getUsuario().getUsuarioPerfilList()) {
+                perfilSelectedList.add(up.getPerfil());
+            }
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "No se encontró el usuario con la Cédula: " + cedulaBusqueda));
+        }
     }
 
     public void nuevoUsuario() {
         renderEdition = Boolean.TRUE;
         onCreate = Boolean.TRUE;
         onEdit = Boolean.FALSE;
-        disabledRegistrador = Boolean.TRUE;
-        disabledVerificador = Boolean.TRUE;
-        disabledValidador = Boolean.TRUE;
-        disabledAdministrador = Boolean.TRUE;
-        disabledRestablecer = Boolean.TRUE;
-        restablecer = Boolean.TRUE;
+        disableRestablecerContraseñaBtn = Boolean.TRUE;
+        restablecerContraseña = Boolean.TRUE;
+        estadoAI= Boolean.TRUE;
 
-        institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
-        usuarioSelected = new Usuario();
-        usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
-        usuarioSelected.setAdministrador(Boolean.TRUE);
-        usuarioSelected.setValidador(Boolean.FALSE);
-        usuarioSelected.setRegistrador(Boolean.FALSE);
-        usuarioSelected.setVerificador(Boolean.FALSE);
+        usuarioDtoGestion = new UsuarioDTO();
+        usuarioDtoGestion.setUsuario(new Usuario());
+        usuarioDtoGestion.setInstitucion(new Institucion());
+        tipoInstitucionSelected = new TipoInstitucion();
+        institucionSelected = new Institucion();
+
+        perfilListActivos = new ArrayList<Perfil>();
+        perfilListActivos = getPerfilesPorTipoInstitucion(TipoInstitucionEnum.DINARDAP.getTipoInstitucion());
 
         btnGuardar = "Guardar";
-        tipoInstitucion = "Dirección Nacional";
-
     }
 
-    public void cambioRolReg() {
-        if (usuarioSelected.getRegistrador()) {
-            usuarioSelected.setVerificador(Boolean.FALSE);
-        } else {
-            usuarioSelected.setVerificador(Boolean.TRUE);
-        }
-
+    public void eliminarUsuario() throws IOException {
+        usuarioDtoGestion.getUsuario().setFechaModificacion(new Date());
+        usuarioDtoGestion.getUsuario().setEstado(EstadoEnum.INACTIVO.getEstado());
+        usuarioServicio.update(usuarioDtoGestion.getUsuario());
+//        cargarDatosUsuario();
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Usuario eliminado exitosamente"));
+//        PrimeFaces.current().ajax().update("formUsuario");        
+        restablecerVista();
     }
 
-    public void cambioRolVer() {
-        if (usuarioSelected.getVerificador()) {
-            usuarioSelected.setRegistrador(Boolean.FALSE);
-        } else {
-            usuarioSelected.setRegistrador(Boolean.TRUE);
-        }
-    }
+    public void guardar() {
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente = usuarioServicio.obtenerUsuarioPorIdentificacion(usuarioDtoGestion.getUsuario().getCedula());
+        //Definición de usuario
+        usuarioDtoGestion.setInstitucion(institucionSelected);
+        usuarioDtoGestion.getUsuario().setFechaCreacion(new Date());
+        usuarioDtoGestion.getUsuario().setNombre(usuarioDtoGestion.getUsuario().getNombre().toUpperCase());
+        usuarioDtoGestion.getUsuario().setEstado(estadoAI?EstadoEnum.ACTIVO.getEstado():EstadoEnum.INACTIVO.getEstado());
 
-    public void onRowSelectUsuario() {
-        renderEdition = Boolean.TRUE;
-        onCreate = Boolean.FALSE;
-        onEdit = Boolean.TRUE;
-        btnGuardar = "Actualizar";
-        disabledRegistrador = Boolean.TRUE;
-        disabledVerificador = Boolean.TRUE;
-        disabledValidador = Boolean.TRUE;
-        disabledAdministrador = Boolean.TRUE;
-        disabledRestablecer = Boolean.FALSE;
-        restablecer = Boolean.FALSE;
-        if (usuarioSelected.getInstitucionId().getTipo().equals("SIN GAD") || usuarioSelected.getInstitucionId().getTipo().equals("CON GAD")) {
-            tipoInstitucion = "Registro Propiedad / Mercantil";
-            institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
-            disabledRegistrador = Boolean.FALSE;
-            disabledVerificador = Boolean.FALSE;
-            disabledValidador = Boolean.TRUE;
-            disabledAdministrador = Boolean.TRUE;
-
-        } else if (usuarioSelected.getInstitucionId().getTipo().equals("GAD")) {
-            tipoInstitucion = "GAD";
-            institucionRequeridaList = institucionRequeridaServicio.getGADList();
-            disabledRegistrador = Boolean.TRUE;
-            disabledVerificador = Boolean.TRUE;
-            disabledValidador = Boolean.TRUE;
-            disabledAdministrador = Boolean.TRUE;
-        } else if (usuarioSelected.getInstitucionId().getTipo().equals("REGIONAL")) {
-            tipoInstitucion = "Dirección Regional";
-            institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
-            disabledRegistrador = Boolean.TRUE;
-            disabledVerificador = Boolean.TRUE;
-            disabledValidador = Boolean.TRUE;
-            disabledAdministrador = Boolean.TRUE;
+        if (onCreate) {
+            if (usuarioExistente == null) {
+                //Creación de nueva contraseña
+                String contraseña = FacesUtils.generarContraseña();
+                usuarioDtoGestion.getUsuario().setContrasena(
+                        EncriptarCadenas.encriptarCadenaSha1(
+                                SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
+                Usuario usuarioAux = new Usuario();
+                usuarioAux = usuarioServicio.crearUsuario(usuarioDtoGestion.getUsuario());
+                usuarioDtoGestion.setUsuario(usuarioAux);
+                for (Pregunta p : preguntaList) {
+                    Respuesta respuesta = new Respuesta();
+                    respuesta.setPregunta(p);
+                    respuesta.setUsuario(usuarioDtoGestion.getUsuario());
+                    respuesta.setRespuesta("");
+                    respuesta.setFechaCreacion(new Date());
+                    respuesta.setEstado(EstadoEnum.ACTIVO.getEstado());
+                    respuestaServicio.create(respuesta);
+                }
+                //Asignación Institución
+                AsignacionInstitucion asignacionInstitucion = new AsignacionInstitucion();
+                asignacionInstitucion.setInstitucion(usuarioDtoGestion.getInstitucion());
+                asignacionInstitucion.setUsuario(usuarioDtoGestion.getUsuario());
+                asignacionInstitucion.setFechaCreacion(new Date());
+                asignacionInstitucion.setEstado(EstadoEnum.ACTIVO.getEstado());
+                asignacionInstitucionServicio.create(asignacionInstitucion);
+                //Usuario Perfil
+                for (Perfil perfil : perfilSelectedList) {
+                    UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
+                    usuarioPerfil.setUsuario(usuarioDtoGestion.getUsuario());
+                    usuarioPerfil.setPerfil(perfil);
+                    usuarioPerfil.setFechaAsignacion(new Date());
+                    usuarioPerfil.setEstado(EstadoEnum.ACTIVO.getEstado());
+                    usuarioPerfilServicio.create(usuarioPerfil);
+                }
+                correoRestablecerContraseña(contraseña, "Creación de Usuario");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Se ha creado un nuevo usuario con Cédula: " + usuarioDtoGestion.getUsuario().getCedula()));
+//                cargarDatosUsuario();
+//                PrimeFaces.current().ajax().update("formUsuario");
+                usuarioDtoGestion = new UsuarioDTO();
+                restablecerVista();
+            } else {
+                this.addErrorMessage("1", "Error", "El usuario ingresado ya existe");
+            }
+        } else if (onEdit) {
+            String contraseña = "";
+            if (restablecerContraseña) {
+                contraseña = FacesUtils.generarContraseña();
+                usuarioDtoGestion.getUsuario().setContrasena(
+                        EncriptarCadenas.encriptarCadenaSha1(
+                                SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
+            }
+            usuarioDtoGestion.getUsuario().setFechaModificacion(new Date());
+            usuarioServicio.update(usuarioDtoGestion.getUsuario());
+            //Asignación Institución
+            AsignacionInstitucion asignacionInstitucion = new AsignacionInstitucion();
+            asignacionInstitucion = asignacionInstitucionServicio.getAsignacionPorUsuarioActivo(usuarioDtoGestion.getUsuario().getUsuarioId());
+            if (!usuarioDtoGestion.getInstitucion().getInstitucionId().equals(asignacionInstitucion.getInstitucion().getInstitucionId())) {
+                asignacionInstitucion.setEstado(EstadoEnum.INACTIVO.getEstado());
+                asignacionInstitucion.setFechaModificacion(new Date());
+                asignacionInstitucionServicio.update(asignacionInstitucion);
+                AsignacionInstitucion asignacionInstitucion1 = new AsignacionInstitucion();
+                asignacionInstitucion1 = asignacionInstitucionServicio.getAsignacionPorUsuarioInactivo(usuarioDtoGestion.getUsuario().getUsuarioId(), usuarioDtoGestion.getInstitucion().getInstitucionId());
+                if (asignacionInstitucion1.getInstitucion() != null) {
+                    asignacionInstitucion1.setEstado(EstadoEnum.ACTIVO.getEstado());
+                    asignacionInstitucion1.setFechaModificacion(new Date());
+                    asignacionInstitucionServicio.update(asignacionInstitucion1);
+                } else {
+                    AsignacionInstitucion asignacionInstitucion2 = new AsignacionInstitucion();
+                    asignacionInstitucion2.setInstitucion(usuarioDtoGestion.getInstitucion());
+                    asignacionInstitucion2.setUsuario(usuarioDtoGestion.getUsuario());
+                    asignacionInstitucion2.setFechaCreacion(new Date());
+                    asignacionInstitucion2.setEstado(EstadoEnum.ACTIVO.getEstado());
+                    asignacionInstitucionServicio.create(asignacionInstitucion2);
+                }
+            }
+            //Usuario Perfil
+            List<UsuarioPerfil> usuarioPerfilList = new ArrayList<UsuarioPerfil>();
+            usuarioPerfilList = usuarioPerfilDao.getUsuarioPerfilListPorUsuarioActivo(usuarioDtoGestion.getUsuario().getUsuarioId());//traido desde base
+            for (UsuarioPerfil up : usuarioPerfilList) {
+                if (!perfilSelectedList.contains(up.getPerfil())) {
+                    up.setEstado(EstadoEnum.INACTIVO.getEstado());
+                    up.setFechaModificacion(new Date());
+                    usuarioPerfilServicio.update(up);
+                }
+            }
+            for (Perfil p : perfilSelectedList) {
+                Boolean flagExist = Boolean.FALSE;
+                for (UsuarioPerfil up : usuarioPerfilList) {
+                    if (p.equals(up.getPerfil())) {
+                        flagExist = Boolean.TRUE;
+                        break;
+                    }
+                }
+                if (!flagExist) {
+                    List<UsuarioPerfil> usuarioPerfil1List = new ArrayList<UsuarioPerfil>();
+                    usuarioPerfil1List = usuarioPerfilDao.getUsuarioPerfilListPorUsuarioInactivo(usuarioDtoGestion.getUsuario().getUsuarioId());//traido desde base
+                    Boolean flagExistInactivo = Boolean.FALSE;
+                    for (UsuarioPerfil up : usuarioPerfil1List) {
+                        if (p.equals(up.getPerfil())) {
+                            up.setEstado(EstadoEnum.ACTIVO.getEstado());
+                            up.setFechaModificacion(new Date());
+                            usuarioPerfilServicio.update(up);
+                            flagExistInactivo = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if (!flagExistInactivo) {
+                        UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
+                        usuarioPerfil.setUsuario(usuarioDtoGestion.getUsuario());
+                        usuarioPerfil.setPerfil(p);
+                        usuarioPerfil.setFechaAsignacion(new Date());
+                        usuarioPerfil.setEstado(EstadoEnum.ACTIVO.getEstado());
+                        usuarioPerfilServicio.create(usuarioPerfil);
+                    }
+                }
+            }
+            List<String> strPerfilList = new ArrayList<String>();
+            for (Perfil perfil : perfilSelectedList) {
+                strPerfilList.add(perfil.getNombre());
+            }
+            usuarioDtoGestion.setPerfil(StringUtils.join(strPerfilList, " / "));
+            if (restablecerContraseña) {
+                correoRestablecerContraseña(contraseña, "Restaurar Contraseña");
+            }
+//            cargarDatosUsuario();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Se ha actualizado el usuario con Cédula: " + usuarioDtoGestion.getUsuario().getCedula()));
+            usuarioDtoGestion = new UsuarioDTO();
+            restablecerVista();
         }
     }
 
     public void cancelar() {
-        usuarioActivoList = new ArrayList<Usuario>();
-        usuarioSelected = new Usuario();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
-        onEdit = Boolean.FALSE;
-        onCreate = Boolean.FALSE;
-        renderEdition = Boolean.FALSE;
+        tipoInstitucionSelected = new TipoInstitucion();
+        institucionSelected = new Institucion();
+        perfilSelectedList = new ArrayList<Perfil>();
+        usuarioDtoGestion = new UsuarioDTO();
+        restablecerVista();
     }
 
-    public void guardar() {
-        String contraseña = "";
-        Usuario userExistente = new Usuario();
-        userExistente = usuarioServicio.getUsuarioByUsername(usuarioSelected.getUsuario());
-        if (usuarioSelected.getEmail() != null && !usuarioSelected.getEmail().isEmpty()) {
-            if (restablecer) {
-                contraseña = FacesUtils.generarContraseña();
-                usuarioSelected.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + contraseña));
-            }
-            if (onCreate) {
-                if (userExistente.getUsuarioId() == null) {
-                    usuarioSelected.setEstado("A");
-                    usuarioServicio.createUsuario(usuarioSelected);
-                    preguntaList = new ArrayList<Pregunta>();
-                    preguntaList = preguntaServicio.getPreguntasActivas();
-                    for (Pregunta p : preguntaList) {
-                        Respuesta respuesta = new Respuesta();
-                        respuesta.setUsuarioId(usuarioSelected);
-                        respuesta.setPreguntaId(p);
-                        respuesta.setRespuesta("");
-                        respuesta.setEstado("A");
-                        respuestaServicio.create(respuesta);
-                    }
-                    if (restablecer) {
-                        correoRestablecerContraseña(contraseña);
-                        this.addInfoMessage("El usuario se creó satisfactoriamente. El usuario y contraseña se ha enviado a " + usuarioSelected.getEmail(), "");
-                    }
-                    usuarioActivoList = new ArrayList<Usuario>();
-                    usuarioSelected = new Usuario();
-                    usuarioActivoList = usuarioServicio.getUsuariosActivos();
-
-                    onEdit = Boolean.FALSE;
-                    onCreate = Boolean.FALSE;
-                    renderEdition = Boolean.FALSE;
-                } else {
-                    this.addErrorMessage("1", "El usuario ingresado ya existe", "");
-                }
-            } else if (onEdit) {
-                if (userExistente.getUsuarioId() == null || userExistente.getUsuarioId().equals(usuarioSelected.getUsuarioId())) {
-                    usuarioServicio.editUsuario(usuarioSelected);
-                    this.addInfoMessage("El usuario se actualizó satisfactoriamente.", "");
-                    if (restablecer) {
-                        correoRestablecerContraseña(contraseña);
-                        this.addInfoMessage("La contraseña actualizada se ha enviado a " + usuarioSelected.getEmail(), "");
-                    }
-
-                    usuarioActivoList = new ArrayList<Usuario>();
-                    usuarioSelected = new Usuario();
-                    usuarioActivoList = usuarioServicio.getUsuariosActivos();
-
-                    onEdit = Boolean.FALSE;
-                    onCreate = Boolean.FALSE;
-                    renderEdition = Boolean.FALSE;
-                } else {
-                    this.addErrorMessage("1", "El usuario ingresado ya existe", "");
-                }
-            }
-        } else {
-            this.addErrorMessage("1", "Debe ingresar un correo válido", "");
-        }
-    }
-
-    public void eliminarUsuario() {
-        usuarioSelected.setEstado("I");
-        usuarioServicio.editUsuario(usuarioSelected);
-        usuarioActivoList = new ArrayList<Usuario>();
-        usuarioSelected = new Usuario();
-        usuarioActivoList = usuarioServicio.getUsuariosActivos();
-    }
-
-    public void crearUsuariosBloque(FileUploadEvent event) {
-        try {
-            UploadedFile uploadedFile = event.getFile();
-            InputStream in = uploadedFile.getInputstream();
-            XSSFWorkbook worbook = new XSSFWorkbook(in);
-            XSSFSheet sheet = worbook.getSheetAt(0);
-
-            XSSFRow row;
-            XSSFCell cell;
-
-            List<Usuario> usuarioNuevoList = new ArrayList<Usuario>();
-
-            for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
-                row = sheet.getRow(r);
-                Usuario usuarioNuevo = new Usuario();
-                if (row.getRowNum() != 0) {
-                    for (int c = 0; c < (int) row.getLastCellNum(); c++) {
-                        String dato = "";
-                        cell = row.getCell(c);
-                        if (cell == null) {
-                            dato = null;
-                        } else {
-                            switch (cell.getCellType()) {
-                                case NUMERIC:
-                                    int val = (int) cell.getNumericCellValue();
-                                    dato = val + "";
-                                    break;
-                                case FORMULA:
-                                    FormulaEvaluator evaluator = worbook.getCreationHelper().createFormulaEvaluator();
-                                    CellValue cellValue = evaluator.evaluate(cell);
-                                    switch (cellValue.getCellType()) {
-                                        case STRING:
-                                            System.out.print(cellValue.getStringValue());
-                                            dato = cellValue.getStringValue();
-                                            break;
-                                        case NUMERIC:
-                                            System.out.print(cellValue.getNumberValue());
-                                            dato = (int) cellValue.getNumberValue() + "";
-                                            break;
-                                    }
-                                    break;
-                                case STRING:
-                                    dato = cell.getStringCellValue();
-                                    break;
-                                case BLANK:
-                                    dato = "";
-                                    break;
-                                default:
-                                    dato = cell.getStringCellValue();
-                                    break;
-                            }
-                        }
-                        switch (cell.getColumnIndex()) {
-                            case 0:
-                                InstitucionRequerida ir = new InstitucionRequerida();
-                                if (dato == null) {
-                                    ir.setInstitucionId(null);
-                                } else {
-                                    ir.setInstitucionId(Integer.parseInt(dato));
-                                }
-                                usuarioNuevo.setInstitucionId(ir);
-                                break;
-                            case 1:
-                                usuarioNuevo.setNombre(dato);
-                                break;
-                            case 2:
-                                usuarioNuevo.setEmail(dato);
-                                break;
-                            case 3:
-                                usuarioNuevo.setUsuario(dato);
-                                usuarioNuevo.setContrasena(EncriptarCadenas.encriptarCadenaSha1(SemillaEnum.SEMILLA_REMANENTE.getSemilla() + "R" + dato + "R"));
-                                break;
-                            case 4:
-                                usuarioNuevo.setRegistrador(Boolean.FALSE);
-                                usuarioNuevo.setVerificador(Boolean.FALSE);
-                                usuarioNuevo.setValidador(Boolean.FALSE);
-                                usuarioNuevo.setAdministrador(Boolean.FALSE);
-                                switch (dato) {
-                                    case "REGISTRADOR":
-                                        usuarioNuevo.setRegistrador(Boolean.TRUE);
-                                        break;
-                                    case "VERIFICADOR":
-                                        usuarioNuevo.setVerificador(Boolean.TRUE);
-                                        break;
-                                    case "VALIDADOR":
-                                        usuarioNuevo.setValidador(Boolean.TRUE);
-                                        break;
-                                    case "ADMINISTRADOR":
-                                        usuarioNuevo.setAdministrador(Boolean.TRUE);
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                    usuarioNuevo.setEstado("A");
-                    Boolean flagUsuarioRepetido = Boolean.FALSE;
-                    for (Usuario u : usuarioNuevoList) {
-                        if (usuarioNuevo.getUsuario().equals(u.getUsuario())) {
-                            flagUsuarioRepetido = Boolean.TRUE;
-                            break;
-                        }
-                    }
-                    if (!flagUsuarioRepetido) {
-                        usuarioNuevoList.add(usuarioNuevo);
-                    }
-                }
-            }
-            Boolean errorUsuarios = Boolean.FALSE;
-            String mensajeError = "";
-            for (Usuario u : usuarioNuevoList) {
-
-                if (usuarioServicio.getUsuarioByUsername(u.getUsuario()).getUsuarioId() != null) {
-                    errorUsuarios = Boolean.TRUE;
-                    mensajeError = "El usuario: " + u.getUsuario() + " ya se encuentra registrado, favor verificar su archivo de carga";
-                    break;
-                }
-                if (u.getUsuario() == null || u.getUsuario().equals("")) {
-                    errorUsuarios = Boolean.TRUE;
-                    mensajeError = "Error:Favor verificar su archivo de carga. Usuario no definido.";
-                    break;
-                }
-                if (u.getInstitucionId().getInstitucionId() == null
-                        || u.getInstitucionId().getInstitucionId().toString().equals("")) {
-                    errorUsuarios = Boolean.TRUE;
-                    mensajeError = "Error: Favor verificar su archivo de carga. Institución no definida.";
-                    break;
-                }
-                if (u.getEmail() == null || u.getEmail().equals("")) {
-                    errorUsuarios = Boolean.TRUE;
-                    mensajeError = "Error: Favor verificar su archivo de carga. Email no definido";
-                    break;
-                }
-            }
-
-            if (errorUsuarios) {
-                this.addErrorMessage("0", mensajeError, "No funcionó");
-            } else {
-                for (Usuario u : usuarioNuevoList) {
-                    usuarioServicio.createUsuario(u);
-                }
-                usuarioActivoList = new ArrayList<Usuario>();
-                usuarioActivoList = usuarioServicio.getUsuariosActivos();
-                this.addInfoMessage("Se ha creado el bloque de usuarios satisfactoriamente", "Info");
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(GestionUsuariosCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            this.addErrorMessage("0", "Error: El Excel que se pretende subir tiene errores, favor verificar su archivo de carga", "No funcionó");
-        }
-    }
-
-    private void correoRestablecerContraseña(String contraseña) {
-        Email email = new Email();
-        try {
-            String mensajeMail = "Su Usuario es: <b>" + usuarioSelected.getUsuario() + "</b><br/>"
-                    + "Su Contraseña es: <b>" + contraseña + "</b>";
-            email.sendMail(usuarioSelected.getEmail(), "Plataforma REMANENTES", mensajeMail);
-            System.out.println("Correo Enviado");
-        } catch (Exception ex) {
-            Logger.getLogger(RestaurarClaveCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void seleccionarTipoInstitucion() {
-        InstitucionRequerida ir = new InstitucionRequerida();
-        usuarioSelected.setInstitucionId(ir);
-        if (tipoInstitucion.equals("Registro Propiedad / Mercantil")) {
-            tipoInstitucion = "Registro Propiedad / Mercantil";
-            institucionRequeridaList = institucionRequeridaServicio.getRegistroMixtoList();
-            usuarioSelected.setValidador(false);
-            usuarioSelected.setAdministrador(false);
-            usuarioSelected.setVerificador(false);
-            usuarioSelected.setRegistrador(true);
-
-            disabledRegistrador = Boolean.FALSE;
-            disabledValidador = Boolean.TRUE;
-            disabledVerificador = Boolean.FALSE;
-            disabledAdministrador = Boolean.TRUE;
-        } else if (tipoInstitucion.equals("GAD")) {
-            tipoInstitucion = "GAD";
-            institucionRequeridaList = institucionRequeridaServicio.getGADList();
-            usuarioSelected.setValidador(false);
-            usuarioSelected.setAdministrador(false);
-            usuarioSelected.setVerificador(true);
-            usuarioSelected.setRegistrador(false);
-
-            disabledRegistrador = Boolean.TRUE;
-            disabledValidador = Boolean.TRUE;
-            disabledVerificador = Boolean.TRUE;
-            disabledAdministrador = Boolean.TRUE;
-        } else if (tipoInstitucion.equals("Dirección Regional")) {
-            tipoInstitucion = "Dirección Regional";
-            institucionRequeridaList = institucionRequeridaServicio.getDireccionRegionalList();
-            usuarioSelected.setValidador(true);
-            usuarioSelected.setAdministrador(false);
-            usuarioSelected.setVerificador(false);
-            usuarioSelected.setRegistrador(false);
-
-            disabledRegistrador = Boolean.TRUE;
-            disabledValidador = Boolean.TRUE;
-            disabledVerificador = Boolean.TRUE;
-            disabledAdministrador = Boolean.TRUE;
-        } else if (tipoInstitucion.equals("Dirección Nacional")) {
-            tipoInstitucion = "Dirección Nacional";
-            institucionRequeridaList = institucionRequeridaServicio.getDireccionNacionalList();
-            usuarioSelected.setInstitucionId(institucionRequeridaList.get(institucionRequeridaList.size() - 1));
-            usuarioSelected.setValidador(Boolean.FALSE);
-            usuarioSelected.setAdministrador(Boolean.TRUE);
-            usuarioSelected.setVerificador(Boolean.FALSE);
-            usuarioSelected.setRegistrador(Boolean.FALSE);
-
-            disabledRegistrador = Boolean.TRUE;
-            disabledValidador = Boolean.TRUE;
-            disabledVerificador = Boolean.TRUE;
-            disabledAdministrador = Boolean.TRUE;
-        }
-    }
-
-    public List<InstitucionRequerida> completeNombreInstitucion(String query) {
-        List<InstitucionRequerida> filteredInstituciones = new ArrayList<InstitucionRequerida>();
-        for (InstitucionRequerida ir : institucionRequeridaList) {
+    public List<Institucion> completeNombreInstitucion(String query) {
+        List<Institucion> filteredInstituciones = new ArrayList<Institucion>();
+        for (Institucion ir : institucionList) {
             if (ir.getNombre().toLowerCase().contains(query)
                     || ir.getNombre().toUpperCase().contains(query)) {
                 filteredInstituciones.add(ir);
@@ -484,9 +430,103 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         return filteredInstituciones;
     }
 
+    public void onChangeTipoInstitucion() {
+        institucionList = institucionServicio.buscarInstitucionPorTipo(tipoInstitucionSelected.getTipoInstitucionId());
+        institucionSelected = new Institucion();
+
+        perfilListActivos = getPerfilesPorTipoInstitucion(tipoInstitucionSelected.getTipoInstitucionId());
+        perfilSelectedList = new ArrayList<Perfil>();
+    }
+
+    //Metodos internos
+    private List<Perfil> getPerfilesPorTipoInstitucion(Integer tipoInstitucion) {
+        List<Perfil> perfilListAux = new ArrayList<Perfil>();
+        List<Perfil> perfilList = new ArrayList<Perfil>();
+        perfilListAux = perfilServicio.obtenerPerfilesPorSistema(SistemaIdEnum.REMANENTES_SISTEMA_ID.getSistemaId());
+        switch (tipoInstitucion) {
+            case 1:
+                perfilList.add(perfilListAux.get(0));
+                perfilList.add(perfilListAux.get(4));
+                perfilList.add(perfilListAux.get(6));
+                break;
+            case 2:
+                perfilList.add(perfilListAux.get(3));
+                perfilList.add(perfilListAux.get(7));
+                break;
+            case 3:
+                perfilList.add(perfilListAux.get(8));
+                break;
+            case 4:
+                perfilList.add(perfilListAux.get(1));
+                perfilList.add(perfilListAux.get(2));
+                perfilList.add(perfilListAux.get(5));
+                perfilList.add(perfilListAux.get(8));
+                break;
+            case 5:
+                perfilList.add(perfilListAux.get(1));
+                perfilList.add(perfilListAux.get(2));
+                perfilList.add(perfilListAux.get(5));
+                break;
+            case 6:
+                perfilList.add(perfilListAux.get(1));
+                break;
+            case 7:
+                perfilList.add(perfilListAux.get(2));
+                break;
+
+        }
+        return perfilList;
+    }
+
+    private void restablecerVista() {
+        onCreate = Boolean.FALSE;
+        onEdit = Boolean.FALSE;
+        renderEdition = Boolean.FALSE;
+        disableRestablecerContraseñaBtn = Boolean.TRUE;
+        restablecerContraseña = Boolean.FALSE;
+    }
+
+    private void correoRestablecerContraseña(String contraseña, String asuntoUser) {
+//        System.out.println("se esta enviando el correo XD");
+        MailMessage mailMessage = new MailMessage();
+        String mensajeMail = "Su Usuario es: <b>" + usuarioDtoGestion.getUsuario().getCedula() + "</b><br/>"
+                + "Su Contraseña es: <b>" + contraseña + "</b>";
+        try {
+            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+            URI uri = new URI(ext.getRequestScheme(),
+                    null, ext.getRequestServerName(), ext.getRequestServerPort(),
+                    ext.getRequestContextPath(), null, null);
+
+            StringBuilder html = new StringBuilder(
+                    "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
+            html.append("Estimado(a) " + usuarioDtoGestion.getUsuario().getNombre() + ", <br /><br />");
+            html.append(mensajeMail + "<br/ ><br />");
+            html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+            html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
+            html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
+            html.append("Dirección Nacional de Registros de Datos Públicos");
+            html.append("</B></FONT>");
+            List<String> to = new ArrayList<String>();
+            StringBuilder asunto = new StringBuilder(200);
+            to.add(usuarioDtoGestion.getUsuario().getCorreoElectronico());
+            asunto.append("Sistema de Remanentes e Inventario de Libros - " + asuntoUser);
+            mailMessage = bandejaServicio.credencialesCorreo();            
+            mailMessage.setTo(to);
+            mailMessage.setSubject(asunto.toString());
+            mailMessage.setText(html.toString());
+            clienteQueueMailServicio.encolarMail(mailMessage);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(BandejaServicioImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     //Getters & Setters
-    public Boolean getRenderEdition() {
-        return renderEdition;
+    public List<UsuarioDTO> getUsuarioDtoList() {
+        return usuarioDtoList;
+    }
+
+    public void setUsuarioDtoList(List<UsuarioDTO> usuarioDtoList) {
+        this.usuarioDtoList = usuarioDtoList;
     }
 
     public String getTituloPagina() {
@@ -497,20 +537,44 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         this.tituloPagina = tituloPagina;
     }
 
-    public List<Usuario> getUsuarioActivoList() {
-        return usuarioActivoList;
+    public String getCedulaBusqueda() {
+        return cedulaBusqueda;
     }
 
-    public void setUsuarioActivoList(List<Usuario> usuarioActivoList) {
-        this.usuarioActivoList = usuarioActivoList;
+    public void setCedulaBusqueda(String cedulaBusqueda) {
+        this.cedulaBusqueda = cedulaBusqueda;
     }
 
-    public Usuario getUsuarioSelected() {
-        return usuarioSelected;
+    public Boolean getOnEdit() {
+        return onEdit;
     }
 
-    public void setUsuarioSelected(Usuario usuarioSelected) {
-        this.usuarioSelected = usuarioSelected;
+    public void setOnEdit(Boolean onEdit) {
+        this.onEdit = onEdit;
+    }
+
+    public Boolean getOnCreate() {
+        return onCreate;
+    }
+
+    public void setOnCreate(Boolean onCreate) {
+        this.onCreate = onCreate;
+    }
+
+    public Boolean getRenderEdition() {
+        return renderEdition;
+    }
+
+    public void setRenderEdition(Boolean renderEdition) {
+        this.renderEdition = renderEdition;
+    }
+
+    public Boolean getRestablecerContraseña() {
+        return restablecerContraseña;
+    }
+
+    public void setRestablecerContraseña(Boolean restablecerContraseña) {
+        this.restablecerContraseña = restablecerContraseña;
     }
 
     public String getBtnGuardar() {
@@ -521,79 +585,72 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
         this.btnGuardar = btnGuardar;
     }
 
-    public String getTipoInstitucion() {
-        return tipoInstitucion;
+    public Boolean getDisableRestablecerContraseñaBtn() {
+        return disableRestablecerContraseñaBtn;
     }
 
-    public void setTipoInstitucion(String tipoInstitucion) {
-        this.tipoInstitucion = tipoInstitucion;
+    public void setDisableRestablecerContraseñaBtn(Boolean disableRestablecerContraseñaBtn) {
+        this.disableRestablecerContraseñaBtn = disableRestablecerContraseñaBtn;
     }
 
-    public List<InstitucionRequerida> getInstitucionRequeridaList() {
-        return institucionRequeridaList;
+    public TipoInstitucion getTipoInstitucionSelected() {
+        return tipoInstitucionSelected;
     }
 
-    public void setInstitucionRequeridaList(List<InstitucionRequerida> institucionRequeridaList) {
-        this.institucionRequeridaList = institucionRequeridaList;
+    public void setTipoInstitucionSelected(TipoInstitucion tipoInstitucionSelected) {
+        this.tipoInstitucionSelected = tipoInstitucionSelected;
     }
 
-    public String getNombre() {
-        return nombre;
+    public List<TipoInstitucion> getTipoInstitucionList() {
+        return tipoInstitucionList;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setTipoInstitucionList(List<TipoInstitucion> tipoInstitucionList) {
+        this.tipoInstitucionList = tipoInstitucionList;
     }
 
-    public Boolean getOnCreate() {
-        return onCreate;
+    public Institucion getInstitucionSelected() {
+        return institucionSelected;
     }
 
-    public Boolean getDisabledRegistrador() {
-        return disabledRegistrador;
+    public void setInstitucionSelected(Institucion institucionSelected) {
+        this.institucionSelected = institucionSelected;
     }
 
-    public void setDisabledRegistrador(Boolean disabledRegistrador) {
-        this.disabledRegistrador = disabledRegistrador;
+    public UsuarioDTO getUsuarioDtoGestion() {
+        return usuarioDtoGestion;
     }
 
-    public Boolean getDisabledVerificador() {
-        return disabledVerificador;
+    public void setUsuarioDtoGestion(UsuarioDTO usuarioDtoGestion) {
+        this.usuarioDtoGestion = usuarioDtoGestion;
     }
 
-    public void setDisabledVerificador(Boolean disabledVerificador) {
-        this.disabledVerificador = disabledVerificador;
+    public List<Perfil> getPerfilSelectedList() {
+        return perfilSelectedList;
     }
 
-    public Boolean getDisabledValidador() {
-        return disabledValidador;
+    public void setPerfilSelectedList(List<Perfil> perfilSelectedList) {
+        this.perfilSelectedList = perfilSelectedList;
     }
 
-    public void setDisabledValidador(Boolean disabledValidador) {
-        this.disabledValidador = disabledValidador;
+    public List<Perfil> getPerfilListActivos() {
+        return perfilListActivos;
     }
 
-    public Boolean getDisabledAdministrador() {
-        return disabledAdministrador;
+    public void setPerfilListActivos(List<Perfil> perfilListActivos) {
+        this.perfilListActivos = perfilListActivos;
     }
 
-    public void setDisabledAdministrador(Boolean disabledAdministrador) {
-        this.disabledAdministrador = disabledAdministrador;
+    public Boolean getEstadoAI() {
+        return estadoAI;
     }
 
-    public Boolean getDisabledRestablecer() {
-        return disabledRestablecer;
+    public void setEstadoAI(Boolean estadoAI) {
+        this.estadoAI = estadoAI;
     }
+    
+    
+    
+    
 
-    public void setDisabledRestablecer(Boolean disabledRestablecer) {
-        this.disabledRestablecer = disabledRestablecer;
-    }
-
-    public Boolean getRestablecer() {
-        return restablecer;
-    }
-
-    public void setRestablecer(Boolean restablecer) {
-        this.restablecer = restablecer;
-    }
 }

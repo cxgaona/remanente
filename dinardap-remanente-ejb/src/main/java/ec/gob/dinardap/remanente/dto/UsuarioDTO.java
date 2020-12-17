@@ -5,21 +5,37 @@
  */
 package ec.gob.dinardap.remanente.dto;
 
+import ec.gob.dinardap.seguridad.modelo.Institucion;
+import ec.gob.dinardap.seguridad.modelo.Usuario;
+
 /**
  *
  * @author christian.gaona
  */
 public class UsuarioDTO {
 
+    private Usuario usuario;
+    private Institucion institucion;
     private String perfil;
-    private Integer usuarioID;
-    private Integer institucionID;
-    private Integer gadID;
-    private Boolean registrador;
-    private Boolean verificador;
-    private Boolean validador;
-    private Boolean administrador;
-    private String tipo;
+
+    public UsuarioDTO() {
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public Institucion getInstitucion() {
+        return institucion;
+    }
+
+    public void setInstitucion(Institucion institucion) {
+        this.institucion = institucion;
+    }
 
     public String getPerfil() {
         return perfil;
@@ -27,70 +43,6 @@ public class UsuarioDTO {
 
     public void setPerfil(String perfil) {
         this.perfil = perfil;
-    }
-
-    public Integer getUsuarioID() {
-        return usuarioID;
-    }
-
-    public void setUsuarioID(Integer usuarioID) {
-        this.usuarioID = usuarioID;
-    }
-
-    public Integer getInstitucionID() {
-        return institucionID;
-    }
-
-    public void setInstitucionID(Integer institucionID) {
-        this.institucionID = institucionID;
-    }
-
-    public Integer getGadID() {
-        return gadID;
-    }
-
-    public void setGadID(Integer gadID) {
-        this.gadID = gadID;
-    }
-
-    public Boolean getRegistrador() {
-        return registrador;
-    }
-
-    public void setRegistrador(Boolean registrador) {
-        this.registrador = registrador;
-    }
-
-    public Boolean getVerificador() {
-        return verificador;
-    }
-
-    public void setVerificador(Boolean verificador) {
-        this.verificador = verificador;
-    }
-
-    public Boolean getValidador() {
-        return validador;
-    }
-
-    public void setValidador(Boolean validador) {
-        this.validador = validador;
-    }
-
-    public Boolean getAdministrador() {
-        return administrador;
-    }
-
-    public void setAdministrador(Boolean administrador) {
-        this.administrador = administrador;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 
 }

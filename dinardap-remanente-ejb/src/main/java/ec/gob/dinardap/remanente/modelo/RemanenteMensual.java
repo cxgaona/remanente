@@ -24,6 +24,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -31,15 +33,16 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "remanente_mensual")
+@XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "RemanenteMensual.findAll", query = "SELECT r FROM RemanenteMensual r")
-    , @NamedQuery(name = "RemanenteMensual.findByRemanenteMensualId", query = "SELECT r FROM RemanenteMensual r WHERE r.remanenteMensualId = :remanenteMensualId")
-    , @NamedQuery(name = "RemanenteMensual.findByMes", query = "SELECT r FROM RemanenteMensual r WHERE r.mes = :mes")
-    , @NamedQuery(name = "RemanenteMensual.findByFechaRegistro", query = "SELECT r FROM RemanenteMensual r WHERE r.fechaRegistro = :fechaRegistro")
-    , @NamedQuery(name = "RemanenteMensual.findByTotal", query = "SELECT r FROM RemanenteMensual r WHERE r.total = :total")
-    , @NamedQuery(name = "RemanenteMensual.findByComentarios", query = "SELECT r FROM RemanenteMensual r WHERE r.comentarios = :comentarios")
-    , @NamedQuery(name = "RemanenteMensual.findBySolicitudCambioUrl", query = "SELECT r FROM RemanenteMensual r WHERE r.solicitudCambioUrl = :solicitudCambioUrl")
-    , @NamedQuery(name = "RemanenteMensual.findByInformeAprobacionUrl", query = "SELECT r FROM RemanenteMensual r WHERE r.informeAprobacionUrl = :informeAprobacionUrl")})
+    @NamedQuery(name = "RemanenteMensual.findAll", query = "SELECT r FROM RemanenteMensual r"),
+    @NamedQuery(name = "RemanenteMensual.findByRemanenteMensualId", query = "SELECT r FROM RemanenteMensual r WHERE r.remanenteMensualId = :remanenteMensualId"),
+    @NamedQuery(name = "RemanenteMensual.findByMes", query = "SELECT r FROM RemanenteMensual r WHERE r.mes = :mes"),
+    @NamedQuery(name = "RemanenteMensual.findByFechaRegistro", query = "SELECT r FROM RemanenteMensual r WHERE r.fechaRegistro = :fechaRegistro"),
+    @NamedQuery(name = "RemanenteMensual.findByTotal", query = "SELECT r FROM RemanenteMensual r WHERE r.total = :total"),
+    @NamedQuery(name = "RemanenteMensual.findByComentarios", query = "SELECT r FROM RemanenteMensual r WHERE r.comentarios = :comentarios"),
+    @NamedQuery(name = "RemanenteMensual.findBySolicitudCambioUrl", query = "SELECT r FROM RemanenteMensual r WHERE r.solicitudCambioUrl = :solicitudCambioUrl"),
+    @NamedQuery(name = "RemanenteMensual.findByInformeAprobacionUrl", query = "SELECT r FROM RemanenteMensual r WHERE r.informeAprobacionUrl = :informeAprobacionUrl")})
 public class RemanenteMensual implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,7 +59,7 @@ public class RemanenteMensual implements Serializable {
     @Column(name = "fecha_registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
-
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "total")
     private BigDecimal total;
 
@@ -68,33 +71,37 @@ public class RemanenteMensual implements Serializable {
 
     @Column(name = "informe_aprobacion_url", length = 2147483647)
     private String informeAprobacionUrl;
-
+    
     //Bandeja//
-    @OneToMany(mappedBy = "remanenteMensualId")
+    @OneToMany(mappedBy = "remanenteMensual")
     private List<Bandeja> bandejaList;
 
     //RemanenteCuatrimestral//
     @ManyToOne
     @JoinColumns({
-        @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id")
-        , @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id")
-        , @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")})
+        @JoinColumn(name = "remanente_cuatrimestral_id", referencedColumnName = "remanente_cuatrimestral_id"),
+        @JoinColumn(name = "remanente_anual_id", referencedColumnName = "remanente_anual_id"),
+        @JoinColumn(name = "institucion_id", referencedColumnName = "institucion_id")})
     private RemanenteCuatrimestral remanenteCuatrimestral;
 
     //Remanente Origen//
-    @OneToMany(mappedBy = "remanenteMensualOrigenId")
+    @OneToMany(mappedBy = "remanenteMensualOrigen")
     private List<RemanenteMensual> remanenteMensualList;
 
     @ManyToOne
     @JoinColumn(name = "remanente_mensual_origen_id", referencedColumnName = "remanente_mensual_id")
-    private RemanenteMensual remanenteMensualOrigenId;
+    private RemanenteMensual remanenteMensualOrigen;
     //Remanente Origen//
 
-    @OneToMany(mappedBy = "remanenteMensualId")
+    @OneToMany(mappedBy = "remanenteMensual")
     private List<EstadoRemanenteMensual> estadoRemanenteMensualList;
 
-    @OneToMany(mappedBy = "remanenteMensualId")
+    @OneToMany(mappedBy = "remanenteMensual")
     private List<Transaccion> transaccionList;
+    
+    //Prórroga
+    @OneToMany(mappedBy = "remanenteMensualId")
+    private List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList;
 
     public RemanenteMensual() {
     }
@@ -159,12 +166,31 @@ public class RemanenteMensual implements Serializable {
         this.informeAprobacionUrl = informeAprobacionUrl;
     }
 
+    @XmlTransient
     public List<Bandeja> getBandejaList() {
         return bandejaList;
     }
 
     public void setBandejaList(List<Bandeja> bandejaList) {
         this.bandejaList = bandejaList;
+    }
+
+    @XmlTransient
+    public List<EstadoRemanenteMensual> getEstadoRemanenteMensualList() {
+        return estadoRemanenteMensualList;
+    }
+
+    public void setEstadoRemanenteMensualList(List<EstadoRemanenteMensual> estadoRemanenteMensualList) {
+        this.estadoRemanenteMensualList = estadoRemanenteMensualList;
+    }
+
+    @XmlTransient
+    public List<Transaccion> getTransaccionList() {
+        return transaccionList;
+    }
+
+    public void setTransaccionList(List<Transaccion> transaccionList) {
+        this.transaccionList = transaccionList;
     }
 
     public RemanenteCuatrimestral getRemanenteCuatrimestral() {
@@ -175,6 +201,7 @@ public class RemanenteMensual implements Serializable {
         this.remanenteCuatrimestral = remanenteCuatrimestral;
     }
 
+    @XmlTransient
     public List<RemanenteMensual> getRemanenteMensualList() {
         return remanenteMensualList;
     }
@@ -183,53 +210,20 @@ public class RemanenteMensual implements Serializable {
         this.remanenteMensualList = remanenteMensualList;
     }
 
-    public RemanenteMensual getRemanenteMensualOrigenId() {
-        return remanenteMensualOrigenId;
+    public RemanenteMensual getRemanenteMensualOrigen() {
+        return remanenteMensualOrigen;
     }
 
-    public void setRemanenteMensualOrigenId(RemanenteMensual remanenteMensualOrigenId) {
-        this.remanenteMensualOrigenId = remanenteMensualOrigenId;
+    public void setRemanenteMensualOrigen(RemanenteMensual remanenteMensualOrigen) {
+        this.remanenteMensualOrigen = remanenteMensualOrigen;
+    }    
+    
+    public List<ProrrogaRemanenteMensual> getProrrogaRemanenteMensualList() {
+        return prorrogaRemanenteMensualList;
     }
 
-    public List<EstadoRemanenteMensual> getEstadoRemanenteMensualList() {
-        return estadoRemanenteMensualList;
-    }
-
-    public void setEstadoRemanenteMensualList(List<EstadoRemanenteMensual> estadoRemanenteMensualList) {
-        this.estadoRemanenteMensualList = estadoRemanenteMensualList;
-    }
-
-    public List<Transaccion> getTransaccionList() {
-        return transaccionList;
-    }
-
-    public void setTransaccionList(List<Transaccion> transaccionList) {
-        this.transaccionList = transaccionList;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (remanenteMensualId != null ? remanenteMensualId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof RemanenteMensual)) {
-            return false;
-        }
-        RemanenteMensual other = (RemanenteMensual) object;
-        if ((this.remanenteMensualId == null && other.remanenteMensualId != null) || (this.remanenteMensualId != null && !this.remanenteMensualId.equals(other.remanenteMensualId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "RemanenteMensual{" + "remanenteMensualId=" + remanenteMensualId + ", mes=" + mes + ", fechaRegistro=" + fechaRegistro + ", total=" + total + ", comentarios=" + comentarios + ", solicitudCambioUrl=" + solicitudCambioUrl + ", informeAprobacionUrl=" + informeAprobacionUrl + ", bandejaList=" + bandejaList + ", remanenteCuatrimestral=" + remanenteCuatrimestral + ", remanenteMensualList=" + remanenteMensualList + ", remanenteMensualOrigenId=" + remanenteMensualOrigenId + ", estadoRemanenteMensualList=" + estadoRemanenteMensualList + ", transaccionList=" + transaccionList + '}';
+    public void setProrrogaRemanenteMensualList(List<ProrrogaRemanenteMensual> prorrogaRemanenteMensualList) {
+        this.prorrogaRemanenteMensualList = prorrogaRemanenteMensualList;
     }
 
 }

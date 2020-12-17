@@ -24,7 +24,6 @@ body{
     /*margin:8px;*/
 }
 
-
 .pie{
     /*position: fixed;*/
     text-align: center;
@@ -453,4 +452,11 @@ ui-fileupload ui-widget ui-fileupload-responsive{
 
 .ui-datatable.tableDialogs th {
     text-align: center !important;
+}
+
+.busquedaIzq{
+    padding-right: 0;    
+}
+.busquedaDer{
+    padding-left: 0;    
 }

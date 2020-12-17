@@ -49,34 +49,5 @@ public class RemanenteAnualPK implements Serializable {
     public void setInstitucionId(int institucionId) {
         this.institucionId = institucionId;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (int) remanenteAnualId;
-        hash += (int) institucionId;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof RemanenteAnualPK)) {
-            return false;
-        }
-        RemanenteAnualPK other = (RemanenteAnualPK) object;
-        if (this.remanenteAnualId != other.remanenteAnualId) {
-            return false;
-        }
-        if (this.institucionId != other.institucionId) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ec.gob.dinardap.remanente.modelo.RemanenteAnualPK[ remanenteAnualId=" + remanenteAnualId + ", institucionId=" + institucionId + " ]";
-    }
     
 }

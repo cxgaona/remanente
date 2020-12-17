@@ -14,13 +14,12 @@ import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.dao.RemanenteCuatrimestralDao;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoRemanenteCuatrimestral;
-import ec.gob.dinardap.remanente.modelo.EstadoRemanenteMensual;
 import ec.gob.dinardap.remanente.modelo.RemanenteAnual;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestralPK;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
-import ec.gob.dinardap.remanente.modelo.Transaccion;
 import ec.gob.dinardap.remanente.servicio.RemanenteCuatrimestralServicio;
+import ec.gob.dinardap.remanente.servicio.RemanenteMensualServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
 import ec.gob.dinardap.sftp.exception.FtpException;
 import ec.gob.dinardap.sftp.util.CredencialesSFTP;
@@ -28,6 +27,8 @@ import ec.gob.dinardap.sftp.util.GestionSFTP;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +41,9 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
 
     @EJB
     private ParametroServicio parametroServicio;
+
+    @EJB
+    private RemanenteMensualServicio remanenteMensualServicio;
 
     @Override
     public GenericDao<RemanenteCuatrimestral, RemanenteCuatrimestralPK> getDao() {
@@ -136,10 +140,11 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     }
 
     @Override
+    @SuppressWarnings("empty-statement")
     public List<RemanenteCuatrimestral> getRemanenteCuatrimestralListByInstitucion(Integer institucionId, Integer año) {
         List<RemanenteCuatrimestral> remanenteCuatrimestralList = new ArrayList<RemanenteCuatrimestral>();
         String[] criteriaNombres = {
-            "remanenteAnual.institucionRequerida.institucionId",
+            "remanenteAnual.institucion.institucionId",
             "remanenteAnual.anio"
         };
         CriteriaTypeEnum[] criteriaTipos = {
@@ -154,17 +159,15 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
         for (RemanenteCuatrimestral remanenteCuatrimestral : remanenteCuatrimestralList) {
             remanenteCuatrimestral.getRemanenteCuatrimestralPK();
             for (EstadoRemanenteCuatrimestral estadoRemanenteCuatrimestral : remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList()) {
-                estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestral();
+                estadoRemanenteCuatrimestral.getEstadoRemanenteCuatrimestralId();
             }
-            for (RemanenteMensual remanenteMensual : remanenteCuatrimestral.getRemanenteMensualList()) {
-                remanenteMensual.getRemanenteMensualId();
-                for (EstadoRemanenteMensual estadoRemanenteMensual : remanenteMensual.getEstadoRemanenteMensualList()) {
-                    estadoRemanenteMensual.getEstadoRemanenteMensualId();
+            Collections.sort(remanenteCuatrimestral.getEstadoRemanenteCuatrimestralList(), new Comparator<EstadoRemanenteCuatrimestral>() {
+                @Override
+                public int compare(EstadoRemanenteCuatrimestral erm1, EstadoRemanenteCuatrimestral erm2) {
+                    return new Integer(erm1.getEstadoRemanenteCuatrimestralId()).compareTo(new Integer(erm2.getEstadoRemanenteCuatrimestralId()));
                 }
-                for (Transaccion transaccion : remanenteMensual.getTransaccionList()) {
-                    transaccion.getTransaccionId();
-                }
-            }
+            });
+            remanenteCuatrimestral.setRemanenteMensualList(new ArrayList<RemanenteMensual>());
         }
         return remanenteCuatrimestralList;
     }
@@ -181,8 +184,8 @@ public class RemanenteCuatrimestralServicioImpl extends GenericServiceImpl<Reman
     private CredencialesSFTP setCredencialesSftp(CredencialesSFTP credencialesSFTP) {
         credencialesSFTP.setHost(parametroServicio.findByPk(ParametroEnum.SERVIDOR_SFTP.name()).getValor());
         credencialesSFTP.setPuerto(Integer.parseInt(parametroServicio.findByPk(ParametroEnum.PUERTO_SFTP.name()).getValor()));
-        credencialesSFTP.setUsuario(parametroServicio.findByPk(ParametroEnum.USUARIO_REMANENTE_SFTP.name()).getValor());
-        credencialesSFTP.setContrasena(parametroServicio.findByPk(ParametroEnum.CONTRASENA_REMANENTE_SFTP.name()).getValor());
+        credencialesSFTP.setUsuario(parametroServicio.findByPk(ParametroEnum.SFTP_USUARIO_REMANENTE.name()).getValor());
+        credencialesSFTP.setContrasena(parametroServicio.findByPk(ParametroEnum.SFTP_CONTRASENA_REMANENTE.name()).getValor());
         return credencialesSFTP;
     }
 

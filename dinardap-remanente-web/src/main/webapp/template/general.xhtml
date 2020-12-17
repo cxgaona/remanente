@@ -19,7 +19,7 @@
         <link rel="stylesheet" type="text/css"
               href="#{facesContext.externalContext.requestContextPath}/resource/css/dinardap.css" />            
     </h:head>
-    <p:growl id="msgMensajes" sticky="false" life="5000" />
+    <p:growl id="msgMensajes" showDetail="true" sticky="false" life="5000" />
     <div id="contenedor">
         <div style="padding: 5px">
             <ui:insert name="header">
@@ -46,7 +46,4 @@
             <p:graphicImage value="/resource/images/procesando1.gif" width="64"/>
         </div>
     </p:dialog>
-
-
-
 </html>
