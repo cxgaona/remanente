@@ -188,6 +188,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         strBtnGuardar = "Actualizar";
 
         onEdit = Boolean.TRUE;
+
         onCreate = Boolean.FALSE;
         disableDeleteTramite = Boolean.FALSE;
         renderEdition = Boolean.TRUE;
@@ -200,6 +201,7 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
         disableDeleteTramite = ultimoEstado.equals("GeneradoAutomaticamente")
                 || ultimoEstado.equals("Verificado-Rechazado")
                 || ultimoEstado.equals("GeneradoNuevaVersion") ? tramiteSelectedList.isEmpty() ? Boolean.TRUE : Boolean.FALSE : Boolean.TRUE;
+
     }
 
     public void nuevoRegistroTramite() {
@@ -721,5 +723,4 @@ public class TramitePropiedadCtrl extends BaseCtrl implements Serializable {
     public void setUltimoEstado(String ultimoEstado) {
         this.ultimoEstado = ultimoEstado;
     }
-
 }
