@@ -544,7 +544,8 @@
                 </b:panel>                
                 <b:panelGrid colSpans="12" style="width: 50%; margin-bottom: 10px;">   
                     <p:commandButton value="Descargar"
-                                     style="padding-bottom:5px;"                                     
+                                     style="padding-bottom:5px;"
+                                     ajax="false"
                                      action="#{resumenLibrosCtrl.exportarPDF(actionEvent)}"/>
                         
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"

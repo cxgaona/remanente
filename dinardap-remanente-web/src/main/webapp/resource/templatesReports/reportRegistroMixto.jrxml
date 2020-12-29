@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportRegistroMixto" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="123"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -84,6 +84,8 @@
 		</box>
 	</style>
 	<subDataset name="Resumen Propiedad">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -92,19 +94,20 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=1
 	AND l.estado=1
 	AND t.estado=1
-GROUP BY ia.nombre_registrador
-]]>
+GROUP BY ia.nombre_registrador]]>
 		</queryString>
 		<field name="nombre_registrador" class="java.lang.String"/>
 		<field name="total_libros" class="java.lang.Long"/>
 		<field name="total_paginas" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="Detalle Propiedad">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT l.denominacion, 
 	ia.anio,
@@ -129,8 +132,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=1
 	AND l.estado=1
 	AND t.estado=1]]>
@@ -150,6 +153,8 @@ WHERE i.institucion_id=186
 		<field name="observaciones" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="Resumen Mercantil">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -158,8 +163,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=2
 	AND l.estado=1
 	AND t.estado=1
@@ -170,6 +175,8 @@ GROUP BY ia.nombre_registrador]]>
 		<field name="total_paginas" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="Detalle Mercantil">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT l.denominacion, 
 	ia.anio,
@@ -194,8 +201,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=2
 	AND l.estado=1
 	AND t.estado=1]]>
@@ -215,6 +222,8 @@ WHERE i.institucion_id=186
 		<field name="observaciones" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="Resumen Repertorio Propiedad">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -223,8 +232,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=3
 	AND l.estado=1
 	AND t.estado=1
@@ -235,6 +244,8 @@ GROUP BY ia.nombre_registrador]]>
 		<field name="total_paginas" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="Detalle Repertorio Propiedad">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT l.denominacion, 
 	ia.anio,
@@ -259,8 +270,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=3
 	AND l.estado=1
 	AND t.estado=1]]>
@@ -280,6 +291,8 @@ WHERE i.institucion_id=186
 		<field name="observaciones" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="Resumen Repertorio Mercantil">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -288,8 +301,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=4
 	AND l.estado=1
 	AND t.estado=1
@@ -300,6 +313,8 @@ GROUP BY ia.nombre_registrador]]>
 		<field name="total_paginas" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="Detalle Repertorio Mercantil">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT l.denominacion, 
 	ia.anio,
@@ -324,8 +339,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=4
 	AND l.estado=1
 	AND t.estado=1]]>
@@ -345,6 +360,8 @@ WHERE i.institucion_id=186
 		<field name="observaciones" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="Resumen Indice General Propiedad">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -353,19 +370,20 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=5
 	AND l.estado=1
 	AND t.estado=1
-GROUP BY ia.nombre_registrador
-]]>
+GROUP BY ia.nombre_registrador]]>
 		</queryString>
 		<field name="nombre_registrador" class="java.lang.String"/>
 		<field name="total_libros" class="java.lang.Long"/>
 		<field name="total_paginas" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="Detalle Indice General Propiedad">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT l.denominacion, 
 	ia.anio,	
@@ -379,8 +397,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=5
 	AND l.estado=1
 	AND t.estado=1]]>
@@ -395,6 +413,8 @@ WHERE i.institucion_id=186
 		<field name="observaciones" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="Resumen Indice General Mercantil">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -403,8 +423,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=6
 	AND l.estado=1
 	AND t.estado=1
@@ -415,6 +435,8 @@ GROUP BY ia.nombre_registrador]]>
 		<field name="total_paginas" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="Detalle Indice General Mercantil">
+		<parameter name="institucionId" class="java.lang.Integer"/>
+		<parameter name="anio" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT l.denominacion, 
 	ia.anio,	
@@ -428,8 +450,8 @@ FROM  ec_dinardap_inventario.inventario_anual ia
 INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
 INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
 INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
+WHERE i.institucion_id=$P{institucionId}
+	AND ia.anio=$P{anio}
 	AND l.tipo_libro_id=6
 	AND l.estado=1
 	AND t.estado=1]]>
@@ -444,24 +466,10 @@ WHERE i.institucion_id=186
 		<field name="observaciones" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="realPath" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
-	AND l.tipo_libro_id=1
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-	</queryString>
-	<field name="nombre_registrador" class="java.lang.String"/>
-	<field name="total_libros" class="java.lang.Long"/>
-	<field name="total_paginas" class="java.lang.Long"/>
+	<parameter name="nombreRegistro" class="java.lang.String"/>
+	<parameter name="nombreRegional" class="java.lang.String"/>
+	<parameter name="institucionId" class="java.lang.Integer"/>
+        <parameter name="anio" class="java.lang.Integer"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -481,24 +489,31 @@ GROUP BY ia.nombre_registrador]]>
 			<staticText>
 				<reportElement x="0" y="65" width="802" height="44"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="13" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="66" width="802" height="43"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="13" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Registro de la Propiedad con Funciones y Facultades de Registro Mercantil del Cantón Pimampiro Pimampiro Pimampiro Pimampiro]]></text>
-			</staticText>
-			<staticText>
+				<textFieldExpression><![CDATA[$P{nombreRegistro}]]></textFieldExpression>
+			</textField>
+			<textField>
 				<reportElement x="0" y="109" width="802" height="28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="13" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Dirección Regional Zona 1 y 2]]></text>
-			</staticText>
-			<staticText>
+				<textFieldExpression><![CDATA[$P{nombreRegional}]]></textFieldExpression>
+			</textField>
+			<textField>
 				<reportElement x="0" y="137" width="802" height="28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Año 2020]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{anio}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<columnHeader>
@@ -518,8 +533,18 @@ GROUP BY ia.nombre_registrador]]>
 				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Mercantil">
+						<datasetParameter name="FILTER">
+							<datasetParameterExpression><![CDATA[$P{institucionId}]]></datasetParameterExpression>
+						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
+					<jr:column width="90">
+						<jr:tableHeader height="30" rowSpan="1"/>
+						<jr:tableFooter height="30" rowSpan="1"/>
+						<jr:columnHeader height="30" rowSpan="1"/>
+						<jr:columnFooter height="30" rowSpan="1"/>
+						<jr:detailCell height="30" rowSpan="1"/>
+					</jr:column>
 					<jr:column width="508">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
@@ -529,7 +554,7 @@ GROUP BY ia.nombre_registrador]]>
 								<text><![CDATA[Nombre del Registrador]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+						<jr:detailCell style="table 1_TD" height="30" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="508" height="20"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
@@ -547,7 +572,7 @@ GROUP BY ia.nombre_registrador]]>
 								<text><![CDATA[Total Libros]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+						<jr:detailCell style="table 1_TD" height="30" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="149" height="20"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
@@ -565,7 +590,7 @@ GROUP BY ia.nombre_registrador]]>
 								<text><![CDATA[Total Páginas]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+						<jr:detailCell style="table 1_TD" height="30" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="145" height="20"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>

@@ -1,6 +1,5 @@
 package ec.gob.dinardap.remanente.controller;
 
-import ec.gob.dinardap.remanente.connection.Conexion;
 import ec.gob.dinardap.remanente.constante.EstadoInventarioAnualEnum;
 import ec.gob.dinardap.remanente.constante.ParametroEnum;
 import ec.gob.dinardap.remanente.constante.PerfilEnum;
@@ -26,6 +25,9 @@ import ec.gob.dinardap.util.TipoArchivo;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,11 +50,6 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
-import net.sf.jasperreports.view.JasperViewer;
 import org.apache.poi.util.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -309,26 +306,24 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         }
     }
     
-    public void exportarPDF(ActionEvent actionEvent) throws JRException, IOException {
+    public void exportarPDF(ActionEvent actionEvent) throws JRException, IOException, SQLException {
         Map<String, Object> parametros = new HashMap<String, Object>();        
         String path = FacesUtils.getPath() + "/resource/images/";
         parametros.put("realPath", path);
-        
-        
-        
-        //File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
+        parametros.put("nombreRegistro", inventarioAnual.getInstitucion().getNombre());
+        parametros.put("nombreRegional", inventarioAnual.getInstitucion().getTipoInstitucion().equals(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()) ?inventarioAnual.getInstitucion().getInstitucion().getInstitucion().getNombre():inventarioAnual.getInstitucion().getInstitucion().getNombre());
+        parametros.put("anio", año);
+        parametros.put("institucionId", inventarioAnual.getInstitucion().getInstitucionId());
+                     
+        File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
 
         //JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(), parametros, new JREmptyDataSource());
+        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ec_dinardap_ri","postgres","postgres");
         JasperPrint jasperPrint = JasperFillManager.fillReport(
-				FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"), parametros,
-				Conexion.conectar());
-        JRPdfExporter exp = new JRPdfExporter();
-        exp.setExporterInput(new SimpleExporterInput(jasperPrint));
-        exp.setExporterOutput(new SimpleOutputStreamExporterOutput("ResumenLibros.pdf"));
-        SimplePdfExporterConfiguration conf = new SimplePdfExporterConfiguration();
-        exp.setConfiguration(conf);
-        exp.exportReport();
- 
+				jasper.getPath(),
+                                parametros,
+				con);
+         
 //        // se muestra en una ventana aparte para su descarga
 //        JasperPrint jasperPrintWindow = JasperFillManager.fillReport(
 //                        "C:\\Users\\Ecodeup\\JaspersoftWorkspace\\Reportes Escuela\\ReporteAlumnos.jasper", null,
@@ -336,15 +331,15 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
 //        JasperViewer jasperViewer = new JasperViewer(jasperPrintWindow);
 //        jasperViewer.setVisible(true);
 
-//        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-//        response.addHeader("Content-disposition", "attachment; filename=ResumenLibros.pdf");
-//        ServletOutputStream stream = response.getOutputStream();
-//
-//        JasperExportManager.exportReportToPdfStream(jasperPrint, stream);
-//
-//        stream.flush();
-//        stream.close();
-//        FacesContext.getCurrentInstance().responseComplete();
+        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+        response.addHeader("Content-disposition", "attachment; filename=ResumenLibros.pdf");
+        ServletOutputStream stream = response.getOutputStream();
+
+        JasperExportManager.exportReportToPdfStream(jasperPrint, stream);
+
+        stream.flush();
+        stream.close();
+        FacesContext.getCurrentInstance().responseComplete();
     }
 
     //Getters & Setters

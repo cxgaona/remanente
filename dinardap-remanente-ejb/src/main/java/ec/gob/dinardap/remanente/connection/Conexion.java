@@ -18,8 +18,7 @@ public class Conexion {
 		Connection con = null;
  
 		try {
-			String url = "jdbc:postgresql://127.0.0.1:5432/ec_dinardap_ri?user=postgres&password=postgres";
-			con = DriverManager.getConnection(url);
+			con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ec_dinardap_ri","postgres","postgres");
 			if (con != null) {
 				System.out.println("Conexion Satisfactoria");
 			}
