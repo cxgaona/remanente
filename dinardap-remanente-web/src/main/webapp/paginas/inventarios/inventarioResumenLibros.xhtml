@@ -543,6 +543,10 @@
                     </h:panelGrid>                   
                 </b:panel>                
                 <b:panelGrid colSpans="12" style="width: 50%; margin-bottom: 10px;">   
+                    <p:commandButton value="Descargar"
+                                     style="padding-bottom:5px;"                                     
+                                     action="#{resumenLibrosCtrl.exportarPDF(actionEvent)}"/>
+                        
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
                                      style="padding-bottom:5px;"
                                      update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
