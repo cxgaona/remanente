@@ -312,8 +312,8 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         parametros.put("realPath", path);
         parametros.put("nombreRegistro", inventarioAnual.getInstitucion().getNombre());
         parametros.put("nombreRegional", inventarioAnual.getInstitucion().getTipoInstitucion().equals(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()) ?inventarioAnual.getInstitucion().getInstitucion().getInstitucion().getNombre():inventarioAnual.getInstitucion().getInstitucion().getNombre());
-        parametros.put("anio", año);
-        parametros.put("institucionId", inventarioAnual.getInstitucion().getInstitucionId());
+        parametros.put("anioG", año);
+        parametros.put("institucionIdG", inventarioAnual.getInstitucion().getInstitucionId());
                      
         File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
 
