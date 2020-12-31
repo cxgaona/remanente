@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportRegistroMixto" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table">
@@ -426,6 +426,8 @@ WHERE i.institucion_id=$P{institucionId}
 	<parameter name="nombreRegistro" class="java.lang.String"/>
 	<parameter name="nombreRegional" class="java.lang.String"/>
 	<parameter name="realPath" class="java.lang.String"/>
+	<parameter name="actividadMercantil" class="java.lang.Boolean"/>
+	<parameter name="actividadPropiedad" class="java.lang.Boolean"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT ia.nombre_registrador, 
 	count(distinct(l.libro_id)) as total_libros,
@@ -486,7 +488,9 @@ GROUP BY ia.nombre_registrador]]>
 	<detail>
 		<band height="47" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -494,7 +498,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Mercantil">
 						<datasetParameter name="institucionId">
@@ -564,7 +570,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -572,7 +580,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50"/>
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Detalle Mercantil">
 						<datasetParameter name="institucionId">
@@ -822,7 +832,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -830,7 +842,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Repertorio Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Repertorio Mercantil">
 						<datasetParameter name="institucionId">
@@ -900,7 +914,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -908,7 +924,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Repertorio Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50"/>
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Detalle Repertorio Mercantil">
 						<datasetParameter name="institucionId">
@@ -1104,7 +1122,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1112,7 +1132,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Índice General Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Indice General Mercantil">
 						<datasetParameter name="institucionId">
@@ -1182,7 +1204,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1190,7 +1214,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Índice General Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50"/>
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Detalle Indice General Mercantil">
 						<datasetParameter name="institucionId">
@@ -1350,7 +1376,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1358,7 +1386,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Propiedad">
 						<datasetParameter name="institucionId">
@@ -1428,7 +1458,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1436,7 +1468,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50"/>
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Detalle Propiedad">
 						<datasetParameter name="institucionId">
@@ -1525,7 +1559,7 @@ GROUP BY ia.nombre_registrador]]>
 								<reportElement x="0" y="0" width="39" height="67"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[No.Tomo]]></text>
+								<text><![CDATA[No. Tomo]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
@@ -1686,7 +1720,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1694,7 +1730,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Repertorio Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Repertorio Propiedad">
 						<datasetParameter name="institucionId">
@@ -1764,7 +1802,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1772,7 +1812,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Repertorio Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50"/>
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Detalle Repertorio Propiedad">
 						<datasetParameter name="institucionId">
@@ -1968,7 +2010,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -1976,7 +2020,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Índice General Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25"/>
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Resumen Indice General Propiedad">
 						<datasetParameter name="institucionId">
@@ -2046,7 +2092,9 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18"/>
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
@@ -2054,7 +2102,9 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Índice General Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50"/>
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Detalle Indice General Propiedad">
 						<datasetParameter name="institucionId">

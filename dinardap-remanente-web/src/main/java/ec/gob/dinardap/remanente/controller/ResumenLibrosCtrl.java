@@ -309,27 +309,23 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
     public void exportarPDF(ActionEvent actionEvent) throws JRException, IOException, SQLException {
         Map<String, Object> parametros = new HashMap<String, Object>();        
         String path = FacesUtils.getPath() + "/resource/images/";
+        Connection con = DriverManager.getConnection(parametroServicio.findByPk(ParametroEnum.STRING_CONEXION_REPORTE.name()).getValor());
         parametros.put("realPath", path);
         parametros.put("nombreRegistro", inventarioAnual.getInstitucion().getNombre());
         parametros.put("nombreRegional", inventarioAnual.getInstitucion().getTipoInstitucion().equals(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()) ?inventarioAnual.getInstitucion().getInstitucion().getInstitucion().getNombre():inventarioAnual.getInstitucion().getInstitucion().getNombre());
         parametros.put("anioG", año);
-        parametros.put("institucionIdG", inventarioAnual.getInstitucion().getInstitucionId());
+        parametros.put("institucionIdG", inventarioAnual.getInstitucion().getInstitucionId());        
+        parametros.put("actividadMercantil", renderMercantil);
+        parametros.put("actividadPropiedad", renderPropiedad);
                      
         File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
 
         //JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(), parametros, new JREmptyDataSource());
-        Connection con = DriverManager.getConnection(parametroServicio.findByPk(ParametroEnum.STRING_CONEXION_REPORTE.name()).getValor());
+        
         JasperPrint jasperPrint = JasperFillManager.fillReport(
 				jasper.getPath(),
                                 parametros,
 				con);
-         
-//        // se muestra en una ventana aparte para su descarga
-//        JasperPrint jasperPrintWindow = JasperFillManager.fillReport(
-//                        "C:\\Users\\Ecodeup\\JaspersoftWorkspace\\Reportes Escuela\\ReporteAlumnos.jasper", null,
-//                        Conexion.conectar());
-//        JasperViewer jasperViewer = new JasperViewer(jasperPrintWindow);
-//        jasperViewer.setVisible(true);
 
         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
         response.addHeader("Content-disposition", "attachment; filename=ResumenLibros.pdf");
