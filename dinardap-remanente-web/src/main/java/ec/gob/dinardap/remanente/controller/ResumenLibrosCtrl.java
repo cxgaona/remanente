@@ -318,7 +318,7 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
         File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
 
         //JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(), parametros, new JREmptyDataSource());
-        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ec_dinardap_ri","postgres","postgres");
+        Connection con = DriverManager.getConnection(parametroServicio.findByPk(ParametroEnum.STRING_CONEXION_REPORTE.name()).getValor());
         JasperPrint jasperPrint = JasperFillManager.fillReport(
 				jasper.getPath(),
                                 parametros,
@@ -339,6 +339,7 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
 
         stream.flush();
         stream.close();
+        con.close();
         FacesContext.getCurrentInstance().responseComplete();
     }
 

@@ -543,13 +543,15 @@
                     </h:panelGrid>                   
                 </b:panel>                
                 <b:panelGrid colSpans="12" style="width: 50%; margin-bottom: 10px;">   
-                    <p:commandButton value="Descargar"
-                                     style="padding-bottom:5px;"
+                    <p:commandButton value="#{etiquetas['btnGenerarResumenLibrosPDF']}"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     icon="fa fa-fw fa-file-pdf-o"
                                      ajax="false"
                                      action="#{resumenLibrosCtrl.exportarPDF(actionEvent)}"/>
                         
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
-                                     style="padding-bottom:5px;"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     icon="fa fa-fw fa-eye"
                                      update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
                                      onclick="PF('estadoInventarioAnualDlg').show();">
                         <f:setPropertyActionListener value="#{resumenLibrosCtrl.inventarioAnual}" target="#{resumenLibrosCtrl.inventarioAnual}" />
