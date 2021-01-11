@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportRegistroMixto" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportRegistroMixto" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="90469d9d-cf51-412f-a34b-db3011c4af6b">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="923"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -63,363 +63,133 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Resumen Propiedad">
+	<subDataset name="Resumen Propiedad" uuid="567f9f5c-9c97-43dd-b62e-af763484305e">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=1
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-		</queryString>
-		<field name="nombre_registrador" class="java.lang.String"/>
-		<field name="total_libros" class="java.lang.Long"/>
-		<field name="total_paginas" class="java.lang.Long"/>
+		<field name="nombreRegistrador" class="java.lang.String"/>
+		<field name="totalLibros" class="java.lang.Integer"/>
+		<field name="totalPaginasLibros" class="java.lang.Integer"/>
 	</subDataset>
-	<subDataset name="Resumen Mercantil">
+	<subDataset name="Resumen Mercantil" uuid="7d81abd6-46a3-4716-a932-4c586045150d">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=2
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-		</queryString>
-		<field name="nombre_registrador" class="java.lang.String"/>
-		<field name="total_libros" class="java.lang.Long"/>
-		<field name="total_paginas" class="java.lang.Long"/>
+		<field name="nombreRegistrador" class="java.lang.String"/>
+		<field name="totalLibros" class="java.lang.Integer"/>
+		<field name="totalPaginasLibros" class="java.lang.Integer"/>
 	</subDataset>
-	<subDataset name="Detalle Mercantil">
+	<subDataset name="Detalle Mercantil" uuid="887c1e39-edf4-4fe3-924d-521f745c21ab">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT l.denominacion, 
-	ia.anio, 
-	l.fecha_apertura,
-	l.fecha_cierre,
-	t.numero,
-	t.numero_inscripcion_inicio,
-	t.numero_inscripcion_fin,
-	t.total_inscripciones_contenidas,
-	t.foja_inicio,
-	t.foja_fin,
-	t.numero_total_hojas,
-	t.numero_hojas_otro_formato,
-	t.observaciones
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=2
-	AND l.estado=1
-	AND t.estado=1]]>
-		</queryString>
-		<field name="denominacion" class="java.lang.String"/>
-		<field name="anio" class="java.lang.Integer"/>
-		<field name="fecha_apertura" class="java.sql.Date"/>
-		<field name="fecha_cierre" class="java.sql.Date"/>
-		<field name="numero" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_inicio" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_fin" class="java.lang.Integer"/>
-		<field name="total_inscripciones_contenidas" class="java.lang.Integer"/>
-		<field name="foja_inicio" class="java.lang.Integer"/>
-		<field name="foja_fin" class="java.lang.Integer"/>
-		<field name="numero_total_hojas" class="java.lang.Integer"/>
-		<field name="numero_hojas_otro_formato" class="java.lang.Integer"/>
-		<field name="observaciones" class="java.lang.String"/>
+		<field name="denominacionLibro" class="java.lang.String"/>
+		<field name="añoLibro" class="java.lang.Integer"/>
+		<field name="fechaAperturaLibro" class="java.lang.String"/>
+		<field name="fechaCierreLibro" class="java.lang.String"/>
+		<field name="numeroTomo" class="java.lang.Integer"/>
+		<field name="numeroInscripcionInicioTomo" class="java.lang.Integer"/>
+		<field name="numeroInscripcionFinTomo" class="java.lang.Integer"/>
+		<field name="totalInscripcionesContenidasTomo" class="java.lang.Integer"/>
+		<field name="fojaInicioTomo" class="java.lang.Integer"/>
+		<field name="fojaFinTomo" class="java.lang.Integer"/>
+		<field name="numeroTotalHojasTomo" class="java.lang.Integer"/>
+		<field name="numeroHojasOtroFormatoTomo" class="java.lang.Integer"/>
+		<field name="observacionesTomo" class="java.lang.String"/>
 	</subDataset>
-	<subDataset name="Detalle Propiedad">
+	<subDataset name="Detalle Propiedad" uuid="64770dc1-c007-4c16-802e-4726307504b9">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT l.denominacion, 
-	ia.anio,
-	l.fecha_apertura,
-	l.fecha_cierre,
-	t.numero,
-	t.numero_inscripcion_inicio,
-	t.numero_inscripcion_fin,
-	t.total_inscripciones_contenidas,
-	t.foja_inicio,
-	t.foja_fin,
-	t.numero_total_hojas,
-	t.numero_hojas_otro_formato,
-	t.observaciones
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=1
-	AND l.estado=1
-	AND t.estado=1]]>
-		</queryString>
-		<field name="denominacion" class="java.lang.String"/>
-		<field name="anio" class="java.lang.Integer"/>
-		<field name="fecha_apertura" class="java.sql.Date"/>
-		<field name="fecha_cierre" class="java.sql.Date"/>
-		<field name="numero" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_inicio" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_fin" class="java.lang.Integer"/>
-		<field name="total_inscripciones_contenidas" class="java.lang.Integer"/>
-		<field name="foja_inicio" class="java.lang.Integer"/>
-		<field name="foja_fin" class="java.lang.Integer"/>
-		<field name="numero_total_hojas" class="java.lang.Integer"/>
-		<field name="numero_hojas_otro_formato" class="java.lang.Integer"/>
-		<field name="observaciones" class="java.lang.String"/>
+		<field name="denominacionLibro" class="java.lang.String"/>
+		<field name="añoLibro" class="java.lang.Integer"/>
+		<field name="fechaAperturaLibro" class="java.lang.String"/>
+		<field name="fechaCierreLibro" class="java.lang.String"/>
+		<field name="numeroTomo" class="java.lang.Integer"/>
+		<field name="numeroInscripcionInicioTomo" class="java.lang.Integer"/>
+		<field name="numeroInscripcionFinTomo" class="java.lang.Integer"/>
+		<field name="totalInscripcionesContenidasTomo" class="java.lang.Integer"/>
+		<field name="fojaInicioTomo" class="java.lang.Integer"/>
+		<field name="fojaFinTomo" class="java.lang.Integer"/>
+		<field name="numeroTotalHojasTomo" class="java.lang.Integer"/>
+		<field name="numeroHojasOtroFormatoTomo" class="java.lang.Integer"/>
+		<field name="observacionesTomo" class="java.lang.String"/>
 	</subDataset>
-	<subDataset name="Resumen Repertorio Propiedad">
+	<subDataset name="Resumen Repertorio Propiedad" uuid="23706a03-d01b-4d5f-b61b-0587ff9612c7">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=3
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-		</queryString>
-		<field name="nombre_registrador" class="java.lang.String"/>
-		<field name="total_libros" class="java.lang.Long"/>
-		<field name="total_paginas" class="java.lang.Long"/>
+		<field name="nombreRegistrador" class="java.lang.String"/>
+		<field name="totalLibros" class="java.lang.Integer"/>
+		<field name="totalPaginasLibros" class="java.lang.Integer"/>
 	</subDataset>
-	<subDataset name="Detalle Repertorio Propiedad">
+	<subDataset name="Detalle Repertorio Propiedad" uuid="29ad4598-12fc-4217-a5e4-8acb5f2b8d58">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT l.denominacion, 
-	ia.anio,
-	l.fecha_apertura,
-	l.fecha_cierre, 
-	t.numero,
-	t.numero_inscripcion_inicio,
-	t.numero_inscripcion_fin,
-	t.total_inscripciones_contenidas,
-	t.foja_inicio,
-	t.foja_fin,
-	t.numero_total_hojas,
-	t.numero_hojas_otro_formato,
-	t.observaciones
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=3
-	AND l.estado=1
-	AND t.estado=1]]>
-		</queryString>
-		<field name="denominacion" class="java.lang.String"/>
-		<field name="anio" class="java.lang.Integer"/>
-		<field name="fecha_apertura" class="java.sql.Date"/>
-		<field name="fecha_cierre" class="java.sql.Date"/>
-		<field name="numero" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_inicio" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_fin" class="java.lang.Integer"/>
-		<field name="total_inscripciones_contenidas" class="java.lang.Integer"/>
-		<field name="foja_inicio" class="java.lang.Integer"/>
-		<field name="foja_fin" class="java.lang.Integer"/>
-		<field name="numero_total_hojas" class="java.lang.Integer"/>
-		<field name="numero_hojas_otro_formato" class="java.lang.Integer"/>
-		<field name="observaciones" class="java.lang.String"/>
+		<field name="denominacionLibro" class="java.lang.String"/>
+		<field name="añoLibro" class="java.lang.Integer"/>
+		<field name="fechaAperturaLibro" class="java.lang.String"/>
+		<field name="fechaCierreLibro" class="java.lang.String"/>
+		<field name="numeroTomo" class="java.lang.Integer"/>
+		<field name="totalInscripcionesContenidasTomo" class="java.lang.Integer"/>
+		<field name="fojaInicioTomo" class="java.lang.Integer"/>
+		<field name="fojaFinTomo" class="java.lang.Integer"/>
+		<field name="numeroTotalHojasTomo" class="java.lang.Integer"/>
+		<field name="observacionesTomo" class="java.lang.String"/>
 	</subDataset>
-	<subDataset name="Resumen Repertorio Mercantil">
+	<subDataset name="Resumen Repertorio Mercantil" uuid="7509ea5e-9af1-404d-b751-50a10952a9fd">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=4
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-		</queryString>
-		<field name="nombre_registrador" class="java.lang.String"/>
-		<field name="total_libros" class="java.lang.Long"/>
-		<field name="total_paginas" class="java.lang.Long"/>
+		<field name="nombreRegistrador" class="java.lang.String"/>
+		<field name="totalLibros" class="java.lang.Integer"/>
+		<field name="totalPaginasLibros" class="java.lang.Integer"/>
 	</subDataset>
-	<subDataset name="Detalle Repertorio Mercantil">
+	<subDataset name="Detalle Repertorio Mercantil" uuid="f391be63-6225-48c6-93c4-88805c20ffe9">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT l.denominacion, 
-	ia.anio,
-	l.fecha_apertura,
-	l.fecha_cierre, 
-	t.numero,
-	t.numero_inscripcion_inicio,
-	t.numero_inscripcion_fin,
-	t.total_inscripciones_contenidas,
-	t.foja_inicio,
-	t.foja_fin,
-	t.numero_total_hojas,
-	t.numero_hojas_otro_formato,
-	t.observaciones
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=4
-	AND l.estado=1
-	AND t.estado=1]]>
-		</queryString>
-		<field name="denominacion" class="java.lang.String"/>
-		<field name="anio" class="java.lang.Integer"/>
-		<field name="fecha_apertura" class="java.sql.Date"/>
-		<field name="fecha_cierre" class="java.sql.Date"/>
-		<field name="numero" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_inicio" class="java.lang.Integer"/>
-		<field name="numero_inscripcion_fin" class="java.lang.Integer"/>
-		<field name="total_inscripciones_contenidas" class="java.lang.Integer"/>
-		<field name="foja_inicio" class="java.lang.Integer"/>
-		<field name="foja_fin" class="java.lang.Integer"/>
-		<field name="numero_total_hojas" class="java.lang.Integer"/>
-		<field name="numero_hojas_otro_formato" class="java.lang.Integer"/>
-		<field name="observaciones" class="java.lang.String"/>
+		<field name="denominacionLibro" class="java.lang.String"/>
+		<field name="añoLibro" class="java.lang.Integer"/>
+		<field name="fechaAperturaLibro" class="java.lang.String"/>
+		<field name="fechaCierreLibro" class="java.lang.String"/>
+		<field name="numeroTomo" class="java.lang.Integer"/>
+		<field name="totalInscripcionesContenidasTomo" class="java.lang.Integer"/>
+		<field name="fojaInicioTomo" class="java.lang.Integer"/>
+		<field name="fojaFinTomo" class="java.lang.Integer"/>
+		<field name="numeroTotalHojasTomo" class="java.lang.Integer"/>
+		<field name="observacionesTomo" class="java.lang.String"/>
 	</subDataset>
-	<subDataset name="Resumen Indice General Propiedad">
+	<subDataset name="Resumen Indice General Propiedad" uuid="f35665f7-6d5f-41dd-8318-5e3227b352d9">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=5
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-		</queryString>
-		<field name="nombre_registrador" class="java.lang.String"/>
-		<field name="total_libros" class="java.lang.Long"/>
-		<field name="total_paginas" class="java.lang.Long"/>
+		<field name="nombreRegistrador" class="java.lang.String"/>
+		<field name="totalLibros" class="java.lang.Integer"/>
+		<field name="totalPaginasLibros" class="java.lang.Integer"/>
 	</subDataset>
-	<subDataset name="Detalle Indice General Propiedad">
+	<subDataset name="Detalle Indice General Propiedad" uuid="8e52f43a-8626-44b7-bbc2-aa460e4c7682">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT l.denominacion, 
-	ia.anio,	
-	t.numero,	
-	t.total_inscripciones_contenidas,
-	t.foja_inicio,
-	t.foja_fin,
-	t.numero_total_hojas,	
-	t.observaciones
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=5
-	AND l.estado=1
-	AND t.estado=1]]>
-		</queryString>
-		<field name="denominacion" class="java.lang.String"/>
-		<field name="anio" class="java.lang.Integer"/>
-		<field name="numero" class="java.lang.Integer"/>
-		<field name="total_inscripciones_contenidas" class="java.lang.Integer"/>
-		<field name="foja_inicio" class="java.lang.Integer"/>
-		<field name="foja_fin" class="java.lang.Integer"/>
-		<field name="numero_total_hojas" class="java.lang.Integer"/>
-		<field name="observaciones" class="java.lang.String"/>
+		<field name="fojaInicioTomo" class="java.lang.Integer"/>
+		<field name="totalInscripcionesContenidasTomo" class="java.lang.Integer"/>
+		<field name="numeroTotalHojasTomo" class="java.lang.Integer"/>
+		<field name="añoLibro" class="java.lang.Integer"/>
+		<field name="fojaFinTomo" class="java.lang.Integer"/>
+		<field name="denominacionLibro" class="java.lang.String"/>
+		<field name="numeroTomo" class="java.lang.Integer"/>
+		<field name="observacionesTomo" class="java.lang.String"/>
 	</subDataset>
-	<subDataset name="Resumen Indice General Mercantil">
+	<subDataset name="Resumen Indice General Mercantil" uuid="5e1f413a-0ff5-46ce-9ab1-11402c09aef7">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=6
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-		</queryString>
-		<field name="nombre_registrador" class="java.lang.String"/>
-		<field name="total_libros" class="java.lang.Long"/>
-		<field name="total_paginas" class="java.lang.Long"/>
+		<field name="nombreRegistrador" class="java.lang.String"/>
+		<field name="totalLibros" class="java.lang.Integer"/>
+		<field name="totalPaginasLibros" class="java.lang.Integer"/>
 	</subDataset>
-	<subDataset name="Detalle Indice General Mercantil">
+	<subDataset name="Detalle Indice General Mercantil" uuid="a41367e5-f430-4bbf-b3b4-4cd3a3169686">
 		<parameter name="institucionId" class="java.lang.Integer"/>
 		<parameter name="anio" class="java.lang.Integer"/>
-		<queryString>
-			<![CDATA[SELECT l.denominacion, 
-	ia.anio,	
-	t.numero,	
-	t.total_inscripciones_contenidas,
-	t.foja_inicio,
-	t.foja_fin,
-	t.numero_total_hojas,	
-	t.observaciones
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=$P{institucionId}
-	AND ia.anio=$P{anio}
-	AND l.tipo_libro_id=6
-	AND l.estado=1
-	AND t.estado=1]]>
-		</queryString>
-		<field name="denominacion" class="java.lang.String"/>
-		<field name="anio" class="java.lang.Integer"/>
-		<field name="numero" class="java.lang.Integer"/>
-		<field name="total_inscripciones_contenidas" class="java.lang.Integer"/>
-		<field name="foja_inicio" class="java.lang.Integer"/>
-		<field name="foja_fin" class="java.lang.Integer"/>
-		<field name="numero_total_hojas" class="java.lang.Integer"/>
-		<field name="observaciones" class="java.lang.String"/>
+		<field name="fojaInicioTomo" class="java.lang.Integer"/>
+		<field name="totalInscripcionesContenidasTomo" class="java.lang.Integer"/>
+		<field name="numeroTotalHojasTomo" class="java.lang.Integer"/>
+		<field name="añoLibro" class="java.lang.Integer"/>
+		<field name="fojaFinTomo" class="java.lang.Integer"/>
+		<field name="denominacionLibro" class="java.lang.String"/>
+		<field name="numeroTomo" class="java.lang.Integer"/>
+		<field name="observacionesTomo" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="institucionIdG" class="java.lang.Integer"/>
 	<parameter name="anioG" class="java.lang.Integer"/>
@@ -428,21 +198,18 @@ WHERE i.institucion_id=$P{institucionId}
 	<parameter name="realPath" class="java.lang.String"/>
 	<parameter name="actividadMercantil" class="java.lang.Boolean"/>
 	<parameter name="actividadPropiedad" class="java.lang.Boolean"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT ia.nombre_registrador, 
-	count(distinct(l.libro_id)) as total_libros,
-	sum(t.numero_total_hojas) as total_paginas
-FROM  ec_dinardap_inventario.inventario_anual ia 
-INNER JOIN ec_dinardap_inventario.libro l ON l.inventario_anual_id = ia.inventario_anual_id
-INNER JOIN ec_dinardap_inventario.tomo t ON l.libro_id = t.libro_id
-INNER JOIN ec_dinardap_seguridad.institucion i ON ia.institucion_id=i.institucion_id
-WHERE i.institucion_id=186
-	AND ia.anio=2020
-	AND l.tipo_libro_id=1
-	AND l.estado=1
-	AND t.estado=1
-GROUP BY ia.nombre_registrador]]>
-	</queryString>
+	<parameter name="resumenMercantilDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="detalleMercantilDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="resumenRepertorioMercantilDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="detalleRepertorioMercantilDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="resumenIGMercantilDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="detalleIGMercantilDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="resumenPropiedadDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="detallePropiedadDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="resumenRepertorioPropiedadDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="detalleRepertorioPropiedadDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="resumenIGPropiedadDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="detalleIGPropiedadDS" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<field name="nombre_registrador" class="java.lang.String"/>
 	<field name="total_libros" class="java.lang.Long"/>
 	<field name="total_paginas" class="java.lang.Long"/>
@@ -452,35 +219,35 @@ GROUP BY ia.nombre_registrador]]>
 	<title>
 		<band height="153" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="34" width="802" height="30"/>
+				<reportElement x="0" y="34" width="802" height="30" uuid="dea467be-d247-451f-838e-9e8cfbe3f7f1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[INVENTARIO DE LIBROS REGISTRALES]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="0" y="107" width="802" height="18"/>
+				<reportElement x="0" y="107" width="802" height="18" uuid="9911e12f-3ea6-4c58-a7c9-0ca6e4b4f179"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="13" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{nombreRegional}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="125" width="802" height="22"/>
+				<reportElement x="0" y="125" width="802" height="22" uuid="5c858ab0-5e84-4c6a-84d4-cf3be0d8a6d7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{anioG}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="64" width="802" height="43"/>
+				<reportElement x="0" y="64" width="802" height="43" uuid="ef1b8778-7ec4-46d8-b2c4-11990b09cc17"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="13" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{nombreRegistro}]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="610" y="0" width="192" height="34"/>
+				<reportElement x="610" y="0" width="192" height="34" uuid="3bbd6482-b047-4982-aac9-4b9481e95fd4"/>
 				<imageExpression><![CDATA[$P{realPath}+"/logoDinardap.png"]]></imageExpression>
 			</image>
 		</band>
@@ -488,7 +255,7 @@ GROUP BY ia.nombre_registrador]]>
 	<detail>
 		<band height="47" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="9bb91e7f-d593-4235-9894-7de56bbe45a5">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -498,23 +265,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true" uuid="4a22af0a-69f6-4680-b8ee-7437b12bd865">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Resumen Mercantil">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Resumen Mercantil" uuid="0131dd62-1bbc-43fc-8e38-0b2c5e17f771">
+						<dataSourceExpression><![CDATA[$P{resumenMercantilDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="508">
+					<jr:column width="508" uuid="91ba0896-4349-4753-898e-710106871688">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="508" height="30"/>
+								<reportElement x="0" y="0" width="508" height="30" uuid="872443f3-88e8-4f2b-af1b-ad5292505f3f"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Nombre del Registrador]]></text>
@@ -522,17 +283,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="21" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="508" height="20"/>
+								<reportElement x="0" y="0" width="508" height="20" uuid="3a964a6c-9b32-4c5b-85f0-b59846aa3b94"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{nombre_registrador}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{nombreRegistrador}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="149">
+					<jr:column width="149" uuid="04746e2a-d234-46cc-8cab-27afdb221002">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="149" height="30"/>
+								<reportElement x="0" y="0" width="149" height="30" uuid="6c41185c-d1cd-4117-acf0-a8e0e7dc7775"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Libros]]></text>
@@ -540,17 +301,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="21" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="149" height="20"/>
+								<reportElement x="0" y="0" width="149" height="20" uuid="9b3e19fc-6c33-45c5-9659-081941a9984b"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_libros}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145">
+					<jr:column width="145" uuid="c9b8928a-2ac6-4271-8a74-daa344cd4f54">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="145" height="30"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="18612043-3fed-44e9-ae90-238f871eea15"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Páginas]]></text>
@@ -558,10 +319,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="21" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="0347966d-eef3-450e-bb10-d1b6df23da44"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_paginas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalPaginasLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -570,7 +331,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="d9c064d9-8763-464f-8c06-118a24a15998">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -580,23 +341,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true" uuid="26770e8a-cb1b-4958-b616-30d2d62538ef">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Detalle Mercantil">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Detalle Mercantil" uuid="081e8b3a-e6b6-47a5-be07-3c1233e28b5e">
+						<dataSourceExpression><![CDATA[$P{detalleMercantilDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="110">
+					<jr:column width="110" uuid="d66722e2-65b7-432d-9885-1bb696107d50">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="110" height="67"/>
+								<reportElement x="0" y="0" width="110" height="67" uuid="0d56590e-2a21-4a9d-bcb5-63f1752168f8"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Denominación del Libro]]></text>
@@ -604,17 +359,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20"/>
+								<reportElement x="0" y="0" width="110" height="20" uuid="cff638e6-06ba-41cf-bddc-63f3cc59abfd"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{denominacionLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="29">
+					<jr:column width="29" uuid="76211ff3-39be-4eae-b00d-0ca7d880040d">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="29" height="67"/>
+								<reportElement x="0" y="0" width="29" height="67" uuid="cf6530ab-3dbf-46a2-ab2c-5a85ef946090"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Año]]></text>
@@ -622,17 +377,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="29" height="20"/>
+								<reportElement x="0" y="0" width="29" height="20" uuid="c5b04a91-cc5f-4afb-9fcb-862ad830aad4"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{anio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{añoLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="68">
+					<jr:column width="68" uuid="950c6d01-e4a2-4d96-bae0-f95af67c6034">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="68" height="67"/>
+								<reportElement x="0" y="0" width="68" height="67" uuid="ab4afc9d-64bb-4100-8478-02b9533e4587"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Apertura del Libro]]></text>
@@ -640,17 +395,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="68" height="20"/>
+								<reportElement x="0" y="0" width="68" height="20" uuid="18bad835-5a68-4323-9b2f-ebd36b9f5021"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_apertura}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaAperturaLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="68">
+					<jr:column width="68" uuid="5aca5c98-5394-45bc-93b2-e9d8d1a66777">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="68" height="67"/>
+								<reportElement x="0" y="0" width="68" height="67" uuid="2c6a5989-d244-45f8-a223-f3709f50c1d1"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Cierre del Libro]]></text>
@@ -658,17 +413,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="68" height="20"/>
+								<reportElement x="0" y="0" width="68" height="20" uuid="b4f1829d-c61e-45ee-b4d0-642bc284d830"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_cierre}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaCierreLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="39">
+					<jr:column width="39" uuid="68443b95-abd8-40c7-86f2-d74f51694f8c">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="39" height="67"/>
+								<reportElement x="0" y="0" width="39" height="67" uuid="fdc426bf-3fe4-41c9-94d6-cca36c29f154"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Tomo]]></text>
@@ -676,17 +431,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="39" height="20"/>
+								<reportElement x="0" y="0" width="39" height="20" uuid="c538002f-6ccf-47a4-98a7-832a315140bf"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="b7600d79-d417-4841-a924-b057fce53676">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="f62d2156-9f70-4ed6-be55-086a03bde583"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Inscripción de Inicio de Tomo]]></text>
@@ -694,17 +449,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="62e0558b-d49a-425f-a4bf-c65d53fdae68"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_inscripcion_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroInscripcionInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="68eb77ac-714e-4152-9e2c-c53387b5cce5">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="28cbe48c-5d9f-4dd2-97c4-8d8b56b428ef"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Inscripción de Fin de Tomo]]></text>
@@ -712,17 +467,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="ad6a9274-862b-4d48-828b-7d7e5834a551"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_inscripcion_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroInscripcionFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="64">
+					<jr:column width="64" uuid="d0d1352c-4fca-424b-a155-ddba7a3dd721">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="64" height="67"/>
+								<reportElement x="0" y="0" width="64" height="67" uuid="8b3cf45b-6c2b-42e8-869e-45bb33b1b257"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Inscripciones Contenidas]]></text>
@@ -730,17 +485,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="64" height="20"/>
+								<reportElement x="0" y="0" width="64" height="20" uuid="5c96534a-d589-42cf-a15c-e4436d38c4e7"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_inscripciones_contenidas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalInscripcionesContenidasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="45">
+					<jr:column width="45" uuid="b43b0700-02b4-40f2-bf66-a6f04bff6104">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="45" height="67"/>
+								<reportElement x="0" y="0" width="45" height="67" uuid="5b0bf319-5282-4a7e-9d82-028af73d1fca"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Inicio de Tomo]]></text>
@@ -748,17 +503,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="45" height="20"/>
+								<reportElement x="0" y="0" width="45" height="20" uuid="ccbc86f5-8076-4d09-92b7-d069ded6be97"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="45">
+					<jr:column width="45" uuid="83eba45e-f474-4da8-8688-0701c80bf8ae">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="45" height="67"/>
+								<reportElement x="0" y="0" width="45" height="67" uuid="5d75134d-9268-489e-9d1b-9a9751a63b04"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Fin de Tomo]]></text>
@@ -766,17 +521,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="45" height="20"/>
+								<reportElement x="0" y="0" width="45" height="20" uuid="6b966a42-bb90-4cfc-9f4d-694167f9841c"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="50">
+					<jr:column width="50" uuid="62601013-9e46-4b53-aad3-0424081fe6c9">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="50" height="67"/>
+								<reportElement x="0" y="0" width="50" height="67" uuid="73b48173-6d49-4788-a636-05e4b071948c"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Total Hojas (Anverso y Reverso)]]></text>
@@ -784,17 +539,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="50" height="20"/>
+								<reportElement x="0" y="0" width="50" height="20" uuid="e1b72021-0430-4452-85d0-6e4a481db170"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_total_hojas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTotalHojasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="de5c36bd-c205-4581-b42b-61ca92ee8260">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="cfb8bdb7-3b42-44a2-8e99-6025992400de"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Hojas en otro Formato (Mapas o Similares)]]></text>
@@ -802,17 +557,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="9845c9cc-3655-451f-8214-0491657e512b"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_hojas_otro_formato}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroHojasOtroFormatoTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="108">
+					<jr:column width="108" uuid="0d20ab7c-e845-44fc-9591-2f1f05cf0c6f">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="107" height="67"/>
+								<reportElement x="0" y="0" width="107" height="67" uuid="3f2793e0-bdda-4545-83ee-9dc47e288a01"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Observaciones]]></text>
@@ -820,10 +575,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="107" height="20"/>
+								<reportElement x="0" y="0" width="107" height="20" uuid="aa93e58d-9c87-499f-a186-1526d19d5d8e"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{observacionesTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -832,7 +587,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="d1785296-b080-44bd-9135-707c5a69cb84">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -842,23 +597,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Repertorio Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true" uuid="35721c34-b08a-4e98-9b3c-dd0d3304dbcd">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Resumen Repertorio Mercantil">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Resumen Repertorio Mercantil" uuid="10647141-837e-40c0-8a97-5f83d97f2bb4">
+						<dataSourceExpression><![CDATA[$P{resumenRepertorioMercantilDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="508">
+					<jr:column width="508" uuid="462b6e8d-ca97-4f3e-b499-568e08fd7a5b">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="508" height="30"/>
+								<reportElement x="0" y="0" width="508" height="30" uuid="dacca9f6-b0f9-4f77-96c3-b012c48afd9b"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Nombre del Registrador]]></text>
@@ -866,17 +615,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="508" height="20"/>
+								<reportElement x="0" y="0" width="508" height="20" uuid="828d4eb5-ed09-4602-bfa9-5df97e05acf3"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{nombre_registrador}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{nombreRegistrador}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="149">
+					<jr:column width="149" uuid="17fe7d80-bad0-41d8-a854-920d71daac44">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="149" height="30"/>
+								<reportElement x="0" y="0" width="149" height="30" uuid="9be0bd55-46e5-404e-adf4-d0ca4b750256"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Libros]]></text>
@@ -884,17 +633,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="149" height="20"/>
+								<reportElement x="0" y="0" width="149" height="20" uuid="f3931438-c909-4a5f-b120-30714d326878"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_libros}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145">
+					<jr:column width="145" uuid="fd43023e-3487-4765-b358-82372af41566">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="145" height="30"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="6d137025-23df-417b-a58f-ba432311a1d4"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Páginas]]></text>
@@ -902,10 +651,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="0f57e14f-36a9-4307-bcaa-59ff82d232db"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_paginas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalPaginasLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -914,7 +663,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="9b44e6d8-6d20-43d4-9026-075ab0454865">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -924,23 +673,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Repertorio Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true" uuid="676674e3-7e58-48e8-b1aa-a713ecfa1343">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Detalle Repertorio Mercantil">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Detalle Repertorio Mercantil" uuid="2b65c8a4-123f-4dd1-a37a-2d6e6f3860f0">
+						<dataSourceExpression><![CDATA[$P{detalleRepertorioMercantilDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="150">
+					<jr:column width="150" uuid="69362643-5094-48f6-8d43-b4de86e6ce55">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="150" height="67"/>
+								<reportElement x="0" y="0" width="150" height="67" uuid="60ddce38-636f-41b9-89f2-b667a84e46e0"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Denominación del Libro]]></text>
@@ -948,17 +691,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="150" height="20"/>
+								<reportElement x="0" y="0" width="150" height="20" uuid="a7628f28-5e7f-4ed0-a281-95c6d28438bb"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{denominacionLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="36">
+					<jr:column width="36" uuid="f6a34d5c-0232-43da-b3f9-8ebc37ea0cdb">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="36" height="67"/>
+								<reportElement x="0" y="0" width="36" height="67" uuid="a751041d-f25b-4adc-9882-aeede18a22d8"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Año]]></text>
@@ -966,17 +709,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="36" height="20"/>
+								<reportElement x="0" y="0" width="36" height="20" uuid="ab8780e8-5be8-4d6b-bf09-234eee3c29d8"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{anio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{añoLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80">
+					<jr:column width="80" uuid="84ab4e67-9b7e-46bf-ab2d-84a1456f3b3a">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="80" height="67"/>
+								<reportElement x="0" y="0" width="80" height="67" uuid="8d846c80-84cb-4e55-9e22-293feb5ca060"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Apertura del Libro]]></text>
@@ -984,17 +727,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="efb787ff-a461-4797-a521-00bb8a31ebd2"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_apertura}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaAperturaLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80">
+					<jr:column width="80" uuid="4b6122e5-0018-46bd-98b0-c941f45f232b">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="80" height="67"/>
+								<reportElement x="0" y="0" width="80" height="67" uuid="80e13d20-4f47-4b4c-ba8d-318cc892e3ae"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Cierre del Libro]]></text>
@@ -1002,17 +745,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="1e115425-6c73-4cf2-bcbd-6a5f3edde6f3"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_cierre}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaCierreLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="46">
+					<jr:column width="46" uuid="c35cd5d9-3086-4af1-b313-402e2149f0b9">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="46" height="67"/>
+								<reportElement x="0" y="0" width="46" height="67" uuid="5080a774-e4ff-497f-a1d9-0a10b2c78b8a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No.Tomo]]></text>
@@ -1020,17 +763,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="46" height="20"/>
+								<reportElement x="0" y="0" width="46" height="20" uuid="d66c76e4-e919-4a2d-bf03-bdecb2ba3ebf"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="67">
+					<jr:column width="67" uuid="a3717a70-4ebb-4693-8fcd-2e081a8077d2">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="67" height="67"/>
+								<reportElement x="0" y="0" width="67" height="67" uuid="d64a129e-f1bd-460c-bee1-7c3c87d4dbe7"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Anotaciones Contenidas]]></text>
@@ -1038,17 +781,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="67" height="20"/>
+								<reportElement x="0" y="0" width="67" height="20" uuid="6654c4aa-c13b-4c0f-9b73-51b68c9c6954"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_inscripciones_contenidas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalInscripcionesContenidasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="55">
+					<jr:column width="55" uuid="41d136b2-2ea4-4f0c-92e6-8e3b11196b9f">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="55" height="67"/>
+								<reportElement x="0" y="0" width="55" height="67" uuid="8cb631ef-c23c-46f4-aba2-471788be7817"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Inicio de Tomo]]></text>
@@ -1056,17 +799,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="55" height="20"/>
+								<reportElement x="0" y="0" width="55" height="20" uuid="ca0dbf81-0115-4ce3-99ad-962c368791de"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="55">
+					<jr:column width="55" uuid="e7e6604b-8cd4-4e4b-b43f-0f22a9ada402">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="55" height="67"/>
+								<reportElement x="0" y="0" width="55" height="67" uuid="dc97baef-b4b8-49c9-81e4-0354c4a96942"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Fin de Tomo]]></text>
@@ -1074,17 +817,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="55" height="20"/>
+								<reportElement x="0" y="0" width="55" height="20" uuid="68ebb6c2-28a5-4a05-8781-c96785289ca3"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="57">
+					<jr:column width="57" uuid="2c0c73be-24e0-45fd-a6ec-00f53ed5950a">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="57" height="67"/>
+								<reportElement x="0" y="0" width="57" height="67" uuid="ccad8764-75ba-4ea5-aa40-5b261b67a2d5"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Total Hojas (Anverso y Reverso)]]></text>
@@ -1092,17 +835,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="57" height="20"/>
+								<reportElement x="0" y="0" width="57" height="20" uuid="fc10398c-e1e7-4910-af1b-dc975c93705a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_total_hojas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTotalHojasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="175">
+					<jr:column width="175" uuid="658561aa-3c27-40a2-8cd6-f22af1086098">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="175" height="67"/>
+								<reportElement x="0" y="0" width="175" height="67" uuid="038116c2-54d9-48f6-a31a-2ba718cd12c0"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Observaciones]]></text>
@@ -1110,10 +853,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="175" height="20"/>
+								<reportElement x="0" y="0" width="175" height="20" uuid="02be87e4-83b7-4b0f-b15e-fb4aac6c00d4"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{observacionesTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1122,7 +865,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="051d0ebd-f6a7-43b2-b49f-13efb7654990">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -1132,23 +875,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Índice General Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true" uuid="7baf6eaf-dd28-48fe-88a2-bf9b4c13c58c">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Resumen Indice General Mercantil">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Resumen Indice General Mercantil" uuid="d3966015-2322-4fdc-bfa6-130e693eeff5">
+						<dataSourceExpression><![CDATA[$P{resumenIGMercantilDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="508">
+					<jr:column width="508" uuid="402baf32-80a5-45c2-94be-177a325f157e">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="508" height="30"/>
+								<reportElement x="0" y="0" width="508" height="30" uuid="b330b938-4ef2-49e0-bc52-2363f1de3ba1"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Nombre del Registrador]]></text>
@@ -1156,17 +893,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="508" height="20"/>
+								<reportElement x="0" y="0" width="508" height="20" uuid="35767407-9beb-4cc9-86f8-8fcae8ed8c6f"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{nombre_registrador}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{nombreRegistrador}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="149">
+					<jr:column width="149" uuid="2da0c743-fd0d-49e0-aaef-3135776d47f3">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="149" height="30"/>
+								<reportElement x="0" y="0" width="149" height="30" uuid="4e33388e-e424-4abe-9d22-24a687698b8d"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Libros]]></text>
@@ -1174,17 +911,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="149" height="20"/>
+								<reportElement x="0" y="0" width="149" height="20" uuid="1b3bd717-d65b-4877-9321-863f3cdfa9f7"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_libros}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145">
+					<jr:column width="145" uuid="4a0d6fde-ad26-46bb-8835-49a4027f5e05">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="145" height="30"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="9e8d7828-7e7b-4184-b70c-cfc2bb916b08"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Páginas]]></text>
@@ -1192,10 +929,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="d76b4a9b-42af-496c-89a7-4cbcf7a2c007"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_paginas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalPaginasLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1204,7 +941,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="3aa89e51-dd3a-41ee-8a0b-5c8c6412c00c">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -1214,23 +951,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Índice General Registro Mercantil]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true" uuid="5e098b5f-e37b-42ec-8ba6-66d846a72176">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadMercantil})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Detalle Indice General Mercantil">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Detalle Indice General Mercantil" uuid="6927c8b6-1109-40e6-9970-cb8e7b0e7dd4">
+						<dataSourceExpression><![CDATA[$P{detalleIGMercantilDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="180">
+					<jr:column width="180" uuid="772172d2-6aad-4abf-9250-aadb23c8e3db">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="180" height="67"/>
+								<reportElement x="0" y="0" width="180" height="67" uuid="ebb4d47c-fb26-4120-aaf7-0dbf3ae5d419"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Denominación del Libro]]></text>
@@ -1238,17 +969,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="180" height="20"/>
+								<reportElement x="0" y="0" width="180" height="20" uuid="1d76a80e-fba5-4e40-bd35-1d8d314e100e"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{denominacionLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="52">
+					<jr:column width="52" uuid="25f25e70-3737-45a9-b6a7-be65a2e4c497">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="52" height="67"/>
+								<reportElement x="0" y="0" width="52" height="67" uuid="2dbac1af-7837-417e-be7b-577d6a0f8342"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Año]]></text>
@@ -1256,17 +987,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="52" height="20"/>
+								<reportElement x="0" y="0" width="52" height="20" uuid="9a434a30-e91d-4266-97d9-53314a002f47"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{anio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{añoLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="61">
+					<jr:column width="61" uuid="650f0a11-6eff-4c25-b7c6-172e6615ea73">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="61" height="67"/>
+								<reportElement x="0" y="0" width="61" height="67" uuid="a8d90544-fe89-4d59-88cc-c39dac51ce1f"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No.Tomo]]></text>
@@ -1274,17 +1005,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="61" height="20"/>
+								<reportElement x="0" y="0" width="61" height="20" uuid="883ddea6-80e5-48f0-ad9e-5faa290fb43e"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70">
+					<jr:column width="70" uuid="6c732b33-382d-4cfd-b1e3-f0d5eff629b0">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="70" height="67"/>
+								<reportElement x="0" y="0" width="70" height="67" uuid="226cb553-123c-4bba-894e-cd0ec2cabc75"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Anotaciones Contenidas en el Tomo]]></text>
@@ -1292,17 +1023,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="70" height="20"/>
+								<reportElement x="0" y="0" width="70" height="20" uuid="19301b16-b354-49a7-af8f-e78c40e8ac20"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_inscripciones_contenidas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalInscripcionesContenidasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70">
+					<jr:column width="70" uuid="6b3430b9-f456-4638-ba17-a1875ac13de4">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="70" height="67"/>
+								<reportElement x="0" y="0" width="70" height="67" uuid="9c604dbc-1ef2-4173-bec8-538ceb9240d1"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Inicio de Tomo]]></text>
@@ -1310,17 +1041,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="70" height="20"/>
+								<reportElement x="0" y="0" width="70" height="20" uuid="5a0a9c9c-0d4a-4b06-9498-2e988fa96418"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70">
+					<jr:column width="70" uuid="1489d8bf-0376-404f-98a4-210cc42bb2c3">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="70" height="67"/>
+								<reportElement x="0" y="0" width="70" height="67" uuid="001732de-382f-40c6-8f88-94629c4ae05a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Fin de Tomo]]></text>
@@ -1328,17 +1059,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="70" height="20"/>
+								<reportElement x="0" y="0" width="70" height="20" uuid="e4d6745f-4d44-4e58-bc64-147409e8f9c3"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="88">
+					<jr:column width="88" uuid="a842fb80-7777-4651-afd5-286274fb9b5a">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="88" height="67"/>
+								<reportElement x="0" y="0" width="88" height="67" uuid="3227e70e-b184-4529-be3c-69eef4f6208c"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Total Hojas (Anverso y Reverso)]]></text>
@@ -1346,17 +1077,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="88" height="20"/>
+								<reportElement x="0" y="0" width="88" height="20" uuid="ed45b515-db33-4aa0-9792-1ae59c0a8a6b"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_total_hojas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTotalHojasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="211">
+					<jr:column width="211" uuid="bbe20e87-b20a-4e2e-8c8b-142053f58564">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="211" height="67"/>
+								<reportElement x="0" y="0" width="211" height="67" uuid="8cc95a4f-0e3d-4191-a7fd-0783dc2beba3"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Observaciones]]></text>
@@ -1364,10 +1095,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="211" height="20"/>
+								<reportElement x="0" y="0" width="211" height="20" uuid="c492855b-3a42-41d6-9ff2-dd9aad854065"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{observacionesTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1376,7 +1107,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="ef42efce-4a37-4f46-b793-ad1c8519325d">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -1386,23 +1117,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true" uuid="e132e913-27c2-4d9b-bd5f-95651ed5146f">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Resumen Propiedad">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Resumen Propiedad" uuid="eeb3eb2b-2876-4c6e-a908-622ec9ce01d4">
+						<dataSourceExpression><![CDATA[$P{resumenPropiedadDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="508">
+					<jr:column width="508" uuid="73544a12-1e21-4bec-ac58-d8867e6b9f0f">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="508" height="30"/>
+								<reportElement x="0" y="0" width="508" height="30" uuid="b0cec04b-f41e-444f-9d3f-c765ea95a6ad"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Nombre del Registrador]]></text>
@@ -1410,17 +1135,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="508" height="20"/>
+								<reportElement x="0" y="0" width="508" height="20" uuid="aa730c48-01df-4a49-9b8d-c37213e6513a"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{nombre_registrador}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{nombreRegistrador}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="149">
+					<jr:column width="149" uuid="ee89b840-8b00-47ec-a5c8-0737611e46d1">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="149" height="30"/>
+								<reportElement x="0" y="0" width="149" height="30" uuid="020f5a61-5d42-4b48-bd94-f67c64b73b24"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Libros]]></text>
@@ -1428,17 +1153,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="149" height="20"/>
+								<reportElement x="0" y="0" width="149" height="20" uuid="475b0027-e762-465f-be00-fb855fafb137"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_libros}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145">
+					<jr:column width="145" uuid="7f055bec-13b9-44e5-a7a5-8d1c262f081c">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="145" height="30"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="668d6732-21aa-41ce-a26f-e2d6cad3d7b6"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Páginas]]></text>
@@ -1446,10 +1171,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="21ad6d58-1e19-4b7b-bb26-585a00c3c571"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_paginas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalPaginasLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1458,7 +1183,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="f139d2b4-602c-4054-8a90-086086dd895b">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -1468,23 +1193,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true" uuid="5d188d5b-1a62-43d8-a4e0-68c3de3448f6">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Detalle Propiedad">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Detalle Propiedad" uuid="86b33d27-8f1f-4a67-be3b-3ffb06280cc5">
+						<dataSourceExpression><![CDATA[$P{detallePropiedadDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="110">
+					<jr:column width="110" uuid="25e86ad0-55be-495e-869c-1d01abc73a2c">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="110" height="67"/>
+								<reportElement x="0" y="0" width="110" height="67" uuid="8d701be7-9162-4065-8cf8-9e0dfe0d78e2"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Denominación del Libro]]></text>
@@ -1492,17 +1211,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="110" height="20"/>
+								<reportElement x="0" y="0" width="110" height="20" uuid="01549e59-a7e8-4e89-9f9b-9032c1284d35"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{denominacionLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="29">
+					<jr:column width="29" uuid="6db0e898-35ae-4ad2-a11f-506cef60a921">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="29" height="67"/>
+								<reportElement x="0" y="0" width="29" height="67" uuid="38d6c669-b559-4f6d-8934-2aa7d761a784"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Año]]></text>
@@ -1510,17 +1229,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="29" height="20"/>
+								<reportElement x="0" y="0" width="29" height="20" uuid="e1c4eaef-f934-4463-a172-5f952fcf3103"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{anio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{añoLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="68">
+					<jr:column width="68" uuid="1f65959c-9370-4f56-88f6-70aa50ab98c2">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="68" height="67"/>
+								<reportElement x="0" y="0" width="68" height="67" uuid="8427f0a8-94d6-4a76-aec5-88cec81b47e4"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Apertura del Libro]]></text>
@@ -1528,17 +1247,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="68" height="20"/>
+								<reportElement x="0" y="0" width="68" height="20" uuid="8c8c4da4-78b1-415f-a7ef-e4d90b70b39d"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_apertura}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaAperturaLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="68">
+					<jr:column width="68" uuid="ac0b98af-af69-4367-86cc-138f71530be7">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="68" height="67"/>
+								<reportElement x="0" y="0" width="68" height="67" uuid="5c434f4a-3cbe-430a-a892-e5f89bb73399"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Cierre del Libro]]></text>
@@ -1546,17 +1265,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="68" height="20"/>
+								<reportElement x="0" y="0" width="68" height="20" uuid="f0a501be-3d3d-4700-a329-01a58a2bf0bc"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_cierre}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaCierreLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="39">
+					<jr:column width="39" uuid="d428b0fd-91ad-4ed3-99d3-7980cf96a286">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="39" height="67"/>
+								<reportElement x="0" y="0" width="39" height="67" uuid="dd1629fc-4fd2-4947-94a1-9c49f6ca0588"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Tomo]]></text>
@@ -1564,17 +1283,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="39" height="20"/>
+								<reportElement x="0" y="0" width="39" height="20" uuid="afea77dd-5cbc-448a-be82-d6dc7270c8fa"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="ae28cecb-c5a5-4ecf-8146-841bf923319c">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="b6f053a1-4b5e-4c26-8d13-2cb48d0be346"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Inscripción de Inicio de Tomo]]></text>
@@ -1582,17 +1301,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="9f47f665-a5c4-41c8-a014-e9bc677d0798"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_inscripcion_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroInscripcionInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="aad500f5-6dfc-4c4e-8f99-50d0e9ea1576">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="00466490-d3f9-4239-a27e-b238f31cef43"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Inscripción de Fin de Tomo]]></text>
@@ -1600,17 +1319,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="e7ff9458-94b4-45c5-a2f2-d04f06d5ca85"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_inscripcion_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroInscripcionFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="f2680ff9-cb83-4133-9ded-caadd254fb8b">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="9cec8c25-c857-4c8b-9ecb-15a99e774622"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Inscripciones Contenidas]]></text>
@@ -1618,17 +1337,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="f5f0c1e0-d633-4f16-9cae-83a982106517"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_inscripciones_contenidas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalInscripcionesContenidasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="45">
+					<jr:column width="45" uuid="d57a4c0f-d954-4553-b97f-aa8beb4bf637">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="45" height="67"/>
+								<reportElement x="0" y="0" width="45" height="67" uuid="175db501-2dd7-43d2-8ea7-4fa93853ab4a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Inicio de Tomo]]></text>
@@ -1636,17 +1355,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="45" height="20"/>
+								<reportElement x="0" y="0" width="45" height="20" uuid="ef6fe3e6-c6c9-4370-b9fc-01823d5763e7"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="45">
+					<jr:column width="45" uuid="be0b26d0-c311-4396-84e5-a44a2251ff84">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="45" height="67"/>
+								<reportElement x="0" y="0" width="45" height="67" uuid="3fe2c445-cc0e-463e-8f88-da34bcd0ca69"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Fin de Tomo]]></text>
@@ -1654,17 +1373,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="45" height="20"/>
+								<reportElement x="0" y="0" width="45" height="20" uuid="049f55ae-21a5-46bc-8609-888addfb2fea"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="50">
+					<jr:column width="50" uuid="96436bf2-3094-448e-b943-327c5d040a0e">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="50" height="67"/>
+								<reportElement x="0" y="0" width="50" height="67" uuid="43357b09-2ee3-4ca4-a8b0-d35f6190419c"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Total Hojas (Anverso y Reverso)]]></text>
@@ -1672,17 +1391,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="50" height="20"/>
+								<reportElement x="0" y="0" width="50" height="20" uuid="f8943f10-8faf-4511-813f-9d9e70beeca0"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_total_hojas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTotalHojasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="60">
+					<jr:column width="60" uuid="7a66edf3-4bc6-4424-a13a-e01336171654">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="67"/>
+								<reportElement x="0" y="0" width="60" height="67" uuid="ec68f74f-87c3-4de8-adbb-3827740845fb"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Hojas en otro Formato (Mapas o Similares)]]></text>
@@ -1690,17 +1409,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="60" height="20"/>
+								<reportElement x="0" y="0" width="60" height="20" uuid="d2f543bd-375e-48b4-aa62-9c01b2b2f04a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_hojas_otro_formato}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroHojasOtroFormatoTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="108">
+					<jr:column width="108" uuid="afa18851-c8e1-41e9-a766-f399d71ae7bf">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="107" height="67"/>
+								<reportElement x="0" y="0" width="107" height="67" uuid="d66478fd-f648-4091-8b4d-d43bf15394f2"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Observaciones]]></text>
@@ -1708,10 +1427,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="107" height="20"/>
+								<reportElement x="0" y="0" width="107" height="20" uuid="89b1fbb5-1b98-439f-8245-89f64d0b2c8e"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{observacionesTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1720,7 +1439,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="795d8aee-3bf5-4e85-aaa8-4198a2607c65">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -1730,23 +1449,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Repertorio Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true" uuid="c8453546-fdb4-4311-a404-0a0af92a5687">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Resumen Repertorio Propiedad">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Resumen Repertorio Propiedad" uuid="414ef028-8471-4daa-9bba-b54e1934a940">
+						<dataSourceExpression><![CDATA[$P{resumenRepertorioPropiedadDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="508">
+					<jr:column width="508" uuid="3e572042-145a-4389-b7c1-463711fb9e75">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="508" height="30"/>
+								<reportElement x="0" y="0" width="508" height="30" uuid="35f42c48-c638-46fe-bff0-be90b000c1a9"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Nombre del Registrador]]></text>
@@ -1754,17 +1467,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="508" height="20"/>
+								<reportElement x="0" y="0" width="508" height="20" uuid="721204a4-57ff-4bd8-a54e-c7be56b5ad2f"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{nombre_registrador}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{nombreRegistrador}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="149">
+					<jr:column width="149" uuid="4d8c6eae-c03e-43a7-a7d3-33550af7a99f">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="149" height="30"/>
+								<reportElement x="0" y="0" width="149" height="30" uuid="d06aa222-cd23-4d7d-bb8a-6ccb3b02916f"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Libros]]></text>
@@ -1772,17 +1485,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="149" height="20"/>
+								<reportElement x="0" y="0" width="149" height="20" uuid="3acdd51d-e51c-400c-8323-0bf4265f6d7f"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_libros}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145">
+					<jr:column width="145" uuid="982f9855-069c-4c27-ba9a-049aa6ea445f">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="145" height="30"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="ccea796d-404d-4c88-b1e4-5d64f349d150"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Páginas]]></text>
@@ -1790,10 +1503,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="1057b823-2d2a-4649-82f2-bc28942033ab"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_paginas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalPaginasLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1802,7 +1515,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="0a1d13ff-edcb-47fd-940a-6207e2fc8b85">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -1812,23 +1525,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Repertorio Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true" uuid="1f6b3863-d229-4ddf-a954-1d8e230415c5">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Detalle Repertorio Propiedad">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Detalle Repertorio Propiedad" uuid="2f8ab76d-4d1b-4d46-b855-f34d66301f7c">
+						<dataSourceExpression><![CDATA[$P{detalleRepertorioPropiedadDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="150">
+					<jr:column width="150" uuid="d1bad33d-080e-49e7-9c71-cbc6035be2a1">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="150" height="67"/>
+								<reportElement x="0" y="0" width="150" height="67" uuid="97277f0d-9660-4386-9cad-bab916256fe7"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Denominación del Libro]]></text>
@@ -1836,17 +1543,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="150" height="20"/>
+								<reportElement x="0" y="0" width="150" height="20" uuid="866d6892-ca55-40f3-b2d6-7592276cafd6"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{denominacionLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="36">
+					<jr:column width="36" uuid="f5715b9f-a188-409d-9d9a-72eda853b8d7">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="36" height="67"/>
+								<reportElement x="0" y="0" width="36" height="67" uuid="61d261f8-1ae3-405e-ac6b-11773339db86"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Año]]></text>
@@ -1854,17 +1561,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="36" height="20"/>
+								<reportElement x="0" y="0" width="36" height="20" uuid="234c1c00-4250-42d5-87c2-a3b0588b377f"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{anio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{añoLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80">
+					<jr:column width="80" uuid="b7b6f2e6-705d-42fd-850b-648a47b272b5">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="80" height="67"/>
+								<reportElement x="0" y="0" width="80" height="67" uuid="e1afb2af-927a-4f0d-b019-7c52bd7ed904"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Apertura del Libro]]></text>
@@ -1872,17 +1579,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="3f350dea-a0b8-4028-ae62-06c35287686f"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_apertura}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaAperturaLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80">
+					<jr:column width="80" uuid="5c3c6438-9bea-4b09-a832-15f8586714aa">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="80" height="67"/>
+								<reportElement x="0" y="0" width="80" height="67" uuid="273e0a69-1f5e-4453-b26d-b49429617f3e"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Fecha Cierre del Libro]]></text>
@@ -1890,17 +1597,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="4a1adbcc-c7a2-4cbe-bf5b-9daac3fc7a48"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{fecha_cierre}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fechaCierreLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="46">
+					<jr:column width="46" uuid="12cef288-f743-423e-8f33-490c368ebf6c">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="46" height="67"/>
+								<reportElement x="0" y="0" width="46" height="67" uuid="1920a357-448d-4ff0-83ea-fd2c5876044a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No.Tomo]]></text>
@@ -1908,17 +1615,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="46" height="20"/>
+								<reportElement x="0" y="0" width="46" height="20" uuid="3f5672d2-9ce9-4f4e-aaeb-02f7c71f0495"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="67">
+					<jr:column width="67" uuid="07e7c437-304a-45b1-9f67-0fdc3337ba21">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="67" height="67"/>
+								<reportElement x="0" y="0" width="67" height="67" uuid="a68c67e4-94c4-4442-9240-f6681a64827c"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Anotaciones Contenidas]]></text>
@@ -1926,17 +1633,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="67" height="20"/>
+								<reportElement x="0" y="0" width="67" height="20" uuid="d3bb8cb1-3e0c-40f7-b1dd-0433f6440d01"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_inscripciones_contenidas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalInscripcionesContenidasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="55">
+					<jr:column width="55" uuid="ea300880-2336-437e-b6d7-6556e38fc554">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="55" height="67"/>
+								<reportElement x="0" y="0" width="55" height="67" uuid="bdd80196-ea16-4e79-95ec-1a5386eedfa4"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Inicio de Tomo]]></text>
@@ -1944,17 +1651,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="55" height="20"/>
+								<reportElement x="0" y="0" width="55" height="20" uuid="79f3ac03-e92a-4c79-ab4f-5f59aa67421a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="55">
+					<jr:column width="55" uuid="57b14acd-a7fa-4801-af83-e3d6d9273815">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="55" height="67"/>
+								<reportElement x="0" y="0" width="55" height="67" uuid="46b254e7-a986-4d99-b1ab-9dd8402ffeb3"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Fin de Tomo]]></text>
@@ -1962,17 +1669,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="55" height="20"/>
+								<reportElement x="0" y="0" width="55" height="20" uuid="34adeaa8-002f-483f-9600-d1d40363dd82"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="57">
+					<jr:column width="57" uuid="9f0148de-be61-472f-af66-2d082581a5ac">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="57" height="67"/>
+								<reportElement x="0" y="0" width="57" height="67" uuid="e1345d7d-c817-496c-86ca-c20a3092f54d"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Total Hojas (Anverso y Reverso)]]></text>
@@ -1980,17 +1687,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="57" height="20"/>
+								<reportElement x="0" y="0" width="57" height="20" uuid="88afb7d3-4bf4-42c0-8801-439e67423dbd"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_total_hojas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTotalHojasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="175">
+					<jr:column width="175" uuid="722b5644-f205-432d-ab98-2f8254f5e9ae">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="175" height="67"/>
+								<reportElement x="0" y="0" width="175" height="67" uuid="d7b62d2d-5b6a-433b-8303-ccc4179b45d2"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Observaciones]]></text>
@@ -1998,10 +1705,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="175" height="20"/>
+								<reportElement x="0" y="0" width="175" height="20" uuid="25f3bc6a-f69d-4ab5-b8ff-07aafd3293c4"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{observacionesTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -2010,7 +1717,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="47">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="f255e213-acab-48bd-8beb-a859285872cd">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -2020,23 +1727,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen General Libros Índice General Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true">
+				<reportElement key="table 1" style="table 1" x="0" y="18" width="802" height="25" isRemoveLineWhenBlank="true" uuid="0e23dab3-06af-461d-ab56-bc04e8024a26">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Resumen Indice General Propiedad">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Resumen Indice General Propiedad" uuid="a5070c84-1a50-4860-b9b4-fd1fe9eb2ea0">
+						<dataSourceExpression><![CDATA[$P{resumenIGPropiedadDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="508">
+					<jr:column width="508" uuid="cbf65157-5ca6-49ff-b117-cf9a5e198341">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="508" height="30"/>
+								<reportElement x="0" y="0" width="508" height="30" uuid="a3485b43-c2e2-4768-a2d5-5699702abc28"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Nombre del Registrador]]></text>
@@ -2044,17 +1745,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="508" height="20"/>
+								<reportElement x="0" y="0" width="508" height="20" uuid="fbe5a27c-c33e-4714-9f84-19374701099c"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{nombre_registrador}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{nombreRegistrador}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="149">
+					<jr:column width="149" uuid="2b002011-3575-45fc-8c1f-212a94425a6a">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="149" height="30"/>
+								<reportElement x="0" y="0" width="149" height="30" uuid="f8ceea60-5eae-42cf-9679-15959d7bae4b"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Libros]]></text>
@@ -2062,17 +1763,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="149" height="20"/>
+								<reportElement x="0" y="0" width="149" height="20" uuid="78a96a7e-35c8-4e2b-85c5-72a28a245909"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_libros}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145">
+					<jr:column width="145" uuid="ab55d573-110a-41a1-9e5d-46daad6dcc07">
 						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="145" height="30"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="08a9e603-2ec6-4bf9-bb4a-cac45314bb9e"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Páginas]]></text>
@@ -2080,10 +1781,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="20"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="d36ab684-b72b-4005-ac0d-e1c37c3677ef"/>
 								<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_paginas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalPaginasLibros}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -2092,7 +1793,7 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="78">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true">
+				<reportElement x="0" y="0" width="802" height="18" isRemoveLineWhenBlank="true" uuid="9014a3f3-6022-4277-8aa7-4d0e291ce4c1">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="5"/>
@@ -2102,23 +1803,17 @@ GROUP BY ia.nombre_registrador]]>
 				<text><![CDATA[Resumen Específico Libros Índice General Registro de la Propiedad]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true">
+				<reportElement key="table 2" style="table 2" x="0" y="18" width="802" height="50" isRemoveLineWhenBlank="true" uuid="cee1f019-d689-43b9-ad98-0492be4db349">
 					<printWhenExpression><![CDATA[new Boolean ($P{actividadPropiedad})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Detalle Indice General Propiedad">
-						<datasetParameter name="institucionId">
-							<datasetParameterExpression><![CDATA[$P{institucionIdG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="anio">
-							<datasetParameterExpression><![CDATA[$P{anioG}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Detalle Indice General Propiedad" uuid="372d4321-b386-42ca-bbc9-5087b25f244b">
+						<dataSourceExpression><![CDATA[$P{detalleIGPropiedadDS}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="180">
+					<jr:column width="180" uuid="ae0ddc0d-6119-46f6-a2e6-5c20fa98e1ef">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="180" height="67"/>
+								<reportElement x="0" y="0" width="180" height="67" uuid="14ffe16b-9799-4d0c-9f54-f30376243a05"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Denominación del Libro]]></text>
@@ -2126,17 +1821,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="180" height="20"/>
+								<reportElement x="0" y="0" width="180" height="20" uuid="38c23c93-9006-4710-b7f3-9bf45f1e2005"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{denominacionLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="52">
+					<jr:column width="52" uuid="3c824a88-c6a7-498f-bb8d-6dd124b9dd62">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="52" height="67"/>
+								<reportElement x="0" y="0" width="52" height="67" uuid="9a3db71e-cb50-4b5c-bde5-9a536db3568a"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Año]]></text>
@@ -2144,17 +1839,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="52" height="20"/>
+								<reportElement x="0" y="0" width="52" height="20" uuid="95e08f8d-6d45-45db-94a1-f9639ec1f3e1"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{anio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{añoLibro}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="61">
+					<jr:column width="61" uuid="1b3e934d-f7e4-4376-ad42-569a65660f14">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="61" height="67"/>
+								<reportElement x="0" y="0" width="61" height="67" uuid="20d70a57-a883-44ba-8fe9-41c9abb75906"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No.Tomo]]></text>
@@ -2162,17 +1857,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="61" height="20"/>
+								<reportElement x="0" y="0" width="61" height="20" uuid="1b4202e5-7e9a-4c16-8a5d-f3cd4598a141"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70">
+					<jr:column width="70" uuid="98316536-bbe9-4a06-8d92-4474da3b5115">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="70" height="67"/>
+								<reportElement x="0" y="0" width="70" height="67" uuid="ea8cd069-dfaf-44aa-87e3-64b053801dc4"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Total Anotaciones Contenidas en el Tomo]]></text>
@@ -2180,17 +1875,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="70" height="20"/>
+								<reportElement x="0" y="0" width="70" height="20" uuid="6ee5d0f6-120f-49b2-bb33-0e3993e327ef"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{total_inscripciones_contenidas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{totalInscripcionesContenidasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70">
+					<jr:column width="70" uuid="25c81e43-75c7-4f4b-8cab-544489178b8b">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="70" height="67"/>
+								<reportElement x="0" y="0" width="70" height="67" uuid="c70b652c-d1db-49e8-b330-771e933aaced"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Inicio de Tomo]]></text>
@@ -2198,17 +1893,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="70" height="20"/>
+								<reportElement x="0" y="0" width="70" height="20" uuid="0492ba26-50c9-4050-ae50-9950e89eeccd"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_inicio}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaInicioTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70">
+					<jr:column width="70" uuid="f26cbead-65ef-4044-8405-7af8836a9128">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="70" height="67"/>
+								<reportElement x="0" y="0" width="70" height="67" uuid="6e11cf24-45d1-4f9f-8ff5-c590f6029343"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Foja Fin de Tomo]]></text>
@@ -2216,17 +1911,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="70" height="20"/>
+								<reportElement x="0" y="0" width="70" height="20" uuid="ad8c9178-fe6f-4f52-af7a-2eaae2f142b8"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{foja_fin}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fojaFinTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="88">
+					<jr:column width="88" uuid="e2af4af9-d709-4db6-a7d6-f262bef87db0">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="88" height="67"/>
+								<reportElement x="0" y="0" width="88" height="67" uuid="fd470b8d-4f11-4727-9fa6-46fc494491a0"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[No. Total Hojas (Anverso y Reverso)]]></text>
@@ -2234,17 +1929,17 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="88" height="20"/>
+								<reportElement x="0" y="0" width="88" height="20" uuid="afa5102c-4108-46d5-992f-df9d398e305c"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{numero_total_hojas}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numeroTotalHojasTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="211">
+					<jr:column width="211" uuid="6b7d84c8-3ad7-472c-a75d-be7949d0e38c">
 						<jr:columnHeader style="table 2_CH" height="67" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="211" height="67"/>
+								<reportElement x="0" y="0" width="211" height="67" uuid="61f14b19-7b91-4736-b05c-8e90117bc081"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<text><![CDATA[Observaciones]]></text>
@@ -2252,10 +1947,10 @@ GROUP BY ia.nombre_registrador]]>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="30" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="211" height="20"/>
+								<reportElement x="0" y="0" width="211" height="20" uuid="ab793ea0-495d-4182-948f-01b9328ec557"/>
 								<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{observacionesTomo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -2264,10 +1959,10 @@ GROUP BY ia.nombre_registrador]]>
 		</band>
 		<band height="85">
 			<line>
-				<reportElement x="335" y="61" width="131" height="1"/>
+				<reportElement x="335" y="61" width="131" height="1" uuid="5c514a5a-31db-4d9e-9ef6-2c0d8467d960"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="63" width="802" height="22"/>
+				<reportElement x="0" y="63" width="802" height="22" uuid="57739fb7-11a9-44d6-a521-8fcc04288e06"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="false"/>
 				</textElement>
@@ -2278,22 +1973,20 @@ GROUP BY ia.nombre_registrador]]>
 	<pageFooter>
 		<band height="32" splitType="Stretch">
 			<textField evaluationTime="Report">
-				<reportElement x="762" y="11" width="40" height="20"/>
-				<textElement/>
+				<reportElement x="762" y="11" width="40" height="20" uuid="28b103c5-9dec-41dc-9690-0e6a0b8c3db9"/>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="680" y="11" width="80" height="20"/>
+				<reportElement x="680" y="11" width="80" height="20" uuid="6a2f9083-52b1-4354-a507-3c30f990c7db"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement x="0" y="11" width="100" height="20"/>
-				<textElement/>
+				<reportElement x="0" y="11" width="100" height="20" uuid="08ac57a4-da78-4961-a005-5225a66ece32"/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="10" width="802" height="1"/>
+				<reportElement x="0" y="10" width="802" height="1" uuid="9d256a0d-82b1-4388-8cf1-08fdeb9a61c8"/>
 			</line>
 		</band>
 	</pageFooter>

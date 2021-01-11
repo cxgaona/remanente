@@ -6,6 +6,7 @@ import ec.gob.dinardap.remanente.constante.PerfilEnum;
 import ec.gob.dinardap.remanente.constante.TipoInstitucionEnum;
 import ec.gob.dinardap.remanente.constante.TipoLibroEnum;
 import ec.gob.dinardap.remanente.dao.TomoDao;
+import ec.gob.dinardap.remanente.dto.DetalleLibroDTO;
 import ec.gob.dinardap.remanente.dto.ResumenLibroDTO;
 import ec.gob.dinardap.remanente.dto.SftpDto;
 import ec.gob.dinardap.remanente.modelo.EstadoInventarioAnual;
@@ -22,7 +23,6 @@ import ec.gob.dinardap.seguridad.modelo.Usuario;
 import ec.gob.dinardap.seguridad.servicio.InstitucionServicio;
 import ec.gob.dinardap.seguridad.servicio.ParametroServicio;
 import ec.gob.dinardap.util.TipoArchivo;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -44,12 +44,21 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.apache.poi.util.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -68,7 +77,6 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
     private Boolean disableEditRegistrador;
 
     private Boolean disableBtnDescargarArchivo;
-
 
     //Variables de negocio
     private Integer institucionId;
@@ -305,37 +313,150 @@ public class ResumenLibrosCtrl extends BaseCtrl implements Serializable {
             }
         }
     }
-    
-    public void exportarPDF(ActionEvent actionEvent) throws JRException, IOException, SQLException {
-        Map<String, Object> parametros = new HashMap<String, Object>();        
+
+    public void exportarPDFConexionBDD(ActionEvent actionEvent) throws JRException, IOException, SQLException {
+        try {
+            Map<String, Object> parametros = new HashMap<String, Object>();
+            String path = FacesUtils.getPath() + "/resource/images/";
+            Connection con = DriverManager.getConnection(parametroServicio.findByPk(ParametroEnum.STRING_CONEXION_REPORTE.name()).getValor());
+
+            InitialContext initialContext = new InitialContext();
+            DataSource dataSource = (DataSource) initialContext.lookup("java:/jboss/datasources/dinardapRI");
+            Connection connection = dataSource.getConnection();
+            JRDataSource dataSource1 = new JRResultSetDataSource(null);
+
+            parametros.put("realPath", path);
+            parametros.put("nombreRegistro", inventarioAnual.getInstitucion().getNombre());
+            parametros.put("nombreRegional", inventarioAnual.getInstitucion().getTipoInstitucion().equals(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()) ? inventarioAnual.getInstitucion().getInstitucion().getInstitucion().getNombre() : inventarioAnual.getInstitucion().getInstitucion().getNombre());
+            parametros.put("anioG", año);
+            parametros.put("institucionIdG", inventarioAnual.getInstitucion().getInstitucionId());
+            parametros.put("actividadMercantil", renderMercantil);
+            parametros.put("actividadPropiedad", renderPropiedad);
+
+//        File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
+            JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));//
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    report,
+                    parametros,
+                    dataSource1);
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//        response.addHeader("Content-disposition", "attachment; filename=ResumenLibros.pdf");
+//        ServletOutputStream stream = response.getOutputStream();
+//        JasperExportManager.exportReportToPdfStream(jasperPrint, stream);
+            byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline;filename=ResumenLibros.pdf");
+            response.getOutputStream().write(pdfBytes);
+            response.flushBuffer();
+            FacesContext.getCurrentInstance().responseComplete();
+
+//        stream.flush();
+//        stream.close();
+//        con.close();
+//        FacesContext.getCurrentInstance().responseComplete();
+//        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasper.getPath());
+//        JasperPrint reportFilled = JasperFillManager.fillReport(report, parametros, con);
+//        File pdf = File.createTempFile("ResumenLibros.", ".pdf");        
+//        JasperExportManager.exportReportToPdfStream(reportFilled, new FileOutputStream(pdf));
+//        
+        } catch (NamingException ex) {
+            Logger.getLogger(ResumenLibrosCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void exportarPDF(ActionEvent actionEvent) throws JRException, IOException {
+        Map<String, Object> parametros = new HashMap<String, Object>();
         String path = FacesUtils.getPath() + "/resource/images/";
-        Connection con = DriverManager.getConnection(parametroServicio.findByPk(ParametroEnum.STRING_CONEXION_REPORTE.name()).getValor());
+
+        //---Mercantil---
+        JRBeanCollectionDataSource resumenMercantilDS = new JRBeanCollectionDataSource(resumeLibroDTOListMercantil);
+        
+
+        List<DetalleLibroDTO> detalleLibroDTOMercantilList = new ArrayList<DetalleLibroDTO>();
+        for (Tomo tomo : tomoListMercantil) {
+            detalleLibroDTOMercantilList.add(new DetalleLibroDTO(tomo));
+        }
+        JRBeanCollectionDataSource detalleMercantilDS = new JRBeanCollectionDataSource(detalleLibroDTOMercantilList);
+
+        JRBeanCollectionDataSource resumenRepertorioMercantilDS = new JRBeanCollectionDataSource(resumeLibroDTOListRepertorioMercantil);
+
+        List<DetalleLibroDTO> detalleLibroDTORepertorioMercantilList = new ArrayList<DetalleLibroDTO>();
+        for (Tomo tomo : tomoListRepertorioMercantil) {
+            detalleLibroDTORepertorioMercantilList.add(new DetalleLibroDTO(tomo));
+        }
+        JRBeanCollectionDataSource detalleRepertorioMercantilDS = new JRBeanCollectionDataSource(detalleLibroDTORepertorioMercantilList);
+
+        JRBeanCollectionDataSource resumenIGMercantilDS = new JRBeanCollectionDataSource(resumeLibroDTOListIndiceGeneralMercantil);
+
+        List<DetalleLibroDTO> detalleLibroDTOIGMercantilList = new ArrayList<DetalleLibroDTO>();
+        for (Tomo tomo : tomoListIndiceGeneralMercantil) {
+            detalleLibroDTOIGMercantilList.add(new DetalleLibroDTO(tomo));
+        }
+        JRBeanCollectionDataSource detalleIGMercantilDS = new JRBeanCollectionDataSource(detalleLibroDTOIGMercantilList);
+
+        //----Propiedad----
+        JRBeanCollectionDataSource resumenPropiedadDS = new JRBeanCollectionDataSource(resumeLibroDTOListPropiedad);
+
+        List<DetalleLibroDTO> detalleLibroDTOPropiedadList = new ArrayList<DetalleLibroDTO>();
+        for (Tomo tomo : tomoListPropiedad) {
+            detalleLibroDTOPropiedadList.add(new DetalleLibroDTO(tomo));
+        }
+        JRBeanCollectionDataSource detallePropiedadDS = new JRBeanCollectionDataSource(detalleLibroDTOPropiedadList);
+
+        JRBeanCollectionDataSource resumenRepertorioPropiedadDS = new JRBeanCollectionDataSource(resumeLibroDTOListRepertorioPropiedad);
+
+        List<DetalleLibroDTO> detalleLibroDTORepertorioPropiedadList = new ArrayList<DetalleLibroDTO>();
+        for (Tomo tomo : tomoListRepertorioPropiedad) {
+            detalleLibroDTORepertorioPropiedadList.add(new DetalleLibroDTO(tomo));
+        }
+        JRBeanCollectionDataSource detalleRepertorioPropiedadDS = new JRBeanCollectionDataSource(detalleLibroDTORepertorioPropiedadList);
+
+        JRBeanCollectionDataSource resumenIGPropiedadDS = new JRBeanCollectionDataSource(resumeLibroDTOListIndiceGeneralPropiedad);
+
+        List<DetalleLibroDTO> detalleLibroDTOIGPropiedadList = new ArrayList<DetalleLibroDTO>();
+        for (Tomo tomo : tomoListIndiceGeneralPropiedad) {
+            detalleLibroDTOIGPropiedadList.add(new DetalleLibroDTO(tomo));
+        }
+        JRBeanCollectionDataSource detalleIGPropiedadDS = new JRBeanCollectionDataSource(detalleLibroDTOIGPropiedadList);
+
         parametros.put("realPath", path);
         parametros.put("nombreRegistro", inventarioAnual.getInstitucion().getNombre());
-        parametros.put("nombreRegional", inventarioAnual.getInstitucion().getTipoInstitucion().equals(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()) ?inventarioAnual.getInstitucion().getInstitucion().getInstitucion().getNombre():inventarioAnual.getInstitucion().getInstitucion().getNombre());
+        parametros.put("nombreRegional", inventarioAnual.getInstitucion().getTipoInstitucion().equals(TipoInstitucionEnum.RMX_SIN_AUTONOMIA_FINANCIERA.getTipoInstitucion()) ? inventarioAnual.getInstitucion().getInstitucion().getInstitucion().getNombre() : inventarioAnual.getInstitucion().getInstitucion().getNombre());
         parametros.put("anioG", año);
-        parametros.put("institucionIdG", inventarioAnual.getInstitucion().getInstitucionId());        
+        parametros.put("institucionIdG", inventarioAnual.getInstitucion().getInstitucionId());
         parametros.put("actividadMercantil", renderMercantil);
         parametros.put("actividadPropiedad", renderPropiedad);
-                     
-        File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));
-
-        //JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(), parametros, new JREmptyDataSource());
         
-        JasperPrint jasperPrint = JasperFillManager.fillReport(
-				jasper.getPath(),
-                                parametros,
-				con);
+        //Mercantil
 
+        parametros.put("resumenMercantilDS", resumenMercantilDS);
+        parametros.put("detalleMercantilDS", detalleMercantilDS);
+        parametros.put("resumenRepertorioMercantilDS", resumenRepertorioMercantilDS);
+        parametros.put("detalleRepertorioMercantilDS", detalleRepertorioMercantilDS);
+        parametros.put("resumenIGMercantilDS", resumenIGMercantilDS);
+        parametros.put("detalleIGMercantilDS", detalleIGMercantilDS);
+        
+        //Propiedad
+        
+        parametros.put("resumenPropiedadDS", resumenPropiedadDS);
+        parametros.put("detallePropiedadDS", detallePropiedadDS);
+        parametros.put("resumenRepertorioPropiedadDS", resumenRepertorioPropiedadDS);
+        parametros.put("detalleRepertorioPropiedadDS", detalleRepertorioPropiedadDS);
+        parametros.put("resumenIGPropiedadDS", resumenIGPropiedadDS);
+        parametros.put("detalleIGPropiedadDS", detalleIGPropiedadDS);
+
+        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resource/templatesReports/reportRegistroMixto.jasper"));//
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                report,
+                parametros,
+                new JREmptyDataSource());
         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
         response.addHeader("Content-disposition", "attachment; filename=ResumenLibros.pdf");
         ServletOutputStream stream = response.getOutputStream();
-
         JasperExportManager.exportReportToPdfStream(jasperPrint, stream);
-
         stream.flush();
         stream.close();
-        con.close();
+
         FacesContext.getCurrentInstance().responseComplete();
     }
 
