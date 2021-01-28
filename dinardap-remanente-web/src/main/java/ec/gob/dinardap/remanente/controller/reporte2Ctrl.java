@@ -1,6 +1,7 @@
 package ec.gob.dinardap.remanente.controller;
 
 import ec.gob.dinardap.remanente.dao.ReporteDao;
+import ec.gob.dinardap.remanente.dto.ConteoTramitesDTO;
 import ec.gob.dinardap.remanente.dto.UltimoEstadoDTO;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,9 +12,9 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-@Named(value = "reporte1Ctrl")
+@Named(value = "reporte2Ctrl")
 @ViewScoped
-public class reporte1Ctrl extends BaseCtrl implements Serializable {
+public class reporte2Ctrl extends BaseCtrl implements Serializable {
 
     //Declaración de variables
     //Variables de control visual    
@@ -22,8 +23,8 @@ public class reporte1Ctrl extends BaseCtrl implements Serializable {
     private Integer año;
 
     //Listas
-    private List<UltimoEstadoDTO> ultimoEstadoDTOList;
-    private List<UltimoEstadoDTO> ultimoEstadoDTOListFiltrado;
+    private List<ConteoTramitesDTO> conteoTramitesDTOList;
+    private List<ConteoTramitesDTO> conteoTramitesDTOListFiltrado;
 
     //EJB's
     @EJB
@@ -32,11 +33,11 @@ public class reporte1Ctrl extends BaseCtrl implements Serializable {
     @PostConstruct
     protected void init() {
         tituloPagina = "Reporte";
-        ultimoEstadoDTOList = new ArrayList<UltimoEstadoDTO>();
+        conteoTramitesDTOList = new ArrayList<ConteoTramitesDTO>();
     }
 
     public void buscarAño() {
-        ultimoEstadoDTOList = dao.getUltimoEstado(año);
+        conteoTramitesDTOList = dao.getConteoTramites(año);
     }
 
     //Getters & Setters
@@ -56,20 +57,20 @@ public class reporte1Ctrl extends BaseCtrl implements Serializable {
         this.año = año;
     }
 
-    public List<UltimoEstadoDTO> getUltimoEstadoDTOList() {
-        return ultimoEstadoDTOList;
+    public List<ConteoTramitesDTO> getConteoTramitesDTOList() {
+        return conteoTramitesDTOList;
     }
 
-    public void setUltimoEstadoDTOList(List<UltimoEstadoDTO> ultimoEstadoDTOList) {
-        this.ultimoEstadoDTOList = ultimoEstadoDTOList;
+    public void setConteoTramitesDTOList(List<ConteoTramitesDTO> conteoTramitesDTOList) {
+        this.conteoTramitesDTOList = conteoTramitesDTOList;
     }
 
-    public List<UltimoEstadoDTO> getUltimoEstadoDTOListFiltrado() {
-        return ultimoEstadoDTOListFiltrado;
+    public List<ConteoTramitesDTO> getConteoTramitesDTOListFiltrado() {
+        return conteoTramitesDTOListFiltrado;
     }
 
-    public void setUltimoEstadoDTOListFiltrado(List<UltimoEstadoDTO> ultimoEstadoDTOListFiltrado) {
-        this.ultimoEstadoDTOListFiltrado = ultimoEstadoDTOListFiltrado;
+    public void setConteoTramitesDTOListFiltrado(List<ConteoTramitesDTO> conteoTramitesDTOListFiltrado) {
+        this.conteoTramitesDTOListFiltrado = conteoTramitesDTOListFiltrado;
     }
 
 }
