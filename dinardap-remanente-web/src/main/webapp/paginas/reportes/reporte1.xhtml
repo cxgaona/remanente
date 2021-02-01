@@ -32,33 +32,46 @@
                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                             rowsPerPageTemplate="5,10,25,50"
                             filteredValue="#{reporte1Ctrl.ultimoEstadoDTOListFiltrado}"
-                            tableStyle="width:auto">                                               
-                            <p:column headerText="Registro Mixto" sortBy="#{estado.nombre}" 
-                                      filterBy="#{estado.nombre}" 
-                                      filterMatchMode="contains" 
-                                      width="30%" style="text-align: left">
+                            tableStyle="width:auto">
+                            <p:columnGroup type="header">
+                                <p:row>                                    
+                                    <p:column headerText="Registro Mixto" 
+                                              sortBy="#{estado.nombre}" 
+                                              filterBy="#{estado.nombre}" filterMatchMode="contains" 
+                                              width="30%"/>
+                                    <p:column headerText="Dirección Regional" 
+                                              sortBy="#{estado.direccionRegional}" 
+                                              filterBy="#{estado.direccionRegional}" filterMatchMode="contains" 
+                                              width="30%"/>
+                                    <p:column headerText="Estado Actual"
+                                              sortBy="#{estado.estado}"
+                                              filterBy="#{estado.estado}" filterMatchMode="contains"
+                                              width="15%"/>
+                                    <p:column headerText="Fecha" 
+                                              sortBy="#{estado.fechaRegistro}" 
+                                              filterBy="#{estado.fechaRegistro}" filterMatchMode="contains" 
+                                              width="15%"/>
+                                    <p:column headerText="Mes" 
+                                              sortBy="#{estado.mesStr}" 
+                                              filterBy="#{estado.mesStr}" filterMatchMode="contains" 
+                                              width="10%" style="text-align: right"/>
+                                </p:row>                                                          
+                            </p:columnGroup>
+                            <p:column>
                                 <h:outputText value="#{estado.nombre}" />
                             </p:column>
-                            <p:column headerText="Dirección Regional" sortBy="#{estado.direccionRegional}" 
-                                      filterBy="#{estado.direccionRegional}" filterMatchMode="contains" 
-                                      width="30%" style="text-align: left">
+                            <p:column>
                                 <h:outputText value="#{estado.direccionRegional}" />
                             </p:column>
-                            <p:column headerText="Estado Actual" sortBy="#{estado.estado}" 
-                                      filterBy="#{estado.estado}" filterMatchMode="contains" 
-                                      width="15%" style="text-align: right">
+                            <p:column>
                                 <h:outputText value="#{estado.estado}" />                                
                             </p:column>
-                            <p:column headerText="Fecha" sortBy="#{estado.fechaRegistro}" 
-                                      filterBy="#{estado.fechaRegistro}" filterMatchMode="contains" 
-                                      width="15%" style="text-align: right">
+                            <p:column>
                                 <h:outputText value="#{estado.fechaRegistro}" > 
                                     <f:convertDateTime pattern="yyyy/MM/dd HH:mm:ss"  />
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Mes" sortBy="#{estado.mesStr}" 
-                                      filterBy="#{estado.mesStr}" filterMatchMode="contains" 
-                                      width="10%" style="text-align: right">
+                            <p:column>
                                 <h:outputText value="#{estado.mesStr}" /> 
                             </p:column>                        
                         </p:dataTable>   

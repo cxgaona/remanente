@@ -32,34 +32,48 @@
                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                             rowsPerPageTemplate="5,10,25,50"
                             filteredValue="#{reporte2Ctrl.conteoTramitesDTOListFiltrado}"
-                            tableStyle="width:auto">                                               
-                            <p:column headerText="Registro Mixto" sortBy="#{conteo.nombreInstitucion}" 
-                                      filterBy="#{conteo.nombreInstitucion}" 
-                                      filterMatchMode="contains" 
-                                      width="60%" style="text-align: left">
+                            tableStyle="width:auto">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column headerText="Registro Mixto" 
+                                              sortBy="#{conteo.nombreInstitucion}"
+                                              filterBy="#{conteo.nombreInstitucion}" filterMatchMode="contains"
+                                              width="60%"/>
+                                    <p:column headerText="Mes" 
+                                              sortBy="#{conteo.mesStr}" 
+                                              filterBy="#{conteo.mesStr}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                    <p:column headerText="Actividad Registral" 
+                                              sortBy="#{conteo.actividadRegistral}" 
+                                              filterBy="#{conteo.actividadRegistral}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                    <p:column headerText="Tipo de Trámite" 
+                                              sortBy="#{conteo.tipoTramite}" 
+                                              filterBy="#{conteo.tipoTramite}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                    <p:column headerText="Número de trámites" 
+                                              sortBy="#{conteo.conteo}" 
+                                              filterBy="#{conteo.conteo}" filterMatchMode="contains" 
+                                              width="10%">
+                                        <h:outputText value="#{conteo.conteo}"/>
+                                    </p:column>
+                                </p:row>                                                          
+                            </p:columnGroup>
+                            <p:column>
                                 <h:outputText value="#{conteo.nombreInstitucion}" />
                             </p:column>
-                            <p:column headerText="Mes" sortBy="#{conteo.mesStr}" 
-                                      filterBy="#{conteo.mesStr}" filterMatchMode="contains" 
-                                      width="10%" style="text-align: right">
+                            <p:column>
                                 <h:outputText value="#{conteo.mesStr}" /> 
                             </p:column>                        
-                            <p:column headerText="Actividad Registral" sortBy="#{conteo.actividadRegistral}" 
-                                      filterBy="#{conteo.actividadRegistral}" filterMatchMode="contains" 
-                                      width="10%" style="text-align: left">
+                            <p:column>
                                 <h:outputText value="#{conteo.actividadRegistral}" />
                             </p:column>
-                            <p:column headerText="Tipo de Trámite" sortBy="#{conteo.tipoTramite}" 
-                                      filterBy="#{conteo.tipoTramite}" filterMatchMode="contains" 
-                                      width="10%" style="text-align: right">
+                            <p:column>
                                 <h:outputText value="#{conteo.tipoTramite}" />                                
                             </p:column>
-                            <p:column headerText="Número de trámites" sortBy="#{conteo.conteo}" 
-                                      filterBy="#{conteo.conteo}" filterMatchMode="contains" 
-                                      width="10%" style="text-align: right">
+                            <p:column >
                                 <h:outputText value="#{conteo.conteo}"/>                                     
                             </p:column>
-
                         </p:dataTable>   
                     </h:panelGrid>
                 </b:panel>
