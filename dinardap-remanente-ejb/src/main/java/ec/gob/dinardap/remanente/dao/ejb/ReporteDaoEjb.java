@@ -15,9 +15,9 @@ import javax.ejb.Stateless;
 import javax.persistence.Query;
 
 @Stateless(name = "ReporteDao")
-public class ReporteoDaoEjb extends RemanenteGenericDao<RemanenteMensual, Integer> implements ReporteDao {
+public class ReporteDaoEjb extends RemanenteGenericDao<RemanenteMensual, Integer> implements ReporteDao {
 
-    public ReporteoDaoEjb() {
+    public ReporteDaoEjb() {
         super(RemanenteMensual.class);
     }
 
@@ -68,7 +68,7 @@ public class ReporteoDaoEjb extends RemanenteGenericDao<RemanenteMensual, Intege
                     ultimoEstadoDTO.setMes(Integer.parseInt(item[5].toString()));
                     ultimoEstadoDTOList.add(ultimoEstadoDTO);
                 } catch (ParseException ex) {
-                    Logger.getLogger(ReporteoDaoEjb.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ReporteDaoEjb.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
