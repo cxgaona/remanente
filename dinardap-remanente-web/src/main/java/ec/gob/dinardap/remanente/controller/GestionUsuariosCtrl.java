@@ -83,6 +83,8 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
 
     private List<Pregunta> preguntaList;
     private List<Perfil> perfilSelectedList;
+    
+    private List<UsuarioDTO> usuarioDtoListFiltrado;
 
     @EJB
     private UsuarioDao usuarioDao;
@@ -496,12 +498,14 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
             URI uri = new URI(ext.getRequestScheme(),
                     null, ext.getRequestServerName(), ext.getRequestServerPort(),
                     ext.getRequestContextPath(), null, null);
+            String uriPro="https://remanentesrm.dinardap.gob.ec/remanente/login.jsf";
 
             StringBuilder html = new StringBuilder(
                     "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
             html.append("Estimado(a) " + usuarioDtoGestion.getUsuario().getNombre() + ", <br /><br />");
             html.append(mensajeMail + "<br/ ><br />");
-            html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+//            html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+            html.append("<a href='" + uriPro + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
             html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
             html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
             html.append("Dirección Nacional de Registros de Datos Públicos");
@@ -648,6 +652,16 @@ public class GestionUsuariosCtrl extends BaseCtrl implements Serializable {
     public void setEstadoAI(Boolean estadoAI) {
         this.estadoAI = estadoAI;
     }
+
+    public List<UsuarioDTO> getUsuarioDtoListFiltrado() {
+        return usuarioDtoListFiltrado;
+    }
+
+    public void setUsuarioDtoListFiltrado(List<UsuarioDTO> usuarioDtoListFiltrado) {
+        this.usuarioDtoListFiltrado = usuarioDtoListFiltrado;
+    }
+    
+    
     
     
     
