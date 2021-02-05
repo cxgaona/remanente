@@ -80,7 +80,7 @@
                 <b:panel style="width: 50%" rendered="#{libroCtrl.renderEdition}">                    
                     <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
                         <p:outputLabel for="denominacion" value="#{etiquetas['denominacionLibro']}:" />
-                        <p:inputText id="denominacion" value="#{libroCtrl.libroSelected.denominacion}" maxlength="30" style="width: 80%" required="true" />                        
+                        <p:inputText id="denominacion" value="#{libroCtrl.libroSelected.denominacion}" maxlength="60" style="width: 80%" required="true" />                        
                         <p:outputLabel for="fechaApertura" value="#{etiquetas['fechaAperturaLibro']}:" />
                         <p:datePicker id="fechaApertura" 
                                       value="#{libroCtrl.libroSelected.fechaApertura}" 

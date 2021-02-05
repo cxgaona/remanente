@@ -60,7 +60,7 @@
                 </b:panelGrid>
                 <b:panelGrid colSpans="3,6,3" style="width: 30%; margin: 4px 5px;">   
                     <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
-                    <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="30" size="25" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
+                    <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="50" size="40" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
                     <p:commandButton action="#{resumenLibrosCtrl.actualizarRegistrador}" update="formResumen" style="margin-right:20px;" value="#{etiquetas['btnActualizar']}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>
                 </b:panelGrid>                
                 <b:panel title="Resumen Libros Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
