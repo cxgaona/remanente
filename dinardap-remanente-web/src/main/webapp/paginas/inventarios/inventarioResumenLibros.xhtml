@@ -58,7 +58,7 @@
                     </p:inputText>
                     <p:commandButton action="#{resumenLibrosCtrl.reloadLibro}" update="formResumen" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panelGrid colSpans="3,6,3" style="width: 30%; margin: 4px 5px;">   
+                <b:panelGrid colSpans="3,6,3" style="width: 50%; margin: 4px 5px;">   
                     <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
                     <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="50" size="40" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
                     <p:commandButton action="#{resumenLibrosCtrl.actualizarRegistrador}" update="formResumen" style="margin-right:20px;" value="#{etiquetas['btnActualizar']}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>
