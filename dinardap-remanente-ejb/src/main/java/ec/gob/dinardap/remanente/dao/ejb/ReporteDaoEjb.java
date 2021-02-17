@@ -3,6 +3,7 @@ package ec.gob.dinardap.remanente.dao.ejb;
 import ec.gob.dinardap.remanente.dao.ReporteDao;
 import ec.gob.dinardap.remanente.dto.ConteoTramitesDTO;
 import ec.gob.dinardap.remanente.dto.UltimoEstadoDTO;
+import ec.gob.dinardap.remanente.dto.ValoresTransaccionesDTO;
 import ec.gob.dinardap.remanente.modelo.RemanenteMensual;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,6 +110,44 @@ public class ReporteDaoEjb extends RemanenteGenericDao<RemanenteMensual, Integer
             }
         }
         return conteoTramitesDTOList;
+    }
+
+    @Override
+    public List<ValoresTransaccionesDTO> getValoresTransacciones(Integer año) {
+        StringBuilder sql = new StringBuilder("SELECT i.nombre, rm.mes, ct. tipo, ct.nombre as descripcionTransaccion, t.valor_total "
+                + "FROM ec_dinardap_remanente.transaccion t "
+                + "INNER JOIN ec_dinardap_remanente.remanente_mensual rm "
+                + "ON t.remanente_mensual_id=rm.remanente_mensual_id "
+                + "INNER JOIN ec_dinardap_seguridad.institucion i "
+                + "ON i.institucion_id=rm.institucion_id "
+                + "INNER JOIN ec_dinardap_remanente.catalogo_transaccion ct "
+                + "ON t.catalogo_transaccion_id=ct.catalogo_transaccion_id "
+                + "WHERE t.remanente_mensual_id IN ( "
+                + "SELECT max(rm.remanente_mensual_id) "
+                + "FROM ec_dinardap_remanente.remanente_mensual rm "
+                + "INNER JOIN ec_dinardap_remanente.remanente_anual ra ON rm.remanente_anual_id=ra.remanente_anual_id "
+                + "WHERE ra.anio = "+año+" "
+                + "GROUP BY rm.institucion_id, mes, ra.remanente_anual_id,ra.anio ORDER BY rm.institucion_id,anio,mes "
+                + ")"
+                + "ORDER BY i. institucion_id, rm.mes, ct.catalogo_transaccion_id ");
+        Query query = em.createNativeQuery(sql.toString());
+
+        List<Object[]> dataList = query.getResultList();
+        List<ValoresTransaccionesDTO> valoresTransaccionesDTOList = new ArrayList<ValoresTransaccionesDTO>();
+        ValoresTransaccionesDTO valoresTransaccionesDTO;
+
+        if (dataList != null && !dataList.isEmpty()) {
+            for (Object[] item : dataList) {
+                valoresTransaccionesDTO = new ValoresTransaccionesDTO();
+                valoresTransaccionesDTO.setNombreInstitucion(item[0].toString());
+                valoresTransaccionesDTO.setMes(Integer.parseInt(item[1].toString()));
+                valoresTransaccionesDTO.setTipoTransaccion(item[2].toString());
+                valoresTransaccionesDTO.setDescripcionTransaccion(item[3].toString());
+                valoresTransaccionesDTO.setValorTransaccion(Double.parseDouble(item[4].toString()));
+                valoresTransaccionesDTOList.add(valoresTransaccionesDTO);
+            }
+        }
+        return valoresTransaccionesDTOList;
     }
 
 }
