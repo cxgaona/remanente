@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">  
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{reporte2Ctrl.tituloPagina}</h1>
+            <h:form id="formReporte">
+                <b:panel title="Conteo de trámites por mes">
+                    <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                        <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                        <p:inputText id="anio" value="#{reporte2Ctrl.año}" maxlength="4" >
+                            <p:keyFilter regEx="/[\d]/"/>
+                        </p:inputText>
+                        <p:commandButton action="#{reporte2Ctrl.buscarAño}" update="formReporte" style="margin-right:20px;" icon="fa fa-fw fa-search"/>
+                    </b:panelGrid>
+                    <h:panelGrid columns="1" style="width: 100%;">
+                        <h:commandLink>
+                            <p:graphicImage value="/resource/images/excel.png" alt="Exportar a Excel" width="30"/>
+                            <h:outputText value="Exportar a Excel"/>
+                            <pe:exporter type="xlsx" target="conteoTbl" fileName="ReporteNumeroTramiteAño_#{reporte2Ctrl.año}" />
+                        </h:commandLink>
+                        <p:dataTable 
+                            id="conteoTbl"
+                            value="#{reporte2Ctrl.conteoTramitesDTOList}"
+                            var="conteo"                        
+                            reflow="true" rows="5" paginator="true"
+                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="5,10,25,50"
+                            filteredValue="#{reporte2Ctrl.conteoTramitesDTOListFiltrado}"
+                            tableStyle="width:auto">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column headerText="Registro Mixto" 
+                                              sortBy="#{conteo.nombreInstitucion}"
+                                              filterBy="#{conteo.nombreInstitucion}" filterMatchMode="contains"
+                                              width="60%"/>
+                                    <p:column headerText="Mes" 
+                                              sortBy="#{conteo.mesStr}" 
+                                              filterBy="#{conteo.mesStr}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                    <p:column headerText="Actividad Registral" 
+                                              sortBy="#{conteo.actividadRegistral}" 
+                                              filterBy="#{conteo.actividadRegistral}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                    <p:column headerText="Tipo de Trámite" 
+                                              sortBy="#{conteo.tipoTramite}" 
+                                              filterBy="#{conteo.tipoTramite}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                    <p:column headerText="Número de trámites" 
+                                              sortBy="#{conteo.conteo}" 
+                                              filterBy="#{conteo.conteo}" filterMatchMode="contains" 
+                                              width="10%"/>
+                                </p:row>                                                          
+                            </p:columnGroup>
+                            <p:column>
+                                <h:outputText value="#{conteo.nombreInstitucion}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{conteo.mesStr}" /> 
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="#{conteo.actividadRegistral}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{conteo.tipoTramite}" />                                
+                            </p:column>
+                            <p:column >
+                                <h:outputText value="#{conteo.conteo}"/>                                     
+                            </p:column>
+                        </p:dataTable>   
+                    </h:panelGrid>
+                </b:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
