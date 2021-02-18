@@ -52,5 +52,16 @@ public class TomoServicioImpl extends GenericServiceImpl<Tomo, Integer> implemen
         tomoList = findByCriterias(criteria);
         return tomoList;
     }
+    
+    @Override
+    public Tomo getUltimoTomoPorLibro(Integer libroId) {
+        List<Tomo> tomoList = getTomosActivosPorLibro(libroId);
+        Tomo ultimoTomo = new Tomo();
+        if(tomoList.size()>0){
+            //ultimoTomo=tomoList.get(tomoList.size()-1);
+            ultimoTomo=tomoList.get(0);
+        }      
+        return ultimoTomo;
+    }
 
 }

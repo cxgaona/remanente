@@ -13,5 +13,6 @@ public interface TomoServicio extends GenericService<Tomo, Integer> {
 
     public List<Tomo> getTomosActivosPorLibro(Integer libroId);
     public List<Tomo> getTomosPorInstitucionAñoTipo(Integer institucionId, Integer año, Integer tipoLibroId);
+    public Tomo getUltimoTomoPorLibro(Integer libroId);
 
 }
