@@ -187,9 +187,13 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
         if(ultimoTomo.getTomoId()!=null){
             tomoSelected.setNumero(ultimoTomo.getNumero()+1);
             tomoSelected.setFojaInicio(ultimoTomo.getFojaFin()+1);
-        }else{
+        }else{            
             tomoSelected.setNumero(1);
             tomoSelected.setFojaInicio(1);
+            if(libroSelected.getTipoLibro().getTipoLibroId().equals(TipoLibroEnum.PROPIEDAD.getTipoLibro()) ||
+               libroSelected.getTipoLibro().getTipoLibroId().equals(TipoLibroEnum.MERCANTIL.getTipoLibro()) ){
+                tomoSelected.setNumeroInscripcionInicio(1);
+            }
         }
         if(ultimoTomo.getNumeroInscripcionInicio()!=null){
             tomoSelected.setNumeroInscripcionInicio(ultimoTomo.getNumeroInscripcionFin()+1);
@@ -239,7 +243,6 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
         if(tomoSelected.getNumeroInscripcionInicio()!=null && tomoSelected.getNumeroInscripcionFin()!=null){
             Integer total = tomoSelected.getNumeroInscripcionFin()-tomoSelected.getNumeroInscripcionInicio()+1;
             tomoSelected.setTotalInscripcionesContenidas(total);
-            System.out.println("total inscripciones: "+total);
         }
     }
     
@@ -247,7 +250,6 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
         if(tomoSelected.getFojaInicio()!=null && tomoSelected.getFojaFin()!=null){
             Integer total = (tomoSelected.getFojaFin()-tomoSelected.getFojaInicio()+1)*2;
             tomoSelected.setNumeroTotalHojas(total);
-            System.out.println("total hojas: "+total);
         }
     }
 
