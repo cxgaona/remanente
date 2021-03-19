@@ -213,7 +213,9 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
     
     public void guardarTomo() {
         tomoSelected.setLibro(libroSelected);
-
+        if(tomoSelected.getNumeroHojasOtroFormato()==null){
+            tomoSelected.setNumeroHojasOtroFormato(0);
+        }
         if (onCreate) {
             tomoSelected.setFechaRegistro(new Date());
             tomoSelected.setEstado(EstadoEnum.ACTIVO.getEstado());
