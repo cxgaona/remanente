@@ -27,15 +27,19 @@ import org.apache.poi.util.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
-@Named(value = "informeCumplimientoInventariosRegionalCtrl")
+@Named(value = "informeCumplimientoInventariosAdministradorCtrl")
 @ViewScoped
-public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl implements Serializable {
+public class InformeCumplimientoInventariosAdministradorCtrl extends BaseCtrl implements Serializable {
 
     //Declaración de variables
     //Variables de control visual
     private String tituloInventario;
-    private Boolean disableBtnCargarArchivo;
-    private Boolean renderArchivoTemporal;
+    private String tituloInventarioDPI;
+    private String tituloInventarioDCE;
+    private Boolean disableBtnCargarArchivoDPI;
+    private Boolean disableBtnCargarArchivoDCE;
+    private Boolean renderArchivoTemporalDPI;
+    private Boolean renderArchivoTemporalDCE;
 
     //Variables de negocio
     private Integer institucionId;
@@ -51,7 +55,8 @@ public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl impleme
     private String nombreArchivoTemporal;
 
     //Listas
-    private List<InformeCumplimiento> informeCumplimientoList;
+    private List<InformeCumplimiento> informeCumplimientoDPIList;
+    private List<InformeCumplimiento> informeCumplimientoDCEList;
 
     //
     @EJB
@@ -63,6 +68,8 @@ public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl impleme
     protected void init() {
         sftpDto = new SftpDto();
         tituloInventario = "Informe de Cumplimiento de Inventarios";
+        tituloInventarioDPI = "Informe de Cumplimiento de Inventarios DPI";
+        tituloInventarioDCE = "Informe de Cumplimiento de Inventarios DCE";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         año = calendar.get(Calendar.YEAR);
@@ -72,55 +79,92 @@ public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl impleme
         institucionId = Integer.parseInt(BaseCtrl.getSessionVariable("institucionId"));
         institucion = new Institucion();
         institucion.setInstitucionId(institucionId);
-        informeCumplimientoList = new ArrayList<InformeCumplimiento>();
+        informeCumplimientoDPIList = new ArrayList<InformeCumplimiento>();
+        informeCumplimientoDCEList = new ArrayList<InformeCumplimiento>();
         cantidadInformes = Integer.parseInt(parametroServicio.findByPk(ParametroEnum.CANTIDAD_INFORMES_CUMPLIMIENTO_INVENTARIOS.name()).getValor());
         reloadInformes();
     }
 
     public void reloadInformes() {
-        renderArchivoTemporal=Boolean.FALSE;
-        disableBtnCargarArchivo = Boolean.FALSE;
+        renderArchivoTemporalDPI=Boolean.FALSE;
+        renderArchivoTemporalDCE=Boolean.FALSE;
+        disableBtnCargarArchivoDPI = Boolean.FALSE;
+        disableBtnCargarArchivoDCE = Boolean.FALSE;
         informeCumplimiento = new InformeCumplimiento();
-        informeCumplimientoList = informeCumplimientoServicio.getInformesCumplimientoPorInstitucionAñoTipo(institucionId, año, "DR");
-        if (informeCumplimientoList.size() == 0) {
+        informeCumplimientoDPIList = informeCumplimientoServicio.getInformesCumplimientoPorInstitucionAñoTipo(institucionId, año, "DPI");
+        informeCumplimientoDCEList = informeCumplimientoServicio.getInformesCumplimientoPorInstitucionAñoTipo(institucionId, año, "DCE");
+        if (informeCumplimientoDPIList.size() == 0 && informeCumplimientoDCEList.size() == 0) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Información", "No se han cargado Informes de Cumplimiento para el año " + año + "."));
-        } else if (informeCumplimientoList.size() >= cantidadInformes) {
-            disableBtnCargarArchivo = Boolean.TRUE;
+        } else {
+            if (informeCumplimientoDPIList.size() >= cantidadInformes){
+                disableBtnCargarArchivoDPI = Boolean.TRUE;
+            }
+            if (informeCumplimientoDCEList.size() >= cantidadInformes){
+                disableBtnCargarArchivoDCE = Boolean.TRUE;
+            }            
         }
     }
 
-    public void guardarInformeCumplimiento() {
+    public void guardarInformeCumplimiento(String tipo) {
         informeCumplimiento.setFechaRegistro(new Date());
         informeCumplimiento.setAnio(año);
         informeCumplimiento.setInstitucion(institucion);
         informeCumplimiento.setUsuario(usuario);
         informeCumplimiento.setEstado((short) 1);
-        informeCumplimiento.setTipo("DR");
+        informeCumplimiento.setTipo(tipo);
         informeCumplimientoServicio.create(informeCumplimiento);
-    }
+    }    
 
-    public void uploadInformeRegional(FileUploadEvent event) {
+    public void uploadInformeDPI(FileUploadEvent event) {
         try {            
             UploadedFile file = event.getFile();
             setFileByte(IOUtils.toByteArray(file.getInputstream()));
             setNombreArchivoTemporal(event.getFile().getFileName());
-            renderArchivoTemporal=Boolean.TRUE;
+            renderArchivoTemporalDPI=Boolean.TRUE;
+            disableBtnCargarArchivoDCE = Boolean.TRUE;
         } catch (IOException ex) {
             Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            renderArchivoTemporal=Boolean.FALSE;
+            renderArchivoTemporalDPI=Boolean.FALSE;
         }
     }
 
-    public void confirmarUpload() {
-        guardarInformeCumplimiento();
-        String realPath = (año + "/icdr").concat(informeCumplimiento.getInformeCumplimientoId().toString()).concat(".pdf");
+    public void uploadInformeDCE(FileUploadEvent event) {
+        try {            
+            UploadedFile file = event.getFile();
+            setFileByte(IOUtils.toByteArray(file.getInputstream()));
+            setNombreArchivoTemporal(event.getFile().getFileName());
+            renderArchivoTemporalDCE=Boolean.TRUE;
+            disableBtnCargarArchivoDPI = Boolean.TRUE;
+        } catch (IOException ex) {
+            Logger.getLogger(RemanenteMensualCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            renderArchivoTemporalDCE=Boolean.FALSE;
+        }
+    }
+
+    public void confirmarUploadDPI() {
+        guardarInformeCumplimiento("DPI");
+        String realPath = (año + "/icdpi").concat(informeCumplimiento.getInformeCumplimientoId().toString()).concat(".pdf");
         sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INFORME_CUMPLIMIENTO.name()).getValor().concat(realPath));
         sftpDto.setArchivo(getFileByte());
         informeCumplimiento.setUrlArchivo(realPath);
         informeCumplimientoServicio.editInformeCumplimiento(informeCumplimiento, sftpDto);
         setFileByte(null);
         //PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
-        renderArchivoTemporal=Boolean.FALSE;
+        renderArchivoTemporalDPI=Boolean.FALSE;
+        reloadInformes();
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Informe de Cumplimiento cargado exitosamente."));
+    }
+
+    public void confirmarUploadDCE() {
+        guardarInformeCumplimiento("DCE");
+        String realPath = (año + "/icdce").concat(informeCumplimiento.getInformeCumplimientoId().toString()).concat(".pdf");
+        sftpDto.getCredencialesSFTP().setDirDestino(parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_REMANENTE.name()).getValor() + parametroServicio.findByPk(ParametroEnum.SFTP_RUTA_INFORME_CUMPLIMIENTO.name()).getValor().concat(realPath));
+        sftpDto.setArchivo(getFileByte());
+        informeCumplimiento.setUrlArchivo(realPath);
+        informeCumplimientoServicio.editInformeCumplimiento(informeCumplimiento, sftpDto);
+        setFileByte(null);
+        //PrimeFaces.current().executeScript("PF('transaccionUploadDlg').hide()");
+        renderArchivoTemporalDCE=Boolean.FALSE;
         reloadInformes();
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", "Informe de Cumplimiento cargado exitosamente."));
     }
@@ -157,6 +201,22 @@ public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl impleme
         this.tituloInventario = tituloInventario;
     }
 
+    public String getTituloInventarioDPI() {
+        return tituloInventarioDPI;
+    }
+
+    public void setTituloInventarioDPI(String tituloInventarioDPI) {
+        this.tituloInventarioDPI = tituloInventarioDPI;
+    }
+
+    public String getTituloInventarioDCE() {
+        return tituloInventarioDCE;
+    }
+
+    public void setTituloInventarioDCE(String tituloInventarioDCE) {
+        this.tituloInventarioDCE = tituloInventarioDCE;
+    }
+
     public Integer getInstitucionId() {
         return institucionId;
     }
@@ -173,20 +233,52 @@ public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl impleme
         this.año = año;
     }
 
-    public List<InformeCumplimiento> getInformeCumplimientoList() {
-        return informeCumplimientoList;
+    public Boolean getDisableBtnCargarArchivoDPI() {
+        return disableBtnCargarArchivoDPI;
     }
 
-    public void setInformeCumplimientoList(List<InformeCumplimiento> informeCumplimientoList) {
-        this.informeCumplimientoList = informeCumplimientoList;
+    public void setDisableBtnCargarArchivoDPI(Boolean disableBtnCargarArchivoDPI) {
+        this.disableBtnCargarArchivoDPI = disableBtnCargarArchivoDPI;
     }
 
-    public Boolean getDisableBtnCargarArchivo() {
-        return disableBtnCargarArchivo;
+    public Boolean getDisableBtnCargarArchivoDCE() {
+        return disableBtnCargarArchivoDCE;
     }
 
-    public void setDisableBtnCargarArchivo(Boolean disableBtnCargarArchivo) {
-        this.disableBtnCargarArchivo = disableBtnCargarArchivo;
+    public void setDisableBtnCargarArchivoDCE(Boolean disableBtnCargarArchivoDCE) {
+        this.disableBtnCargarArchivoDCE = disableBtnCargarArchivoDCE;
+    }
+
+    public Boolean getRenderArchivoTemporalDPI() {
+        return renderArchivoTemporalDPI;
+    }
+
+    public void setRenderArchivoTemporalDPI(Boolean renderArchivoTemporalDPI) {
+        this.renderArchivoTemporalDPI = renderArchivoTemporalDPI;
+    }
+
+    public Boolean getRenderArchivoTemporalDCE() {
+        return renderArchivoTemporalDCE;
+    }
+
+    public void setRenderArchivoTemporalDCE(Boolean renderArchivoTemporalDCE) {
+        this.renderArchivoTemporalDCE = renderArchivoTemporalDCE;
+    }
+
+    public List<InformeCumplimiento> getInformeCumplimientoDPIList() {
+        return informeCumplimientoDPIList;
+    }
+
+    public void setInformeCumplimientoDPIList(List<InformeCumplimiento> informeCumplimientoDPIList) {
+        this.informeCumplimientoDPIList = informeCumplimientoDPIList;
+    }
+
+    public List<InformeCumplimiento> getInformeCumplimientoDCEList() {
+        return informeCumplimientoDCEList;
+    }
+
+    public void setInformeCumplimientoDCEList(List<InformeCumplimiento> informeCumplimientoDCEList) {
+        this.informeCumplimientoDCEList = informeCumplimientoDCEList;
     }
 
     public String getRutaArchivo() {
@@ -219,14 +311,6 @@ public class InformeCumplimientoInventariosRegionalCtrl extends BaseCtrl impleme
 
     public void setNombreArchivoTemporal(String nombreArchivoTemporal) {
         this.nombreArchivoTemporal = nombreArchivoTemporal;
-    }
-
-    public Boolean getRenderArchivoTemporal() {
-        return renderArchivoTemporal;
-    }
-
-    public void setRenderArchivoTemporal(Boolean renderArchivoTemporal) {
-        this.renderArchivoTemporal = renderArchivoTemporal;
     }
 
 }

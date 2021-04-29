@@ -59,7 +59,7 @@
                                                      update="msgMensajes, pnlArchivoTemporal, formInformesRegional"/>
                                 </b:panelGrid>
                             </b:panel>
-                            <p:dataTable id="inventarioTbl"
+                            <p:dataTable id="informeTbl"
                                          value="#{informeCumplimientoInventariosRegionalCtrl.informeCumplimientoList}" 
                                          var="informe"
                                          rowKey="#{informe.informeCumplimientoId}"
@@ -79,7 +79,7 @@
                                 </p:columnGroup>
                                 <p:column>
                                     <center>
-                                        <h:commandLink id="btDescargaInfRemanenteCuatrimestral"
+                                        <h:commandLink id="btDescargaInfCumplimientoRegional"
                                                        immediate="true"
                                                        styleClass="fa fa-fw fa-download"                                                       
                                                        action="#{informeCumplimientoInventariosRegionalCtrl.visualizarArchivoRespaldo}">
