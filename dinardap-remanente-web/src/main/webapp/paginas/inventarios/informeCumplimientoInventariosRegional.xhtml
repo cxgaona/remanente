@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{informeCumplimientoInventariosRegionalCtrl.tituloInventario}</h1>
+            <h:form id="formInformes">                            
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                    <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                    <p:inputText id="anio" value="#{informeCumplimientoInventariosRegionalCtrl.año}" maxlength="4" >
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                    <p:commandButton action="#{informeCumplimientoInventariosRegionalCtrl.reloadInformes}" update="formInformes, formInformesRegional" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panelGrid>                
+            </h:form>
+            <h:form id="formInformesRegional">
+                <b:panelGrid colSpans="6,6" style="width: 100%; margin-bottom: 10px;">
+                    <b:panel title="#{informeCumplimientoInventariosRegionalCtrl.tituloInventario} - #{informeCumplimientoInventariosRegionalCtrl.año}" style="width: 100%">
+                        <b:panelGrid colSpans="12" style="width: 100%; margin-bottom: 10px;">   
+                            <p:outputLabel value="#{etiquetas['cargarInformeCumplimiento']}: " />
+                            <p:fileUpload                                
+                                id="archivoRespaldo"
+                                messageTemplate="Tipo de Archivo no Válido"
+                                style="width:75%; padding-bottom:5px; margin-bottom: 5px;"
+                                mode="advanced"
+                                auto="true"
+                                dragDropSupport="true"
+                                sizeLimit="9000000"
+                                allowTypes="/(\.|\/)(pdf)$/"
+                                label=""
+                                uploadLabel=""
+                                cancelLabel=""
+                                disabled="#{informeCumplimientoInventariosRegionalCtrl.disableBtnCargarArchivo}"
+                                oncomplete="onCellEdit();"
+                                fileUploadListener="#{informeCumplimientoInventariosRegionalCtrl.uploadInformeRegional}"
+                                update="msgMensajes, pnlArchivoTemporal"/>
+                            <br/>
+                            <b:panel id="pnlArchivoTemporal">
+                                <b:panelGrid colSpans="5,4,3" style="width: 100%;" rendered="#{informeCumplimientoInventariosRegionalCtrl.renderArchivoTemporal}">
+                                    <p:outputLabel id="txtArchivoTemporal" value="#{informeCumplimientoInventariosRegionalCtrl.nombreArchivoTemporal}"/>
+                                    <p:commandButton value="#{etiquetas['btnVistaPrevia']}"
+                                                     id="btnVistaPrevia"
+                                                     ajax="false"
+                                                     process="@this"
+                                                     icon="fa fa-fw fa-download"
+                                                     action="#{informeCumplimientoInventariosRegionalCtrl.vistaPrevia}"
+                                                     update="msgMensajes"/>
+                                    <p:commandButton value="#{etiquetas['btnGuardar']}"
+                                                     id="btnGuardar"
+                                                     icon="fa fa-fw fa-save"
+                                                     action="#{informeCumplimientoInventariosRegionalCtrl.confirmarUpload()}"
+                                                     update="msgMensajes, pnlArchivoTemporal, formInformesRegional"/>
+                                </b:panelGrid>
+                            </b:panel>
+                            <p:dataTable id="informeTbl"
+                                         value="#{informeCumplimientoInventariosRegionalCtrl.informeCumplimientoList}" 
+                                         var="informe"
+                                         rowKey="#{informe.informeCumplimientoId}"
+                                         reflow="true" rows="#{informeCumplimientoInventariosRegionalCtrl.cantidadInformes}">
+                                <p:columnGroup type="header">
+                                    <p:row>
+                                        <p:column colspan="3" headerText="Dirección Regional" />
+                                    </p:row>
+                                    <p:row>
+                                        <p:column headerText="Informe Cumplimiento" 
+                                                  sortBy="#{informe.urlArchivo}"/>
+                                        <p:column headerText="Fecha"
+                                                  sortBy="#{informe.fechaRegistro}"/>
+                                        <p:column headerText="Usuario"
+                                                  sortBy="#{informe.usuario.nombre}"/>
+                                    </p:row>                                
+                                </p:columnGroup>
+                                <p:column>
+                                    <center>
+                                        <h:commandLink id="btDescargaInfCumplimientoRegional"
+                                                       immediate="true"
+                                                       styleClass="fa fa-fw fa-download"                                                       
+                                                       action="#{informeCumplimientoInventariosRegionalCtrl.visualizarArchivoRespaldo}">
+                                            <f:setPropertyActionListener
+                                                target="#{informeCumplimientoInventariosRegionalCtrl.rutaArchivo}"
+                                                value="#{informe.urlArchivo}" /> 
+                                        </h:commandLink>                                    
+                                    </center>
+                                </p:column> 
+                                <p:column>
+                                    <center>
+                                        <h:outputText value="#{informe.fechaRegistro}">
+                                            <f:convertDateTime pattern="yyyy/MM/dd" />
+                                        </h:outputText>
+                                    </center>
+                                </p:column>
+                                <p:column>
+                                    <center>
+                                        <h:outputText value="#{informe.usuario.nombre}"/>
+                                    </center>
+                                </p:column>
+                            </p:dataTable>
+                        </b:panelGrid>                    
+                    </b:panel>
+                </b:panelGrid>
+            </h:form>           
+        </ui:define>
+    </ui:composition>
+</html>
