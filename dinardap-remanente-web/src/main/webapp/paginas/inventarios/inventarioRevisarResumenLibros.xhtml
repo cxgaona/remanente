@@ -572,10 +572,11 @@
                         </p:dataTable>
                     </h:panelGrid>                   
                 </b:panel>
-                <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 40%; margin: 4px 5px;">
+                <b:panelGrid id="btnPnl" colSpans="6,6" style="width: 50%; margin: 4px 5px;">
                     <p:commandButton value="#{etiquetas['btnVerEstados']}"
                                      disabled="#{revisarResumenLibrosCtrl.disabledBtnReload}"
-                                     style="margin-bottom:5px;"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     icon="fa fa-fw fa-eye"
                                      update="formEstadoInventarioAnualDlg:estadoInventarioAnualTbl"
                                      onclick="PF('estadoInventarioAnualDlg').show();">
                         <f:setPropertyActionListener value="#{revisarResumenLibrosCtrl.inventarioAnual}" target="#{revisarResumenLibrosCtrl.inventarioAnual}" />
@@ -584,12 +585,13 @@
                     <p:commandButton id="downloadArchivo"                                         
                                          value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
                                          ajax="false"
+                                         style="padding-bottom:5px; margin-bottom: 10px;"
                                          process="@this"
                                          action="#{revisarResumenLibrosCtrl.visualizarArchivoRespaldo}"
                                          disabled="#{revisarResumenLibrosCtrl.disableBtnDescargarArchivo}"
                                          icon="fa fa-fw fa-download"/><br/>
                     <p:outputLabel value="#{etiquetas['comentarios']}: &nbsp;" /><br/>
-                    <h:outputText value="#{revisarResumenLibrosCtrl.comentariosRechazo}" style="padding-bottom:5px;" /><br/>
+                    <h:outputText value="#{revisarResumenLibrosCtrl.comentariosRechazo}" style="padding-bottom:5px; margin-bottom: 10px;" /><br/>
                     <p:commandButton value="#{etiquetas['btnAprobarInventarioAnual']}"
                                      id="btnAprobar"
                                      style="margin-right:20px;" 

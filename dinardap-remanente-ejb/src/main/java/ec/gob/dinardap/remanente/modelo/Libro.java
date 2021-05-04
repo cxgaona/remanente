@@ -53,7 +53,7 @@ public class Libro implements Serializable {
     @ManyToOne
     private InventarioAnual inventarioAnual;
     
-    @Size(max = 50)
+    @Size(max = 60)
     @Column(name = "denominacion")
     private String denominacion;
     

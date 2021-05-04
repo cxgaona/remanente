@@ -560,7 +560,7 @@
                     <p:fileUpload                                
                         id="archivoRespaldo"
                         messageTemplate="Tipo de Archivo no Válido"
-                        style="width:75%"
+                        style="width:75%; padding-bottom:5px; margin-bottom: 5px;"
                         mode="advanced"
                         dragDropSupport="true"
                         sizeLimit="9000000"
@@ -576,12 +576,13 @@
                     <p:commandButton id="downloadArchivo"                                         
                                          value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
                                          ajax="false"
+                                         style="padding-bottom:5px; margin-bottom: 10px;"
                                          process="@this"
                                          action="#{resumenLibrosCtrl.visualizarArchivoRespaldo}"
                                          disabled="#{resumenLibrosCtrl.disableBtnDescargarArchivo}"
                                          icon="fa fa-fw fa-download"/>
                     <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" />
-                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/>              
+                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px; margin-bottom: 10px;"/>              
                     <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"
                                      action="#{resumenLibrosCtrl.solicitarRevisionInventario}"
                                      icon="fa fa-fw fa-share"

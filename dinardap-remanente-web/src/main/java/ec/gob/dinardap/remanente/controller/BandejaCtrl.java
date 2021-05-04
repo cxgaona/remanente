@@ -4,7 +4,6 @@ import ec.gob.dinardap.remanente.dto.BandejaDTO;
 import ec.gob.dinardap.remanente.servicio.BandejaServicio;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -76,6 +75,17 @@ public class BandejaCtrl extends BaseCtrl implements Serializable {
                         linkRedireccion = "inventarios/inventarioRevisarResumenLibros.jsf";
                     }else if(perfil.equals("9")){
                         linkRedireccion = "inventarios/inventarioAdministradorInventarios.jsf";
+                    }
+                }
+                break;
+            case "ID":
+                for(String perfil:perfilesList ){                   
+                    if(perfil.equals("6") || perfil.equals("7")){
+                        linkRedireccion = "inventarios/declaraciones/inventarioDeclaraciones.jsf";
+                    }else if(perfil.equals("8")){
+                        linkRedireccion = "inventarios/declaraciones/inventarioRevisarDeclaraciones.jsf";
+                    }else if(perfil.equals("9")){
+                        linkRedireccion = "inventarios/declaraciones/inventarioAdministradorDeclaraciones.jsf";
                     }
                 }
                 break;
