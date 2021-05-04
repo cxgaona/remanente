@@ -20,6 +20,7 @@
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,25,50"
                                      tableStyle="width:auto"
+                                     filteredValue="#{reporte1Ctrl.ultimoEstadoDTOListFiltrado}"
                                      disabledTextSelection="false">                            
                             <p:column headerText="Nombre" sortBy="#{usuarioDto.usuario.nombre}" filterBy="#{usuarioDto.usuario.nombre}" filterMatchMode="contains">
                                 <h:outputText value="#{usuarioDto.usuario.nombre}" />

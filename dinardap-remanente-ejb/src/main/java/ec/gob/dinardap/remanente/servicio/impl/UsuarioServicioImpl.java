@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 
 import ec.gob.dinardap.persistence.servicio.impl.GenericServiceImpl;
 import ec.gob.dinardap.remanente.modelo.InventarioAnual;
+import ec.gob.dinardap.remanente.modelo.InventarioDeclaracion;
 import ec.gob.dinardap.remanente.modelo.RemanenteCuatrimestral;
 import ec.gob.dinardap.remanente.servicio.UsuarioServicio;
 import ec.gob.dinardap.seguridad.dao.UsuarioDao;
@@ -69,6 +70,21 @@ public class UsuarioServicioImpl extends GenericServiceImpl<Usuario, Integer> im
         List<Integer> tipoInstitucionList = new ArrayList<Integer>();
         if (rolSolicitante.equals(9)) {
             institucion= inventarioAnual.getInstitucion();
+        }
+        institucionIdList = getInstitucionPadre(institucion, institucionIdList);
+        tipoInstitucionList = getInstitucionTipos(institucion, tipoInstitucionList);       
+        userList = usuarioDao.obtenerUsuariosPorInstitucionTipoPerfil(institucionIdList, tipoInstitucionList, rolAsignado);
+               
+        return userList;
+    }
+
+    @Override
+    public List<Usuario> getUsuarioByIstitucionRolInventarioDeclaracion(Institucion institucion, Integer rolAsignado, Integer rolSolicitante, InventarioDeclaracion inventarioDeclaracion) {
+        List<Usuario> userList = new ArrayList<Usuario>();
+        List<Integer> institucionIdList = new ArrayList<Integer>();
+        List<Integer> tipoInstitucionList = new ArrayList<Integer>();
+        if (rolSolicitante.equals(9)) {
+            institucion= inventarioDeclaracion.getInstitucion();
         }
         institucionIdList = getInstitucionPadre(institucion, institucionIdList);
         tipoInstitucionList = getInstitucionTipos(institucion, tipoInstitucionList);       

@@ -13,6 +13,7 @@ import ec.gob.dinardap.remanente.servicio.TomoServicio;
 import ec.gob.dinardap.seguridad.modelo.Institucion;
 import ec.gob.dinardap.util.constante.EstadoEnum;
 import java.io.Serializable;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,7 +49,7 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
     private Integer año;
     private Libro libroSelected;    
     private Institucion institucion;
-    private Tomo tomoSelected;
+    private Tomo tomoSelected, ultimoTomo;
     private InventarioAnual inventarioAnual;
     
     //Listas
@@ -180,8 +181,23 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
         onEdit = Boolean.FALSE;
         disableDeleteTomo = Boolean.TRUE;
         renderEdition = Boolean.TRUE;
-
+        
         tomoSelected = new Tomo();
+        ultimoTomo=tomoServicio.getUltimoTomoPorLibro(libroSelected.getLibroId());
+        if(ultimoTomo.getTomoId()!=null){
+            tomoSelected.setNumero(ultimoTomo.getNumero()+1);
+            tomoSelected.setFojaInicio(ultimoTomo.getFojaFin()+1);
+        }else{            
+            tomoSelected.setNumero(1);
+            tomoSelected.setFojaInicio(1);
+            if(libroSelected.getTipoLibro().getTipoLibroId().equals(TipoLibroEnum.PROPIEDAD.getTipoLibro()) ||
+               libroSelected.getTipoLibro().getTipoLibroId().equals(TipoLibroEnum.MERCANTIL.getTipoLibro()) ){
+                tomoSelected.setNumeroInscripcionInicio(1);
+            }
+        }
+        if(ultimoTomo.getNumeroInscripcionInicio()!=null){
+            tomoSelected.setNumeroInscripcionInicio(ultimoTomo.getNumeroInscripcionFin()+1);
+        }
     }
     
     public void borrarTomoSeleccionado() {
@@ -197,7 +213,9 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
     
     public void guardarTomo() {
         tomoSelected.setLibro(libroSelected);
-
+        if(tomoSelected.getNumeroHojasOtroFormato()==null){
+            tomoSelected.setNumeroHojasOtroFormato(0);
+        }
         if (onCreate) {
             tomoSelected.setFechaRegistro(new Date());
             tomoSelected.setEstado(EstadoEnum.ACTIVO.getEstado());
@@ -221,6 +239,20 @@ public class TomoCtrl extends BaseCtrl implements Serializable {
         disableDeleteTomo = Boolean.TRUE;
         obtenerTomo();
         //reloadLibro();        
+    }
+    
+    public void calcularTotalInscripciones(){
+        if(tomoSelected.getNumeroInscripcionInicio()!=null && tomoSelected.getNumeroInscripcionFin()!=null){
+            Integer total = tomoSelected.getNumeroInscripcionFin()-tomoSelected.getNumeroInscripcionInicio()+1;
+            tomoSelected.setTotalInscripcionesContenidas(total);
+        }
+    }
+    
+    public void calcularTotalHojas(){
+        if(tomoSelected.getFojaInicio()!=null && tomoSelected.getFojaFin()!=null){
+            Integer total = (tomoSelected.getFojaFin()-tomoSelected.getFojaInicio()+1)*2;
+            tomoSelected.setNumeroTotalHojas(total);
+        }
     }
 
     //Getters & Setters

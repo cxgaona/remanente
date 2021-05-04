@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{adminInventarioDeclaracionesCtrl.tituloInventario}</h1>
+            <p:dialog id="estadoInventarioDeclaracionDlg"
+                      header="Estados de Inventario de Declaraciones" 
+                      modal="true"
+                      widgetVar="estadoInventarioDeclaracionDlg"                      
+                      width="60%"
+                      position="top"
+                      height="400"
+                      blockScroll="true"
+                      resizable="false">
+                <h:form id="formEstadoInventarioDeclaracionDlg">
+                    <p:dataTable id="estadoInventarioDeclaracionTbl"
+                                 value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.estadoInventarioDeclaracionList}" 
+                                 var="estadoInventarioDeclaracion"
+                                 rowKey="#{estadoInventarioDeclaracion.estadoInventarioDeclaracionId}"
+                                 reflow="true" rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15"
+                                 sortBy="#{estadoInventarioDeclaracion.estadoInventarioDeclaracionId}"
+                                 sortOrder="descending">
+                        <f:facet name="header">
+                            #{etiquetas['año']}: #{adminInventarioDeclaracionesCtrl.año}
+                        </f:facet>
+                        <p:column headerText="Fecha" sortBy="#{estadoInventarioDeclaracion.fechaRegistro}" filterBy="#{estadoInventarioDeclaracion.fechaRegistro}" filterMatchMode="contains" style="text-align: center">
+                            <h:outputText value="#{estadoInventarioDeclaracion.fechaRegistro}">
+                                <f:convertDateTime pattern="yyyy/MM/dd HH:mm:ss"  />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Estado" sortBy="#{estadoInventarioDeclaracion.estado}" filterBy="#{estadoInventarioDeclaracion.estado}" filterMatchMode="contains" style="text-align: center">
+                            <h:outputText value="#{estadoInventarioDeclaracion.estado eq 1? 'Generado':
+                                                   estadoInventarioDeclaracion.estado eq 2? 'Completo':                                   
+                                                   estadoInventarioDeclaracion.estado eq 3? 'Rechazado':
+                                                   estadoInventarioDeclaracion.estado eq 4? 'Aprobado':'Sin Estado'}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+            <h:form id="formInstitucion">
+                <b:panel title="Instituciones">
+                    <h:panelGrid columns="1" style="width: 100%;">                        
+                        <p:dataTable id="institucionTbl"
+                                     value="#{adminInventarioDeclaracionesCtrl.institucionList}" 
+                                     var="institucion"
+                                     rowKey="#{institucion.institucionId}"
+                                     selectionMode="single"
+                                     selection="#{adminInventarioDeclaracionesCtrl.institucionSelected}"
+                                     reflow="true" rows="5" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15,25">
+                            <p:ajax event="rowSelect" listener="#{adminInventarioDeclaracionesCtrl.onRowSelectInstitucion}" 
+                                    update="
+                                    formDeclaracion, formResumen"/>                            
+                            <p:column headerText="Institución" 
+                                      sortBy="#{institucion.nombre}" 
+                                      filterBy="#{institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Provincia - Cantón" 
+                                      sortBy="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" 
+                                      filterBy="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.canton.provincia.nombre} - #{institucion.canton.nombre}" />
+                            </p:column>
+                            <p:column headerText="Dirección Regional" 
+                                      sortBy="#{institucion.tipoInstitucion.tipoInstitucionId eq 5 ?institucion.institucion.institucion.nombre:institucion.institucion.nombre}" 
+                                      filterBy="#{institucion.tipoInstitucion.tipoInstitucionId eq 5 ?institucion.institucion.institucion.nombre:institucion.institucion.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{institucion.tipoInstitucion.tipoInstitucionId eq 5 ?institucion.institucion.institucion.nombre:institucion.institucion.nombre}" />
+                            </p:column>
+                            <p:column headerText="Tipo de Registro" 
+                                      sortBy="#{institucion.tipoInstitucion.descripcion}">
+                                <h:outputText value="#{institucion.tipoInstitucion.descripcion}"/>
+                            </p:column>                            
+                        </p:dataTable>
+                    </h:panelGrid>                    
+                </b:panel>                
+            </h:form>
+            <h:form id="formDeclaracion">                            
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                    <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                    <p:inputText id="anio" value="#{adminInventarioDeclaracionesCtrl.año}" maxlength="4" >
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                    <p:commandButton action="#{adminInventarioDeclaracionesCtrl.reloadInventario}" update="formDeclaracion, formResumen" disabled="#{adminInventarioDeclaracionesCtrl.disabledBtnReload}" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panelGrid>                
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                </p:confirmDialog>            
+                <h:outputLabel value="Institución: #{adminInventarioDeclaracionesCtrl.nombreInstitucion}" styleClass="form-label-izquierda-15" style="width: 100%"/>
+                <b:panel title="#{adminInventarioDeclaracionesCtrl.tituloInventario} - #{adminInventarioDeclaracionesCtrl.año}" style="width: 100%">
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="tipoSoporte" value="#{etiquetas['tipoSoporteInventarioDeclaracion']}:" />
+                        <p:inputTextarea id="tipoSoporte" 
+                                         value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.tipoSoporte}" 
+                                         required="true" rows="2" cols="60" maxlength="200" autoResize="false" 
+                                         disabled="#{adminInventarioDeclaracionesCtrl.disableFormularioInventario}" />
+                        <p:outputLabel for="denominacion" value="#{etiquetas['denominacionInventarioDeclaracion']}:" />
+                        <p:inputTextarea id="denominacion" 
+                                         value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.denominacion}" 
+                                         required="true" rows="2" cols="60" maxlength="200" autoResize="false" 
+                                         disabled="#{adminInventarioDeclaracionesCtrl.disableFormularioInventario}" />
+                        <p:outputLabel for="fechaApertura" value="#{etiquetas['fechaAperturaInventarioDeclaracion']}:" />
+                        <p:datePicker id="fechaApertura" 
+                                      value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.fechaApertura}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%"                                       
+                                      readonlyInput="true"
+                                      required="true"
+                                      disabled="#{adminInventarioDeclaracionesCtrl.disableFormularioInventario}"/>                       
+                        <p:outputLabel for="fechaCierre" value="#{etiquetas['fechaCierreInventarioDeclaracion']}:" />
+                        <p:datePicker id="fechaCierre" 
+                                      value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.fechaCierre}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%" 
+                                      readonlyInput="true"
+                                      required="true"
+                                      disabled="#{adminInventarioDeclaracionesCtrl.disableFormularioInventario}"/> 
+                        <p:outputLabel for="totalAnotaciones" value="#{etiquetas['totalAnotacionesInventarioDeclaracion']}:"/>
+                        <p:inputText id="totalAnotaciones" 
+                                     value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.totalAnotaciones}" 
+                                     maxlength="10" style="width: 25%" required="true" 
+                                     disabled="#{adminInventarioDeclaracionesCtrl.disableFormularioInventario}">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>
+                        <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
+                        <p:inputText id="nombreRegistrador" 
+                                     value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion.nombreRegistrador}" 
+                                     maxlength="50" size="40" required="true"
+                                     disabled="#{adminInventarioDeclaracionesCtrl.disableFormularioInventario}"/>
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="4,4,4" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                    </b:panelGrid>
+                </b:panel>
+            </h:form>            
+            <h:form id="formResumen">
+                <b:panelGrid colSpans="6,6" style="width: 50%; margin-bottom: 10px;" rendered="#{adminInventarioDeclaracionesCtrl.renderResumen}">   
+                    <p:commandButton value="#{etiquetas['btnVerEstados']}"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     icon="fa fa-fw fa-eye"
+                                     update="formEstadoInventarioDeclaracionDlg:estadoInventarioDeclaracionTbl"
+                                     onclick="PF('estadoInventarioDeclaracionDlg').show();">
+                        <f:setPropertyActionListener value="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion}" target="#{adminInventarioDeclaracionesCtrl.inventarioDeclaracion}" />
+                    </p:commandButton><br/>
+                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " /><br/>
+                    <p:commandButton id="downloadArchivo"                                         
+                                     value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
+                                     ajax="false"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     process="@this"
+                                     action="#{adminInventarioDeclaracionesCtrl.visualizarArchivoRespaldo}"
+                                     disabled="#{adminInventarioDeclaracionesCtrl.disableBtnDescargarArchivo}"
+                                     icon="fa fa-fw fa-download"/><br/>
+                    <h:outputText value="#{adminInventarioDeclaracionesCtrl.comentariosRechazo}" style="padding-bottom:5px; margin-bottom: 10px;" /><br/>
+                </b:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

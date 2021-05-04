@@ -142,10 +142,12 @@
                         <p:outputLabel for="fojaInicioTomo" value="#{etiquetas['fojaInicioTomo']}:"/>
                         <p:inputText id="fojaInicioTomo" value="#{tomoCtrl.tomoSelected.fojaInicio}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
+                            <p:ajax event="blur" update="formTomoSelected:numeroTotalHojasTomo" process="@this" listener="#{tomoCtrl.calcularTotalHojas}" />
                         </p:inputText>                        
                         <p:outputLabel for="fojaFinTomo" value="#{etiquetas['fojaFinTomo']}:"/>
                         <p:inputText id="fojaFinTomo" value="#{tomoCtrl.tomoSelected.fojaFin}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
+                            <p:ajax event="blur" update="formTomoSelected:numeroTotalHojasTomo" process="@this" listener="#{tomoCtrl.calcularTotalHojas}" />
                         </p:inputText>                        
                         <p:outputLabel for="numeroTotalHojasTomo" value="#{etiquetas['numeroTotalHojasTomo']}:"/>
                         <p:inputText id="numeroTotalHojasTomo" value="#{tomoCtrl.tomoSelected.numeroTotalHojas}" maxlength="20" style="width: 50%" required="true" >

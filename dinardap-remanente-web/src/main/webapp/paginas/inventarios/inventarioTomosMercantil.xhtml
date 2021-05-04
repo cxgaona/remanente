@@ -129,11 +129,13 @@
                         </p:inputText>                        
                         <p:outputLabel for="numeroInscripcionInicioTomo" value="#{etiquetas['numeroInscripcionInicioTomo']}:"/>
                         <p:inputText id="numeroInscripcionInicioTomo" value="#{tomoCtrl.tomoSelected.numeroInscripcionInicio}" maxlength="20" style="width: 50%" required="true" >
-                            <p:keyFilter regEx="/[\d]/"/>  
+                            <p:keyFilter regEx="/[\d]/"/> 
+                            <p:ajax event="blur" update="formTomoSelected:totalInscripcionesContenidasTomo" process="@this" listener="#{tomoCtrl.calcularTotalInscripciones}" />
                         </p:inputText>                        
                         <p:outputLabel for="numeroInscripcionFinTomo" value="#{etiquetas['numeroInscripcionFinTomo']}:"/>
                         <p:inputText id="numeroInscripcionFinTomo" value="#{tomoCtrl.tomoSelected.numeroInscripcionFin}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
+                            <p:ajax event="blur" update="formTomoSelected:totalInscripcionesContenidasTomo" process="@this" listener="#{tomoCtrl.calcularTotalInscripciones}" />
                         </p:inputText>                        
                         <p:outputLabel for="totalInscripcionesContenidasTomo" value="#{etiquetas['totalInscripcionesContenidasTomo']}:"/>
                         <p:inputText id="totalInscripcionesContenidasTomo" value="#{tomoCtrl.tomoSelected.totalInscripcionesContenidas}" maxlength="20" style="width: 50%" required="true" >
@@ -142,10 +144,12 @@
                         <p:outputLabel for="fojaInicioTomo" value="#{etiquetas['fojaInicioTomo']}:"/>
                         <p:inputText id="fojaInicioTomo" value="#{tomoCtrl.tomoSelected.fojaInicio}" maxlength="20" style="width: 50%" required="true" >
                             <p:keyFilter regEx="/[\d]/"/>  
+                            <p:ajax event="blur" update="formTomoSelected:numeroTotalHojasTomo" process="@this" listener="#{tomoCtrl.calcularTotalHojas}" />
                         </p:inputText>                        
                         <p:outputLabel for="fojaFinTomo" value="#{etiquetas['fojaFinTomo']}:"/>
                         <p:inputText id="fojaFinTomo" value="#{tomoCtrl.tomoSelected.fojaFin}" maxlength="20" style="width: 50%" required="true" >
-                            <p:keyFilter regEx="/[\d]/"/>  
+                            <p:keyFilter regEx="/[\d]/"/> 
+                            <p:ajax event="blur" update="formTomoSelected:numeroTotalHojasTomo" process="@this" listener="#{tomoCtrl.calcularTotalHojas}" />
                         </p:inputText>                        
                         <p:outputLabel for="numeroTotalHojasTomo" value="#{etiquetas['numeroTotalHojasTomo']}:"/>
                         <p:inputText id="numeroTotalHojasTomo" value="#{tomoCtrl.tomoSelected.numeroTotalHojas}" maxlength="20" style="width: 50%" required="true" >

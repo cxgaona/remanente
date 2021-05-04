@@ -132,10 +132,10 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
                 //String uri = "https://remanentesrm.dinardap.gob.ec/remanente";
                 String mensajeMail = descripcion;
                 StringBuilder html = new StringBuilder(
-                        "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes</B></h1></center><br/><br/>");
+                        "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Plataforma de Control de Remanentes e Inventarios</B></h1></center><br/><br/>");
                 html.append("Estimado(a) " + userAsignado.getNombre() + ", <br /><br />");
                 html.append(mensajeMail + "<br/ ><br />");
-                html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes</a><br/ >");
+                html.append("<a href='" + uri.toASCIIString() + "'>Plataforma de Control de Remanentes e Inventarios</a><br/ >");
                 //html.append("<a href='" + uri + "'>Sistema de Remanentes</a><br/ >");
                 html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
                 html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
@@ -186,10 +186,10 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
                 //String uri = "https://remanentesrm.dinardap.gob.ec/remanente";
                 String mensajeMail = descripcion;
                 StringBuilder html = new StringBuilder(
-                        "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Sistema de Remanentes e Inventario de Libros</B></h1></center><br/><br/>");
+                        "<FONT FACE=\"Arial, sans-serif\"><center><h1><B>Plataforma de Control de Remanentes e Inventarios</B></h1></center><br/><br/>");
                 html.append("Estimado(a) " + userAsignado.getNombre() + ", <br /><br />");
                 html.append(mensajeMail + "<br/ ><br />");
-                html.append("<a href='" + uri.toASCIIString() + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
+                html.append("<a href='" + uri.toASCIIString() + "'>Plataforma de Control de Remanentes e Inventarios</a><br/ >");
                 //html.append("<a href='" + uri + "'>Sistema de Remanentes e Inventario de Libros</a><br/ >");
                 html.append("Gracias por usar nuestros servicios.<br /><br /></FONT>");
                 html.append("<FONT FACE=\"Arial Narrow, sans-serif\"><B> ");
@@ -198,7 +198,11 @@ public class BandejaServicioImpl extends GenericServiceImpl<Bandeja, Integer> im
                 List<String> to = new ArrayList<String>();
                 StringBuilder asunto = new StringBuilder(200);
                 to.add(userAsignado.getCorreoElectronico());
-                asunto.append("Notificación Inventario de Libros Registrales");
+                if(tipo=="IA"){
+                    asunto.append("Notificación Inventario de Libros Registrales");
+                }else if(tipo=="ID"){
+                    asunto.append("Notificación Inventario de Declaraciones Responsables de Trámites en Línea");
+                }
                 mailMessage = credencialesCorreo();
                 mailMessage.setTo(to);
                 mailMessage.setSubject(asunto.toString());

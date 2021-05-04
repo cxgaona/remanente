@@ -58,9 +58,9 @@
                     </p:inputText>
                     <p:commandButton action="#{resumenLibrosCtrl.reloadLibro}" update="formResumen" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
                 </b:panelGrid>
-                <b:panelGrid colSpans="3,6,3" style="width: 30%; margin: 4px 5px;">   
+                <b:panelGrid colSpans="3,6,3" style="width: 50%; margin: 4px 5px;">   
                     <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
-                    <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="30" size="25" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
+                    <p:inputText id="nombreRegistrador" value="#{resumenLibrosCtrl.nombreRegistrador}" maxlength="50" size="40" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>                
                     <p:commandButton action="#{resumenLibrosCtrl.actualizarRegistrador}" update="formResumen" style="margin-right:20px;" value="#{etiquetas['btnActualizar']}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}"/>
                 </b:panelGrid>                
                 <b:panel title="Resumen Libros Propiedad" rendered="#{resumenLibrosCtrl.renderPropiedad}">                    
@@ -560,7 +560,7 @@
                     <p:fileUpload                                
                         id="archivoRespaldo"
                         messageTemplate="Tipo de Archivo no Válido"
-                        style="width:75%"
+                        style="width:75%; padding-bottom:5px; margin-bottom: 5px;"
                         mode="advanced"
                         dragDropSupport="true"
                         sizeLimit="9000000"
@@ -576,12 +576,13 @@
                     <p:commandButton id="downloadArchivo"                                         
                                          value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
                                          ajax="false"
+                                         style="padding-bottom:5px; margin-bottom: 10px;"
                                          process="@this"
                                          action="#{resumenLibrosCtrl.visualizarArchivoRespaldo}"
                                          disabled="#{resumenLibrosCtrl.disableBtnDescargarArchivo}"
                                          icon="fa fa-fw fa-download"/>
                     <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" />
-                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px;"/>              
+                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{resumenLibrosCtrl.comentariosRechazo}" disabled="#{resumenLibrosCtrl.disableEditRegistrador}" style="padding-bottom:5px; margin-bottom: 10px;"/>              
                     <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"
                                      action="#{resumenLibrosCtrl.solicitarRevisionInventario}"
                                      icon="fa fa-fw fa-share"

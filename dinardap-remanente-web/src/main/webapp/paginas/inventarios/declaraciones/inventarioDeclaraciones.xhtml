@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">      
+    <ui:composition template="/template/general.xhtml">
+        <ui:define name="content">              
+            <h1 class="h-wai">#{etiquetas['nombre.sistema']} - #{inventarioDeclaracionesCtrl.tituloInventario}</h1>
+            <p:dialog id="estadoInventarioDeclaracionDlg"
+                      header="Estados de Inventario de Declaraciones" 
+                      modal="true"
+                      widgetVar="estadoInventarioDeclaracionDlg"                      
+                      width="60%"
+                      position="top"
+                      height="400"
+                      blockScroll="true"
+                      resizable="false">
+                <h:form id="formEstadoInventarioDeclaracionDlg">
+                    <p:dataTable id="estadoInventarioDeclaracionTbl"
+                                 value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.estadoInventarioDeclaracionList}" 
+                                 var="estadoInventarioDeclaracion"
+                                 rowKey="#{estadoInventarioDeclaracion.estadoInventarioDeclaracionId}"
+                                 reflow="true" rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15"
+                                 sortBy="#{estadoInventarioDeclaracion.estadoInventarioDeclaracionId}"
+                                 sortOrder="descending">
+                        <f:facet name="header">
+                            #{etiquetas['año']}: #{inventarioDeclaracionesCtrl.año}
+                        </f:facet>
+                        <p:column headerText="Fecha" sortBy="#{estadoInventarioDeclaracion.fechaRegistro}" filterBy="#{estadoInventarioDeclaracion.fechaRegistro}" filterMatchMode="contains" style="text-align: center">
+                            <h:outputText value="#{estadoInventarioDeclaracion.fechaRegistro}">
+                                <f:convertDateTime pattern="yyyy/MM/dd HH:mm:ss"  />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Estado" sortBy="#{estadoInventarioDeclaracion.estado}" filterBy="#{estadoInventarioDeclaracion.estado}" filterMatchMode="contains" style="text-align: center">
+                            <h:outputText value="#{estadoInventarioDeclaracion.estado eq 1? 'Generado':
+                                                   estadoInventarioDeclaracion.estado eq 2? 'Completo':                                   
+                                                   estadoInventarioDeclaracion.estado eq 3? 'Rechazado':
+                                                   estadoInventarioDeclaracion.estado eq 4? 'Aprobado':'Sin Estado'}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+            <h:form id="formDeclaracion">                            
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <b:panelGrid colSpans="2,8,2" style="width: 20%; margin: 4px 5px;">
+                    <p:outputLabel for="anio" value="#{etiquetas['año']}: &nbsp;" />
+                    <p:inputText id="anio" value="#{inventarioDeclaracionesCtrl.año}" maxlength="4" >
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                    <p:commandButton action="#{inventarioDeclaracionesCtrl.reloadInventario}" update="formDeclaracion, formDeclaracionSelected, formResumen" style="margin-right:20px;" icon="fa fa-fw fa-refresh"/>
+                </b:panelGrid>                
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-fw fa-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-fw fa-remove" />
+                </p:confirmDialog>
+            </h:form>
+            <h:form id="formDeclaracionSelected">
+                <b:panel title="#{inventarioDeclaracionesCtrl.tituloInventario} - #{inventarioDeclaracionesCtrl.año}" style="width: 100%">
+                    <b:panelGrid id="btnPnl" colSpans="4,4,4" style="width: 75%; margin: 4px 5px;">
+                        <p:commandButton value="#{etiquetas['btnNuevoInventarioDeclaracion']}"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{inventarioDeclaracionesCtrl.nuevoRegistroInventarioDeclaracion}"
+                                         icon="fa fa-fw fa-plus-square"
+                                         id="btnNuevoInventarioDeclaracion"
+                                         disabled="#{inventarioDeclaracionesCtrl.disableNuevoInventario}"
+                                         update="formDeclaracionSelected, formDeclaracionSelected:btnNuevoInventarioDeclaracion, formResumen"/>
+                        <p:commandButton value="#{etiquetas['btnActualizarInventarioDeclaracion']}"
+                                         style="margin-right:20px; width: 100%" 
+                                         action="#{inventarioDeclaracionesCtrl.actualizarRegistroInventarioDeclaracion}"
+                                         icon="fa fa-fw fa-pencil-square-o"
+                                         id="btnActualizarInventarioDeclaracion"
+                                         disabled="#{inventarioDeclaracionesCtrl.disableActualizarInventario}"
+                                         update="formDeclaracionSelected, formDeclaracionSelected:btnNuevoInventarioDeclaracion, formResumen"/>
+                    </b:panelGrid>
+                    <b:panelGrid colSpans="3,9" style="width: 100%; margin: 4px 5px;" styleClass="panel_boost">
+                        <p:outputLabel for="tipoSoporte" value="#{etiquetas['tipoSoporteInventarioDeclaracion']}:" />
+                        <p:inputTextarea id="tipoSoporte" 
+                                         value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.tipoSoporte}" 
+                                         required="true" rows="2" cols="60" maxlength="200" autoResize="false" 
+                                         disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}" />
+                        <p:outputLabel for="denominacion" value="#{etiquetas['denominacionInventarioDeclaracion']}:" />
+                        <p:inputTextarea id="denominacion" 
+                                         value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.denominacion}" 
+                                         required="true" rows="2" cols="60" maxlength="200" autoResize="false" 
+                                         disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}" />
+                        <p:outputLabel for="fechaApertura" value="#{etiquetas['fechaAperturaInventarioDeclaracion']}:" />
+                        <p:datePicker id="fechaApertura" 
+                                      value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.fechaApertura}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%"                                       
+                                      readonlyInput="true"
+                                      required="true"
+                                      disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}"/>                       
+                        <p:outputLabel for="fechaCierre" value="#{etiquetas['fechaCierreInventarioDeclaracion']}:" />
+                        <p:datePicker id="fechaCierre" 
+                                      value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.fechaCierre}" 
+                                      locale="es" 
+                                      monthNavigator="true" 
+                                      pattern="yyyy-MM-dd" 
+                                      style="width: 90%" 
+                                      readonlyInput="true"
+                                      required="true"
+                                      disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}"/> 
+                        <p:outputLabel for="totalAnotaciones" value="#{etiquetas['totalAnotacionesInventarioDeclaracion']}:"/>
+                        <p:inputText id="totalAnotaciones" 
+                                     value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.totalAnotaciones}" 
+                                     maxlength="10" style="width: 25%" required="true" 
+                                     disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}">
+                            <p:keyFilter regEx="/[\d]/"/>  
+                        </p:inputText>
+                        <p:outputLabel for="nombreRegistrador" value="#{etiquetas['nombreRegistrador']}: &nbsp;" />
+                        <p:inputText id="nombreRegistrador" 
+                                     value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion.nombreRegistrador}" 
+                                     maxlength="50" size="40" required="true"
+                                     disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}"/>
+                    </b:panelGrid>    
+                    <b:panelGrid colSpans="4,4,4" style="width: 100%; margin: 4px 5px; text-align: center;">                        
+                        <p:commandButton value="#{inventarioDeclaracionesCtrl.strBtnGuardar}" id="guardarBtn" style="margin-right:20px;" icon="fa fa-fw fa-save" action="#{inventarioDeclaracionesCtrl.guardarInventario}" update=":formDeclaracionSelected, :formDeclaracion, :formResumen" disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}"/>
+                        <p:commandButton value="#{etiquetas['btnCancelar']}" id="cancelarBtn" style="margin-right:20px;" icon="fa fa-fw fa-ban" process="@this" action="#{inventarioDeclaracionesCtrl.cancelarInventario}" update=":formDeclaracionSelected, :formDeclaracion, :formResumen" disabled="#{inventarioDeclaracionesCtrl.disableFormularioInventario}"/>
+                    </b:panelGrid>
+                </b:panel>
+            </h:form>           
+            <h:form id="formResumen">
+                <b:panelGrid colSpans="12" style="width: 50%; margin-bottom: 10px;" rendered="#{inventarioDeclaracionesCtrl.renderResumen}">   
+                    <p:commandButton value="#{etiquetas['btnGenerarInventarioDeclaracionPDF']}"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     icon="fa fa-fw fa-file-pdf-o"
+                                     ajax="false"
+                                     action="#{inventarioDeclaracionesCtrl.exportarPDF(actionEvent)}"/>
+
+                    <p:commandButton value="#{etiquetas['btnVerEstados']}"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     icon="fa fa-fw fa-eye"
+                                     update="formEstadoInventarioDeclaracionDlg:estadoInventarioDeclaracionTbl"
+                                     onclick="PF('estadoInventarioDeclaracionDlg').show();">
+                        <f:setPropertyActionListener value="#{inventarioDeclaracionesCtrl.inventarioDeclaracion}" target="#{inventarioDeclaracionesCtrl.inventarioDeclaracion}" />
+                    </p:commandButton>
+                    <p:outputLabel value="#{etiquetas['archivoRespaldo']}: " />
+                    <p:fileUpload                                
+                        id="archivoRespaldo"
+                        messageTemplate="Tipo de Archivo no Válido"
+                        style="width:75%; padding-bottom:5px; margin-bottom: 5px;"
+                        mode="advanced"
+                        dragDropSupport="true"
+                        sizeLimit="9000000"
+                        allowTypes="/(\.|\/)(pdf)$/"
+                        label=""
+                        uploadLabel=""
+                        cancelLabel=""
+                        disabled="#{inventarioDeclaracionesCtrl.disableBtnCargarArchivo}"
+                        oncomplete="onCellEdit();"
+                        fileUploadListener="#{inventarioDeclaracionesCtrl.uploadSolicitud}"
+                        update="formResumen, msgMensajes"
+                        />
+                    <p:commandButton id="downloadArchivo"                                         
+                                     value="#{etiquetas['btnDescargarArchivoRespaldo']}"                                          
+                                     ajax="false"
+                                     style="padding-bottom:5px; margin-bottom: 10px;"
+                                     process="@this"
+                                     action="#{inventarioDeclaracionesCtrl.visualizarArchivoRespaldo}"
+                                     disabled="#{inventarioDeclaracionesCtrl.disableBtnDescargarArchivo}"
+                                     icon="fa fa-fw fa-download"/>
+                    <p:outputLabel for="comentarios" value="#{etiquetas['comentarios']}: &nbsp;" />
+                    <p:inputTextarea id="comentarios" rows="3" cols="50" maxlength="500" autoResize="false" value="#{inventarioDeclaracionesCtrl.comentariosRechazo}" disabled="#{inventarioDeclaracionesCtrl.disableSolicitarRevision}" style="padding-bottom:5px; margin-bottom: 10px;"/>              
+                    <p:commandButton value="#{etiquetas['btnSolicitarRevision']}"
+                                     action="#{inventarioDeclaracionesCtrl.solicitarRevisionInventario}"
+                                     icon="fa fa-fw fa-share"
+                                     id="btnSolicitarRevision"
+                                     disabled="#{inventarioDeclaracionesCtrl.disableSolicitarRevision}"
+                                     update="formResumen, formDeclaracionSelected">
+                        <p:confirm header="Confirmación" message="#{mensajes['confirmacionRevisionInventario']}" icon="fa fa-fw fa-warning" />
+                    </p:commandButton>                        
+                </b:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
